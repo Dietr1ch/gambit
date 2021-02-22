@@ -557,7 +557,7 @@ def find_and_harvest_headers(header_set, fullheadlist, exclude_set, dir_exclude_
             new_headers, fullheadlist, new_exclude_set, dir_exclude_set, verbose=verbose)
 
 
-def retrieve_rollcall_headers(verbose, install_dir, excludes):
+def retrieve_rollcall_headers(verbose, install_dir, excludes, retrieve_excluded=False):
     """Search the source tree to determine which modules are present, and write a module_rollcall header if the GAMBIT Core exists."""
     rollcall_headers = []
     core_exists = False
@@ -576,7 +576,14 @@ def retrieve_rollcall_headers(verbose, install_dir, excludes):
                 for x in excludes:
                     if name.startswith(x):
                         exclude = True
-                if (not exclude):
+                if not exclude and not retrieve_excluded:
+                    if verbose:
+                        print("  Located module rollcall header '{0}' at path '{1}'".format(
+                            name, os.path.join(root, name)))
+                    rel_name = re.sub(
+                        ".*?/include/", "", os.path.relpath(os.path.join(root, name), install_dir))
+                    rollcall_headers += [rel_name]
+                if exclude and retrieve_excluded:
                     if verbose:
                         print("  Located module rollcall header '{0}' at path '{1}'".format(
                             name, os.path.join(root, name)))
@@ -628,7 +635,7 @@ def get_all_files_with_ext(verbose, starting_dir, ext_set, kind):
     return results
 
 
-def retrieve_generic_headers(verbose, starting_dir, kind, excludes, exclude_list=[]):
+def retrieve_generic_headers(verbose, starting_dir, kind, excludes, exclude_list=[], retrieve_excluded=False):
     """Search a directory for headers that are not excluded."""
     headers = []
     for root, dirs, files in os.walk(starting_dir):
@@ -641,13 +648,22 @@ def retrieve_generic_headers(verbose, starting_dir, kind, excludes, exclude_list
                     exclude = True
             if kind == "BOSSed type" and not name.startswith("loaded_types"):
                 exclude = True
-            if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")):
-                if verbose:
-                    print(
-                        "  Located "+kind+" header '{0}' at path '{1}'".format(name, os.path.join(root, name)))
-                rel_name = re.sub(
-                    ".*?/include/", "", os.path.relpath(os.path.join(root, name), starting_dir))
-                headers += [rel_name]
+
+            if name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh"):
+                if not exclude and not retrieve_excluded:
+                    if verbose:
+                        print(
+                            "  Located "+kind+" header '{0}' at path '{1}'".format(name, os.path.join(root, name)))
+                    rel_name = re.sub(
+                        ".*?/include/", "", os.path.relpath(os.path.join(root, name), starting_dir))
+                    headers += [rel_name]
+                if exclude and retrieve_excluded:
+                    if verbose:
+                        print(
+                            "  Located "+kind+" header '{0}' at path '{1}'".format(name, os.path.join(root, name)))
+                    rel_name = re.sub(
+                        ".*?/include/", "", os.path.relpath(os.path.join(root, name), starting_dir))
+                    headers += [rel_name]
         if kind != "BOSSed type":
             break
     return headers
