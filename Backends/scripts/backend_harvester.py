@@ -46,10 +46,8 @@ def extract_yaml_for_diagnostic(headers):
     Returns:
         dict: backend name key with a list of versions as value
     """
-    print(headers)
     # Remove the file extension
     headers_without_file_extension = [header.split(".")[0] for header in headers]
-    print(headers_without_file_extension)
     # Get a list of backend names without version numbers
     backend_names = {"_".join(x for x in header.split("_") if not x[0].isdigit()) for header in headers_without_file_extension}
 
