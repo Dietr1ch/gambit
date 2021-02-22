@@ -41,7 +41,9 @@ namespace Gambit
   void gambit_core::module_diagnostic()
   {
     YAML::Node gambit_bits_yaml = YAML::LoadFile(GAMBIT_DIR "/config/gambit_bits.yaml");
-    auto gambit_bits = gambit_bits_yaml["gambit_bits"].as<std::vector<std::string>>();
+    auto gambit_bits = gambit_bits_yaml["enabled"].as<std::vector<std::string>>();
+    const auto gambit_bits_disabled = gambit_bits_yaml["disabled"].as<std::vector<std::string>>();
+    gambit_bits.insert(gambit_bits.end(), gambit_bits_disabled.begin(), gambit_bits_disabled.end());
 
     // We need to manually add this here, can not be crawled by our script.
     // We want to sort it again to keep alphabetical ordering from the python script after adding bits explicitly here.
