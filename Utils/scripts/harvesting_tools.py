@@ -590,7 +590,7 @@ def retrieve_rollcall_headers(verbose, install_dir, excludes, retrieve_excluded=
                     rel_name = re.sub(
                         ".*?/include/", "", os.path.relpath(os.path.join(root, name), install_dir))
                     rollcall_headers += [rel_name]
-    if core_exists:
+    if core_exists and not retrieve_excluded:
         make_module_rollcall(rollcall_headers, verbose)
     return rollcall_headers
 
