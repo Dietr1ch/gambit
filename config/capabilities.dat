@@ -219,14 +219,14 @@ run_light_quark_test: |
 ptr_arr_tests: |
    Function that tests array and -> operators on deps and BE vars.
 
-libMathematicaTest_1_0_init: |
+LibMathematicaTest_1_0_init: |
    Initialises the backend for Mathematica tests.
 
 MathematicaTest: |
    Performs serveral tests of Mathematica backends.
 
 MathTest: |
-   Runs a series of test in libMathematicaTest.
+   Runs a series of test in LibMathematicaTest.
 
 MathTest_CalculateSquare: |
    Test function for Mathematica backends that calculates the square of a number.
