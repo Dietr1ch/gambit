@@ -121,7 +121,8 @@ namespace Gambit
         int ntypes = 0;
         int nctors = 0;
 
-        if (backend_versions.find(backend.first) == backend_versions.end()) {
+        if (backend_versions.find(backend.first) == backend_versions.end()) 
+        {
           const str firstentry = (&version == std::addressof(*backend.second.begin()) ? backend.first : "");
           table << firstentry << version << "n/a";
           table.red() << "disabled";

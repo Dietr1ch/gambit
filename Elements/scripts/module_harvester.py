@@ -354,7 +354,7 @@ namespace Gambit                                  \n\
         pickle.dump(returned_types, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     import yaml
-    with open("config/gambit_bits.yaml", "w+") as f:
+    with open("./config/gambit_bits.yaml", "w+") as f:
       yaml.dump({
         "enabled": list(sorted(modules)),
         "disabled": list(sorted(modules_excluded)),

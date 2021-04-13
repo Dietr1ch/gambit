@@ -558,10 +558,14 @@ def find_and_harvest_headers(header_set, fullheadlist, exclude_set, dir_exclude_
 
 
 def retrieve_rollcall_headers(verbose, install_dir, excludes, retrieve_excluded=False):
-    """Search the source tree to determine which modules are present, and write a module_rollcall header if the GAMBIT Core exists."""
+    """Search the source tree to determine which modules are present, and write a module_rollcall header if the GAMBIT Core exists.
+    
+    If the option `retrieve_excluded` is set to true, it will search for excluded modules. 
+    This feature is used for the diagnostic system.
+    """
     rollcall_headers = []
     core_exists = False
-    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends"]
+    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends", ".github", "Logs", "Core", "pippi", "Models", "yaml_files", "Printers", "config", "doc", "Utils", "Elements", "cmake"]
     for root, dirs, files in os.walk(install_dir, topdown=True):
         # bit confusing, but avoids descending into excluded directories
         [dirs.remove(d) for d in list(dirs) if d in exclude_dirs]
@@ -598,7 +602,7 @@ def retrieve_rollcall_headers(verbose, install_dir, excludes, retrieve_excluded=
 def retrieve_module_type_headers(verbose, install_dir, excludes):
     """Search the source tree to determine which modules type headers are present."""
     type_headers = []
-    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends"]
+    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends", ".github", "Logs", "Core", "pippi", "Models", "yaml_files", "Printers", "config", "doc", "Utils", "Elements", "cmake"]
     for root, dirs, files in os.walk(install_dir, topdown=True):
         # bit confusing, but avoids descending into excluded directories
         [dirs.remove(d) for d in list(dirs) if d in exclude_dirs]
@@ -636,7 +640,11 @@ def get_all_files_with_ext(verbose, starting_dir, ext_set, kind):
 
 
 def retrieve_generic_headers(verbose, starting_dir, kind, excludes, exclude_list=[], retrieve_excluded=False):
-    """Search a directory for headers that are not excluded."""
+    """Search a directory for headers that are not excluded. 
+    
+    If the option `retrieve_excluded` is set to true, it will search for excluded headers. 
+    This feature is used for the diagnostic system.
+    """
     headers = []
     for root, dirs, files in os.walk(starting_dir):
         if root.endswith("shared_includes"):
