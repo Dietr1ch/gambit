@@ -3178,12 +3178,12 @@ diff -rupN susyhit-pristine/sdecay.f ../installed/susyhit/1.5/sdecay.f
 +
 +      else                                       !This whole clause added by GAMBIT.
 +
-+        !Internal SUSY-HIT operational flags
++        !Internal SUSY_HIT operational flags
 +        flagshsin=0d0
 +        flagoutput=2d0
 +        i4bod=1
 +
-+        !SUSY-HIT common blocks already initialised by GAMBIT:
++        !SUSY_HIT common blocks already initialised by GAMBIT:
 +        !checkfavvio
 +        !flavviolation
 +        !susyhitin
@@ -4422,7 +4422,7 @@ diff -rupN susyhit-pristine/sdecay.f ../installed/susyhit/1.5/sdecay.f
 -   
 +
  
-       Print*, "STOP DECAY TO TOP NEUTRALINO IN THE FV SUSY-HIT VERSION
+       Print*, "STOP DECAY TO TOP NEUTRALINO IN THE FV SUSY_HIT VERSION
       .AT THE MOMENT ONLY AT TREE LEVEL AVAILABLE"
 - 
 +

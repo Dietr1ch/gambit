@@ -2913,7 +2913,7 @@ stau_1_decay_rates : |
    Decays of the τ_1 sleptons.
 
 stau_1_decay_rates_SH : |
-   Decays of the τ_1 sleptons calculated with SUSY-HIT.
+   Decays of the τ_1 sleptons calculated with SUSY_HIT.
 
 stau_1_decay_rates_smallsplit : |
    Decays of the τ_1 sleptons for small stau--neutralino mass splittings.
@@ -2973,7 +2973,7 @@ chargino_plus_1_decay_rates : |
    Decays of the chargino+ 1.
 
 chargino_plus_1_decay_rates_SH : |
-   Decays of the chargino+ 1 calculated using SUSY-HIT.
+   Decays of the chargino+ 1 calculated using SUSY_HIT.
 
 chargino_plus_1_decay_rates_smallsplit : |
    Decays of the chargino+ 1 at small chargino--neutralino mass splittings.
@@ -3475,23 +3475,23 @@ mu2e_lnL: |
 
 
 #-------------------------------------
-#  SUSY-HIT capabilities
+#  SUSY_HIT capabilities
 #-------------------------------------
 
 SUSY_HIT_1_5_init: |
-   Initialise SUSY-HIT backend
+   Initialise SUSY_HIT backend
 
 sdecay: |
    Computation of all MSSM decays.
 
 unlikely: |
-   An unlikely double (used for SUSY-HIT initialisation).
+   An unlikely double (used for SUSY_HIT initialisation).
 
 cb_checkfavvio: |
    Common block containing options for flavour violation.
 
 cb_susyhitin: |
-   Various standard model parameters used by SUSY-HIT.
+   Various standard model parameters used by SUSY_HIT.
 
 cb_sd_leshouches1: |
    SLHA1 values for SDecay.
@@ -3644,7 +3644,7 @@ cb_sd_selectron: |
    Selectron mixing matrix.
 
 susy_hit_backend_level_init: |
-   Runs SUSY-HIT decay calculations.
+   Runs SUSY_HIT decay calculations.
 
 H_minus_decay_rates: |
    Decay rate of the negative chared higgs.

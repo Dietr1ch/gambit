@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for SUSY-HIT 1.5 backend
+///  Frontend for SUSY_HIT 1.5 backend
 ///
 ///  *********************************************
 ///
@@ -23,11 +23,11 @@
 // Let's go.
 LOAD_LIBRARY
 
-// SUSY-HIT only works with diagonal MSSM models where first and second generation sfermions are degenerate.
+// SUSY_HIT only works with diagonal MSSM models where first and second generation sfermions are degenerate.
 BE_ALLOW_MODELS(NUHM2, MSSM20atQ)
 
 // Functions
-BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")               // Converted SUSY-HIT main routine
+BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")               // Converted SUSY_HIT main routine
 BE_FUNCTION(unlikely, double, (), "s_hit_unlikely_", "unlikely") // Wrapper for 'unlikely' double
 
 // Variables

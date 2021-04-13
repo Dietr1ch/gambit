@@ -187,7 +187,7 @@ Rules:
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
 
-  # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
+  # Choose to use functions that get Higgs decays from SUSY_HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
   - capability: Reference_SM_Higgs_decay_rates
     function: Ref_SM_Higgs_decays_table
   - capability: Reference_SM_other_Higgs_decay_rates

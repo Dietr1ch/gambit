@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for SUSY-HIT 1.5 backend
+///  Frontend for SUSY_HIT 1.5 backend
 ///
 ///  *********************************************
 ///
@@ -16,7 +16,7 @@
 #include <sstream>
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/SUSY-HIT_1_5.hpp"
+#include "gambit/Backends/frontends/SUSY_HIT_1_5.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 
@@ -29,9 +29,9 @@ BE_NAMESPACE
   void required_block(const str& name, SLHAea::Block& block, const SLHAea::Coll& slha)
   {
     if (slha.find(name) != slha.end()) block = slha.at(name);
-    else backend_error().raise(LOCAL_INFO, "Sorry, SUSY-HIT needs SLHA block: " + name + ".\n"
+    else backend_error().raise(LOCAL_INFO, "Sorry, SUSY_HIT needs SLHA block: " + name + ".\n"
     "If you tried to read in a debug SLHA file with missing entries (e.g. STOPMIX, STAUMIX,\n"
-    "etc), then sort out your SLHA file so that it is readable by SUSY-HIT!  If you can't  \n"
+    "etc), then sort out your SLHA file so that it is readable by SUSY_HIT!  If you can't  \n"
     "do that, then depending on what blocks your file has, you may be able to instead use  \n"
     "it to initialise either                                                               \n"
     " 1. a GAMBIT Spectrum object (see SpecBit::get_MSSM_spectrum_from_SLHAfile), or       \n"
@@ -39,7 +39,7 @@ BE_NAMESPACE
   }
   /// @}
 
-  /// Runs actual SUSY-HIT decay calculations.
+  /// Runs actual SUSY_HIT decay calculations.
   /// Inputs: m_s_1GeV_msbar    strange mass in GeV, in MSbar scheme at an energy of 1GeV
   ///         W_width, Z_width  EW gauge boson total widths in GeV
   void run_susy_hit(SLHAstruct slha, double W_width, double Z_width)
@@ -124,7 +124,7 @@ BE_NAMESPACE
     }
     for (int i=15; i<=20; ++i) sd_leshouches2->smval(i) = 0.0;     // zeroing
 
-    // SUSY-HIT and HDecay non-SLHA inputs
+    // SUSY_HIT and HDecay non-SLHA inputs
     susyhitin->amsin = to<double>(sminputs.at(23).at(1));          // MSBAR(1): HDECAY claims it wants ms(1GeV)^MSbar, but we don't believe it, and give it m_s(2GeV)^MSBar
     susyhitin->amcin = to<double>(sminputs.at(24).at(1));          // MC: HDECAY claims it wants the c pole mass, but that is not well defined, so we give it mc(mc)^MSBar
     susyhitin->ammuonin = sd_leshouches2->smval(11);               // MMUON: mmu(pole)
@@ -158,7 +158,7 @@ BE_NAMESPACE
     }
 
     // EXTPAR
-    sd_leshouches2->extval(0) = sd_leshouches2->qvalue(3);         // EWSB scale (set to SUSY scale as per MSOFT).  Not used by SUSY-HIT anymore.
+    sd_leshouches2->extval(0) = sd_leshouches2->qvalue(3);         // EWSB scale (set to SUSY scale as per MSOFT).  Not used by SUSY_HIT anymore.
     //std::cout << "extval = " << sd_leshouches2->extval(0) << std::endl;
 
     // MASS
@@ -250,7 +250,7 @@ BE_NAMESPACE
       }
     }
 
-    // Tell SUSY-HIT not to bother calculating the b pole mass from mb(mb)_MSbar, just use the value we pass it.
+    // Tell SUSY_HIT not to bother calculating the b pole mass from mb(mb)_MSbar, just use the value we pass it.
     sd_mbmb->i_sd_mbmb = 1;
 
     // Do calculation without flavour-violating light stop decays.
@@ -267,11 +267,11 @@ BE_NAMESPACE
     // There may be a smart way to order this so that it happens automatically if and when you want it.
     // However, before spending time automating this, it still needs to be tested that running first without
     // flavour violation and then re-running with flavour violation actually works, i.e. it does not break
-    // the non-FV results.  The SUSY-HIT authors say they think it should be OK, but they have never done it.
+    // the non-FV results.  The SUSY_HIT authors say they think it should be OK, but they have never done it.
     /*
 
     // MSQ2, MSD2, MSU2, TD, TU
-    if (msq2.find_block_def()->size() >= 4) sd_leshouches2->qvalue(17) = to<double>(msq2.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader
+    if (msq2.find_block_def()->size() >= 4) sd_leshouches2->qvalue(17) = to<double>(msq2.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY_HIT SLHA reader
     if (msd2.find_block_def()->size() >= 4) sd_leshouches2->qvalue(10) = to<double>(msd2.find_block_def()->at(3)); // Q(GeV)
     if (msu2.find_block_def()->size() >= 4) sd_leshouches2->qvalue(11) = to<double>(msu2.find_block_def()->at(3)); // Q(GeV)
     if (td.find_block_def()->size() >= 4) sd_leshouches2->qvalue(12) = to<double>(td.find_block_def()->at(3));     // Q(GeV)
@@ -303,8 +303,8 @@ BE_NAMESPACE
 
     // USQMIX, DSQMIX, SELMIX
     if (usqmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(14) = to<double>(usqmix.find_block_def()->at(3)); // Q(GeV)
-    if (dsqmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(15) = to<double>(dsqmix.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader.
-    if (selmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(16) = to<double>(selmix.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader.
+    if (dsqmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(15) = to<double>(dsqmix.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY_HIT SLHA reader.
+    if (selmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(16) = to<double>(selmix.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY_HIT SLHA reader.
     for (int i=1; i<=6; ++i)
     {
       for (int j=1; j<=6; ++j)
@@ -365,7 +365,7 @@ BE_NAMESPACE
     }
     for (int i=1; i<=20; ++i) slha_leshouches2_hdec->qvalue(i) = sd_leshouches2->qvalue(i); // Q(GeV)
 
-    // Run SUSY-HIT
+    // Run SUSY_HIT
     sdecay();
 
   }
@@ -408,7 +408,7 @@ BE_INI_FUNCTION
     // For some reason the precision on these is different, so they won't be exactly the same
     if (fabs(scale - susy_scale) > 1e-10) backend_error().raise(LOCAL_INFO, "MSSM_spectrum dependency is not at the SUSY scale.");
 
-    // Get an SLHA1 object. SUSY-HIT is not SLHA2-compliant, despite its ability to deal with FV stop decays.
+    // Get an SLHA1 object. SUSY_HIT is not SLHA2-compliant, despite its ability to deal with FV stop decays.
     slha = Dep::MSSM_spectrum->getSLHAea(1);
 
     // Check the tolerances for off-diagonal sfermion mixing.  It's a bit inefficient to redo this here,

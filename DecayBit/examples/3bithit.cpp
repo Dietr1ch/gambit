@@ -4,7 +4,7 @@
 ///
 ///  A simple program that uses SpecBit, DecayBit and
 ///  PrecisionBit in standalone mode.  Basically
-///  does the same thing SUSY-HIT, but
+///  does the same thing SUSY_HIT, but
 ///  - uses SPheno for spectrum generation
 ///    instead of SuSpect
 ///  - uses FeynHiggs for MSSM Higgs decays instead
@@ -63,7 +63,7 @@ int main()
     cout << "    SPheno                                               " << endl;
     cout << "    GM2Calc                                              " << endl;
     cout << "    FeynHiggs                                            " << endl;
-    cout << "    SDECAY (via SUSY-HIT)                                " << endl;
+    cout << "    SDECAY (via SUSY_HIT)                                " << endl;
     cout <<                                                                endl;
     cout << "  GAMBIT Models Workgroup                                " << endl;
     cout << "  EPJC 2018 78:22                                        " << endl;
@@ -84,7 +84,7 @@ int main()
     if (not Backends::backendInfo().works["SPheno4.0.3"]) backend_error().raise(LOCAL_INFO, "SPheno 4.0.3 is missing!");
     if (not Backends::backendInfo().works["gm2calc1.3.0"]) backend_error().raise(LOCAL_INFO, "gm2calc 1.3.1 is missing!");
     if (not Backends::backendInfo().works["FeynHiggs2.11.3"]) backend_error().raise(LOCAL_INFO, "FeynHiggs 2.11.3 is missing!");
-    if (not Backends::backendInfo().works["SUSY_HIT1.5"]) backend_error().raise(LOCAL_INFO, "SUSY-HIT 1.5 is missing!");
+    if (not Backends::backendInfo().works["SUSY_HIT1.5"]) backend_error().raise(LOCAL_INFO, "SUSY_HIT 1.5 is missing!");
 
     // Read in the model
     YAML::Node infile, SM_parameters, SUSY_parameters;
