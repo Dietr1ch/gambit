@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend source for the exoclassy backend.
+///  Frontend source for the classy_exo backend.
 ///
 ///  *********************************************
 ///
@@ -366,7 +366,7 @@ BE_INI_FUNCTION
     if(first_run)
     {
       max_errors = runOptions->getValueOrDef<int>(100,"max_errors");
-      cosmo = classy.attr("Class")();
+      cosmo = classy_exo.attr("Class")();
       // check input for consistency
       class_input_consistency_checks(cosmo_input_dict);
 

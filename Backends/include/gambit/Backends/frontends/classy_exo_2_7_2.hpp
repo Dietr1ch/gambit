@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend header for the classy backend.
+///  Frontend header for the classy_exo backend.
 ///
 ///  *********************************************
 ///
@@ -24,10 +24,10 @@
 ///
 ///  *********************************************
 
-#define BACKENDNAME classy
+#define BACKENDNAME classy_exo
 #define BACKENDLANG Python
-#define VERSION exo_2.7.2
-#define SAFE_VERSION exo_2_7_2
+#define VERSION 2.7.2
+#define SAFE_VERSION 2_7_2
 
 LOAD_LIBRARY
 
