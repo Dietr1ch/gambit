@@ -565,7 +565,7 @@ def retrieve_rollcall_headers(verbose, install_dir, excludes, retrieve_excluded=
     """
     rollcall_headers = []
     core_exists = False
-    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends", ".github", "Logs", "Core", "pippi", "Models", "yaml_files", "Printers", "config", "doc", "Utils", "Elements", "cmake"]
+    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends", ".github", "Logs", "pippi", "Models", "yaml_files", "Printers", "config", "doc", "Utils", "Elements", "cmake"]
     for root, dirs, files in os.walk(install_dir, topdown=True):
         # bit confusing, but avoids descending into excluded directories
         [dirs.remove(d) for d in list(dirs) if d in exclude_dirs]
@@ -602,7 +602,7 @@ def retrieve_rollcall_headers(verbose, install_dir, excludes, retrieve_excluded=
 def retrieve_module_type_headers(verbose, install_dir, excludes):
     """Search the source tree to determine which modules type headers are present."""
     type_headers = []
-    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends", ".github", "Logs", "Core", "pippi", "Models", "yaml_files", "Printers", "config", "doc", "Utils", "Elements", "cmake"]
+    exclude_dirs = ["build", ".git", "runs", "scratch", "contrib", "Backends", ".github", "Logs", "pippi", "Models", "yaml_files", "Printers", "config", "doc", "Utils", "Elements", "cmake"]
     for root, dirs, files in os.walk(install_dir, topdown=True):
         # bit confusing, but avoids descending into excluded directories
         [dirs.remove(d) for d in list(dirs) if d in exclude_dirs]
