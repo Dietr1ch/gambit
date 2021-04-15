@@ -658,7 +658,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: h0_1
+    /// SUSY-HIT MSSM decays: h0_1
     void MSSM_h0_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::MSSM_h0_1_decays;
@@ -727,7 +727,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"), true);
     }
 
-    /// SUSY_HIT MSSM decays: h0_2
+    /// SUSY-HIT MSSM decays: h0_2
     void h0_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::h0_2_decays;
@@ -798,7 +798,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"), true);
     }
 
-    /// SUSY_HIT MSSM decays: A0
+    /// SUSY-HIT MSSM decays: A0
     void A0_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::A0_decays;
@@ -849,7 +849,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: H_plus
+    /// SUSY-HIT MSSM decays: H_plus
     void H_plus_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::H_plus_decays;
@@ -890,7 +890,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: gluino
+    /// SUSY-HIT MSSM decays: gluino
     void gluino_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::gluino_decays;
@@ -972,7 +972,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: stop_1
+    /// SUSY-HIT MSSM decays: stop_1
     void stop_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stop_1_decays;
@@ -1031,7 +1031,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: stop_2
+    /// SUSY-HIT MSSM decays: stop_2
     void stop_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stop_2_decays;
@@ -1104,7 +1104,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sbottom_1
+    /// SUSY-HIT MSSM decays: sbottom_1
     void sbottom_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sbottom_1_decays;
@@ -1152,7 +1152,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sbottom_2
+    /// SUSY-HIT MSSM decays: sbottom_2
     void sbottom_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sbottom_2_decays;
@@ -1217,7 +1217,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sup_l
+    /// SUSY-HIT MSSM decays: sup_l
     void sup_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sup_l_decays;
@@ -1237,7 +1237,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sup_r
+    /// SUSY-HIT MSSM decays: sup_r
     void sup_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sup_r_decays;
@@ -1254,7 +1254,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sdown_l
+    /// SUSY-HIT MSSM decays: sdown_l
     void sdown_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sdown_l_decays;
@@ -1271,7 +1271,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sdown_r
+    /// SUSY-HIT MSSM decays: sdown_r
     void sdown_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sdown_r_decays;
@@ -1288,7 +1288,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: scharm_l
+    /// SUSY-HIT MSSM decays: scharm_l
     void scharm_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::scharm_l_decays;
@@ -1305,7 +1305,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: scharm_r
+    /// SUSY-HIT MSSM decays: scharm_r
     void scharm_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::scharm_r_decays;
@@ -1322,7 +1322,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sstrange_l
+    /// SUSY-HIT MSSM decays: sstrange_l
     void sstrange_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sstrange_l_decays;
@@ -1339,7 +1339,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: sstrange_r
+    /// SUSY-HIT MSSM decays: sstrange_r
     void sstrange_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sstrange_r_decays;
@@ -1356,7 +1356,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: selectron_l
+    /// SUSY-HIT MSSM decays: selectron_l
     void selectron_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::selectron_l_decays;
@@ -1372,7 +1372,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: selectron_r
+    /// SUSY-HIT MSSM decays: selectron_r
     void selectron_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::selectron_r_decays;
@@ -1388,7 +1388,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: smuon_l
+    /// SUSY-HIT MSSM decays: smuon_l
     void smuon_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::smuon_l_decays;
@@ -1404,7 +1404,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: smuon_r
+    /// SUSY-HIT MSSM decays: smuon_r
     void smuon_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::smuon_r_decays;
@@ -1420,7 +1420,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// MSSM decays: stau_1 (Uses SUSY_HIT results or dedicated DecayBit calculation for small mass splittings)
+    /// MSSM decays: stau_1 (Uses SUSY-HIT results or dedicated DecayBit calculation for small mass splittings)
     void stau_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stau_1_decays;
@@ -1430,14 +1430,14 @@ namespace Gambit
       DecayTable::Entry smallsplit_decays = *Dep::stau_1_decay_rates_smallsplit;
       if (smallsplit_decays.channels.size() > 0)
         result = smallsplit_decays;
-      // Else, use the SUSY_HIT results
+      // Else, use the SUSY-HIT results
       else
         result = *Dep::stau_1_decay_rates_SH;
 
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: stau_1
+    /// SUSY-HIT MSSM decays: stau_1
     void stau_1_decays_SH (DecayTable::Entry& result)
     {
       using namespace Pipes::stau_1_decays_SH;
@@ -1460,7 +1460,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: stau_2
+    /// SUSY-HIT MSSM decays: stau_2
     void stau_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stau_2_decays;
@@ -1487,7 +1487,7 @@ namespace Gambit
 
     }
 
-    /// SUSY_HIT MSSM decays: snu_electronl
+    /// SUSY-HIT MSSM decays: snu_electronl
     void snu_electronl_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::snu_electronl_decays;
@@ -1503,7 +1503,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: snu_muonl
+    /// SUSY-HIT MSSM decays: snu_muonl
     void snu_muonl_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::snu_muonl_decays;
@@ -1519,8 +1519,8 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: snu_taul
-    /// Note that SUSY_HIT calls ~nu_tau_L "snutau1" even though it has no RH (~)nus.
+    /// SUSY-HIT MSSM decays: snu_taul
+    /// Note that SUSY-HIT calls ~nu_tau_L "snutau1" even though it has no RH (~)nus.
     void snu_taul_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::snu_taul_decays;
@@ -1544,7 +1544,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// MSSM decays: chargino_plus_1 (Uses SUSY_HIT results or dedicated DecayBit calculation for small mass splittings)
+    /// MSSM decays: chargino_plus_1 (Uses SUSY-HIT results or dedicated DecayBit calculation for small mass splittings)
     void chargino_plus_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::chargino_plus_1_decays;
@@ -1554,14 +1554,14 @@ namespace Gambit
       DecayTable::Entry smallsplit_decays = *Dep::chargino_plus_1_decay_rates_smallsplit;
       if (smallsplit_decays.channels.size() > 0)
         result = smallsplit_decays;
-      // Else, use the SUSY_HIT results
+      // Else, use the SUSY-HIT results
       else
         result = *Dep::chargino_plus_1_decay_rates_SH;
 
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: chargino_plus_1
+    /// SUSY-HIT MSSM decays: chargino_plus_1
     void chargino_plus_1_decays_SH (DecayTable::Entry& result)
     {
       using namespace Pipes::chargino_plus_1_decays_SH;
@@ -1635,7 +1635,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: chargino_plus_2
+    /// SUSY-HIT MSSM decays: chargino_plus_2
     void chargino_plus_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::chargino_plus_2_decays;
@@ -1725,7 +1725,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: neutralino_1
+    /// SUSY-HIT MSSM decays: neutralino_1
     void neutralino_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_1_decays;
@@ -1829,7 +1829,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: neutralino_2
+    /// SUSY-HIT MSSM decays: neutralino_2
     void neutralino_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_2_decays;
@@ -1950,7 +1950,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: neutralino_3
+    /// SUSY-HIT MSSM decays: neutralino_3
     void neutralino_3_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_3_decays;
@@ -2088,7 +2088,7 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    /// SUSY_HIT MSSM decays: neutralino_4
+    /// SUSY-HIT MSSM decays: neutralino_4
     void neutralino_4_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_4_decays;

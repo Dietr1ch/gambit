@@ -42,7 +42,7 @@ GAMBIT contains interfaces to various external codes, along with scripts for dow
  - **Spheno:** **(i)** W. Porod, SPheno, a program for calculating supersymmetric spectra, SUSY particle decays and SUSY particle production at e+ e- colliders, Comput. Phys. Commun. 153 (2003) 275, arXiv:hep-ph/0301101, **(ii)** W. Porod, F. Staub,  SPheno 3.1: extensions including flavour, CP-phases and models beyond the MSSM, Comp. Phys. Comm. 183 (2012) 2458, arXiv:1104.1573
  - **SuperIso:** **(i)** F. Mahmoudi, SuperIso: A Program for calculating the isospin asymmetry of B -> K* gamma in the MSSM, Comp. Phys. Comm. 178 (2008) 745, arXiv:0710.2067, **(ii)** F. Mahmoudi, SuperIso v2.3: A Program for calculating flavor physics observables in Supersymmetry, Comp. Phys. Comm. 180 (2009) 1579, arXiv:0808.3144, **(iii)** F. Mahmoudi, SuperIso v3.0, flavor physics observables calculations: Extension to NMSSM, Comp. Phys. Comm. 180 (2009) 1718.
  - **SUSY-HD:** J. P. Vega, G. Villadoro, SusyHD: Higgs mass Determination in Supersymmetry, JHEP 07 (2015) 159, arXiv:1504.05200
- - **SUSY_HIT:** A. Djouadi, M. M. Mühlleitner M. Spira, Decays of supersymmetric particles: The Program SUSY_HIT (SUspect-SdecaY-Hdecay-InTerface), Acta Phys. Polon. 38 (2007) 635, arXiv: hep-ph/0609292
+ - **SUSY-HIT:** A. Djouadi, M. M. Mühlleitner M. Spira, Decays of supersymmetric particles: The Program SUSY-HIT (SUspect-SdecaY-Hdecay-InTerface), Acta Phys. Polon. 38 (2007) 635, arXiv: hep-ph/0609292
 
 Documentation
 --

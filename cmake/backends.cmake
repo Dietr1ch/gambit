@@ -924,7 +924,7 @@ if(NOT ditched_${name}_${ver})
 endif()
 
 
-# SUSY_HIT
+# SUSY-HIT
 set(name "susyhit")
 set(ver "1.5")
 set(lib "libsusyhit")

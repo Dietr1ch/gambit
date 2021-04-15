@@ -180,7 +180,7 @@ BE_NAMESPACE
     slha["SMINPUTS"][""] << 23 << (*mf_d)(2) << "# m_s(2 GeV), MSbar";
     slha["SMINPUTS"][""] << 24 << (*mf_u)(2) << "# m_c(m_c), MSbar";
 
-    // SUSY_HIT requires these blocks to be present, so add them
+    // SUSY-HIT requires these blocks to be present, so add them
     SLHAea_add_block(slha, "VCKMIN");
     slha["VCKMIN"][""] << 1 << *lam_wolf << "# lambda";
     slha["VCKMIN"][""] << 2 << *A_wolf << "# A";
