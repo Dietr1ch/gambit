@@ -556,7 +556,7 @@ namespace Gambit
       status = missingMath;
 #endif
     }
-#ifdef HAVE_PYBIND
+#ifdef HAVE_PYBIND11
     else if (backendData->missingPythonVersion.at(be + version) > 0)
     {
       std::ostringstream status_stream;
