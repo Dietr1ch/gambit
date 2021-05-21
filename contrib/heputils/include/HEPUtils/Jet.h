@@ -19,18 +19,18 @@ namespace HEPUtils {
   class Jet {
 
     /// @name Storage
-    //@{
+    /// @{
     /// Momentum vector
     P4 _p4;
     /// B and C tags
     bool _isB, _isC;
-    //@}
+    /// @}
 
 
   public:
 
     /// @name Constructors
-    //@{
+    /// @{
 
     /// Constructor for a light jet without explicit constituents
     Jet(const P4& mom, bool isB=false, bool isC=false)
@@ -40,21 +40,21 @@ namespace HEPUtils {
     Jet(double px, double py, double pz, double E, bool isB=false, bool isC=false)
       : _p4(px, py, pz, E), _isB(isB), _isC(isC) {  }
 
-    //@}
+    /// @}
 
 
     /// @name Implicit casts
-    //@{
+    /// @{
 
     operator const P4& () const { return mom(); }
 
     operator const P4* () const { return &mom(); }
 
-    //@}
+    /// @}
 
 
     /// @name Momentum
-    //@{
+    /// @{
 
     /// Get the 4 vector
     const P4& mom() const { return _p4; }
@@ -92,11 +92,11 @@ namespace HEPUtils {
     /// Get the squared transverse momentum
     double pT() const { return mom().pT(); }
 
-    //@}
+    /// @}
 
 
     /// @name Tagging
-    //@{
+    /// @{
 
     /// Is this particle tagged as a b?
     bool btag() const { return _isB; }
@@ -111,15 +111,42 @@ namespace HEPUtils {
 
     /// @todo Generalize for charm tags, tau tags, multiple tags of a single type?
 
-    //@}
+    /// @}
 
   };
 
 
-  /// Function/functor for container<const Jet*> sorting (cf. std::less)
-  inline bool _cmpPtDesc(const Jet* a, const Jet* b) {
-    return a->pT2() >= b->pT2();
+  /// @defgroup jet_const Jet constness conversion
+  /// @{
+
+  /// Convenience Jet cast to const
+  inline const Jet* mkconst(Jet* jet) {
+    return const_cast<const Jet*>(jet);
   }
+
+  /// Convenience Jet cast to non-const
+  inline Jet* mkunconst(const Jet* cjet) {
+    return const_cast<Jet*>(cjet);
+  }
+
+  /// Get a reference to a vector of Jets, with each member const
+  inline std::vector<const Jet*>& mkconst(const std::vector<Jet*>& jets) {
+    return * (std::vector<const Jet*>*)(void*) (&jets);
+  }
+
+  /// Get a reference to a vector of Jets, with each member non-const
+  inline std::vector<Jet*>& mkunconst(const std::vector<const Jet*>& cjets) {
+    return * (std::vector<Jet*>*) (void*) (&cjets);
+  }
+
+  /// @}
+
+
+
+  // /// Function/functor for container<const Jet*> sorting (cf. std::less)
+  // inline bool _cmpPtDescJet(const Jet* a, const Jet* b) {
+  //   return a->pT2() >= b->pT2();
+  // }
 
 
 }

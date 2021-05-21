@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2018 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2021 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -32,18 +32,11 @@
 #endif
 #endif
 
-//#define JETCLUSTER_DEBUG
-
-/*inline bool compare_particles_by_pz(FJNS::PseudoJet jet1, FJNS::PseudoJet jet2)
-{
-  return (jet1.pz() > jet2.pz());
-}*/
-
 namespace HEPUtils {
 
 
-  /// @name Converters between HEPUtils and FastJet momentum types
-  //@{
+  /// @defgroup fastjet_cnv Converters between HEPUtils and FastJet momentum types
+  /// @{
 
   /// @todo Enable... conditionally on FJ version?
   // /// For attaching the GenParticle provenance info to a PseudoJet
@@ -71,43 +64,22 @@ namespace HEPUtils {
     return P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
   }
 
-  //@}
+  /// @}
 
 
-  /// @name Jet builders
-  //@{
+  /// @defgroup fastjet_mk Jet builders
+  /// @{
 
   /// Construct pT-sorted jets using the @a alg measure with jet @a R parameter, and min pT @a ptmin (in MeV)
   inline std::vector<FJNS::PseudoJet> get_jets(const std::vector<FJNS::PseudoJet>& particles, double R, double ptmin,
-                                               FJNS::JetAlgorithm alg=FJNS::antikt_algorithm)
-  {
-   
+                                               FJNS::JetAlgorithm alg=FJNS::antikt_algorithm) {
     const FJNS::JetDefinition jet_def(alg, R);
-
-    //std::sort(particles.begin(), particles.end(), compare_particles_by_pz);
-
-    //int TP_TEMP_COUNTER = 0;
-    //for (auto particle : particles)
-    //{
-      //std::cout << "Particle Number: " << TP_TEMP_COUNTER++ << "; Pz: " << particle.pz() << "; Px: " << particle.px() <<std::endl;
-    //}
-
     /// @todo Add area definition? And filtering?
     FJNS::ClusterSequence cseq(particles, jet_def); //< @todo Need new + auto/unique_ptr?
-
-#ifdef JETCLUSTER_DEBUG
-    std::cout << "\n\nJETCLUSTER_DEBUG_INFO: " << std::endl;
-    std::cout << "AntiktR: " << R << std::endl;
-    std::cout << "pTmin: " << ptmin << std::endl;
-    std::cout << "Number of particles passed to algorithm is: " << particles.size() << std::endl;
-    std::cout << "Number of outputjets, unsorted: " << cseq.inclusive_jets(10).size() << std::endl;
-    std::cout << "Number of outputjets, sorted: " << sorted_by_pt(cseq.inclusive_jets(10)).size() << std::endl;
-    
-#endif
     return sorted_by_pt(cseq.inclusive_jets(ptmin));
   }
 
-  //@}
+  /// @}
 
 
 }

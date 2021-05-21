@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2018 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2021 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -18,6 +18,10 @@
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
 namespace HEPUtils {
+
+
+  /// @defgroup phasespace Phase-space helpers
+  /// @{
 
 
   /// Integral of acos(x)
@@ -73,6 +77,8 @@ namespace HEPUtils {
                                                           asin(M_PI/sqrt(detamax2 + M_PI2)))) * detamax/12.;
     return psPhiIntegral;
   }
+
+  /// @}
 
 
 }
