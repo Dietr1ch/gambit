@@ -242,11 +242,26 @@ namespace HEPUtils {
           else if (p->abspid() == 11) _electrons.push_back(p);
           else if (p->abspid() == 13) _muons.push_back(p);
           else if (p->abspid() == 15) _taus.push_back(p);
+        // } else {
+        //   delete p;
         }
       }
 
       // Sort the collections
       if (ptsort) _sort_particles();
+
+      // else if (p->abspid() == 15)
+      // {
+      //   _taus.push_back(p);
+      //   _ctaus.push_back(p);
+      // }
+      // else if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
+      //          p->pid() == 1000022 || p->pid() == 1000039 ||
+      //          in_range(p->abspid(), 50, 60)) //< invert definition to specify all *visibles*?
+      // {
+      //   _invisibles.push_back(p);
+      //   _cinvisibles.push_back(p);
+      // }
     }
 
 

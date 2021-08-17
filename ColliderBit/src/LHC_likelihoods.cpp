@@ -41,9 +41,13 @@
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/Utils/statistics.hpp" 
 
+#include "multimin/multimin.hpp"
+
+#include "gambit/Utils/begin_ignore_warnings_eigen.hpp"
 #include "Eigen/Eigenvalues"
+#include "gambit/Utils/end_ignore_warnings.hpp"
+
 #include <gsl/gsl_sf_gamma.h>
-#include "gambit/ColliderBit/multimin.h"
 
 //#define COLLIDERBIT_DEBUG
 #define DEBUG_PREFIX "DEBUG: OMP thread " << omp_get_thread_num() << ":  "
@@ -247,7 +251,7 @@ namespace Gambit
       static const double SIMPLEX_SIZE = runOptions->getValueOrDef<double>(1e-5, "nuisance_prof_simplexsize");
       static const unsigned METHOD = runOptions->getValueOrDef<unsigned>(6, "nuisance_prof_method");
       static const unsigned VERBOSITY = runOptions->getValueOrDef<unsigned>(0, "nuisance_prof_verbosity");
-      static const struct multimin_params oparams = {INITIAL_STEP, CONV_TOL, MAXSTEPS, CONV_ACC, SIMPLEX_SIZE, METHOD, VERBOSITY};
+      static const struct multimin::multimin_params oparams = {INITIAL_STEP, CONV_TOL, MAXSTEPS, CONV_ACC, SIMPLEX_SIZE, METHOD, VERBOSITY};
 
       // Convert the linearised array of doubles into "Eigen views" of the fixed params
       std::vector<double> fixeds = _gsl_mkpackedarray(n_preds, n_obss, sqrtevals, evecs);
@@ -255,7 +259,7 @@ namespace Gambit
       // Pass to the minimiser
       double minusbestll = 999;
       // _gsl_calc_Analysis_MinusLogLike(nSR, &nuisances[0], &fixeds[0], &minusbestll);
-      multimin(nSR, &nuisances[0], &minusbestll,
+      multimin::multimin(nSR, &nuisances[0], &minusbestll,
                nullptr, nullptr, nullptr,
                _gsl_calc_Analysis_MinusLogLike,
                _gsl_calc_Analysis_MinusLogLikeGrad,
@@ -277,7 +281,8 @@ namespace Gambit
       auto marginaliser = (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error")
         ? BEreq::lnlike_marg_poisson_lognormal_error : BEreq::lnlike_marg_poisson_gaussian_error;
 
-      const double sr_margll = marginaliser((int) n_obss(0), 0.0, n_preds(0), sqrtevals(0)/n_preds(0));
+      // Setting bkg above zero to avoid nulike special cases
+      const double sr_margll = marginaliser((int) n_obss(0), 0.001, n_preds(0), sqrtevals(0)/n_preds(0));
       return sr_margll;
     }
 
@@ -469,6 +474,7 @@ namespace Gambit
           if (USE_COVAR && has_covar)
           {
             result[ananame].combination_sr_label = "none";
+            result[ananame].combination_sr_index = -1;
             result[ananame].combination_loglike = 0.0;
           }
           // If this is an analysis without covariance info, add 0-entries for all SRs plus
@@ -481,6 +487,7 @@ namespace Gambit
               result[ananame].sr_loglikes[adata[SR].sr_label] = 0.0;
             }
             result[ananame].combination_sr_label = "none";
+            result[ananame].combination_sr_index = -1;
             result[ananame].combination_loglike = 0.0;
           }
 
@@ -508,7 +515,15 @@ namespace Gambit
         if (all_zero_signal)
         {
           // Store result
-          result[ananame].combination_sr_label = "all";
+          if (!(USE_COVAR && has_covar))
+          {
+            for (size_t SR = 0; SR < adata.size(); ++SR)
+            {
+              result[ananame].sr_indices[adata[SR].sr_label] = SR;
+              result[ananame].sr_loglikes[adata[SR].sr_label] = 0.0;
+            }
+          }
+          result[ananame].combination_sr_label = "any";
           result[ananame].combination_sr_index = -1;
           result[ananame].combination_loglike = 0.0;
 

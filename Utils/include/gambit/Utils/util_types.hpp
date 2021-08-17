@@ -64,8 +64,10 @@ namespace Gambit
   typedef std::pair<str, str> sspair;
   /// Shorthand for a pair of doubles
   typedef std::pair<double, double> ddpair;
-  /// Shorthand for a pair of ints
+  /// Shorthand for a pair of integers
   typedef std::pair<int, int> iipair;
+  /// Shorthand for a pair of string and double
+  typedef std::pair<str, double> sdpair;
   /// Shorthand for a string-to-double map
   typedef std::map<std::string,double> map_str_dbl;
   /// Shorthand for a string-to-int map
@@ -334,13 +336,13 @@ namespace Gambit
       struct calc_nElem<limL,limU,_lims...>
       {
         enum{val= (limU-limL+1)*calc_nElem<_lims... >::val};
-        static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
+        static_assert(limU>=limL, "Farray error: Upper array index limit is lower than lower limit.");
       };
       template<int limL, int limU>
       struct calc_nElem<limL,limU>
       {
         enum{val=(limU-limL+1)};
-        static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
+        static_assert(limU>=limL, "Farray error: Upper array index limit is lower than lower limit.");
       };
     public:
       typedef calc_nElem<lims... > nElem;
