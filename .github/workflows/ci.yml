@@ -2,11 +2,11 @@ name: Gambit CI
 
 on:
   push:
-    branches: [ master, gitlab-ci ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
   schedule:
-    - cron:  '* * * * 1'
+    - cron:  '0 5 * * *'
 
 jobs:
   gambit_build:
