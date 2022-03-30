@@ -85,6 +85,10 @@
 #          (wh260@cam.ac.uk)
 #  \date 2020 Mar
 #
+#  \author Timon Emken
+#          (timon.emken@fysik.su.se)
+#  \date 2022 Mar
+#
 #************************************************
 
 
@@ -786,6 +790,28 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
 endif()
+
+# Obscura
+set(name "obscura")
+set(ver "1.0.1")
+set(dl "https://github.com/temken/${name}/archive/refs/tags/v${ver}.zip")
+set(md5 "none")
+set(lib "libobscura")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+check_ditch_status(${name} ${ver} ${dir})
+if(NOT ditched_${name}_${ver})
+  ExternalProject_Add(${name}_${ver}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+    SOURCE_DIR ${dir}
+    BUILD_IN_SOURCE 1
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+  )
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+  set_as_default_version("backend" ${name} ${ver})
+endif()
+
 
 # Pythia
 set(name "pythia")
