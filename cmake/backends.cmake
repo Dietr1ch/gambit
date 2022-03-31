@@ -793,7 +793,7 @@ endif()
 
 # Obscura
 set(name "obscura")
-set(ver "1.0.1")
+set(ver "1.0.2")
 set(dl "https://github.com/temken/${name}/archive/refs/tags/v${ver}.zip")
 set(md5 "none")
 set(lib "libobscura")
@@ -804,12 +804,13 @@ if(NOT ditched_${name}_${ver})
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
+    BUILD_COMMAND ${CMAKE_COMMAND} --build ${dir} --config Release
+    INSTALL_COMMAND ${CMAKE_COMMAND} --install ${dir}
   )
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
+  # BOSS_backend(${name} ${ver})
 endif()
 
 
