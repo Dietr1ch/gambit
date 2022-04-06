@@ -15,17 +15,17 @@
 ///  *********************************************
 
 // Identify backend
-#define BACKENDNAME obscura_1_0_2
+#define BACKENDNAME obscura
 #define BACKENDLANGUAGE CXX
 #define VERSION 1.0.2
 #define SAFE_VERSION 1_0_2
-#define REFERENCE Emken:2021uzb
+#define REFERENCE Emken:2021uzb,Emken_obscura
 
 // Begin
 LOAD_LIBRARY
 
 // Allow for models
-BE_ALLOW_MODELS()
+// BE_ALLOW_MODELS()
 
 // BE_VARIABLE(MyVar, int, ("myvar_symbol"),"MyVar_Cap")
 // BE_FUNCTION(MyFunc, void, (double&), ("myfunc_symbol"),"MyFunc_Cap")
