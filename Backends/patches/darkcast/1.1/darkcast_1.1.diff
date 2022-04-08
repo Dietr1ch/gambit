@@ -1,0 +1,3452 @@
+diff -ruN darkcast-master/__init__.py darkcast_updated/__init__.py
+--- darkcast-master/__init__.py	2021-04-03 07:34:51.000000000 +1100
++++ darkcast_updated/__init__.py	1970-01-01 10:00:00.000000000 +1000
+@@ -1,52 +0,0 @@
+-# DARKCAST is licensed under the GNU GPL version 2 or later.
+-# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
+-"""
+-Darkcast is the companion software package to the paper 'Serendipity
+-in dark photon searches' and is a framework for recasting constraints
+-from dark photon searches into other models. The following directory
+-structure is in place:
+-
+-vmd:    contains the R_mu^f interpolation grids from equation 2.5, split 
+-        by individual meson contributions, including interference.
+-models: all models reported in the paper are defined here.
+-limits: limits reported in the paper are provided here. Files of the 
+-        form '<name>.py' define all needed information for a limit,
+-        e.g. meta-data, model, production, bounds, and
+-        efficiency. Files of the form '<name>.lmt' provide the actual
+-        limit data, while' <name>.prd' provide production mechanism
+-        ratios for more complex scenarios.
+-
+-Example usage is as follows:
+-'''
+-# Load the module.
+-import darkcast
+-
+-# Change any global parameters, here the speed of light (m/s).
+-darkcast.pars.c = 3e8
+-
+-# Load a limit, here the LHCb prompt limit.
+-limit = darkcast.Limit('LHCb_Aaij2017rft_prompt')
+-
+-# Print the notes and BibTex for the limit.
+-print limit.notes
+-print limit.bibtex
+-
+-# Load a model for recasting.
+-model = darkcast.Model('B_boson')
+-
+-# Recast from the limit model to the new model.
+-recast = limit.recast(model)
+-
+-# Write out the recast limit.
+-recast.write('LHCb_B_boson.txt')
+-'''
+-
+-More detailed examples with explanations are provided in the
+-'examples' directory and further documentation is provided per
+-sub-module and class.
+-"""
+-from .utils import Dataset, Datasets
+-from .model import Model, Models
+-from .production import BreitWigner, Production
+-from .efficiency import Efficiency
+-from .limit import Limit, Limits
+Binary files darkcast-master/__pycache__/darkcast_be.cpython-37.pyc and darkcast_updated/__pycache__/darkcast_be.cpython-37.pyc differ
+Binary files darkcast-master/__pycache__/darkcast_be.cpython-38.pyc and darkcast_updated/__pycache__/darkcast_be.cpython-38.pyc differ
+Binary files darkcast-master/__pycache__/darkcast_be_model.cpython-38.pyc and darkcast_updated/__pycache__/darkcast_be_model.cpython-38.pyc differ
+diff -ruN darkcast-master/darkcast/__init__.py darkcast_updated/darkcast/__init__.py
+--- darkcast-master/darkcast/__init__.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast/__init__.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,52 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++"""
++Darkcast is the companion software package to the paper 'Serendipity
++in dark photon searches' and is a framework for recasting constraints
++from dark photon searches into other models. The following directory
++structure is in place:
++
++vmd:    contains the R_mu^f interpolation grids from equation 2.5, split 
++        by individual meson contributions, including interference.
++models: all models reported in the paper are defined here.
++limits: limits reported in the paper are provided here. Files of the 
++        form '<name>.py' define all needed information for a limit,
++        e.g. meta-data, model, production, bounds, and
++        efficiency. Files of the form '<name>.lmt' provide the actual
++        limit data, while' <name>.prd' provide production mechanism
++        ratios for more complex scenarios.
++
++Example usage is as follows:
++'''
++# Load the module.
++import darkcast
++
++# Change any global parameters, here the speed of light (m/s).
++darkcast.pars.c = 3e8
++
++# Load a limit, here the LHCb prompt limit.
++limit = darkcast.Limit('LHCb_Aaij2017rft_prompt')
++
++# Print the notes and BibTex for the limit.
++print limit.notes
++print limit.bibtex
++
++# Load a model for recasting.
++model = darkcast.Model('B_boson')
++
++# Recast from the limit model to the new model.
++recast = limit.recast(model)
++
++# Write out the recast limit.
++recast.write('LHCb_B_boson.txt')
++'''
++
++More detailed examples with explanations are provided in the
++'examples' directory and further documentation is provided per
++sub-module and class.
++"""
++from .utils import Dataset, Datasets
++from .model import Model, Models
++from .production import BreitWigner, Production
++from .efficiency import Efficiency
++from .limit import Limit, Limits
+Binary files darkcast-master/darkcast/__pycache__/__init__.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/__init__.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/efficiency.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/efficiency.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/limit.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/limit.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/model.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/model.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/pars.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/pars.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/production.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/production.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/utils.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/utils.cpython-38.pyc differ
+diff -ruN darkcast-master/darkcast/efficiency.py darkcast_updated/darkcast/efficiency.py
+--- darkcast-master/darkcast/efficiency.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast/efficiency.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,119 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++import math
++from . import utils
++
++###############################################################################
++class EfficiencyError(Exception):
++    """
++    Simple exception for the 'Efficiency' class.
++    """
++    pass
++
++###############################################################################
++class Efficiency:
++    """
++    Provides the efficiency for a given experiment.
++    """
++    ###########################################################################
++    def __init__(self, t0 = 0, t1 = None, lratio = None, rvals = False):
++        """
++        Initialize an efficiency. The efficiency is defined in terms
++        of a proper lifetime interval between t0 and t1 (seconds). For
++        a prompt experiment, only the upper proper time needs to be
++        provided, e.g. t1. For a displaced experiment, only 'lratio'
++        (e.g. the ratio between the decay volume length and the shielding
++        length, L_det/L_sh) needs to be provided, and t0 and t1 will
++        be solved for using the lower and upper limits.
++
++        When r-value limits are given, i.e. the ratio between observed
++        and expected as a function of mass and lifetime, 'rvals'
++        should be set as true. Here, the efficiency ratio for
++        lifetimes above the maximum is approximated by t0 = 0 and t1 =
++        tau_max, while below the minimum by t0 = tau_min and t1 =
++        infinity.
++
++        t0:     value or function for the lower proper lifetime (seconds).
++        t1:     value or function for the upper proper lifetime (seconds).
++        lratio: ratio between the decay and shielding volume for a beam-dump
++                experiment.
++        rvals:  true if the efficiency is for limits with r-values, false
++                otherwise.
++        """
++        # Return if efficiency for a r-value limit.
++        self.__rvals = rvals
++        if self.__rvals: return
++
++        # Initialize the cached results.
++        self.__cache = (None, None, None)
++
++        # Set the lower proper time.
++        if lratio != None: self.__lratio = 1.0 + lratio
++        else:
++            self.__lratio = None
++            try: t0 = float(t0); self.__t0 = lambda m: t0
++            except: self.__t0 = t0
++ 
++        # Set the upper proper time.
++        if lratio == None:
++            try: t1 = float(t1); self.__t1 = lambda m: t1
++            except: self.__t1 = t1
++
++    ###########################################################################
++    def __ts(self, m, limit):
++        """
++        Return the proper time fiducial. If a displaced limit and
++        'lratio' was specified, solve for t0 and t1.
++
++        m:     mass (GeV).
++        limit: 'Limit' which includes a model and lower/upper bounds.
++        """
++        # Cached proper times.
++        if self.__cache[0:-1] == (m, limit): return self.__cache[-1]
++
++        # Fiducial from displaced limits with no shielding.
++        if self.__lratio == float("inf"):
++            t0 = limit.model.tau(m, limit.bounds["lower"](m))
++            t1 = limit.model.tau(m, limit.bounds["upper"](m))
++        
++        # Fiducial from displaced limit.
++        elif self.__lratio:
++
++            # Solve t0 from equation 2.24.
++            g0 = limit.bounds["lower"](m)
++            g1 = limit.bounds["upper"](m)
++            tau0 = limit.model.tau(m, g0)
++            tau1 = limit.model.tau(m, g1)
++            f = lambda t: (
++                g1**2*(math.exp(-t/tau1) - math.exp(-t*self.__lratio/tau1))
++                - g0**2*(math.exp(-t/tau0) - math.exp(-t*self.__lratio/tau0)))
++            t0 = utils.solve(f)
++
++            # Set t1 from equation 2.22.
++            t1 = t0*self.__lratio
++
++        # Fiducial from user defined proper times.
++        else: t0, t1 = self.__t0(m), self.__t1(m)
++        self.__cache = (m, limit, (t0, t1))
++        return t0, t1
++    
++    ###########################################################################
++    def ratio(self, m, limit, tau0, tau1):
++        """
++        Return the efficiency ratios for a given mass, limit, and
++        lifetimes.
++        
++        m:     mass (GeV).
++        limit: 'Limit' which includes a model and lower/upper bounds.
++        tau0:  numerator lifetime (seconds).
++        tau1:  denominator lifetime (seconds).
++        """
++        # If r-value limit, use equation C.4.
++        if self.__rvals:
++            t0, t1 = (0, tau1) if tau0 > tau1 else (tau1, float("inf"))
++        else: t0, t1 = self.__ts(m, limit)
++
++        # Ratio of efficiencies, given by equation 2.23.
++        num = math.exp(-t0/tau0) - math.exp(-t1/tau0)
++        den = math.exp(-t0/tau1) - math.exp(-t1/tau1)
++        return num/den if den else float("inf")
+diff -ruN darkcast-master/darkcast/limit.py darkcast_updated/darkcast/limit.py
+--- darkcast-master/darkcast/limit.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast/limit.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,253 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++import os, sys, inspect, collections
++from . import utils
++
++###############################################################################
++# Update the limit paths.
++sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(
++                inspect.getfile(inspect.currentframe()))), "limits"))
++if os.getenv("DARKCAST_LIMIT_PATH"):
++    for path in reversed(os.getenv("DARKCAST_LIMIT_PATH").split(":")):
++        sys.path.insert(1, path)
++
++###############################################################################
++class LimitError(Exception):
++    """
++    Simple exception for the 'Limit' class.
++    """
++    pass
++
++###############################################################################
++class Limit:
++    """
++    Represents all the needed information to define a limit. This
++    class contains the following members.
++    
++    name:       name of the limit.
++    notes:      text providing any relevant notes for the limit. This is
++                optional, and if not defined a default will be assigned.
++    bibtex:     the optional BibTex entry from inSPIRE for this limit.
++    model:      the model defining the limit, must be of class 'Model'.
++    production: production which contains the production mechanism or 
++                mechanisms for the limit. Must be of class 'Production'.
++    bounds:     the actual bounds for the limit. This can either be
++                a 'Dataset' when a single-sided bound or 'Datasets' when
++                a double-sided bound.
++    efficiency: efficiency of class 'Efficiency'.
++    """
++    def __init__(self, name, path = None):
++        """
++        Initialize a limit, given its name.
++
++        The limit must exist in the form <name>.py and is searched for
++        along these paths in the following order:
++        (0) The current directory within the Python interpreter.
++        (1) The paths defined by the environment variable 
++            'DARKCAST_LIMIT_PATH'.
++        (2) The 'limits' directory of the Darkcast package.
++
++        Each limit must have a model, production, decay, bounds, and
++        efficiency defined. Optionally, notes and a BibTex entry can
++        be provided.
++
++        name: name of the limit.
++        """
++        # Check if the limit should be initialized.
++        self.name = name
++
++        # Import the limit.
++        if path: sys.path.insert(1, path)
++        limit = __import__(name)
++        if path: del sys.path[1]
++
++        # Load the notes and BibTeX.
++        try: self.notes = limit.notes
++        except: self.notes = "The limit %s has no notes." % name
++        try: self.bibtex = limit.bibtex
++        except: self.bibtex = "The limit %s has no BibTeX entry." % name
++
++        # Load the model.
++        if not hasattr(limit, "model"): raise LimitError(
++            "No model is defined for '%s'." % name)
++        self.model = limit.model
++        self.model.width("total", 1)
++        
++        # Load the production.
++        if not hasattr(limit, "production"): raise LimitError(
++            "No production is defined for '%s'." % name)
++        self.production = limit.production
++        self.production.ratio(1, 1, 1, self.model, self.model)
++
++        # Load the decay.
++        try: self.decay = limit.decay
++        except: raise LimitError(
++            "No decay is defined for '%s'." % name)
++        try: self.model.width(self.decay, 1)
++        except: raise LimitError(
++            "The decay defined for '%s' is not valid." % name)
++
++        # Load the bounds.
++        if not hasattr(limit, "bounds"): raise LimitError(
++            "No bounds are defined for '%s'." % name)
++        try:
++            self.bounds = utils.Datasets()
++            self.bounds["rvals" if limit.bounds.dim() == 2 
++                        else "lower"] = limit.bounds
++        except: self.bounds = limit.bounds
++        for key, bound in self.bounds.items():
++            if not isinstance(bound, utils.Dataset): raise LimitError(
++                "The bound %s is not of type Dataset." % key)
++
++        # Load the efficiency.
++        if not hasattr(limit, "efficiency"): raise LimitError(
++            "No efficiency is defined for '%s'." % name)
++        self.efficiency = limit.efficiency
++        self.efficiency.ratio(1, self, 1.0, 1.0)
++
++    ###########################################################################
++    def recast(self, model, gmax = 1e5):
++        """
++        Recast these limits to a given model. Returns a dictionary
++        with entries of 'lower' and when relevant, 'upper'. Each entry
++        is of the form: [[m0, m1, ...], [g0, g1, ...]].
++
++        model: model for recasting, must be of type 'Model', e.g. 
++               Model('dark_photon').
++        gmax:  maximum coupling to recast. If a coupling is greater than 
++               or equal to this, then that mass point is skipped.
++        """
++        # Initialize the recast bounds.
++        rvals = self.bounds.get("rvals")
++        lower = utils.Dataset()
++        upper = utils.Dataset() if rvals or "upper" in self.bounds else None
++
++        # Recast r-value bounds.
++        if rvals: 
++
++            # Loop over the r-values.
++            jdx, tl, tu, gl, gu, rl, ru,  = 0, 0, 0, gmax, -gmax, 1, 1
++            tmin, tmax = float("inf"), 0
++            for idx, r1 in enumerate(rvals.vals):
++
++                # Determine the r-value via equation 2.21.
++                m, g1 = rvals._Dataset__f2x(idx)
++                tau = self.model.tau(m, g1)
++                g0 = model.g(m, tau)
++                b0 = model.bfrac(self.decay, m)
++                b1 = self.model.bfrac(self.decay, m)
++                pr = self.production.ratio(m, g0, g1, model, self.model)
++                r0 = r1*b1/(b0*pr) if b0*pr != 0 else gmax
++
++                # Update the lower/upper limits.
++                if r0 < 1:
++                    if g0 < gl: tl, gl, rl = tau, g0, r0
++                    if g0 > gu: tu, gu, ru = tau, g0, r0
++                tmin = min(tmin, tau)
++                tmax = max(tmax, tau)
++                
++                # Check if final g for given m.
++                jdx += 1
++                if jdx == len(rvals.axes[1]):
++
++                    # Solve for any limits outside bounds.
++                    if tl == tmax and rl < 1:
++                        f = lambda g: g**2/gl**2*self.efficiency.ratio(
++                            m, self, model.tau(m, g), tl)/rl - 1
++                        try: gl = utils.solve(f, x1 = gl)
++                        except: pass
++                    if tu == tmin and ru < 1:
++                        f = lambda g: g**2/gu**2*self.efficiency.ratio(
++                            m, self, model.tau(m, g), tu)/ru - 1
++                        try: gu = utils.solve(f, x0 = gu)
++                        except: pass
++
++                    # Update the bounds.
++                    lower.axes[0].append(m); lower.vals.append(abs(gl))
++                    upper.axes[0].append(m); upper.vals.append(abs(gu))
++                    jdx, gl, gu, rl, ru = 0, gmax, -gmax, 1, 1
++                    tmin, tmax = float("inf"), 0
++            
++        # Recast lower/upper bounds.
++        else:
++
++            # Loop over the masses.
++            g0l = None
++            for m, g1l in zip(self.bounds["lower"].axes[0],
++                              self.bounds["lower"].vals):
++    
++                # Check if branching fraction and production is non-zero.
++                if model.bfrac(self.decay, m) == 0: continue
++                if self.model.bfrac(self.decay, m) == 0: continue
++                if self.production.ratio(m, 1, 1, model, self.model) == 0:
++                    continue
++    
++                # Check if limit is above maximum and set guess.
++                if g1l >= gmax: 
++                    lower.axes[0].append(m); lower.vals.append(gmax)
++                    if upper: upper.axes[0].append(m); upper.vals.append(gmax)
++                    continue
++                ggl = g0l if g0l != None else g1l
++    
++                # Solve equation 2.2 for the lower bound.
++                f = lambda g: (
++                    model.bfrac(self.decay, m)/self.model.bfrac(self.decay, m)
++                    * self.production.ratio(m, g, g1l, model, self.model) 
++                    * self.efficiency.ratio(m, self, model.tau(m, g), 
++                                            self.model.tau(m, g1l)) - 1)
++                try: g0l = utils.solve(f, x = ggl)
++                except: g0l = gmax
++    
++                # If upper bound, find second zero, e.g. equations C.5 - C.7.
++                if upper == None:
++                    lower.axes[0].append(m); lower.vals.append(g0l)
++                else:
++                    if g0l == gmax: g0u = gmax
++                    elif f(g0l*1.01) < 0:
++                        try: g0u = utils.solve(f, x1 = g0l*0.99)
++                        except: g0u = gmax
++                    else:
++                        try: g0u = utils.solve(f, x0 = g0l*1.01)
++                        except: g0u = gmax
++                    if g0u < g0l: g0u, g0l = g0l, g0u
++                    lower.axes[0].append(m); lower.vals.append(g0l)
++                    upper.axes[0].append(m); upper.vals.append(g0u)
++                                   
++        # Return the recast bounds.
++        bounds = utils.Datasets()
++        bounds["lower"] = lower
++        if upper != None: bounds["upper"] = upper
++        return bounds
++
++###############################################################################
++class Limits(collections.OrderedDict):
++    """
++    Loads all 'Limit's along the provided paths. The 'Limits' object
++    acts as an ordered dictionary for the individual models.
++    """
++    ###########################################################################
++    def __init__(self, paths = None):
++        """
++        Load all available models along the specified paths.
++
++        paths: paths to search for models. If no paths are specified,
++               search the paths specified by DARKCAST_LIMIT_PATH and
++               the local Darkcast limit directory.
++        """
++        super(Limits, self).__init__()
++
++        # Set default search paths.
++        if paths == None:
++            paths = []
++            if os.getenv("DARKCAST_LIMIT_PATH"): paths += [
++                p for p in os.getenv("DARKCAST_LIMIT_PATH").split(":")]
++            paths += [os.path.join(os.path.dirname(os.path.realpath(
++                            inspect.getfile(inspect.currentframe()))),"limits")]
++
++        # Load the limits.
++        for path in (paths,) if isinstance(paths, str) else paths:
++            limits = sorted(os.listdir(path))
++            for limit in limits:
++                if not limit.endswith(".py"): continue
++                try: self[limit[0:-3]] = Limit(limit[0:-3], path)
++                except: pass
+diff -ruN darkcast-master/darkcast/model.py darkcast_updated/darkcast/model.py
+--- darkcast-master/darkcast/model.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast/model.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,262 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++import os, sys, inspect, math, collections
++from . import pars
++
++###############################################################################
++# Update the model paths.
++sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(
++                inspect.getfile(inspect.currentframe()))), "models"))
++if os.getenv("DARKCAST_MODEL_PATH"):
++    for path in reversed(os.getenv("DARKCAST_MODEL_PATH").split(":")):
++        sys.path.insert(1, path)
++
++###############################################################################
++class ModelError(Exception):
++    """
++    Simple exception for the 'Model' class.
++    """
++    pass
++
++###############################################################################
++class Model:
++    """
++    Provides the information and methods needed to define a given
++    model, e.g. 'dark_photon'.
++
++    name:   name of the model.
++    xfs:    dictionary of fermion couplings. Each coupling is a function 
++            dependent upon mass (GeV).
++    q:      quark U(3) charge matrix.
++    """
++    ###########################################################################
++    def __init__(self, name, states = None, iwidth = None, path = None):
++        """
++        Load a model, given its name.
++
++        The model must exist in the form '<name>.py' and is searched
++        for along these paths in the following order:
++        (0) The current directory within the Python interpreter.
++        (1) The paths defined by the environment variable 
++            'DARKCAST_MODEL_PATH'.
++        (2) The 'models' directory of the Darkcast package.
++
++        Each model must contain a fermion coupling dictionary named
++        'xfs', where each coupling can either be a constant, or a mass 
++        dependent function.
++
++        The list 'states' may be defined, specifying the allowed final
++        states for the model, e.g. ['e_e', 'mu_mu', 'invisible',
++        ...]. Only these final states are used when calculating the
++        total width. If not defined, all visible and invisible final
++        states are used when calculating the total width.
++
++        Optionally, an 'iwidth' function provides the invisible width
++        for the model, given a mass and model and taking the form
++        'iwidth(mass (GeV), model)'. Consequently, the invisible width
++        can be defined as a function of the visible width. If no
++        'iwidth' is defined, the invisible width is taken as zero. The
++        invisible width is assumed to be dependent on the square of
++        the global coupling. See the example model for further
++        details.
++        
++        name:   name of the model.
++        states: optionally, specify the allowed final states of the model.
++        iwidth: optionally, specify the invisible width as a function of 
++                a given mass and this model.
++        path:   optionally, specify the path to load the module from.
++        """
++        # Import the model.
++        self.name = name
++        self.__cache = {}
++        if path: sys.path.insert(1,path)
++        model = __import__(name)
++        if path: del sys.path[1]
++
++        # Load the model's fermion couplings.
++        self.xfs = {}
++        for f in pars.mfs:
++            try:
++                float(model.xfs[f])
++                self.xfs[f] = lambda m, f = f: float(model.xfs[f])
++            except: 
++                try: self.xfs[f] = model.xfs[f]
++                except: raise ModelError(
++                        "Error loading '%s' coupling from '%s'." % (f, name))
++
++        # Load the model's invisible width function.
++        try: self.__iwidth = iwidth if iwidth != None else model.iwidth
++        except: self.__iwidth = lambda m, model: 0.0
++        self.__iwidth(0, self)
++
++        # Create the quark U(3) charge matrix.
++        self.q = [self.xfs["u"], self.xfs["d"], self.xfs["s"]]
++
++        # Load the model's defined final states.
++        try: self.__states = states if states != None else model.states
++        except: self.__states = ["visible", "invisible"]
++        self.width("total", 0)
++        try: self.width("total", 0)
++        except: raise ModelError(
++            "Invalid definition of allowed final states from '%s'." % name)
++
++    ###########################################################################
++    def trq(self, m, t):
++        """
++        Return the trace of the quark U(3)-charge matrix for the model
++        with the diagonal of a given matrix, e.g. a meson generator T.
++        
++        m: mass at which to evaulate the couplings (GeV).
++        t: diagonal of the matrix to perform the trace with, must be
++           size 3.
++        """
++        try: return (t[0]*self.xfs["u"](m) + t[1]*self.xfs["d"](m) +
++                     t[2]*self.xfs["s"](m))
++        except: raise ModelError(
++            "Invalid diagonal provided to the trace.")
++
++    ###########################################################################
++    def width(self, states, m, g = 1.0):
++        """
++        Return the width, in GeV, for the specified states, mass,
++        and global coupling.
++
++        states: final state or states.
++        m:      mass (GeV).
++        g:      global coupling (unitless).
++        """
++        # Loop over the states.
++        total = 0
++        for state in (states,) if isinstance(states, str) else states:
++
++            # Decoupled decay.
++            if state == "none": return None
++
++            # Use cached result if valid.
++            cache = self.__cache.get(state)
++            if cache and cache[0] == m: total += cache[-1]; continue
++    
++            # Invisible, visible, hadronic, and total widths.
++            dtrs = state.split("_")
++            if state == "invisible":
++                part = self.__iwidth(m, self)
++            elif state == "visible":
++                part = self.width(
++                    ["gamma_gamma_gamma", "e_e", "mu_mu", "tau_tau",
++                     "nue_nue", "numu_numu",  "nutau_nutau",
++                     "c_c", "b_b", "t_t", "hadrons"], m)
++            elif state == "hadrons":
++                part = self.width(pars.rfs.keys(), m)
++            elif state == "total":
++                part = self.width(self.__states, m)
++    
++            # Perturbative decay into a fermion pair, equation 2.13.
++            elif len(dtrs) == 2 and dtrs[0] == dtrs[1] and dtrs[0] in pars.mfs:
++                dtr = dtrs[0]
++                cf, mf, xf = pars.cfs[dtr], pars.mfs[dtr], self.xfs[dtr](m)
++                if m > 2.0*mf: part = (cf*xf**2.0*m/(12.0*math.pi)*(
++                        1.0 + 2.0*mf**2/m**2)*math.sqrt(1.0 - 4.0*mf**2.0/m**2))
++                else: part = 0
++
++            # Perturbative decay into three photons via an electron loop,
++            # equation 3.5 of Seo:2020dtx.
++            elif len(dtrs) == 3 and dtrs[0] == dtrs[1] == dtrs[2] == "gamma":
++                mf, xf = pars.mfs["e"], self.xfs["e"](m)
++                if m <= 2.0*mf: part = (
++                    (xf**2.0*pars.ge**6.0)/(4.0*math.pi)**4.0/(
++                    2.0**7.0*3.0**6.0*5.0**2.0*math.pi**3.0)*(m**9.0/mf**8.0)*(
++                    17.0/5.0 + (67.0*m**2.0)/(42.0*mf**2.0) +
++                    (128941.0*m**4.0)/(246960.0*mf**4.0)))
++                else: part = 0
++
++            # Decay into hadrons, equations 2.17 and 2.18.
++            elif state in pars.rfs:
++                part = 0
++                for mesons, rf in pars.rfs[state].items():
++                    sub = 1
++                    for meson in mesons:
++                        sub *= pars.rvs[meson]*self.trq(m, pars.tms[meson])
++                    sub *= sub if len(mesons) == 1 else 2
++                    sub *= rf(m)
++                    part += m/(12*math.pi)*sub
++
++            else: raise ModelError(
++                "Unknown state '%s'." % state)
++
++            # Cache the result.
++            total += part
++            self.__cache[state] = (m, part)
++        return g*g*total
++
++    ###########################################################################
++    def tau(self, m, g = 1.0):
++        """
++        Return the lifetime, in seconds, for the specified mass and
++        and global coupling.
++
++        m: mass (GeV).
++        g: global coupling (unitless).
++        """
++        return pars.hbar/self.width("total", m, g)
++
++    ###########################################################################
++    def g(self, m, tau):
++        """
++        Return the global coupling, for the specified mass and lifetime.
++
++        m:   mass (GeV).
++        tau: lifetime (seconds).
++        """
++        return math.sqrt(self.tau(m)/tau)
++
++    ###########################################################################
++    def bfrac(self, states, m):
++        """
++        Return the branching fraction for the specified states and mass.
++
++        states: final state or states.
++        m:      mass (GeV).
++        """
++        num = self.width(states, m)
++        if num == 0: return 0.0
++        elif num == None: return 1.0
++        den = self.width("total", m)
++        if den == 0: return 0.0
++        return num/den
++
++###############################################################################
++class Models(collections.OrderedDict):
++    """
++    Loads all 'Model's along the provided paths. The 'Models' object
++    acts as an ordered dictionary for the individual models.
++    """
++    ###########################################################################
++    def __init__(self, paths = None, states = None, iwidth = None):
++        """
++        Load all available models along the specified paths.
++
++        paths:  paths to search for models. If no paths are specified,
++                search the paths specified by DARKCAST_MODEL_PATH and
++                the local Darkcast model directory.
++        states: optionally, specify the allowed final states of the models.
++        iwidth: optionally, specify the invisible width as a function of 
++                a given mass and model.
++        """
++        super(Models, self).__init__()
++
++        # Set default search paths.
++        if paths == None:
++            paths = []
++            if os.getenv("DARKCAST_MODEL_PATH"): paths += [
++                p for p in os.getenv("DARKCAST_MODEL_PATH").split(":")]
++            paths += [os.path.join(os.path.dirname(os.path.realpath(
++                            inspect.getfile(inspect.currentframe()))),"models")]
++
++        # Load the models.
++        for path in (paths,) if not hasattr(paths, "__iter__") else paths:
++            models = sorted(os.listdir(path))
++            for model in models:
++                if not model.endswith(".py"): continue
++                try: self[model[0:-3]] = Model(
++                        model[0:-3], states, iwidth, path)
++                except: pass
+diff -ruN darkcast-master/darkcast/pars.py darkcast_updated/darkcast/pars.py
+--- darkcast-master/darkcast/pars.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast/pars.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,153 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++"""
++This module contains all the relevant parameters used by
++Darkcast. They can be simply redefined by importing the module and
++changing the relevant parameter, e.g. 'import darkcast' and
++'darkcast.pars.ge = 1'. The following float value parameters are
++defined.
++
++c:    speed of light (m/s).
++hbar: reduced Planck's constant (s/GeV).
++ge:   electromagnetic coupling (unitless).
++bw:   flag for which Breit-Wigner type to use, either 'fix' or 'run'.
++
++The remaining parameters are dictionaries.
++
++mfs:  fermion masses (GeV).
++cfs:  fermion color factors (unitless).
++
++tms:  on-diagonal U(3) meson generators from equation A.1 (unitless). For
++      convenience the photon U(3) quark charge matrix, equation 2.8, is
++      also included.
++rvs:  pre-factors for each vector contribution R_X^V from equation 2.18
++      (unitless).
++
++mms:  needed meson masses (GeV). 
++wms:  meson widths (GeV).
++dms:  meson branching fractions and final state masses (GeV), 
++      e.g. [BR, m1, m2]. These are used for the running Breit-Wigners.
++
++rfs:  interpolation grids for each final state R_mu^f from equation 2.15
++      split by individual meson contributions, including interference 
++      (unitless). These grids are stored in the 'vmd' directory.
++"""
++import math
++from . import utils
++
++###############################################################################
++# Constants.
++c    = 2.99792458e8     # Speed of light (m/s).
++hbar = 6.58211951e-25   # Reduced Planck's constant (GeV s).
++ge   = 3.02822e-1       # Electromagnetic coupling (unitless).
++bw   = "run"            # Flag for Breit-Wigner type, 'fix' or 'run'.
++
++###############################################################################
++# Fermion masses (GeV).
++mfs = {
++    "e":      5.110e-04,
++    "mu":     0.10566,
++    "tau":    1.77682,
++    "nue":    0,
++    "numu":   0,
++    "nutau":  0,
++    "d":      0.33,
++    "u":      0.33,
++    "s":      0.5,
++    "c":      1.5,
++    "b":      4.8,
++    "t":      171.0
++    }
++
++###############################################################################
++# Fermion color factors (unitless).
++cfs = {
++    "e":      1.0,
++    "mu":     1.0,
++    "tau":    1.0,
++    "nue":    1.0/2.0,
++    "numu":   1.0/2.0,
++    "nutau":  1.0/2.0,
++    "d":      3.0,
++    "u":      3.0,
++    "s":      3.0,
++    "c":      3.0,
++    "b":      3.0,
++    "t":      3.0
++    }
++
++###############################################################################
++# On-diagonal U(3) meson generators from equation A.1 (unitless). For
++# convenience the photon U(3) quark charge matrix, equation 2.8, is
++# also included.
++tms = {
++    "gamma": [t/3.0              for t in [2, -1, -1]],
++    "rho0":  [t/2.0              for t in [1, -1,  0]],
++    "pi0":   [t/2.0              for t in [1, -1,  0]],
++    "omega": [t/2.0              for t in [1,  1,  0]],
++    "phi":   [t/math.sqrt(2)     for t in [0,  0,  1]],
++    "eta":   [t/math.sqrt(6)     for t in [1,  1, -1]],
++    "eta'":  [t/(2*math.sqrt(3)) for t in [1,  1,  2]],
++    "D0":    [t                  for t in [1,  0,  0]],
++    "D*0":   [t                  for t in [1,  0,  0]]
++    }
++
++###############################################################################
++# Pre-factors for each vector contribution R_X^V from equation 2.18
++# (unitless).
++rvs = {
++    "rho0":  2.0,
++    "omega": 6.0,
++    "phi":   3.0*math.sqrt(2)
++    }
++
++###############################################################################
++# Meson masses (GeV).
++mms = {
++    "rho0":  0.77549,
++    "pi0":   0.13498,
++    "omega": 0.78265,
++    "phi":   1.01946,
++    "eta":   0.54785
++    }
++
++###############################################################################
++# Resonance widths (GeV).
++wms = {
++    "rho0":  0.14910,
++    "omega": 0.00849,
++    "phi":   0.00426
++}
++
++###############################################################################
++# Resonance branching fractions and final state masses (GeV), e.g. [BR, m1, m2].
++dms = {
++    "rho0":  [[0.9988447, 0.13957, 0.13957]],  # pi+ pi-
++    "omega": [[0.8994773, 2*0.13957, 0.13498], # pi+ pi- pi0
++              [0.0834941, 0.13498, 0],         # pi0 gamma
++              [0.0154283, 0.13957, 0.13957]],  # pi+ pi-
++    "phi":   [[0.4893042, 0.49368, 0.49368],   # K K
++              [0.3422127, 0.49761, 0.49761],   # KS KL
++              [0.0130981, 0.54785, 0]]         # eta gamma
++}
++
++###############################################################################
++# Interpolation grids for each final state R_mu^f from equation 2.15
++# split by individual meson contributions, including interference (unitless).
++rfs = {
++    "pi+_pi-": [("rho0",)],
++    "pi+_pi-_pi+_pi-": [("rho0",)],
++    "pi+_pi-_pi0_pi0": [("rho0",)],
++    "pi+_pi-_pi0": [("omega",), ("phi",), ("omega", "phi")],
++    "pi0_gamma": [("omega",)],
++    "K_K": [("phi",)],
++    "K_K_pi": [("phi",)],
++    "other": [("rho0",), ("omega",), ("phi",)]
++    }
++for rf, mesons in rfs.items():
++    rfs[rf] = {meson: utils.Dataset("vmd/rf.%s.%s.dat" % (rf, "_".join(meson)))
++               for meson in mesons}
++
++# Clean up.
++try: del t, rf, mesons
++except: pass
+diff -ruN darkcast-master/darkcast/production.py darkcast_updated/darkcast/production.py
+--- darkcast-master/darkcast/production.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast/production.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,196 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++import math
++from . import utils, pars, model
++
++###############################################################################
++class BreitWignerError(Exception):
++    """
++    Simple exception for the 'BreitWigner' class.
++    """
++    pass
++
++###############################################################################
++class BreitWigner:
++    """
++    Provide a running width Breit-Wigner for a given resonance.
++    
++    mr:  mass of the resonance (GeV).
++    wr:  width of the resonance (1/GeV).
++    lr:  orbital angular momentum for the resonance.
++    drs: decay channels for the resonance of the form 
++         [branching, mass 0, mass 1].
++    """
++    ###########################################################################
++    def __init__(self, resonance, lr = 1):
++        """
++        Initialize the needed data for a given resonance and orbital
++        angular momentum.
++
++        resonance: resonance string, e.g. 'rho0'.
++        lr:        orbital angular momentum for the resonance, e.g. 0 for 
++                   s-wave, 1 for p-wave, etc. If 'None', a fixed width is used.
++        """
++        self.lr = None if pars.bw == "fix" else lr
++        try:
++            self.mr, self.wr = pars.mms[resonance], pars.wms[resonance]
++            self.sr, self.drs = self.mr**2, pars.dms[resonance]
++        except:
++            raise BreitWignerError(
++                "No data is available for the %s resonance." % resonance)
++
++    ###########################################################################
++    def __call__(self, m):
++        """
++        Return the Breit-Wigner for a given mass.
++        
++        m: mass (GeV).
++        """
++        # Running width, equation A.3.
++        if self.lr != None:
++            k, sm = 0, m**2
++            for br, m0, m1 in self.drs:
++                if m > m0 + m1: k += br*math.sqrt(
++                    ((sm - (m0 + m1)**2)*(sm - (m0 - m1)**2)/(4*sm))/
++                    ((self.sr - (m0 + m1)**2)*(self.sr - (m0 - m1)**2)/
++                     (4*self.sr)))**(2*self.lr + 1)
++            return self.sr/(self.sr - sm - complex(0, self.sr*self.wr*k/m))
++       
++       # Fixed width, equation A.2.
++        else:
++            return self.sr/(self.sr - m**2 - complex(0, m*self.wr))
++
++###############################################################################
++class ProductionError(Exception):
++    """
++    Simple exception for the 'Production' class.
++    """
++    pass
++
++###############################################################################
++class Production:
++    """
++    Represents the possible production mechanisms for an X-boson,
++    given an experiment.
++
++    name:     name of the production.
++    channels: list of production channels taking the form 
++              [production of type 'Production', production fraction function]
++    """
++    ###########################################################################
++    def __init__(self, channels, frac = 1.0):
++        """
++        Load a production, given its channel or channels. When
++        specifying a single channel, 'channels' can be a mechanism
++        name, e.g. 'p_brem' for proton-beam bremsstrahlung. The
++        built-in mechanisms are:
++
++        p_brem: proton-beam bremsstrahlung.
++        A_brem: A-beam bremsstrahlung, where A can be any fundamental fermion.
++        A_A:    Drell-Yan, where A can be any fundamental fermion.
++        A:      vector meson mixing, where A is the vector meson.
++        A_B:    meson decays of the form A -> B + X, where A is the decaying 
++                meson, B is the SM daughter and X is the NP daughter.
++
++        Alternatively, a user defined function that is mass and model
++        dependent can be provided, taking the form 'mechanism(mass
++        (GeV), model)'. The mechanism is assumed to be dependent upon
++        the square of the global coupling.
++
++        If multiple channels are specified, these are provided in a
++        dictionary via 'channels' where the keys are the mechanisms
++        and their associated values are the fractions. The mechanism
++        is given as above. The fraction can be given either as a
++        number, or a mass dependent function, e.g. 'fraction(mass
++        (GeV))'.
++
++        The 'Datasets' class provides a dictionary of datasets, and
++        consequently can be passed as the 'channels' argument. The
++        first column of the dataset is the mass interpolation points
++        and all remaining columns are the mass dependent ratios for
++        each mechanism. The first row specifies the built-in mechanism
++        for each column. User defined mechanisms cannot be used here.
++        """
++        # Initialize the cached results.
++        self.name = 'undefined'
++        self.__cache = (None, None)
++
++        # Multiple mechanisms from a dictionary.
++        try:
++            self.channels = []
++            for prd, frc in channels.items():
++                self.channels.append(Production(prd, frc))
++            return
++        except: pass
++
++        # Pre-defined mechanism.
++        if isinstance(channels, str):
++            self.name = channels
++            moms = channels.split('_')
++
++            # Decoupled production mechanism.
++            if channels == "none": self.__sigma = lambda m, model: 1.0
++            
++            # Proton-beam bremsstrahlung, equation 2.4.
++            if channels == "p_brem":
++                self.__sigma = lambda m, model: (
++                    2*model.xfs["u"](m) + model.xfs["d"](m))**2
++    
++            # Drell-Yan or lepton-beam bremsstrahlung, equation 2.3 and 2.6.
++            elif (len(moms) == 2 and (moms[1] == 'brem' or moms[0] == moms[1]) 
++                  and moms[0] in pars.mfs):
++                self.__sigma = lambda m, model: (
++                    model.xfs[moms[0]](m))**2
++    
++            # Vector meson decay, equation 2.11.
++            elif channels in pars.rvs:
++                self.__sigma = lambda m, model: (
++                    model.trq(m, pars.tms[channels]))**2
++    
++            # Meson decay of the form A -> B + X, equation 2.7 - 2.10.
++            elif len(moms) == 2 and moms[0] in pars.tms and moms[1] in pars.tms:
++                ta, tb, vs = pars.tms[moms[0]], pars.tms[moms[1]], []
++                for v in pars.rvs:
++                    tv = pars.tms[v]
++                    pf = utils.trace(ta, tb, tv)
++                    if pf: vs.append((tv, pf, BreitWigner(v, 1)))
++                self.__sigma = lambda m, model: (
++                    abs(sum([pf*model.trq(m, tv)*
++                             bw(m) for tv, pf, bw in vs])))**2
++                    
++            # Unknown mechanism.
++            else: raise ProductionError(
++                "Unknown production mechanism '%s'." % self.name)
++
++        # User supplied mechanism.
++        else:
++            self.__sigma = channels
++            self.__sigma(0, model.Model("dark_photon"))
++                         
++        # Set the channels.
++        try: float(frac); self.__frac = lambda m, frac = frac: float(frac)
++        except: self.__frac = frac
++        self.channels = [self]
++
++    ###########################################################################
++    def ratio(self, m, g0, g1, model0, model1):
++        """
++        Return the cross-section ratio between two models, for a given
++        mass and global couplings.
++        
++        m:      mass (GeV).
++        g0:     global coupling for the first model.
++        g1:     global coupling for the second model.
++        model0: first model, numerator.
++        model1: second model, denominator.
++        """
++        # Return the cached result if valid.
++        if self.__cache[0] == m: return (g0/g1)**2*self.__cache[-1]
++
++        # Calculate the result, equation 2.12.
++        ratio = 0
++        for channel in self.channels:
++            den = channel.__sigma(m, model1)
++            if den: ratio += channel.__frac(m)*channel.__sigma(m, model0)/den
++        self.__cache = (m, ratio)
++        return (g0/g1)**2*ratio
+diff -ruN darkcast-master/darkcast/utils.py darkcast_updated/darkcast/utils.py
+--- darkcast-master/darkcast/utils.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast/utils.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,579 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++import os, inspect, operator, collections, math
++
++###############################################################################
++# Create the data paths to search.
++paths = []
++if os.getenv("DARKCAST_DATA_PATH"):
++    paths += [os.path.abspath(os.path.expandvars(path)) for path in 
++              reversed(os.getenv("DARKCAST_DATA_PATH").split(":"))]
++paths.append(
++    os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
++
++###############################################################################
++def find(name):
++    """
++    Find a file, either absolute or along the following paths in the
++    order given:
++    (0) The absolute path, if the absolute path is given.
++    (1) The current directory within the Python interpreter.
++    (2) The paths defined by the environment variable 'DARKCAST_DATA_PATH'.
++    (3) The Darkcast package directory.
++
++    Returns the absolute path if it exists, otherwise 'None' is
++    returned.
++
++    name: name of the absolute or relative file to find.
++    """
++    name = os.path.expandvars(name)
++    if os.path.isabs(name) and os.path.isfile(name):
++        return name
++    if os.path.isfile(os.path.join(os.getcwd(), name)):
++        return os.path.join(os.getcwd(), name)
++    for path in paths:
++        if os.path.isfile(os.path.join(path, name)):
++            return os.path.join(path, name)
++    return None
++
++###############################################################################
++def prod(vs):
++    """
++    Return the product for an iterable object.
++
++    vs: iterable values to multiply.
++    """
++    p = None
++    for v in vs: p = v if p == None else v*p
++    return p
++
++###############################################################################
++def trace(*ts):
++    """
++    Return the sum of products for a set of lists, e.g. the trace
++    when the lists provided are the diagonals of matrices.
++
++    ts: lists to multiply and sum.
++    """
++    return sum(prod(t) for t in zip(*ts))
++
++###############################################################################
++class SolveError(Exception):
++    """
++    Simple exception for the 'solve' method.
++    """
++    pass
++
++###############################################################################
++def solve(f, x0 = None, x1 = None, x = 1, tol = 1e-2, itrs = 100):
++    """
++    Solve a zero for a function, 'f(x)', using Ridders' method and
++    with the assumption that x >= 0. If no bracketing interval for the
++    zero is provided, then the method tries to determine an initial
++    bracket. If a lower bracket value is provided, then an attempt is
++    made to determine the upper value, and vice versa. Alternatively,
++    a starting value for the bracket finding can be provided.
++
++    f:    function to solve, must take a single float argument, e.g. 'f(x)'.
++    x0:   optional lower bracket value.
++    x1:   optional upper bracket value.
++    x:    optional starting value for bracket finding.
++    tol:  relative tolerance required on x.
++    itrs: maximum number of iterations.
++    """
++    # Guess the initial bracket.
++    sx, g0, g1 = 2.0, x0 == None, x1 == None
++    if g0 and not g1: x0 = x1/sx
++    elif g1 and not g0: x1 = x0*sx
++    else: x0, x1 = x*0.8, x*1.2
++    f0, f1 = f(x0), f(x1)
++
++    # Expand the bracket if needed.
++    if g0 and not g1:
++        for itr in range(0, int(itrs)):
++            if f0*f1 < 0: break
++            x0 = x0/sx
++            f0 = f(x0)
++    elif g1 and not g0:
++        for itr in range(0, int(itrs)):
++            if f0*f1 < 0: break
++            x1 = x1*sx
++            f1 = f(x1)
++    else:
++        xmin, xmax, fmin, fmax = x0, x1, f0, f1
++        if fmin < fmax: xmin, xmax, fmin, fmax = xmax, xmin, fmax, fmin
++        for itr in range(0, int(itrs)):
++            if fmin*fmax < 0: break
++            x0, x1 = x0/sx, x1*sx
++            f0, f1 = f(x0), f(x1)
++            if f0 < fmin: xmin, fmin = x0, f0
++            if f1 < fmin: xmin, fmin = x1, f1
++            if f0 > fmax: xmax, fmax = x0, f0
++            if f1 > fmax: xmax, fmax = x1, f1
++        x0, x1, f0, f1 = xmin, xmax, fmin, fmax
++        if x0 > x1: x0, x1, f0, f1 = x1, x0, f1, f0
++    if not f0*f1 < 0: raise SolveError(
++        "Could not find bracketing interval.")
++
++    # Apply Ridders' method.
++    for itr in range(0, int(itrs)):
++        xm = (x0 + x1)/2.0
++        fm = f(xm)
++        xn = xm + (xm - x0)*(-1.0 if f0 < 0 else 1.0)*fm/math.sqrt(
++            fm**2 - f0*f1)
++        fn = f(xn)
++        if fn == 0.0 or abs(x1 - x0)/xn < tol: return xn
++        elif fn*fm < 0: x0, x1, f0, f1 = xn, xm, fn, fm
++        elif fn*f0 < 0: x1, f1 = xn, fn
++        else: x0, f0 = xn, fn
++    raise SolveError("Could not find a solution.")
++
++###############################################################################
++class DatasetError(Exception):
++    """
++    Simple exception for the 'Dataset' class.
++    """
++    pass
++
++###############################################################################
++class Dataset:
++    """
++    Represents an n-dimensional dataset where the nth dimension is
++    provided as a function of the preceding n - 1 dimensions with the
++    '()' operator. Within the dataset range linear interpolation is
++    used, while outside the dataset range the nearest edge point is
++    used. The dataset is assumed to be a regular grid but is not
++    required to have constant spacing.
++    
++    axes: defining axes for the dataset.
++    vals: dataset values.
++    dim:  dimension of the dataset.
++    len:  number of stored dataset values.
++    """
++    ###########################################################################
++    def __init__(self, name = None, vals = None):
++        """
++        Initiate the dataset from a whitespace separated text file
++        with the format 'x_0 x_1 ... x_n' for each line. The dataset
++        is assumed to be a regular grid; any missing points are
++        initialized as 0.
++
++        name: name of the text file to read the dataset from.
++        vals: optional list of values, rather than a file.
++        """
++        import os.path, copy
++        self.vals, self.axes, dim = [], [[]], 0
++
++        # Read from a file.
++        if name != None:
++            try: data, vals = open(find(name)), []
++            except: raise DatasetError(
++                "Could not find the dataset '%s'." % name)
++            for idx, line in enumerate(data):
++                line = line.split("#")[0].split()
++                if len(line) == 0: continue
++                if dim == 0:
++                    self.axes = [set() for i in range(len(line) - 1)]
++                    dim  = len(self.axes)
++                if len(line) != dim + 1: raise DatasetError(
++                    "Line %i has size %i, %i required." 
++                    % (idx + 1,len(line), dim + 1))
++                try:
++                    for axis, val in zip(self.axes, line): axis.add(float(val))
++                    vals.append([float(val) for val in line])
++                except: raise DatasetError(
++                    "Failed to read line %i." % (idx + 1))
++            data.close()
++        
++        # Read from a list of values.
++        elif vals:
++            for idx, line in enumerate(vals):
++                if dim == 0:
++                    self.axes = [set() for i in range(len(line) - 1)]
++                    dim  = len(self.axes)
++                try:
++                    for axis, val in zip(self.axes, line): axis.add(float(val))
++                except: raise DatasetError(
++                    "Failed to read line %i." % (idx + 1))
++        else: return
++
++        # Sort the axes and allocate the values.
++        for idx, axis in enumerate(self.axes):
++            self.axes[idx] = sorted(list(axis))
++        self.vals = [0]*prod([len(a) for a in self.axes])
++        for i, val in enumerate(vals):
++            self[self.__fkey(val)] = val[-1]
++
++    ###########################################################################
++    def __call__(self, xs, method = 1):
++        """
++        Return the interpolated/extrapolated dataset x_n value, given
++        the point x_0, ..., x_n-1.
++
++        xs:     point to interpolate, must be of length n-1.
++        method: interpolation method.
++        """
++        try: xs[0]
++        except: xs = (xs,)
++        if self.dim() != len(xs): raise DatasetError(
++            "Incorrect dimension %i, %i required." % (len(xs), self.dim()))
++
++        # Nearest neighbor.
++        if method == 0: return self[self.__fkey(xs)]
++        
++        # Polynomial interpolation.
++        vals, bxs, ks = [], [], self.__skey(xs, True)
++        for k in range(2**self.dim()):
++            bks = []
++            for d in range(self.dim()): bks.append(k % 2); k = (k - bks[-1])/2
++            sks = [ks[bk][d] for d, bk in enumerate(bks)]
++            vals.append(self[self.__s2f(sks)])
++            bxs.append(self.__s2x(sks))
++        for d, x in enumerate(xs):
++            step = 2**(d + 1)
++            for k in range(0, len(vals), step):
++                
++                # Currently just linear interpolation.
++                x0, x1 = bxs[k][d], bxs[k + int(step/2)][d]
++                val0, val1 = vals[k], vals[k + int(step/2)]
++                if x0 == x1: continue
++                vals[k] = (x1 - x)/(x1 - x0)*val0 + (x - x0)/(x1 - x0)*val1
++        return vals[0]
++
++    ###########################################################################
++    def __skey(self, xs, bk = False):
++        """
++        Find the structured key of the nearest neighbor for a given
++        point x_0, x_1, ..., x_n-1. Key finding is performed per axis
++        with a modified regula falsi method: if regula falsi fails to
++        find a new bracket, bisection is used to find a new bracket.
++
++        xs: point to determine the key of the nearest neighbor.
++        bk: if true, return the bracketing structured keys of the point.
++        """
++        k0s, k1s = [], []
++        for x, axis in zip(xs, self.axes):
++            k, k0, k1 = 0, 0, len(axis) - 1
++            if x <= axis[k0]:   k1 = k0
++            elif x >= axis[k1]: k0 = k1
++            else:
++                while k1 - k0 > 1:
++                    k = k0 + int(
++                        round((x - axis[k0])*(k1 - k0)/(axis[k1] - axis[k0])))
++                    if x == axis[k]: k0, k1 = k, k; break
++                    if k == k0 or k == k1: k = k0 + int((k1 - k0)/2)
++                    if x > axis[k]: k0 = k
++                    else: k1 = k
++            k0s.append(k0)
++            k1s.append(k1)
++        if bk: return (k0s, k1s)
++        else: return [k1 if abs(axis[k1] - x) < abs(axis[k0] - x) else k0
++                      for axis, k0, k1 in zip(self.axes, k0s, k1s)]
++
++    ###########################################################################
++    def __fkey(self, xs, bk = False):
++        """
++        Find the flat key of the nearest neighbor for a given point
++        x_0, x_1, ..., x_n-1. See the method 'skey' for details.
++
++        xs: point to determine the key of the nearest neighbor.
++        bk: if true, return the bracketing flat keys of the point.
++        """
++        if bk: 
++            k0s, k1s = self.__skey(xs)
++            return self.__s2f(k0s), self.__s2f(k1s)
++        else: return self.__s2f(self.__skey(xs))
++
++    ###########################################################################
++    def __s2f(self, skey):
++        """
++        Transform a structured key to a flat key.
++        
++        skey: structured key to transform.
++        """
++        f, c = 0, 1
++        for s, axis in zip(reversed(skey), reversed(self.axes)):
++            f += c*s; c *= len(axis)
++        return f
++
++    ###########################################################################
++    def __f2s(self, fkey):
++        """
++        Transform a flat key to a structured key.
++
++        fkey: flat key to transform.
++        """
++        s, c = [], fkey
++        for axis in reversed(self.axes):
++            s.append(c % len(axis)); c = int((c - s[-1])/len(axis))
++        return reversed(s)
++
++    ###########################################################################
++    def __s2x(self, skey):
++        """
++        Transform a structured key to coordinates, e.g. x_0, x_1, ...,
++        x_n-1.
++
++        skey: structured key to transform.
++        """
++        return [self.axes[i][j] for i, j in enumerate(skey)]
++
++    ###########################################################################
++    def __f2x(self, fkey):
++        """
++        Transform a flat key to coordinates, e.g. x_0, x_1, ...,
++        x_n-1.
++
++        fkey: flat key to transform.
++        """
++        return self.__s2x(self.__f2s(fkey))
++
++    ###########################################################################
++    def __opr(self, o, a, b):
++        """
++        Internal method used to apply an operator of the form 
++        'c = a o b'.
++
++        o: operator which can be called as o(a, b).
++        a: left-hand value of the operator.
++        b: right-hand value of the operator.
++        """
++        import copy
++        c = Dataset()
++
++        # Both objects are of type 'Dataset'.
++        if type(a) == type(self) and type(b) == type(self):
++            if a.dim() != b.dim(): raise DatasetError(
++                "Incompatible dimensions %i and %i."  % (a.dim(), b.dim()))
++            asub, bsub = True, True
++            for aaxis, baxis in zip(a.axes, b.axes):
++                c.axes.append(sorted(list(set(aaxis) | set(baxis))))
++                asub &= len(baxis) == len(c.axes[-1])
++                bsub &= len(aaxis) == len(c.axes[-1])
++            if asub and bsub:
++                for fkey in range(len(c)):
++                    c[fkey] = o(a[fkey], b[fkey])
++            elif asub:
++                for fkey in range(len(c)): 
++                    c[fkey] = o(a(c.__f2x(fkey)), b[fkey])
++            elif bsub:
++                for fkey in range(len(c)): 
++                    c[fkey] = o(a[fkey], b(c.__f2x(fkey)))
++            else:
++                for fkey in range(len(c)):
++                    xs = c.__f2x(fkey); c[fkey] = o(a(xs), b(xs))
++
++        # One object is of type 'Dataset'.
++        elif type(a) == type(self):
++            c = copy.deepcopy(a)
++            for fkey, val in enumerate(c.vals): c[fkey] = o(val, b)
++        elif type(b) == type(self):
++            c = copy.deepcopy(b)
++            for fkey, val in enumerate(c.vals): c[fkey] = o(val, a)
++        return c
++
++    ###########################################################################
++    def dim(self):
++        """
++        Return the dimension of the dataset.
++        """
++        return len(self.axes)
++
++    ###########################################################################
++
++    def __setitem__(self, fkey, val): self.vals[fkey] = val
++    def __getitem__(self, fkey): return self.vals[fkey]
++    def __len__ (self): return len(self.vals)
++    def __add__ (self, b): return self.__opr(operator.add, self, b)
++    def __sub__ (self, b): return self.__opr(operator.sub, self, b)
++    def __mul__ (self, b): return self.__opr(operator.mul, self, b)
++    def __div__ (self, b): return self.__opr(operator.div, self, b)
++    def __mod__ (self, b): return self.__opr(operator.mod, self, b)
++    def __pow__ (self, b): return self.__opr(operator.pow, self, b)
++    def __radd__(self, b): return self.__opr(operator.add, self, b)
++    def __rsub__(self, b): return self.__opr(operator.sub, self, b)
++    def __rmul__(self, b): return self.__opr(operator.mul, self, b)
++    def __rdiv__(self, b): return self.__opr(operator.div, self, b)
++    def __rmod__(self, b): return self.__opr(operator.mod, self, b)
++    def __rpow__(self, b): return self.__opr(operator.pow, self, b)
++
++###############################################################################
++class DatasetsError(Exception):
++    """
++    Simple exception for the 'Datasets' class.
++    """
++    pass
++
++###############################################################################
++class Datasets(collections.OrderedDict):
++    """
++    Loads multiple 2-dimensional 'Dataset's from a single file, all as
++    a function of the first column. The first row is read as labels
++    for the columns. The 'Datasets' object acts as an ordered
++    dictionary for the individual datasets.
++    """
++    ###########################################################################
++    def __init__(self, name = None):
++        """
++        Load the datasets for a given file.
++
++        name: name of the text file to read the datasets from.
++        """
++        super(Datasets, self).__init__()
++        if name == None: return
++        try: data = open(find(name))
++        except: raise DatasetsError(
++            "Could not find the dataset '%s'." % name)
++
++        # Read from a file.
++        keys = data.readline().replace("#", "").split()[1:]
++        dats = [[] for key in keys]
++        for idx, line in enumerate(data):
++            line = line.split("#")[0].split()
++            if len(line) == 0: continue
++            if len(line) != len(keys) + 1: raise DatasetsError(
++                "Line %i has size %i, %i required." 
++                % (idx + 1, len(line), len(keys)))
++            try:
++                var = float(line[0])
++                for dat, val in zip(dats, line[1:]):
++                    dat.append([var, float(val)])
++            except: raise DatasetsError(
++                "Failed to read line %i." % (idx + 1))
++        data.close()
++
++        # Create the datasets.
++        for key, vals in zip(keys, dats): self[key] = Dataset(vals = vals)
++
++    ###########################################################################
++    def write(self, txt, xlabel = "mass", format = "%11.4e"):
++        """
++        Write out the datasets to a text file.
++
++        txt:    the name of the text file to write out.
++        xlabel: label to give the first column, i.e. the x-values.
++        format: optionally, the format to write out the values.
++        """
++        txt = open(txt, "w")
++        keys = [key for key in self]
++        length = len(format % 0)
++        labels = " ".join([("%%%is" % length) % l for l in [xlabel] + keys])
++        txt.write("# " + labels[2:] + "\n")
++        for idx, xval in enumerate(self[keys[0]].axes[0]):
++            txt.write(" ".join(format % v for v in [xval] + [
++                        self[key].vals[idx] for key in keys]) + "\n")
++        txt.close()
++
++    ###########################################################################
++    def plots(self, lower = "lower", upper = "upper", ymax = 1e5):
++        """
++        Return the points, formatted for plots, for these 'Dataset's.
++        """
++        points = []
++        lower, upper = self[lower], self.get(upper)
++        xs, yls, yus = [], [], []
++        for idx, x in enumerate(lower.axes[0]):
++            yl, yu = lower.vals[idx], upper.vals[idx] if upper else ymax
++            if abs(yl) < ymax and yl < yu:
++                xs += [x]; yls += [yl]; yus += [yu]
++            elif len(xs):
++                points += [[xs + [x for x in reversed(xs)],
++                            yls + [y for y in reversed(yus)]]]
++                xs, yls, yus = [], [], []
++        if len(xs):
++            points += [[xs + [x for x in reversed(xs)],
++                        yls + [y for y in reversed(yus)]]]
++        return points
++                
++###############################################################################
++def latex(line):
++    """
++    Return a line with special LaTeX characters formatted,
++    e.g. particle names. Alternatively, format the name of a
++    limit with a production mechanism.
++
++    line: string (or production mechanism) to format.
++    """
++    try:
++        try:
++            if line.name.startswith("AMM"):
++                return "$(g-2)_{%s}$" % latex(line.name[3:].split("_")[0])
++            prod = line.production
++        except: prod = line
++        line = prod.name
++        if line == "undefined":
++            if len(prod.channels) > 4: line = "LHC"
++            else: line = prod.channels[-1]
++        elif line.endswith("_brem"): line = "$%s$-brem" % line[0:-5]
++        elif line == "e_e": line = "$e^+ e^-$"
++        elif "_" in line: line = "$%s$" % line.replace("_", " rightarrow X ")
++        return latex(line)
++    except:
++        smb = ["gamma", "nu", "mu", "tau", "pi", "eta", "rho", "omega", "phi",
++               "rightarrow"]
++        dct = [("_",     r" ")
++        ] + [("L%s" % l, r"$L_{%s}$" % l) for l in ["e", "mu", "tau"]
++        ] + [("nu%s" % l, r"nu_{%s}" % l) for l in ["e", "mu", "tau"]
++        ] + [(l, r"\%s" % l) for l in smb
++        ] + [(l + "0", l + "^{0}") for l in smb
++        ] + [(l + "+", l + "^{+}") for l in smb
++        ] + [(l + "-", l + "^{-}") for l in smb
++        ] + [("D0", "D^{0}"), ("D*0", "D^{*0}")]
++        for old, new in dct: line = line.replace(old, new)
++        return line
++
++###############################################################################
++def logo(x = 0.87, y = 0.90, width = 0.12, c1 = "gray", c2 = "maroon"):
++    """
++    Draw the Darkcast logo (designed by Eadaoin Ilten) onto a
++    plot. This requires the Matplotlib module.
++
++    x:     the lower left-hand x-position of the logo (fraction of the page).
++    y:     the lower left-hand y-position of the logo (fraction of the page).
++    width: width of the logo (fraction of the page).
++    c1:    color of the photon propagator.
++    c2:    color of the kinetic mixing and text.
++    """
++    try:
++        from matplotlib import pyplot
++        x, y, width, lw = float(x), float(y), float(width), width/0.12
++        a = pyplot.axes([x, y, width, width/100*80], frameon = False)
++        
++        # Draw the photon.
++        xs = [float(x - 50) for x in range(101)]
++        ys = [10.0*math.sin(x/10*math.pi) for x in xs]
++        a.plot(xs, ys, color = c1, linewidth = lw)
++        
++        # Draw the DC.
++        a.plot([-30, -3, -30], [-30, 0, 30], color = c2, linewidth = 3*lw)
++        a.plot([ 30,  3,  30], [-30, 0, 30], color = c2, linewidth = 3*lw)
++        a.plot([-30, -30], [-20, 20], color = c2, linewidth = lw)
++        
++        # Draw the ARK.
++        x, y, w, h, c, l = -20, -33, 4.0, 10.0, c2, lw
++        a.plot([x, x+w/2, x+w], [y, y+h, y], color = c, linewidth = l)
++        a.plot([x+w/4, x+3*w/4], [y+h/3, y+h/3], color = c, linewidth = l)
++        x += 6
++        a.plot([x, x, x+w, x, x+w], [y, y+h, y+3*h/4, y+h/2, y], color = c,
++               linewidth = l)
++        x += 6
++        a.plot([x, x], [y, y+h], color = c, linewidth = l)
++        a.plot([x+w, x, x+w], [y, y+h/2, y+h], color = c, linewidth = l)
++        
++        # Draw the AST.
++        x, y = 30, 16
++        a.plot([x, x+w/2, x+w], [y, y+h, y], color = c, linewidth = l)
++        a.plot([x+w/4, x+3*w/4], [y+h/3, y+h/3], color = c, linewidth = l)
++        x += 6
++        a.plot([x, x+w, x, x+w], [y, y+h/4, y+3*h/4, y+h], color = c,
++               linewidth = l)
++        x += 6
++        a.plot([x+w/2, x+w/2], [y, y+h], color = c, linewidth = l)
++        a.plot([x, x+w], [y+h, y+h], color = c, linewidth = l)
++        
++        # Format the plot.
++        a.set_xlim([-50, 50])
++        a.set_ylim([-40, 40])
++        a.set_xticks([])
++        a.set_yticks([])
++    except: print("Could not draw the Darkcast logo.")
+diff -ruN darkcast-master/darkcast_be.py darkcast_updated/darkcast_be.py
+--- darkcast-master/darkcast_be.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast_be.py	2022-04-08 15:57:27.114441700 +1000
+@@ -0,0 +1,99 @@
++# This file provides the interface function to backend DarkCast with GAMBIT.
++# 
++# 
++# Author: Quan Huynh
++# Last edited: 08/04/2022
++
++
++# Update the system path to find the Darkcast module.
++# This assumes that 'examples' is in 'darkcast/examples.'
++import sys, os, inspect, itertools
++sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(
++                inspect.getfile(inspect.currentframe()))), "../../"))
++
++import darkcast
++from darkcast.pars import ge
++from math import pi
++
++
++
++# def main():
++#     model_params = {
++#         "e":      -1*ge,
++#         "mu":     -1*ge,
++#         "tau":    -1*ge,
++#         "nue":     0*ge,
++#         "numu":    0*ge,
++#         "nutau":   0*ge,
++#         "d":      -1*ge/3,
++#         "u":       2*ge/3,
++#         "s":      -1*ge/3,
++#         "c":       2*ge/3,
++#         "b":      -1*ge/3,
++#         "t":       2*ge/3
++#     }
++#     states = "hadrons"
++#     m = 1.25  #GeV
++#     print(be_decay_width(model_params, states, m))
++#     print(be_bfrac(model_params, states, m))
++
++def be_decay_width(my_params: dict, states: list, m: float) -> float:
++    myModel = create_model(my_params, m)
++    return myModel.width(states, m)
++    # result = []
++    # if isinstance(m, float):
++    #     result.append(myModel.width(states, m))
++    #     return result
++    # if isinstance(m, list):
++    #     for mval in m:
++    #         result.append(myModel.width(states, mval))
++    #     return result
++
++def be_bfrac(my_params: dict, states: list, m: float) -> float:
++    myModel = create_model(my_params, m)
++    return myModel.bfrac(states, m)
++    # result = []
++    # if isinstance(m, float):
++    #     result.append(myModel.bfrac(states, m))
++    #     return result
++    # if isinstance(m, list):
++    #     for mval in m:
++    #         result.append(myModel.bfrac(states, mval))
++    #     return result
++
++def create_model(params_list: dict, mass : float):
++    ref = {
++        "e":       0.0,
++        "mu":      0.0,
++        "tau":     0.0,
++        "nue":     0.0,
++        "numu":    0.0,
++        "nutau":   0.0,
++        "d":       0.0,
++        "u":       0.0,
++        "s":       0.0,
++        "c":       0.0,
++        "b":       0.0,
++        "t":       0.0
++    }
++    for key in params_list:
++        try:
++            if isinstance(params_list[key], float) or isinstance(params_list[key], int):
++                ref[key] = params_list[key]
++                continue
++            ref[key] = params_list[key](mass)
++        except:
++            raise TypeError("Only integers, floats or functions of mass are allowed")
++    
++    with open("darkcast_be_model.py", "w") as f:
++        f.write(f"xfs = {ref}")
++    
++    return darkcast.Model("darkcast_be_model")
++    # return darkcast.Model("dark_photon", states)
++    
++
++
++
++
++# if __name__ == '__main__':
++#     main()
+\ No newline at end of file
+diff -ruN darkcast-master/darkcast_be_model.py darkcast_updated/darkcast_be_model.py
+--- darkcast-master/darkcast_be_model.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/darkcast_be_model.py	2022-04-09 00:45:24.407739700 +1000
+@@ -0,0 +1 @@
++xfs = {'e': -0.0005807044028651649, 'mu': -0.0005807044028651649, 'tau': -0.0005807044028651649, 'nue': 0, 'numu': 0, 'nutau': 0, 'd': 0.3333333333333333, 'u': 0.3333333333333333, 's': 0.3333333333333333, 'c': 0.3333333333333333, 'b': 0.3333333333333333, 't': 0.3333333333333333}
+\ No newline at end of file
+diff -ruN darkcast-master/efficiency.py darkcast_updated/efficiency.py
+--- darkcast-master/efficiency.py	2021-04-03 07:34:51.000000000 +1100
++++ darkcast_updated/efficiency.py	1970-01-01 10:00:00.000000000 +1000
+@@ -1,119 +0,0 @@
+-# DARKCAST is licensed under the GNU GPL version 2 or later.
+-# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
+-import math
+-from . import utils
+-
+-###############################################################################
+-class EfficiencyError(Exception):
+-    """
+-    Simple exception for the 'Efficiency' class.
+-    """
+-    pass
+-
+-###############################################################################
+-class Efficiency:
+-    """
+-    Provides the efficiency for a given experiment.
+-    """
+-    ###########################################################################
+-    def __init__(self, t0 = 0, t1 = None, lratio = None, rvals = False):
+-        """
+-        Initialize an efficiency. The efficiency is defined in terms
+-        of a proper lifetime interval between t0 and t1 (seconds). For
+-        a prompt experiment, only the upper proper time needs to be
+-        provided, e.g. t1. For a displaced experiment, only 'lratio'
+-        (e.g. the ratio between the decay volume length and the shielding
+-        length, L_det/L_sh) needs to be provided, and t0 and t1 will
+-        be solved for using the lower and upper limits.
+-
+-        When r-value limits are given, i.e. the ratio between observed
+-        and expected as a function of mass and lifetime, 'rvals'
+-        should be set as true. Here, the efficiency ratio for
+-        lifetimes above the maximum is approximated by t0 = 0 and t1 =
+-        tau_max, while below the minimum by t0 = tau_min and t1 =
+-        infinity.
+-
+-        t0:     value or function for the lower proper lifetime (seconds).
+-        t1:     value or function for the upper proper lifetime (seconds).
+-        lratio: ratio between the decay and shielding volume for a beam-dump
+-                experiment.
+-        rvals:  true if the efficiency is for limits with r-values, false
+-                otherwise.
+-        """
+-        # Return if efficiency for a r-value limit.
+-        self.__rvals = rvals
+-        if self.__rvals: return
+-
+-        # Initialize the cached results.
+-        self.__cache = (None, None, None)
+-
+-        # Set the lower proper time.
+-        if lratio != None: self.__lratio = 1.0 + lratio
+-        else:
+-            self.__lratio = None
+-            try: t0 = float(t0); self.__t0 = lambda m: t0
+-            except: self.__t0 = t0
+- 
+-        # Set the upper proper time.
+-        if lratio == None:
+-            try: t1 = float(t1); self.__t1 = lambda m: t1
+-            except: self.__t1 = t1
+-
+-    ###########################################################################
+-    def __ts(self, m, limit):
+-        """
+-        Return the proper time fiducial. If a displaced limit and
+-        'lratio' was specified, solve for t0 and t1.
+-
+-        m:     mass (GeV).
+-        limit: 'Limit' which includes a model and lower/upper bounds.
+-        """
+-        # Cached proper times.
+-        if self.__cache[0:-1] == (m, limit): return self.__cache[-1]
+-
+-        # Fiducial from displaced limits with no shielding.
+-        if self.__lratio == float("inf"):
+-            t0 = limit.model.tau(m, limit.bounds["lower"](m))
+-            t1 = limit.model.tau(m, limit.bounds["upper"](m))
+-        
+-        # Fiducial from displaced limit.
+-        elif self.__lratio:
+-
+-            # Solve t0 from equation 2.24.
+-            g0 = limit.bounds["lower"](m)
+-            g1 = limit.bounds["upper"](m)
+-            tau0 = limit.model.tau(m, g0)
+-            tau1 = limit.model.tau(m, g1)
+-            f = lambda t: (
+-                g1**2*(math.exp(-t/tau1) - math.exp(-t*self.__lratio/tau1))
+-                - g0**2*(math.exp(-t/tau0) - math.exp(-t*self.__lratio/tau0)))
+-            t0 = utils.solve(f)
+-
+-            # Set t1 from equation 2.22.
+-            t1 = t0*self.__lratio
+-
+-        # Fiducial from user defined proper times.
+-        else: t0, t1 = self.__t0(m), self.__t1(m)
+-        self.__cache = (m, limit, (t0, t1))
+-        return t0, t1
+-    
+-    ###########################################################################
+-    def ratio(self, m, limit, tau0, tau1):
+-        """
+-        Return the efficiency ratios for a given mass, limit, and
+-        lifetimes.
+-        
+-        m:     mass (GeV).
+-        limit: 'Limit' which includes a model and lower/upper bounds.
+-        tau0:  numerator lifetime (seconds).
+-        tau1:  denominator lifetime (seconds).
+-        """
+-        # If r-value limit, use equation C.4.
+-        if self.__rvals:
+-            t0, t1 = (0, tau1) if tau0 > tau1 else (tau1, float("inf"))
+-        else: t0, t1 = self.__ts(m, limit)
+-
+-        # Ratio of efficiencies, given by equation 2.23.
+-        num = math.exp(-t0/tau0) - math.exp(-t1/tau0)
+-        den = math.exp(-t0/tau1) - math.exp(-t1/tau1)
+-        return num/den if den else float("inf")
+diff -ruN darkcast-master/limit.py darkcast_updated/limit.py
+--- darkcast-master/limit.py	2021-04-03 07:34:51.000000000 +1100
++++ darkcast_updated/limit.py	1970-01-01 10:00:00.000000000 +1000
+@@ -1,253 +0,0 @@
+-# DARKCAST is licensed under the GNU GPL version 2 or later.
+-# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
+-import os, sys, inspect, collections
+-from . import utils
+-
+-###############################################################################
+-# Update the limit paths.
+-sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(
+-                inspect.getfile(inspect.currentframe()))), "limits"))
+-if os.getenv("DARKCAST_LIMIT_PATH"):
+-    for path in reversed(os.getenv("DARKCAST_LIMIT_PATH").split(":")):
+-        sys.path.insert(1, path)
+-
+-###############################################################################
+-class LimitError(Exception):
+-    """
+-    Simple exception for the 'Limit' class.
+-    """
+-    pass
+-
+-###############################################################################
+-class Limit:
+-    """
+-    Represents all the needed information to define a limit. This
+-    class contains the following members.
+-    
+-    name:       name of the limit.
+-    notes:      text providing any relevant notes for the limit. This is
+-                optional, and if not defined a default will be assigned.
+-    bibtex:     the optional BibTex entry from inSPIRE for this limit.
+-    model:      the model defining the limit, must be of class 'Model'.
+-    production: production which contains the production mechanism or 
+-                mechanisms for the limit. Must be of class 'Production'.
+-    bounds:     the actual bounds for the limit. This can either be
+-                a 'Dataset' when a single-sided bound or 'Datasets' when
+-                a double-sided bound.
+-    efficiency: efficiency of class 'Efficiency'.
+-    """
+-    def __init__(self, name, path = None):
+-        """
+-        Initialize a limit, given its name.
+-
+-        The limit must exist in the form <name>.py and is searched for
+-        along these paths in the following order:
+-        (0) The current directory within the Python interpreter.
+-        (1) The paths defined by the environment variable 
+-            'DARKCAST_LIMIT_PATH'.
+-        (2) The 'limits' directory of the Darkcast package.
+-
+-        Each limit must have a model, production, decay, bounds, and
+-        efficiency defined. Optionally, notes and a BibTex entry can
+-        be provided.
+-
+-        name: name of the limit.
+-        """
+-        # Check if the limit should be initialized.
+-        self.name = name
+-
+-        # Import the limit.
+-        if path: sys.path.insert(1, path)
+-        limit = __import__(name)
+-        if path: del sys.path[1]
+-
+-        # Load the notes and BibTeX.
+-        try: self.notes = limit.notes
+-        except: self.notes = "The limit %s has no notes." % name
+-        try: self.bibtex = limit.bibtex
+-        except: self.bibtex = "The limit %s has no BibTeX entry." % name
+-
+-        # Load the model.
+-        if not hasattr(limit, "model"): raise LimitError(
+-            "No model is defined for '%s'." % name)
+-        self.model = limit.model
+-        self.model.width("total", 1)
+-        
+-        # Load the production.
+-        if not hasattr(limit, "production"): raise LimitError(
+-            "No production is defined for '%s'." % name)
+-        self.production = limit.production
+-        self.production.ratio(1, 1, 1, self.model, self.model)
+-
+-        # Load the decay.
+-        try: self.decay = limit.decay
+-        except: raise LimitError(
+-            "No decay is defined for '%s'." % name)
+-        try: self.model.width(self.decay, 1)
+-        except: raise LimitError(
+-            "The decay defined for '%s' is not valid." % name)
+-
+-        # Load the bounds.
+-        if not hasattr(limit, "bounds"): raise LimitError(
+-            "No bounds are defined for '%s'." % name)
+-        try:
+-            self.bounds = utils.Datasets()
+-            self.bounds["rvals" if limit.bounds.dim() == 2 
+-                        else "lower"] = limit.bounds
+-        except: self.bounds = limit.bounds
+-        for key, bound in self.bounds.items():
+-            if not isinstance(bound, utils.Dataset): raise LimitError(
+-                "The bound %s is not of type Dataset." % key)
+-
+-        # Load the efficiency.
+-        if not hasattr(limit, "efficiency"): raise LimitError(
+-            "No efficiency is defined for '%s'." % name)
+-        self.efficiency = limit.efficiency
+-        self.efficiency.ratio(1, self, 1.0, 1.0)
+-
+-    ###########################################################################
+-    def recast(self, model, gmax = 1e5):
+-        """
+-        Recast these limits to a given model. Returns a dictionary
+-        with entries of 'lower' and when relevant, 'upper'. Each entry
+-        is of the form: [[m0, m1, ...], [g0, g1, ...]].
+-
+-        model: model for recasting, must be of type 'Model', e.g. 
+-               Model('dark_photon').
+-        gmax:  maximum coupling to recast. If a coupling is greater than 
+-               or equal to this, then that mass point is skipped.
+-        """
+-        # Initialize the recast bounds.
+-        rvals = self.bounds.get("rvals")
+-        lower = utils.Dataset()
+-        upper = utils.Dataset() if rvals or "upper" in self.bounds else None
+-
+-        # Recast r-value bounds.
+-        if rvals: 
+-
+-            # Loop over the r-values.
+-            jdx, tl, tu, gl, gu, rl, ru,  = 0, 0, 0, gmax, -gmax, 1, 1
+-            tmin, tmax = float("inf"), 0
+-            for idx, r1 in enumerate(rvals.vals):
+-
+-                # Determine the r-value via equation 2.21.
+-                m, g1 = rvals._Dataset__f2x(idx)
+-                tau = self.model.tau(m, g1)
+-                g0 = model.g(m, tau)
+-                b0 = model.bfrac(self.decay, m)
+-                b1 = self.model.bfrac(self.decay, m)
+-                pr = self.production.ratio(m, g0, g1, model, self.model)
+-                r0 = r1*b1/(b0*pr) if b0*pr != 0 else gmax
+-
+-                # Update the lower/upper limits.
+-                if r0 < 1:
+-                    if g0 < gl: tl, gl, rl = tau, g0, r0
+-                    if g0 > gu: tu, gu, ru = tau, g0, r0
+-                tmin = min(tmin, tau)
+-                tmax = max(tmax, tau)
+-                
+-                # Check if final g for given m.
+-                jdx += 1
+-                if jdx == len(rvals.axes[1]):
+-
+-                    # Solve for any limits outside bounds.
+-                    if tl == tmax and rl < 1:
+-                        f = lambda g: g**2/gl**2*self.efficiency.ratio(
+-                            m, self, model.tau(m, g), tl)/rl - 1
+-                        try: gl = utils.solve(f, x1 = gl)
+-                        except: pass
+-                    if tu == tmin and ru < 1:
+-                        f = lambda g: g**2/gu**2*self.efficiency.ratio(
+-                            m, self, model.tau(m, g), tu)/ru - 1
+-                        try: gu = utils.solve(f, x0 = gu)
+-                        except: pass
+-
+-                    # Update the bounds.
+-                    lower.axes[0].append(m); lower.vals.append(abs(gl))
+-                    upper.axes[0].append(m); upper.vals.append(abs(gu))
+-                    jdx, gl, gu, rl, ru = 0, gmax, -gmax, 1, 1
+-                    tmin, tmax = float("inf"), 0
+-            
+-        # Recast lower/upper bounds.
+-        else:
+-
+-            # Loop over the masses.
+-            g0l = None
+-            for m, g1l in zip(self.bounds["lower"].axes[0],
+-                              self.bounds["lower"].vals):
+-    
+-                # Check if branching fraction and production is non-zero.
+-                if model.bfrac(self.decay, m) == 0: continue
+-                if self.model.bfrac(self.decay, m) == 0: continue
+-                if self.production.ratio(m, 1, 1, model, self.model) == 0:
+-                    continue
+-    
+-                # Check if limit is above maximum and set guess.
+-                if g1l >= gmax: 
+-                    lower.axes[0].append(m); lower.vals.append(gmax)
+-                    if upper: upper.axes[0].append(m); upper.vals.append(gmax)
+-                    continue
+-                ggl = g0l if g0l != None else g1l
+-    
+-                # Solve equation 2.2 for the lower bound.
+-                f = lambda g: (
+-                    model.bfrac(self.decay, m)/self.model.bfrac(self.decay, m)
+-                    * self.production.ratio(m, g, g1l, model, self.model) 
+-                    * self.efficiency.ratio(m, self, model.tau(m, g), 
+-                                            self.model.tau(m, g1l)) - 1)
+-                try: g0l = utils.solve(f, x = ggl)
+-                except: g0l = gmax
+-    
+-                # If upper bound, find second zero, e.g. equations C.5 - C.7.
+-                if upper == None:
+-                    lower.axes[0].append(m); lower.vals.append(g0l)
+-                else:
+-                    if g0l == gmax: g0u = gmax
+-                    elif f(g0l*1.01) < 0:
+-                        try: g0u = utils.solve(f, x1 = g0l*0.99)
+-                        except: g0u = gmax
+-                    else:
+-                        try: g0u = utils.solve(f, x0 = g0l*1.01)
+-                        except: g0u = gmax
+-                    if g0u < g0l: g0u, g0l = g0l, g0u
+-                    lower.axes[0].append(m); lower.vals.append(g0l)
+-                    upper.axes[0].append(m); upper.vals.append(g0u)
+-                                   
+-        # Return the recast bounds.
+-        bounds = utils.Datasets()
+-        bounds["lower"] = lower
+-        if upper != None: bounds["upper"] = upper
+-        return bounds
+-
+-###############################################################################
+-class Limits(collections.OrderedDict):
+-    """
+-    Loads all 'Limit's along the provided paths. The 'Limits' object
+-    acts as an ordered dictionary for the individual models.
+-    """
+-    ###########################################################################
+-    def __init__(self, paths = None):
+-        """
+-        Load all available models along the specified paths.
+-
+-        paths: paths to search for models. If no paths are specified,
+-               search the paths specified by DARKCAST_LIMIT_PATH and
+-               the local Darkcast limit directory.
+-        """
+-        super(Limits, self).__init__()
+-
+-        # Set default search paths.
+-        if paths == None:
+-            paths = []
+-            if os.getenv("DARKCAST_LIMIT_PATH"): paths += [
+-                p for p in os.getenv("DARKCAST_LIMIT_PATH").split(":")]
+-            paths += [os.path.join(os.path.dirname(os.path.realpath(
+-                            inspect.getfile(inspect.currentframe()))),"limits")]
+-
+-        # Load the limits.
+-        for path in (paths,) if isinstance(paths, str) else paths:
+-            limits = sorted(os.listdir(path))
+-            for limit in limits:
+-                if not limit.endswith(".py"): continue
+-                try: self[limit[0:-3]] = Limit(limit[0:-3], path)
+-                except: pass
+diff -ruN darkcast-master/model.py darkcast_updated/model.py
+--- darkcast-master/model.py	2021-04-03 07:34:51.000000000 +1100
++++ darkcast_updated/model.py	1970-01-01 10:00:00.000000000 +1000
+@@ -1,262 +0,0 @@
+-# DARKCAST is licensed under the GNU GPL version 2 or later.
+-# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
+-import os, sys, inspect, math, collections
+-from . import pars
+-
+-###############################################################################
+-# Update the model paths.
+-sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(
+-                inspect.getfile(inspect.currentframe()))), "models"))
+-if os.getenv("DARKCAST_MODEL_PATH"):
+-    for path in reversed(os.getenv("DARKCAST_MODEL_PATH").split(":")):
+-        sys.path.insert(1, path)
+-
+-###############################################################################
+-class ModelError(Exception):
+-    """
+-    Simple exception for the 'Model' class.
+-    """
+-    pass
+-
+-###############################################################################
+-class Model:
+-    """
+-    Provides the information and methods needed to define a given
+-    model, e.g. 'dark_photon'.
+-
+-    name:   name of the model.
+-    xfs:    dictionary of fermion couplings. Each coupling is a function 
+-            dependent upon mass (GeV).
+-    q:      quark U(3) charge matrix.
+-    """
+-    ###########################################################################
+-    def __init__(self, name, states = None, iwidth = None, path = None):
+-        """
+-        Load a model, given its name.
+-
+-        The model must exist in the form '<name>.py' and is searched
+-        for along these paths in the following order:
+-        (0) The current directory within the Python interpreter.
+-        (1) The paths defined by the environment variable 
+-            'DARKCAST_MODEL_PATH'.
+-        (2) The 'models' directory of the Darkcast package.
+-
+-        Each model must contain a fermion coupling dictionary named
+-        'xfs', where each coupling can either be a constant, or a mass 
+-        dependent function.
+-
+-        The list 'states' may be defined, specifying the allowed final
+-        states for the model, e.g. ['e_e', 'mu_mu', 'invisible',
+-        ...]. Only these final states are used when calculating the
+-        total width. If not defined, all visible and invisible final
+-        states are used when calculating the total width.
+-
+-        Optionally, an 'iwidth' function provides the invisible width
+-        for the model, given a mass and model and taking the form
+-        'iwidth(mass (GeV), model)'. Consequently, the invisible width
+-        can be defined as a function of the visible width. If no
+-        'iwidth' is defined, the invisible width is taken as zero. The
+-        invisible width is assumed to be dependent on the square of
+-        the global coupling. See the example model for further
+-        details.
+-        
+-        name:   name of the model.
+-        states: optionally, specify the allowed final states of the model.
+-        iwidth: optionally, specify the invisible width as a function of 
+-                a given mass and this model.
+-        path:   optionally, specify the path to load the module from.
+-        """
+-        # Import the model.
+-        self.name = name
+-        self.__cache = {}
+-        if path: sys.path.insert(1,path)
+-        model = __import__(name)
+-        if path: del sys.path[1]
+-
+-        # Load the model's fermion couplings.
+-        self.xfs = {}
+-        for f in pars.mfs:
+-            try:
+-                float(model.xfs[f])
+-                self.xfs[f] = lambda m, f = f: float(model.xfs[f])
+-            except: 
+-                try: self.xfs[f] = model.xfs[f]
+-                except: raise ModelError(
+-                        "Error loading '%s' coupling from '%s'." % (f, name))
+-
+-        # Load the model's invisible width function.
+-        try: self.__iwidth = iwidth if iwidth != None else model.iwidth
+-        except: self.__iwidth = lambda m, model: 0.0
+-        self.__iwidth(0, self)
+-
+-        # Create the quark U(3) charge matrix.
+-        self.q = [self.xfs["u"], self.xfs["d"], self.xfs["s"]]
+-
+-        # Load the model's defined final states.
+-        try: self.__states = states if states != None else model.states
+-        except: self.__states = ["visible", "invisible"]
+-        self.width("total", 0)
+-        try: self.width("total", 0)
+-        except: raise ModelError(
+-            "Invalid definition of allowed final states from '%s'." % name)
+-
+-    ###########################################################################
+-    def trq(self, m, t):
+-        """
+-        Return the trace of the quark U(3)-charge matrix for the model
+-        with the diagonal of a given matrix, e.g. a meson generator T.
+-        
+-        m: mass at which to evaulate the couplings (GeV).
+-        t: diagonal of the matrix to perform the trace with, must be
+-           size 3.
+-        """
+-        try: return (t[0]*self.xfs["u"](m) + t[1]*self.xfs["d"](m) +
+-                     t[2]*self.xfs["s"](m))
+-        except: raise ModelError(
+-            "Invalid diagonal provided to the trace.")
+-
+-    ###########################################################################
+-    def width(self, states, m, g = 1.0):
+-        """
+-        Return the width, in GeV, for the specified states, mass,
+-        and global coupling.
+-
+-        states: final state or states.
+-        m:      mass (GeV).
+-        g:      global coupling (unitless).
+-        """
+-        # Loop over the states.
+-        total = 0
+-        for state in (states,) if isinstance(states, str) else states:
+-
+-            # Decoupled decay.
+-            if state == "none": return None
+-
+-            # Use cached result if valid.
+-            cache = self.__cache.get(state)
+-            if cache and cache[0] == m: total += cache[-1]; continue
+-    
+-            # Invisible, visible, hadronic, and total widths.
+-            dtrs = state.split("_")
+-            if state == "invisible":
+-                part = self.__iwidth(m, self)
+-            elif state == "visible":
+-                part = self.width(
+-                    ["gamma_gamma_gamma", "e_e", "mu_mu", "tau_tau",
+-                     "nue_nue", "numu_numu",  "nutau_nutau",
+-                     "c_c", "b_b", "t_t", "hadrons"], m)
+-            elif state == "hadrons":
+-                part = self.width(pars.rfs.keys(), m)
+-            elif state == "total":
+-                part = self.width(self.__states, m)
+-    
+-            # Perturbative decay into a fermion pair, equation 2.13.
+-            elif len(dtrs) == 2 and dtrs[0] == dtrs[1] and dtrs[0] in pars.mfs:
+-                dtr = dtrs[0]
+-                cf, mf, xf = pars.cfs[dtr], pars.mfs[dtr], self.xfs[dtr](m)
+-                if m > 2.0*mf: part = (cf*xf**2.0*m/(12.0*math.pi)*(
+-                        1.0 + 2.0*mf**2/m**2)*math.sqrt(1.0 - 4.0*mf**2.0/m**2))
+-                else: part = 0
+-
+-            # Perturbative decay into three photons via an electron loop,
+-            # equation 3.5 of Seo:2020dtx.
+-            elif len(dtrs) == 3 and dtrs[0] == dtrs[1] == dtrs[2] == "gamma":
+-                mf, xf = pars.mfs["e"], self.xfs["e"](m)
+-                if m <= 2.0*mf: part = (
+-                    (xf**2.0*pars.ge**6.0)/(4.0*math.pi)**4.0/(
+-                    2.0**7.0*3.0**6.0*5.0**2.0*math.pi**3.0)*(m**9.0/mf**8.0)*(
+-                    17.0/5.0 + (67.0*m**2.0)/(42.0*mf**2.0) +
+-                    (128941.0*m**4.0)/(246960.0*mf**4.0)))
+-                else: part = 0
+-
+-            # Decay into hadrons, equations 2.17 and 2.18.
+-            elif state in pars.rfs:
+-                part = 0
+-                for mesons, rf in pars.rfs[state].items():
+-                    sub = 1
+-                    for meson in mesons:
+-                        sub *= pars.rvs[meson]*self.trq(m, pars.tms[meson])
+-                    sub *= sub if len(mesons) == 1 else 2
+-                    sub *= rf(m)
+-                    part += m/(12*math.pi)*sub
+-
+-            else: raise ModelError(
+-                "Unknown state '%s'." % state)
+-
+-            # Cache the result.
+-            total += part
+-            self.__cache[state] = (m, part)
+-        return g*g*total
+-
+-    ###########################################################################
+-    def tau(self, m, g = 1.0):
+-        """
+-        Return the lifetime, in seconds, for the specified mass and
+-        and global coupling.
+-
+-        m: mass (GeV).
+-        g: global coupling (unitless).
+-        """
+-        return pars.hbar/self.width("total", m, g)
+-
+-    ###########################################################################
+-    def g(self, m, tau):
+-        """
+-        Return the global coupling, for the specified mass and lifetime.
+-
+-        m:   mass (GeV).
+-        tau: lifetime (seconds).
+-        """
+-        return math.sqrt(self.tau(m)/tau)
+-
+-    ###########################################################################
+-    def bfrac(self, states, m):
+-        """
+-        Return the branching fraction for the specified states and mass.
+-
+-        states: final state or states.
+-        m:      mass (GeV).
+-        """
+-        num = self.width(states, m)
+-        if num == 0: return 0.0
+-        elif num == None: return 1.0
+-        den = self.width("total", m)
+-        if den == 0: return 0.0
+-        return num/den
+-
+-###############################################################################
+-class Models(collections.OrderedDict):
+-    """
+-    Loads all 'Model's along the provided paths. The 'Models' object
+-    acts as an ordered dictionary for the individual models.
+-    """
+-    ###########################################################################
+-    def __init__(self, paths = None, states = None, iwidth = None):
+-        """
+-        Load all available models along the specified paths.
+-
+-        paths:  paths to search for models. If no paths are specified,
+-                search the paths specified by DARKCAST_MODEL_PATH and
+-                the local Darkcast model directory.
+-        states: optionally, specify the allowed final states of the models.
+-        iwidth: optionally, specify the invisible width as a function of 
+-                a given mass and model.
+-        """
+-        super(Models, self).__init__()
+-
+-        # Set default search paths.
+-        if paths == None:
+-            paths = []
+-            if os.getenv("DARKCAST_MODEL_PATH"): paths += [
+-                p for p in os.getenv("DARKCAST_MODEL_PATH").split(":")]
+-            paths += [os.path.join(os.path.dirname(os.path.realpath(
+-                            inspect.getfile(inspect.currentframe()))),"models")]
+-
+-        # Load the models.
+-        for path in (paths,) if not hasattr(paths, "__iter__") else paths:
+-            models = sorted(os.listdir(path))
+-            for model in models:
+-                if not model.endswith(".py"): continue
+-                try: self[model[0:-3]] = Model(
+-                        model[0:-3], states, iwidth, path)
+-                except: pass
+Binary files darkcast-master/my_boson.pdf and darkcast_updated/my_boson.pdf differ
+diff -ruN darkcast-master/pars.py darkcast_updated/pars.py
+--- darkcast-master/pars.py	2021-04-03 07:34:51.000000000 +1100
++++ darkcast_updated/pars.py	1970-01-01 10:00:00.000000000 +1000
+@@ -1,153 +0,0 @@
+-# DARKCAST is licensed under the GNU GPL version 2 or later.
+-# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
+-"""
+-This module contains all the relevant parameters used by
+-Darkcast. They can be simply redefined by importing the module and
+-changing the relevant parameter, e.g. 'import darkcast' and
+-'darkcast.pars.ge = 1'. The following float value parameters are
+-defined.
+-
+-c:    speed of light (m/s).
+-hbar: reduced Planck's constant (s/GeV).
+-ge:   electromagnetic coupling (unitless).
+-bw:   flag for which Breit-Wigner type to use, either 'fix' or 'run'.
+-
+-The remaining parameters are dictionaries.
+-
+-mfs:  fermion masses (GeV).
+-cfs:  fermion color factors (unitless).
+-
+-tms:  on-diagonal U(3) meson generators from equation A.1 (unitless). For
+-      convenience the photon U(3) quark charge matrix, equation 2.8, is
+-      also included.
+-rvs:  pre-factors for each vector contribution R_X^V from equation 2.18
+-      (unitless).
+-
+-mms:  needed meson masses (GeV). 
+-wms:  meson widths (GeV).
+-dms:  meson branching fractions and final state masses (GeV), 
+-      e.g. [BR, m1, m2]. These are used for the running Breit-Wigners.
+-
+-rfs:  interpolation grids for each final state R_mu^f from equation 2.15
+-      split by individual meson contributions, including interference 
+-      (unitless). These grids are stored in the 'vmd' directory.
+-"""
+-import math
+-from . import utils
+-
+-###############################################################################
+-# Constants.
+-c    = 2.99792458e8     # Speed of light (m/s).
+-hbar = 6.58211951e-25   # Reduced Planck's constant (GeV s).
+-ge   = 3.02822e-1       # Electromagnetic coupling (unitless).
+-bw   = "run"            # Flag for Breit-Wigner type, 'fix' or 'run'.
+-
+-###############################################################################
+-# Fermion masses (GeV).
+-mfs = {
+-    "e":      5.110e-04,
+-    "mu":     0.10566,
+-    "tau":    1.77682,
+-    "nue":    0,
+-    "numu":   0,
+-    "nutau":  0,
+-    "d":      0.33,
+-    "u":      0.33,
+-    "s":      0.5,
+-    "c":      1.5,
+-    "b":      4.8,
+-    "t":      171.0
+-    }
+-
+-###############################################################################
+-# Fermion color factors (unitless).
+-cfs = {
+-    "e":      1.0,
+-    "mu":     1.0,
+-    "tau":    1.0,
+-    "nue":    1.0/2.0,
+-    "numu":   1.0/2.0,
+-    "nutau":  1.0/2.0,
+-    "d":      3.0,
+-    "u":      3.0,
+-    "s":      3.0,
+-    "c":      3.0,
+-    "b":      3.0,
+-    "t":      3.0
+-    }
+-
+-###############################################################################
+-# On-diagonal U(3) meson generators from equation A.1 (unitless). For
+-# convenience the photon U(3) quark charge matrix, equation 2.8, is
+-# also included.
+-tms = {
+-    "gamma": [t/3.0              for t in [2, -1, -1]],
+-    "rho0":  [t/2.0              for t in [1, -1,  0]],
+-    "pi0":   [t/2.0              for t in [1, -1,  0]],
+-    "omega": [t/2.0              for t in [1,  1,  0]],
+-    "phi":   [t/math.sqrt(2)     for t in [0,  0,  1]],
+-    "eta":   [t/math.sqrt(6)     for t in [1,  1, -1]],
+-    "eta'":  [t/(2*math.sqrt(3)) for t in [1,  1,  2]],
+-    "D0":    [t                  for t in [1,  0,  0]],
+-    "D*0":   [t                  for t in [1,  0,  0]]
+-    }
+-
+-###############################################################################
+-# Pre-factors for each vector contribution R_X^V from equation 2.18
+-# (unitless).
+-rvs = {
+-    "rho0":  2.0,
+-    "omega": 6.0,
+-    "phi":   3.0*math.sqrt(2)
+-    }
+-
+-###############################################################################
+-# Meson masses (GeV).
+-mms = {
+-    "rho0":  0.77549,
+-    "pi0":   0.13498,
+-    "omega": 0.78265,
+-    "phi":   1.01946,
+-    "eta":   0.54785
+-    }
+-
+-###############################################################################
+-# Resonance widths (GeV).
+-wms = {
+-    "rho0":  0.14910,
+-    "omega": 0.00849,
+-    "phi":   0.00426
+-}
+-
+-###############################################################################
+-# Resonance branching fractions and final state masses (GeV), e.g. [BR, m1, m2].
+-dms = {
+-    "rho0":  [[0.9988447, 0.13957, 0.13957]],  # pi+ pi-
+-    "omega": [[0.8994773, 2*0.13957, 0.13498], # pi+ pi- pi0
+-              [0.0834941, 0.13498, 0],         # pi0 gamma
+-              [0.0154283, 0.13957, 0.13957]],  # pi+ pi-
+-    "phi":   [[0.4893042, 0.49368, 0.49368],   # K K
+-              [0.3422127, 0.49761, 0.49761],   # KS KL
+-              [0.0130981, 0.54785, 0]]         # eta gamma
+-}
+-
+-###############################################################################
+-# Interpolation grids for each final state R_mu^f from equation 2.15
+-# split by individual meson contributions, including interference (unitless).
+-rfs = {
+-    "pi+_pi-": [("rho0",)],
+-    "pi+_pi-_pi+_pi-": [("rho0",)],
+-    "pi+_pi-_pi0_pi0": [("rho0",)],
+-    "pi+_pi-_pi0": [("omega",), ("phi",), ("omega", "phi")],
+-    "pi0_gamma": [("omega",)],
+-    "K_K": [("phi",)],
+-    "K_K_pi": [("phi",)],
+-    "other": [("rho0",), ("omega",), ("phi",)]
+-    }
+-for rf, mesons in rfs.items():
+-    rfs[rf] = {meson: utils.Dataset("vmd/rf.%s.%s.dat" % (rf, "_".join(meson)))
+-               for meson in mesons}
+-
+-# Clean up.
+-try: del t, rf, mesons
+-except: pass
+diff -ruN darkcast-master/production.py darkcast_updated/production.py
+--- darkcast-master/production.py	2021-04-03 07:34:51.000000000 +1100
++++ darkcast_updated/production.py	1970-01-01 10:00:00.000000000 +1000
+@@ -1,196 +0,0 @@
+-# DARKCAST is licensed under the GNU GPL version 2 or later.
+-# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
+-import math
+-from . import utils, pars, model
+-
+-###############################################################################
+-class BreitWignerError(Exception):
+-    """
+-    Simple exception for the 'BreitWigner' class.
+-    """
+-    pass
+-
+-###############################################################################
+-class BreitWigner:
+-    """
+-    Provide a running width Breit-Wigner for a given resonance.
+-    
+-    mr:  mass of the resonance (GeV).
+-    wr:  width of the resonance (1/GeV).
+-    lr:  orbital angular momentum for the resonance.
+-    drs: decay channels for the resonance of the form 
+-         [branching, mass 0, mass 1].
+-    """
+-    ###########################################################################
+-    def __init__(self, resonance, lr = 1):
+-        """
+-        Initialize the needed data for a given resonance and orbital
+-        angular momentum.
+-
+-        resonance: resonance string, e.g. 'rho0'.
+-        lr:        orbital angular momentum for the resonance, e.g. 0 for 
+-                   s-wave, 1 for p-wave, etc. If 'None', a fixed width is used.
+-        """
+-        self.lr = None if pars.bw == "fix" else lr
+-        try:
+-            self.mr, self.wr = pars.mms[resonance], pars.wms[resonance]
+-            self.sr, self.drs = self.mr**2, pars.dms[resonance]
+-        except:
+-            raise BreitWignerError(
+-                "No data is available for the %s resonance." % resonance)
+-
+-    ###########################################################################
+-    def __call__(self, m):
+-        """
+-        Return the Breit-Wigner for a given mass.
+-        
+-        m: mass (GeV).
+-        """
+-        # Running width, equation A.3.
+-        if self.lr != None:
+-            k, sm = 0, m**2
+-            for br, m0, m1 in self.drs:
+-                if m > m0 + m1: k += br*math.sqrt(
+-                    ((sm - (m0 + m1)**2)*(sm - (m0 - m1)**2)/(4*sm))/
+-                    ((self.sr - (m0 + m1)**2)*(self.sr - (m0 - m1)**2)/
+-                     (4*self.sr)))**(2*self.lr + 1)
+-            return self.sr/(self.sr - sm - complex(0, self.sr*self.wr*k/m))
+-       
+-       # Fixed width, equation A.2.
+-        else:
+-            return self.sr/(self.sr - m**2 - complex(0, m*self.wr))
+-
+-###############################################################################
+-class ProductionError(Exception):
+-    """
+-    Simple exception for the 'Production' class.
+-    """
+-    pass
+-
+-###############################################################################
+-class Production:
+-    """
+-    Represents the possible production mechanisms for an X-boson,
+-    given an experiment.
+-
+-    name:     name of the production.
+-    channels: list of production channels taking the form 
+-              [production of type 'Production', production fraction function]
+-    """
+-    ###########################################################################
+-    def __init__(self, channels, frac = 1.0):
+-        """
+-        Load a production, given its channel or channels. When
+-        specifying a single channel, 'channels' can be a mechanism
+-        name, e.g. 'p_brem' for proton-beam bremsstrahlung. The
+-        built-in mechanisms are:
+-
+-        p_brem: proton-beam bremsstrahlung.
+-        A_brem: A-beam bremsstrahlung, where A can be any fundamental fermion.
+-        A_A:    Drell-Yan, where A can be any fundamental fermion.
+-        A:      vector meson mixing, where A is the vector meson.
+-        A_B:    meson decays of the form A -> B + X, where A is the decaying 
+-                meson, B is the SM daughter and X is the NP daughter.
+-
+-        Alternatively, a user defined function that is mass and model
+-        dependent can be provided, taking the form 'mechanism(mass
+-        (GeV), model)'. The mechanism is assumed to be dependent upon
+-        the square of the global coupling.
+-
+-        If multiple channels are specified, these are provided in a
+-        dictionary via 'channels' where the keys are the mechanisms
+-        and their associated values are the fractions. The mechanism
+-        is given as above. The fraction can be given either as a
+-        number, or a mass dependent function, e.g. 'fraction(mass
+-        (GeV))'.
+-
+-        The 'Datasets' class provides a dictionary of datasets, and
+-        consequently can be passed as the 'channels' argument. The
+-        first column of the dataset is the mass interpolation points
+-        and all remaining columns are the mass dependent ratios for
+-        each mechanism. The first row specifies the built-in mechanism
+-        for each column. User defined mechanisms cannot be used here.
+-        """
+-        # Initialize the cached results.
+-        self.name = 'undefined'
+-        self.__cache = (None, None)
+-
+-        # Multiple mechanisms from a dictionary.
+-        try:
+-            self.channels = []
+-            for prd, frc in channels.items():
+-                self.channels.append(Production(prd, frc))
+-            return
+-        except: pass
+-
+-        # Pre-defined mechanism.
+-        if isinstance(channels, str):
+-            self.name = channels
+-            moms = channels.split('_')
+-
+-            # Decoupled production mechanism.
+-            if channels == "none": self.__sigma = lambda m, model: 1.0
+-            
+-            # Proton-beam bremsstrahlung, equation 2.4.
+-            if channels == "p_brem":
+-                self.__sigma = lambda m, model: (
+-                    2*model.xfs["u"](m) + model.xfs["d"](m))**2
+-    
+-            # Drell-Yan or lepton-beam bremsstrahlung, equation 2.3 and 2.6.
+-            elif (len(moms) == 2 and (moms[1] == 'brem' or moms[0] == moms[1]) 
+-                  and moms[0] in pars.mfs):
+-                self.__sigma = lambda m, model: (
+-                    model.xfs[moms[0]](m))**2
+-    
+-            # Vector meson decay, equation 2.11.
+-            elif channels in pars.rvs:
+-                self.__sigma = lambda m, model: (
+-                    model.trq(m, pars.tms[channels]))**2
+-    
+-            # Meson decay of the form A -> B + X, equation 2.7 - 2.10.
+-            elif len(moms) == 2 and moms[0] in pars.tms and moms[1] in pars.tms:
+-                ta, tb, vs = pars.tms[moms[0]], pars.tms[moms[1]], []
+-                for v in pars.rvs:
+-                    tv = pars.tms[v]
+-                    pf = utils.trace(ta, tb, tv)
+-                    if pf: vs.append((tv, pf, BreitWigner(v, 1)))
+-                self.__sigma = lambda m, model: (
+-                    abs(sum([pf*model.trq(m, tv)*
+-                             bw(m) for tv, pf, bw in vs])))**2
+-                    
+-            # Unknown mechanism.
+-            else: raise ProductionError(
+-                "Unknown production mechanism '%s'." % self.name)
+-
+-        # User supplied mechanism.
+-        else:
+-            self.__sigma = channels
+-            self.__sigma(0, model.Model("dark_photon"))
+-                         
+-        # Set the channels.
+-        try: float(frac); self.__frac = lambda m, frac = frac: float(frac)
+-        except: self.__frac = frac
+-        self.channels = [self]
+-
+-    ###########################################################################
+-    def ratio(self, m, g0, g1, model0, model1):
+-        """
+-        Return the cross-section ratio between two models, for a given
+-        mass and global couplings.
+-        
+-        m:      mass (GeV).
+-        g0:     global coupling for the first model.
+-        g1:     global coupling for the second model.
+-        model0: first model, numerator.
+-        model1: second model, denominator.
+-        """
+-        # Return the cached result if valid.
+-        if self.__cache[0] == m: return (g0/g1)**2*self.__cache[-1]
+-
+-        # Calculate the result, equation 2.12.
+-        ratio = 0
+-        for channel in self.channels:
+-            den = channel.__sigma(m, model1)
+-            if den: ratio += channel.__frac(m)*channel.__sigma(m, model0)/den
+-        self.__cache = (m, ratio)
+-        return (g0/g1)**2*ratio
+diff -ruN darkcast-master/test_darkcast_be.py darkcast_updated/test_darkcast_be.py
+--- darkcast-master/test_darkcast_be.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/test_darkcast_be.py	2022-04-08 15:46:34.479220400 +1000
+@@ -0,0 +1,43 @@
++from darkcast_be import be_decay_width, be_bfrac
++from darkcast.pars import ge
++from math import pi
++import matplotlib.pyplot as plt
++import time
++
++#B_boson params
++my_params = {
++    "e":      -ge**2/(4*pi)**2,
++    "mu":     -ge**2/(4*pi)**2,
++    "tau":    -ge**2/(4*pi)**2,
++    "nue":     0,
++    "numu":    0,
++    "nutau":   0,
++    "d":       1./3,
++    "u":       1./3,
++    "s":       1./3,
++    "c":       1./3,
++    "b":       1./3,
++    "t":       1./3
++}
++
++masses = [0.01*m for m in range(1,200)] #GeV
++states = 'hadrons'
++
++for mass in masses:
++    start_time = time.perf_counter()
++    print(f'Decay width for {mass} GeV: \t\t {be_decay_width(my_params, states, mass)}')
++    end_time1 = time.perf_counter()
++    print(f'Branching fraction for {mass} GeV: \t {be_bfrac(my_params, states, mass)}')
++    end_time2 = time.perf_counter()
++    print(f'It takes {end_time1 - start_time}s to execute be_decay_width')
++    print(f'It takes {end_time2 - end_time1}s to execute be_bfrac \n')
++
++bfracs = [be_bfrac(my_params, states, mass) for mass in masses]
++
++fig, ax = plt.subplots()
++ax.plot(masses, bfracs)
++ax.set_xlabel("Masses [GeV]")
++ax.set_ylabel("Branching fraction")
++
++fig.savefig('my_boson.pdf')
++
+diff -ruN darkcast-master/utils.py darkcast_updated/utils.py
+--- darkcast-master/utils.py	2021-04-03 07:34:51.000000000 +1100
++++ darkcast_updated/utils.py	1970-01-01 10:00:00.000000000 +1000
+@@ -1,579 +0,0 @@
+-# DARKCAST is licensed under the GNU GPL version 2 or later.
+-# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
+-import os, inspect, operator, collections, math
+-
+-###############################################################################
+-# Create the data paths to search.
+-paths = []
+-if os.getenv("DARKCAST_DATA_PATH"):
+-    paths += [os.path.abspath(os.path.expandvars(path)) for path in 
+-              reversed(os.getenv("DARKCAST_DATA_PATH").split(":"))]
+-paths.append(
+-    os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+-
+-###############################################################################
+-def find(name):
+-    """
+-    Find a file, either absolute or along the following paths in the
+-    order given:
+-    (0) The absolute path, if the absolute path is given.
+-    (1) The current directory within the Python interpreter.
+-    (2) The paths defined by the environment variable 'DARKCAST_DATA_PATH'.
+-    (3) The Darkcast package directory.
+-
+-    Returns the absolute path if it exists, otherwise 'None' is
+-    returned.
+-
+-    name: name of the absolute or relative file to find.
+-    """
+-    name = os.path.expandvars(name)
+-    if os.path.isabs(name) and os.path.isfile(name):
+-        return name
+-    if os.path.isfile(os.path.join(os.getcwd(), name)):
+-        return os.path.join(os.getcwd(), name)
+-    for path in paths:
+-        if os.path.isfile(os.path.join(path, name)):
+-            return os.path.join(path, name)
+-    return None
+-
+-###############################################################################
+-def prod(vs):
+-    """
+-    Return the product for an iterable object.
+-
+-    vs: iterable values to multiply.
+-    """
+-    p = None
+-    for v in vs: p = v if p == None else v*p
+-    return p
+-
+-###############################################################################
+-def trace(*ts):
+-    """
+-    Return the sum of products for a set of lists, e.g. the trace
+-    when the lists provided are the diagonals of matrices.
+-
+-    ts: lists to multiply and sum.
+-    """
+-    return sum(prod(t) for t in zip(*ts))
+-
+-###############################################################################
+-class SolveError(Exception):
+-    """
+-    Simple exception for the 'solve' method.
+-    """
+-    pass
+-
+-###############################################################################
+-def solve(f, x0 = None, x1 = None, x = 1, tol = 1e-2, itrs = 100):
+-    """
+-    Solve a zero for a function, 'f(x)', using Ridders' method and
+-    with the assumption that x >= 0. If no bracketing interval for the
+-    zero is provided, then the method tries to determine an initial
+-    bracket. If a lower bracket value is provided, then an attempt is
+-    made to determine the upper value, and vice versa. Alternatively,
+-    a starting value for the bracket finding can be provided.
+-
+-    f:    function to solve, must take a single float argument, e.g. 'f(x)'.
+-    x0:   optional lower bracket value.
+-    x1:   optional upper bracket value.
+-    x:    optional starting value for bracket finding.
+-    tol:  relative tolerance required on x.
+-    itrs: maximum number of iterations.
+-    """
+-    # Guess the initial bracket.
+-    sx, g0, g1 = 2.0, x0 == None, x1 == None
+-    if g0 and not g1: x0 = x1/sx
+-    elif g1 and not g0: x1 = x0*sx
+-    else: x0, x1 = x*0.8, x*1.2
+-    f0, f1 = f(x0), f(x1)
+-
+-    # Expand the bracket if needed.
+-    if g0 and not g1:
+-        for itr in range(0, int(itrs)):
+-            if f0*f1 < 0: break
+-            x0 = x0/sx
+-            f0 = f(x0)
+-    elif g1 and not g0:
+-        for itr in range(0, int(itrs)):
+-            if f0*f1 < 0: break
+-            x1 = x1*sx
+-            f1 = f(x1)
+-    else:
+-        xmin, xmax, fmin, fmax = x0, x1, f0, f1
+-        if fmin < fmax: xmin, xmax, fmin, fmax = xmax, xmin, fmax, fmin
+-        for itr in range(0, int(itrs)):
+-            if fmin*fmax < 0: break
+-            x0, x1 = x0/sx, x1*sx
+-            f0, f1 = f(x0), f(x1)
+-            if f0 < fmin: xmin, fmin = x0, f0
+-            if f1 < fmin: xmin, fmin = x1, f1
+-            if f0 > fmax: xmax, fmax = x0, f0
+-            if f1 > fmax: xmax, fmax = x1, f1
+-        x0, x1, f0, f1 = xmin, xmax, fmin, fmax
+-        if x0 > x1: x0, x1, f0, f1 = x1, x0, f1, f0
+-    if not f0*f1 < 0: raise SolveError(
+-        "Could not find bracketing interval.")
+-
+-    # Apply Ridders' method.
+-    for itr in range(0, int(itrs)):
+-        xm = (x0 + x1)/2.0
+-        fm = f(xm)
+-        xn = xm + (xm - x0)*(-1.0 if f0 < 0 else 1.0)*fm/math.sqrt(
+-            fm**2 - f0*f1)
+-        fn = f(xn)
+-        if fn == 0.0 or abs(x1 - x0)/xn < tol: return xn
+-        elif fn*fm < 0: x0, x1, f0, f1 = xn, xm, fn, fm
+-        elif fn*f0 < 0: x1, f1 = xn, fn
+-        else: x0, f0 = xn, fn
+-    raise SolveError("Could not find a solution.")
+-
+-###############################################################################
+-class DatasetError(Exception):
+-    """
+-    Simple exception for the 'Dataset' class.
+-    """
+-    pass
+-
+-###############################################################################
+-class Dataset:
+-    """
+-    Represents an n-dimensional dataset where the nth dimension is
+-    provided as a function of the preceding n - 1 dimensions with the
+-    '()' operator. Within the dataset range linear interpolation is
+-    used, while outside the dataset range the nearest edge point is
+-    used. The dataset is assumed to be a regular grid but is not
+-    required to have constant spacing.
+-    
+-    axes: defining axes for the dataset.
+-    vals: dataset values.
+-    dim:  dimension of the dataset.
+-    len:  number of stored dataset values.
+-    """
+-    ###########################################################################
+-    def __init__(self, name = None, vals = None):
+-        """
+-        Initiate the dataset from a whitespace separated text file
+-        with the format 'x_0 x_1 ... x_n' for each line. The dataset
+-        is assumed to be a regular grid; any missing points are
+-        initialized as 0.
+-
+-        name: name of the text file to read the dataset from.
+-        vals: optional list of values, rather than a file.
+-        """
+-        import os.path, copy
+-        self.vals, self.axes, dim = [], [[]], 0
+-
+-        # Read from a file.
+-        if name != None:
+-            try: data, vals = open(find(name)), []
+-            except: raise DatasetError(
+-                "Could not find the dataset '%s'." % name)
+-            for idx, line in enumerate(data):
+-                line = line.split("#")[0].split()
+-                if len(line) == 0: continue
+-                if dim == 0:
+-                    self.axes = [set() for i in range(len(line) - 1)]
+-                    dim  = len(self.axes)
+-                if len(line) != dim + 1: raise DatasetError(
+-                    "Line %i has size %i, %i required." 
+-                    % (idx + 1,len(line), dim + 1))
+-                try:
+-                    for axis, val in zip(self.axes, line): axis.add(float(val))
+-                    vals.append([float(val) for val in line])
+-                except: raise DatasetError(
+-                    "Failed to read line %i." % (idx + 1))
+-            data.close()
+-        
+-        # Read from a list of values.
+-        elif vals:
+-            for idx, line in enumerate(vals):
+-                if dim == 0:
+-                    self.axes = [set() for i in range(len(line) - 1)]
+-                    dim  = len(self.axes)
+-                try:
+-                    for axis, val in zip(self.axes, line): axis.add(float(val))
+-                except: raise DatasetError(
+-                    "Failed to read line %i." % (idx + 1))
+-        else: return
+-
+-        # Sort the axes and allocate the values.
+-        for idx, axis in enumerate(self.axes):
+-            self.axes[idx] = sorted(list(axis))
+-        self.vals = [0]*prod([len(a) for a in self.axes])
+-        for i, val in enumerate(vals):
+-            self[self.__fkey(val)] = val[-1]
+-
+-    ###########################################################################
+-    def __call__(self, xs, method = 1):
+-        """
+-        Return the interpolated/extrapolated dataset x_n value, given
+-        the point x_0, ..., x_n-1.
+-
+-        xs:     point to interpolate, must be of length n-1.
+-        method: interpolation method.
+-        """
+-        try: xs[0]
+-        except: xs = (xs,)
+-        if self.dim() != len(xs): raise DatasetError(
+-            "Incorrect dimension %i, %i required." % (len(xs), self.dim()))
+-
+-        # Nearest neighbor.
+-        if method == 0: return self[self.__fkey(xs)]
+-        
+-        # Polynomial interpolation.
+-        vals, bxs, ks = [], [], self.__skey(xs, True)
+-        for k in range(2**self.dim()):
+-            bks = []
+-            for d in range(self.dim()): bks.append(k % 2); k = (k - bks[-1])/2
+-            sks = [ks[bk][d] for d, bk in enumerate(bks)]
+-            vals.append(self[self.__s2f(sks)])
+-            bxs.append(self.__s2x(sks))
+-        for d, x in enumerate(xs):
+-            step = 2**(d + 1)
+-            for k in range(0, len(vals), step):
+-                
+-                # Currently just linear interpolation.
+-                x0, x1 = bxs[k][d], bxs[k + int(step/2)][d]
+-                val0, val1 = vals[k], vals[k + int(step/2)]
+-                if x0 == x1: continue
+-                vals[k] = (x1 - x)/(x1 - x0)*val0 + (x - x0)/(x1 - x0)*val1
+-        return vals[0]
+-
+-    ###########################################################################
+-    def __skey(self, xs, bk = False):
+-        """
+-        Find the structured key of the nearest neighbor for a given
+-        point x_0, x_1, ..., x_n-1. Key finding is performed per axis
+-        with a modified regula falsi method: if regula falsi fails to
+-        find a new bracket, bisection is used to find a new bracket.
+-
+-        xs: point to determine the key of the nearest neighbor.
+-        bk: if true, return the bracketing structured keys of the point.
+-        """
+-        k0s, k1s = [], []
+-        for x, axis in zip(xs, self.axes):
+-            k, k0, k1 = 0, 0, len(axis) - 1
+-            if x <= axis[k0]:   k1 = k0
+-            elif x >= axis[k1]: k0 = k1
+-            else:
+-                while k1 - k0 > 1:
+-                    k = k0 + int(
+-                        round((x - axis[k0])*(k1 - k0)/(axis[k1] - axis[k0])))
+-                    if x == axis[k]: k0, k1 = k, k; break
+-                    if k == k0 or k == k1: k = k0 + int((k1 - k0)/2)
+-                    if x > axis[k]: k0 = k
+-                    else: k1 = k
+-            k0s.append(k0)
+-            k1s.append(k1)
+-        if bk: return (k0s, k1s)
+-        else: return [k1 if abs(axis[k1] - x) < abs(axis[k0] - x) else k0
+-                      for axis, k0, k1 in zip(self.axes, k0s, k1s)]
+-
+-    ###########################################################################
+-    def __fkey(self, xs, bk = False):
+-        """
+-        Find the flat key of the nearest neighbor for a given point
+-        x_0, x_1, ..., x_n-1. See the method 'skey' for details.
+-
+-        xs: point to determine the key of the nearest neighbor.
+-        bk: if true, return the bracketing flat keys of the point.
+-        """
+-        if bk: 
+-            k0s, k1s = self.__skey(xs)
+-            return self.__s2f(k0s), self.__s2f(k1s)
+-        else: return self.__s2f(self.__skey(xs))
+-
+-    ###########################################################################
+-    def __s2f(self, skey):
+-        """
+-        Transform a structured key to a flat key.
+-        
+-        skey: structured key to transform.
+-        """
+-        f, c = 0, 1
+-        for s, axis in zip(reversed(skey), reversed(self.axes)):
+-            f += c*s; c *= len(axis)
+-        return f
+-
+-    ###########################################################################
+-    def __f2s(self, fkey):
+-        """
+-        Transform a flat key to a structured key.
+-
+-        fkey: flat key to transform.
+-        """
+-        s, c = [], fkey
+-        for axis in reversed(self.axes):
+-            s.append(c % len(axis)); c = int((c - s[-1])/len(axis))
+-        return reversed(s)
+-
+-    ###########################################################################
+-    def __s2x(self, skey):
+-        """
+-        Transform a structured key to coordinates, e.g. x_0, x_1, ...,
+-        x_n-1.
+-
+-        skey: structured key to transform.
+-        """
+-        return [self.axes[i][j] for i, j in enumerate(skey)]
+-
+-    ###########################################################################
+-    def __f2x(self, fkey):
+-        """
+-        Transform a flat key to coordinates, e.g. x_0, x_1, ...,
+-        x_n-1.
+-
+-        fkey: flat key to transform.
+-        """
+-        return self.__s2x(self.__f2s(fkey))
+-
+-    ###########################################################################
+-    def __opr(self, o, a, b):
+-        """
+-        Internal method used to apply an operator of the form 
+-        'c = a o b'.
+-
+-        o: operator which can be called as o(a, b).
+-        a: left-hand value of the operator.
+-        b: right-hand value of the operator.
+-        """
+-        import copy
+-        c = Dataset()
+-
+-        # Both objects are of type 'Dataset'.
+-        if type(a) == type(self) and type(b) == type(self):
+-            if a.dim() != b.dim(): raise DatasetError(
+-                "Incompatible dimensions %i and %i."  % (a.dim(), b.dim()))
+-            asub, bsub = True, True
+-            for aaxis, baxis in zip(a.axes, b.axes):
+-                c.axes.append(sorted(list(set(aaxis) | set(baxis))))
+-                asub &= len(baxis) == len(c.axes[-1])
+-                bsub &= len(aaxis) == len(c.axes[-1])
+-            if asub and bsub:
+-                for fkey in range(len(c)):
+-                    c[fkey] = o(a[fkey], b[fkey])
+-            elif asub:
+-                for fkey in range(len(c)): 
+-                    c[fkey] = o(a(c.__f2x(fkey)), b[fkey])
+-            elif bsub:
+-                for fkey in range(len(c)): 
+-                    c[fkey] = o(a[fkey], b(c.__f2x(fkey)))
+-            else:
+-                for fkey in range(len(c)):
+-                    xs = c.__f2x(fkey); c[fkey] = o(a(xs), b(xs))
+-
+-        # One object is of type 'Dataset'.
+-        elif type(a) == type(self):
+-            c = copy.deepcopy(a)
+-            for fkey, val in enumerate(c.vals): c[fkey] = o(val, b)
+-        elif type(b) == type(self):
+-            c = copy.deepcopy(b)
+-            for fkey, val in enumerate(c.vals): c[fkey] = o(val, a)
+-        return c
+-
+-    ###########################################################################
+-    def dim(self):
+-        """
+-        Return the dimension of the dataset.
+-        """
+-        return len(self.axes)
+-
+-    ###########################################################################
+-
+-    def __setitem__(self, fkey, val): self.vals[fkey] = val
+-    def __getitem__(self, fkey): return self.vals[fkey]
+-    def __len__ (self): return len(self.vals)
+-    def __add__ (self, b): return self.__opr(operator.add, self, b)
+-    def __sub__ (self, b): return self.__opr(operator.sub, self, b)
+-    def __mul__ (self, b): return self.__opr(operator.mul, self, b)
+-    def __div__ (self, b): return self.__opr(operator.div, self, b)
+-    def __mod__ (self, b): return self.__opr(operator.mod, self, b)
+-    def __pow__ (self, b): return self.__opr(operator.pow, self, b)
+-    def __radd__(self, b): return self.__opr(operator.add, self, b)
+-    def __rsub__(self, b): return self.__opr(operator.sub, self, b)
+-    def __rmul__(self, b): return self.__opr(operator.mul, self, b)
+-    def __rdiv__(self, b): return self.__opr(operator.div, self, b)
+-    def __rmod__(self, b): return self.__opr(operator.mod, self, b)
+-    def __rpow__(self, b): return self.__opr(operator.pow, self, b)
+-
+-###############################################################################
+-class DatasetsError(Exception):
+-    """
+-    Simple exception for the 'Datasets' class.
+-    """
+-    pass
+-
+-###############################################################################
+-class Datasets(collections.OrderedDict):
+-    """
+-    Loads multiple 2-dimensional 'Dataset's from a single file, all as
+-    a function of the first column. The first row is read as labels
+-    for the columns. The 'Datasets' object acts as an ordered
+-    dictionary for the individual datasets.
+-    """
+-    ###########################################################################
+-    def __init__(self, name = None):
+-        """
+-        Load the datasets for a given file.
+-
+-        name: name of the text file to read the datasets from.
+-        """
+-        super(Datasets, self).__init__()
+-        if name == None: return
+-        try: data = open(find(name))
+-        except: raise DatasetsError(
+-            "Could not find the dataset '%s'." % name)
+-
+-        # Read from a file.
+-        keys = data.readline().replace("#", "").split()[1:]
+-        dats = [[] for key in keys]
+-        for idx, line in enumerate(data):
+-            line = line.split("#")[0].split()
+-            if len(line) == 0: continue
+-            if len(line) != len(keys) + 1: raise DatasetsError(
+-                "Line %i has size %i, %i required." 
+-                % (idx + 1, len(line), len(keys)))
+-            try:
+-                var = float(line[0])
+-                for dat, val in zip(dats, line[1:]):
+-                    dat.append([var, float(val)])
+-            except: raise DatasetsError(
+-                "Failed to read line %i." % (idx + 1))
+-        data.close()
+-
+-        # Create the datasets.
+-        for key, vals in zip(keys, dats): self[key] = Dataset(vals = vals)
+-
+-    ###########################################################################
+-    def write(self, txt, xlabel = "mass", format = "%11.4e"):
+-        """
+-        Write out the datasets to a text file.
+-
+-        txt:    the name of the text file to write out.
+-        xlabel: label to give the first column, i.e. the x-values.
+-        format: optionally, the format to write out the values.
+-        """
+-        txt = open(txt, "w")
+-        keys = [key for key in self]
+-        length = len(format % 0)
+-        labels = " ".join([("%%%is" % length) % l for l in [xlabel] + keys])
+-        txt.write("# " + labels[2:] + "\n")
+-        for idx, xval in enumerate(self[keys[0]].axes[0]):
+-            txt.write(" ".join(format % v for v in [xval] + [
+-                        self[key].vals[idx] for key in keys]) + "\n")
+-        txt.close()
+-
+-    ###########################################################################
+-    def plots(self, lower = "lower", upper = "upper", ymax = 1e5):
+-        """
+-        Return the points, formatted for plots, for these 'Dataset's.
+-        """
+-        points = []
+-        lower, upper = self[lower], self.get(upper)
+-        xs, yls, yus = [], [], []
+-        for idx, x in enumerate(lower.axes[0]):
+-            yl, yu = lower.vals[idx], upper.vals[idx] if upper else ymax
+-            if abs(yl) < ymax and yl < yu:
+-                xs += [x]; yls += [yl]; yus += [yu]
+-            elif len(xs):
+-                points += [[xs + [x for x in reversed(xs)],
+-                            yls + [y for y in reversed(yus)]]]
+-                xs, yls, yus = [], [], []
+-        if len(xs):
+-            points += [[xs + [x for x in reversed(xs)],
+-                        yls + [y for y in reversed(yus)]]]
+-        return points
+-                
+-###############################################################################
+-def latex(line):
+-    """
+-    Return a line with special LaTeX characters formatted,
+-    e.g. particle names. Alternatively, format the name of a
+-    limit with a production mechanism.
+-
+-    line: string (or production mechanism) to format.
+-    """
+-    try:
+-        try:
+-            if line.name.startswith("AMM"):
+-                return "$(g-2)_{%s}$" % latex(line.name[3:].split("_")[0])
+-            prod = line.production
+-        except: prod = line
+-        line = prod.name
+-        if line == "undefined":
+-            if len(prod.channels) > 4: line = "LHC"
+-            else: line = prod.channels[-1]
+-        elif line.endswith("_brem"): line = "$%s$-brem" % line[0:-5]
+-        elif line == "e_e": line = "$e^+ e^-$"
+-        elif "_" in line: line = "$%s$" % line.replace("_", " rightarrow X ")
+-        return latex(line)
+-    except:
+-        smb = ["gamma", "nu", "mu", "tau", "pi", "eta", "rho", "omega", "phi",
+-               "rightarrow"]
+-        dct = [("_",     r" ")
+-        ] + [("L%s" % l, r"$L_{%s}$" % l) for l in ["e", "mu", "tau"]
+-        ] + [("nu%s" % l, r"nu_{%s}" % l) for l in ["e", "mu", "tau"]
+-        ] + [(l, r"\%s" % l) for l in smb
+-        ] + [(l + "0", l + "^{0}") for l in smb
+-        ] + [(l + "+", l + "^{+}") for l in smb
+-        ] + [(l + "-", l + "^{-}") for l in smb
+-        ] + [("D0", "D^{0}"), ("D*0", "D^{*0}")]
+-        for old, new in dct: line = line.replace(old, new)
+-        return line
+-
+-###############################################################################
+-def logo(x = 0.87, y = 0.90, width = 0.12, c1 = "gray", c2 = "maroon"):
+-    """
+-    Draw the Darkcast logo (designed by Eadaoin Ilten) onto a
+-    plot. This requires the Matplotlib module.
+-
+-    x:     the lower left-hand x-position of the logo (fraction of the page).
+-    y:     the lower left-hand y-position of the logo (fraction of the page).
+-    width: width of the logo (fraction of the page).
+-    c1:    color of the photon propagator.
+-    c2:    color of the kinetic mixing and text.
+-    """
+-    try:
+-        from matplotlib import pyplot
+-        x, y, width, lw = float(x), float(y), float(width), width/0.12
+-        a = pyplot.axes([x, y, width, width/100*80], frameon = False)
+-        
+-        # Draw the photon.
+-        xs = [float(x - 50) for x in range(101)]
+-        ys = [10.0*math.sin(x/10*math.pi) for x in xs]
+-        a.plot(xs, ys, color = c1, linewidth = lw)
+-        
+-        # Draw the DC.
+-        a.plot([-30, -3, -30], [-30, 0, 30], color = c2, linewidth = 3*lw)
+-        a.plot([ 30,  3,  30], [-30, 0, 30], color = c2, linewidth = 3*lw)
+-        a.plot([-30, -30], [-20, 20], color = c2, linewidth = lw)
+-        
+-        # Draw the ARK.
+-        x, y, w, h, c, l = -20, -33, 4.0, 10.0, c2, lw
+-        a.plot([x, x+w/2, x+w], [y, y+h, y], color = c, linewidth = l)
+-        a.plot([x+w/4, x+3*w/4], [y+h/3, y+h/3], color = c, linewidth = l)
+-        x += 6
+-        a.plot([x, x, x+w, x, x+w], [y, y+h, y+3*h/4, y+h/2, y], color = c,
+-               linewidth = l)
+-        x += 6
+-        a.plot([x, x], [y, y+h], color = c, linewidth = l)
+-        a.plot([x+w, x, x+w], [y, y+h/2, y+h], color = c, linewidth = l)
+-        
+-        # Draw the AST.
+-        x, y = 30, 16
+-        a.plot([x, x+w/2, x+w], [y, y+h, y], color = c, linewidth = l)
+-        a.plot([x+w/4, x+3*w/4], [y+h/3, y+h/3], color = c, linewidth = l)
+-        x += 6
+-        a.plot([x, x+w, x, x+w], [y, y+h/4, y+3*h/4, y+h], color = c,
+-               linewidth = l)
+-        x += 6
+-        a.plot([x+w/2, x+w/2], [y, y+h], color = c, linewidth = l)
+-        a.plot([x, x+w], [y+h, y+h], color = c, linewidth = l)
+-        
+-        # Format the plot.
+-        a.set_xlim([-50, 50])
+-        a.set_ylim([-40, 40])
+-        a.set_xticks([])
+-        a.set_yticks([])
+-    except: print("Could not draw the Darkcast logo.")
