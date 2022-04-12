@@ -42,7 +42,8 @@ input_files = [
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection.hpp',
 ]
 include_paths = [
-    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/'
+    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/',
+    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/external/libphysica/include',
 ]
 base_paths = ['../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version]
 
