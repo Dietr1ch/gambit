@@ -16,7 +16,7 @@
 
 // Identify backend
 #define BACKENDNAME obscura
-#define BACKENDLANGUAGE CXX
+#define BACKENDLANG CXX
 #define VERSION 1.0.2
 #define SAFE_VERSION 1_0_2
 #define REFERENCE Emken:2021uzb,Emken_obscura

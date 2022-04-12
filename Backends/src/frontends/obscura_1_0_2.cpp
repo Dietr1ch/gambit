@@ -12,3 +12,9 @@
 ///  \date 2022 Mar
 ///
 ///  *********************************************
+
+#include "gambit/Backends/frontend_macros.hpp"
+#include "gambit/Backends/frontends/obscura_1_0_2.hpp"
+
+BE_INI_FUNCTION {}
+END_BE_INI_FUNCTION
