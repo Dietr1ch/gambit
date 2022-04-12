@@ -810,7 +810,7 @@ if(NOT ditched_${name}_${ver})
   )
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
-  # BOSS_backend(${name} ${ver})
+  BOSS_backend(${name} ${ver})
 endif()
 
 

@@ -42,7 +42,7 @@ input_files = [
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection.hpp',
 ]
 include_paths = [
-    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura'
+    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/'
 ]
 base_paths = ['../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version]
 
@@ -50,6 +50,7 @@ header_files_to = '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_
 src_files_to    = '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/source'
 
 load_classes = [
+    'obscura::DM_Particle_SI',
 ]
 
 load_functions = [
