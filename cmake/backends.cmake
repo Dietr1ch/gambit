@@ -828,8 +828,8 @@ if(NOT ditched_${name}_${ver})
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
-    PATCH_COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/build/generated/"
-          COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/build/generated/version.hpp"
+    PATCH_COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/generated/"
+          COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/generated/version.hpp"
           COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/external/libphysica"
           COMMAND ${CMAKE_COMMAND} -E copy_directory "${libphysica_dir}/" "${dir}/external/libphysica/"
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}

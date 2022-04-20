@@ -42,7 +42,7 @@ input_files = [
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/DM_Particle_Standard.hpp',
 ]
 include_paths = [
-    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/build/generated/',
+    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/generated/',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/external/libphysica/include',
 ]
