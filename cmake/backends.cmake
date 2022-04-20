@@ -796,24 +796,26 @@ set(name "libphysica")
 set(ver "0.1.4")
 set(dl "https://github.com/temken/${name}/archive/refs/tags/v${ver}.zip")
 set(md5 "none")
+set(libphysica_dir "${PROJECT_SOURCE_DIR}/build/${name}/${ver}")
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
-    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
-    SOURCE_DIR ${dir}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${libphysica_dir} ${name} ${ver}
+    SOURCE_DIR ${libphysica_dir}
     BUILD_IN_SOURCE 1 
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
   )
-  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+  add_extra_targets("backend" ${name} ${ver} ${libphysica_dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
 # Obscura
 set(name "obscura")
 set(ver "1.0.2")
-set(dl "https://github.com/temken/${name}/archive/refs/tags/v${ver}.zip")
+# set(dl "https://github.com/temken/${name}/archive/refs/tags/v${ver}.zip")
+set(dl "https://github.com/temken/${name}/archive/refs/heads/dev.zip")
 set(md5 "none")
 set(lib "libobscura")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
@@ -824,8 +826,10 @@ if(NOT ditched_${name}_${ver})
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
-    PATCH_COMMAND cp -r ${libphysica_dir}/ "${dir}/external/libphysica"
-          COMMAND ${CMAKE_COMMAND} -E echo "" > ${version_file}
+    PATCH_COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/build/generated/"
+          COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/build/generated/version.hpp"
+          COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/external/libphysica"
+          COMMAND cp -r ${libphysica_dir}/ "${dir}/external/libphysica"
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
     BUILD_COMMAND ${CMAKE_COMMAND} --build ${dir} --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} --install ${dir}
