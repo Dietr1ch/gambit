@@ -796,7 +796,9 @@ set(name "libphysica")
 set(ver "0.1.4")
 set(dl "https://github.com/temken/${name}/archive/refs/tags/v${ver}.zip")
 set(md5 "none")
-set(libphysica_dir "${PROJECT_SOURCE_DIR}/build/${name}/${ver}")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(libphysica_dir "${dir}")
+set(libphysica_ver "${ver}")
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
@@ -829,7 +831,7 @@ if(NOT ditched_${name}_${ver})
     PATCH_COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/build/generated/"
           COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/build/generated/version.hpp"
           COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/external/libphysica"
-          COMMAND cp -r ${libphysica_dir}/ "${dir}/external/libphysica"
+          COMMAND ${CMAKE_COMMAND} -E copy_directory "${libphysica_dir}/" "${dir}/external/libphysica/"
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
     BUILD_COMMAND ${CMAKE_COMMAND} --build ${dir} --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} --install ${dir}
