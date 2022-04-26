@@ -477,5 +477,11 @@ namespace Gambit
     // Just in case, to make sure we don't mess with other things elsewhere.
     #undef DD_EX
 
+  void calc_obscuraTest(double& result){
+    using namespace Pipes::calc_obscuraTest;
+    // obscura_default::obscura::Standard_Halo_Model SHM;
+    result = 1.0;
+  }
+
   }
 }

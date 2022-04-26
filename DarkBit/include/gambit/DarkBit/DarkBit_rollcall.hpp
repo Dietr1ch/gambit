@@ -2165,5 +2165,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+#define CAPABILITY obscuraTest
+  START_CAPABILITY
+    #define FUNCTION calc_obscuraTest
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    #undef FUNCTION  
+#undef CAPABILITY
+
 #undef REFERENCE
 #undef MODULE
+
