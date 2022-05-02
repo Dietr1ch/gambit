@@ -1035,6 +1035,7 @@ START_MODULE
     ALLOW_MODELS(AnnihilatingDM_mixture, DecayingDM_mixture)
     ALLOW_MODELS(NREO_scalarDM, NREO_MajoranaDM, NREO_DiracDM)
     ALLOW_MODELS(MDM, DMEFT)
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)    
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1157,6 +1158,16 @@ START_MODULE
       START_FUNCTION(DM_nucleon_couplings)
       DEPENDENCY(VectorSingletDM_Z2_spectrum, Spectrum)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, VectorSingletDM_Z2)
+     #undef FUNCTION
+
+     #define FUNCTION DD_couplings_SubGeVDM_scalar
+      START_FUNCTION(DM_nucleon_couplings)
+      ALLOW_MODEL(SubGeVDM_scalar)
+     #undef FUNCTION
+
+     #define FUNCTION DD_couplings_SubGeVDM_fermion
+      START_FUNCTION(DM_nucleon_couplings)
+      ALLOW_MODEL(SubGeVDM_fermion)
      #undef FUNCTION
 
   #undef CAPABILITY
@@ -1884,6 +1895,15 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMEFT)
     #undef FUNCTION
+    #define FUNCTION DarkMatter_ID_SubGeVDM_scalar    
+    START_FUNCTION(std::string)
+    ALLOW_MODELS(SubGeVDM_scalar)    
+    #undef FUNCTION
+    #define FUNCTION DarkMatter_ID_SubGeVDM_fermion    
+    START_FUNCTION(std::string)
+    ALLOW_MODELS(SubGeVDM_fermion)    
+    #undef FUNCTION
+    
   #undef CAPABILITY
 
   #define CAPABILITY DarkMatterConj_ID
@@ -1924,6 +1944,15 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMEFT)
     #undef FUNCTION
+    #define FUNCTION DarkMatterConj_ID_SubGeVDM_scalar    
+    START_FUNCTION(std::string)
+    ALLOW_MODELS(SubGeVDM_scalar)    
+    #undef FUNCTION
+    #define FUNCTION DarkMatterConj_ID_SubGeVDM_fermion    
+    START_FUNCTION(std::string)
+    ALLOW_MODELS(SubGeVDM_fermion)    
+    #undef FUNCTION
+
   #undef CAPABILITY
 
   // Axion likelihoods and functions ===================================

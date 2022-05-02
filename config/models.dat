@@ -630,6 +630,13 @@ WIMP_sigmav: |
 DMEFT: |
    Effective field theory model of Dirac DM. The parameters of the model are the DM Mass, mchi, the new physics scale, Lambda, the MSbar running top mass, mtrunIN, and the dimensions I=5,6,7 Wilson coefficients, CIJ
 
+SubGeVDM_scalar: |
+   Model for Sub-GeV DM with a complex scalar and a dark photon mediator. The model parameters are the DM mass, mDM, the dark photon mass, mAp, the DM coupling, gDM, the kinetic mixing parameter, kappa, and the DM asymmetry, etaDM
+
+SubGeVDM_fermion: |
+   Model for Sub-GeV DM with a Dirac fermion and a dark photon mediator. The model parameters are the DM mass, mDM, the dark photon mass, mAp, the DM coupling, gDM, the kinetic mixing parameter, kappa, and the DM asymmetry, etaDM
+
+
 ############################
 # Cosmology related models #
 ############################
