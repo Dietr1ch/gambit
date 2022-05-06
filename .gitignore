@@ -46,7 +46,6 @@ results/*
 build/*
 *_standalone
 
-
 # Generated cmake files
 cmake/linkedout.cmake
 cmake/include
