@@ -54,9 +54,29 @@ diff -ruN darkcast-master/__init__.py darkcast_updated/__init__.py
 -from .production import BreitWigner, Production
 -from .efficiency import Efficiency
 -from .limit import Limit, Limits
-Binary files darkcast-master/__pycache__/darkcast_be.cpython-37.pyc and darkcast_updated/__pycache__/darkcast_be.cpython-37.pyc differ
-Binary files darkcast-master/__pycache__/darkcast_be.cpython-38.pyc and darkcast_updated/__pycache__/darkcast_be.cpython-38.pyc differ
-Binary files darkcast-master/__pycache__/darkcast_be_model.cpython-38.pyc and darkcast_updated/__pycache__/darkcast_be_model.cpython-38.pyc differ
+diff -ruN darkcast-master/dark_photon.py darkcast_updated/dark_photon.py
+--- darkcast-master/dark_photon.py	1970-01-01 10:00:00.000000000 +1000
++++ darkcast_updated/dark_photon.py	2021-04-03 07:34:51.000000000 +1100
+@@ -0,0 +1,19 @@
++# DARKCAST is licensed under the GNU GPL version 2 or later.
++# Copyright (C) 2021 Philip Ilten, Yotam Soreq, Mike Williams, and Wei Xue.
++
++# Define the fermion couplings.
++from darkcast.pars import ge
++xfs = {
++    "e":      -1*ge,
++    "mu":     -1*ge,
++    "tau":    -1*ge,
++    "nue":     0*ge,
++    "numu":    0*ge,
++    "nutau":   0*ge,
++    "d":      -1*ge/3,
++    "u":       2*ge/3,
++    "s":      -1*ge/3,
++    "c":       2*ge/3,
++    "b":      -1*ge/3,
++    "t":       2*ge/3
++    }
 diff -ruN darkcast-master/darkcast/__init__.py darkcast_updated/darkcast/__init__.py
 --- darkcast-master/darkcast/__init__.py	1970-01-01 10:00:00.000000000 +1000
 +++ darkcast_updated/darkcast/__init__.py	2021-04-03 07:34:51.000000000 +1100
@@ -113,13 +133,6 @@ diff -ruN darkcast-master/darkcast/__init__.py darkcast_updated/darkcast/__init_
 +from .production import BreitWigner, Production
 +from .efficiency import Efficiency
 +from .limit import Limit, Limits
-Binary files darkcast-master/darkcast/__pycache__/__init__.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/__init__.cpython-38.pyc differ
-Binary files darkcast-master/darkcast/__pycache__/efficiency.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/efficiency.cpython-38.pyc differ
-Binary files darkcast-master/darkcast/__pycache__/limit.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/limit.cpython-38.pyc differ
-Binary files darkcast-master/darkcast/__pycache__/model.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/model.cpython-38.pyc differ
-Binary files darkcast-master/darkcast/__pycache__/pars.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/pars.cpython-38.pyc differ
-Binary files darkcast-master/darkcast/__pycache__/production.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/production.cpython-38.pyc differ
-Binary files darkcast-master/darkcast/__pycache__/utils.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/utils.cpython-38.pyc differ
 diff -ruN darkcast-master/darkcast/efficiency.py darkcast_updated/darkcast/efficiency.py
 --- darkcast-master/darkcast/efficiency.py	1970-01-01 10:00:00.000000000 +1000
 +++ darkcast_updated/darkcast/efficiency.py	2021-04-03 07:34:51.000000000 +1100
@@ -1708,8 +1721,8 @@ diff -ruN darkcast-master/darkcast/utils.py darkcast_updated/darkcast/utils.py
 +    except: print("Could not draw the Darkcast logo.")
 diff -ruN darkcast-master/darkcast_be.py darkcast_updated/darkcast_be.py
 --- darkcast-master/darkcast_be.py	1970-01-01 10:00:00.000000000 +1000
-+++ darkcast_updated/darkcast_be.py	2022-04-08 15:57:27.114441700 +1000
-@@ -0,0 +1,99 @@
++++ darkcast_updated/darkcast_be.py	2022-05-05 13:08:32.113712100 +1000
+@@ -0,0 +1,79 @@
 +# This file provides the interface function to backend DarkCast with GAMBIT.
 +# 
 +# 
@@ -1729,37 +1742,17 @@ diff -ruN darkcast-master/darkcast_be.py darkcast_updated/darkcast_be.py
 +
 +
 +
-+# def main():
-+#     model_params = {
-+#         "e":      -1*ge,
-+#         "mu":     -1*ge,
-+#         "tau":    -1*ge,
-+#         "nue":     0*ge,
-+#         "numu":    0*ge,
-+#         "nutau":   0*ge,
-+#         "d":      -1*ge/3,
-+#         "u":       2*ge/3,
-+#         "s":      -1*ge/3,
-+#         "c":       2*ge/3,
-+#         "b":      -1*ge/3,
-+#         "t":       2*ge/3
-+#     }
-+#     states = "hadrons"
-+#     m = 1.25  #GeV
-+#     print(be_decay_width(model_params, states, m))
-+#     print(be_bfrac(model_params, states, m))
++def dark_photon_decay_width(g: float, states: list, m: float):
++    myModel = darkcast.Model("dark_photon")
++    return myModel.width(states, m, g)
++
++def dark_photon_branching_fraction(states: list, m: float):
++    myModel = darkcast.Model("dark_photon")
++    return myModel.bfrac(states, m)
 +
 +def be_decay_width(my_params: dict, states: list, m: float) -> float:
 +    myModel = create_model(my_params, m)
 +    return myModel.width(states, m)
-+    # result = []
-+    # if isinstance(m, float):
-+    #     result.append(myModel.width(states, m))
-+    #     return result
-+    # if isinstance(m, list):
-+    #     for mval in m:
-+    #         result.append(myModel.width(states, mval))
-+    #     return result
 +
 +def be_bfrac(my_params: dict, states: list, m: float) -> float:
 +    myModel = create_model(my_params, m)
@@ -1812,7 +1805,7 @@ diff -ruN darkcast-master/darkcast_be.py darkcast_updated/darkcast_be.py
 \ No newline at end of file
 diff -ruN darkcast-master/darkcast_be_model.py darkcast_updated/darkcast_be_model.py
 --- darkcast-master/darkcast_be_model.py	1970-01-01 10:00:00.000000000 +1000
-+++ darkcast_updated/darkcast_be_model.py	2022-04-09 00:45:24.407739700 +1000
++++ darkcast_updated/darkcast_be_model.py	2022-04-21 02:39:55.340198000 +1000
 @@ -0,0 +1 @@
 +xfs = {'e': -0.0005807044028651649, 'mu': -0.0005807044028651649, 'tau': -0.0005807044028651649, 'nue': 0, 'numu': 0, 'nutau': 0, 'd': 0.3333333333333333, 'u': 0.3333333333333333, 's': 0.3333333333333333, 'c': 0.3333333333333333, 'b': 0.3333333333333333, 't': 0.3333333333333333}
 \ No newline at end of file
@@ -2462,7 +2455,6 @@ diff -ruN darkcast-master/model.py darkcast_updated/model.py
 -                try: self[model[0:-3]] = Model(
 -                        model[0:-3], states, iwidth, path)
 -                except: pass
-Binary files darkcast-master/my_boson.pdf and darkcast_updated/my_boson.pdf differ
 diff -ruN darkcast-master/pars.py darkcast_updated/pars.py
 --- darkcast-master/pars.py	2021-04-03 07:34:51.000000000 +1100
 +++ darkcast_updated/pars.py	1970-01-01 10:00:00.000000000 +1000
@@ -2822,51 +2814,115 @@ diff -ruN darkcast-master/production.py darkcast_updated/production.py
 -        return (g0/g1)**2*ratio
 diff -ruN darkcast-master/test_darkcast_be.py darkcast_updated/test_darkcast_be.py
 --- darkcast-master/test_darkcast_be.py	1970-01-01 10:00:00.000000000 +1000
-+++ darkcast_updated/test_darkcast_be.py	2022-04-08 15:46:34.479220400 +1000
-@@ -0,0 +1,43 @@
-+from darkcast_be import be_decay_width, be_bfrac
++++ darkcast_updated/test_darkcast_be.py	2022-05-05 13:07:53.413247600 +1000
+@@ -0,0 +1,106 @@
++from darkcast_be import be_decay_width, be_bfrac, dark_photon_decay_width, dark_photon_branching_fraction
 +from darkcast.pars import ge
 +from math import pi
 +import matplotlib.pyplot as plt
++import collections
++import darkcast
 +import time
 +
-+#B_boson params
-+my_params = {
-+    "e":      -ge**2/(4*pi)**2,
-+    "mu":     -ge**2/(4*pi)**2,
-+    "tau":    -ge**2/(4*pi)**2,
-+    "nue":     0,
-+    "numu":    0,
-+    "nutau":   0,
-+    "d":       1./3,
-+    "u":       1./3,
-+    "s":       1./3,
-+    "c":       1./3,
-+    "b":       1./3,
-+    "t":       1./3
-+}
 +
 +masses = [0.01*m for m in range(1,200)] #GeV
-+states = 'hadrons'
++states = collections.OrderedDict([
++        # Entries take the form (key, value).
++        
++        # All available fundamental fermion pairs.
++        ("$e_e$",                 "e_e"),
++        ("$mu_mu$",               "mu_mu"),
++        #("$tau_tau$",             "tau_tau"),
++        #("$nue_nue$",             "nue_nue"),
++        #("$numu_numu$",           "numu_numu"),
++        #("$nutau_nutau$",         "nutau_nutau"),
++        #("$d_d$",                 "d_d"), # Included in exclusive hadrons.
++        #("$u_u$",                 "u_u"), # Included in exclusive hadrons.
++        #("$s_s$",                 "s_s"), # Included in exclusive hadrons.
++        #("$c_c$",                 "c_c"),
++        #("$b_b$",                 "b_b"),
++        #("$t_t$",                 "t_t"),
 +
-+for mass in masses:
-+    start_time = time.perf_counter()
-+    print(f'Decay width for {mass} GeV: \t\t {be_decay_width(my_params, states, mass)}')
-+    end_time1 = time.perf_counter()
-+    print(f'Branching fraction for {mass} GeV: \t {be_bfrac(my_params, states, mass)}')
-+    end_time2 = time.perf_counter()
-+    print(f'It takes {end_time1 - start_time}s to execute be_decay_width')
-+    print(f'It takes {end_time2 - end_time1}s to execute be_bfrac \n')
++        # Combine Neutrinos into a single channel.
++        ("$nu_nu$",               ["nue_nue", "numu_numu", "nutau_nutau"]),
 +
-+bfracs = [be_bfrac(my_params, states, mass) for mass in masses]
++        # All available exclusive hadronic states.
++        #("$pi+_pi-$",             "pi+_pi-"),
++        #("$pi+_pi-_pi+_pi-$",     "pi+_pi-_pi+_pi-"),
++        #("$pi+_pi-_pi0_pi0$",     "pi+_pi-_pi0_pi0"),
++        #("$pi+_pi-_pi0$",         "pi+_pi-_pi0"),
++        #("$pi0_gamma$",           "pi0_gamma"),
++        #("$K_K$",                 "K_K"),
++        #("$K_K_pi$",              "K_K_pi"),
++        #("other hadrons",         "other"),
 +
-+fig, ax = plt.subplots()
-+ax.plot(masses, bfracs)
-+ax.set_xlabel("Masses [GeV]")
-+ax.set_ylabel("Branching fraction")
++        # Alias for all exclusive hadronic final states above.
++        ("hadrons",                "hadrons"),
 +
-+fig.savefig('my_boson.pdf')
++        # Alias for all visible final states, e.g. everything above
++        # except 'd_d', 'u_u', and 's_s'.
++        #("visible",                "visible"),
 +
++        # All invisible final states.
++        #("invisible",              "invisible"),
++        
++        # All possible final states to consider when calculating the
++        # total width. Typically 'visible' and 'invisible' but this
++        # can be specified by the user when creating the model with
++        # the 'states' variable, e.g. darkcast.Model('dark_photon',
++        # states = ['e_e', 'mu_mu']).
++        #("total",                  "total"),
++        ])
++g1 = [ge, 0.1*ge, 10*ge]
++
++for g in g1:
++    i = 0
++
++    color = ["red", "blue", "black", "green", "yellow"]
++
++    decay_width_execute_time = []
++    bfrac_execute_time = []
++
++    fig, ax = plt.subplots()
++    ax.set_xlabel("Masses [GeV]")
++    ax.set_ylabel("Decay width [GeV]")
++    ax.set_title("Decay width of dark photon with $\kappa e = $ {:.2f}".format(g))
++    ax.ticklabel_format(axis="x", style="sci", scilimits=(0,0))
++    ax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
++
++    for label, state in states.items():
++        width = [dark_photon_decay_width(g, state, mass) for mass in masses]
++        ax.plot(masses, width,  color = color[i], label = darkcast.utils.latex(label))
++        i += 1
++
++    leg = ax.legend()
++
++
++    fig.savefig("dark_photon_width_{:.2f}.pdf".format(g))
++
++fig1, ax1 = plt.subplots()
++ax1.set_xlabel("Masses [GeV]")
++ax1.set_ylabel("Decay width [GeV]")
++ax1.set_title("Decay width of dark photon with $\kappa e = $ {:.2f}".format(g))
++ax1.ticklabel_format(axis="x", style="sci", scilimits=(0,0))
++ax1.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
++for label, state in states.items():
++    bfrac = [dark_photon_branching_fraction(state, mass) for mass in masses]
++    ax1.plot(masses, bfrac,  color = color[i], label = darkcast.utils.latex(label))
++    i -= 1
++
++leg = ax1.legend()
++fig1.savefig("dark_photon_branching_fraction.pdf".format(g))
++# times = range(1, len(masses)+1)
++
++# fig1,ax1 = plt.subplots()
++# ax1.plot(times, decay_width_execute_time, color = "blue", label = "be_decay_width")
++# ax1.plot(times, bfrac_execute_time, color = "green", label = "be_bfracs")
++# ax1.set_ylabel("Run time [s]")
++# ax1.set_xlabel("Execute number")
++# leg = ax1.legend()
++# fig1.savefig("runtime.jpg")
+\ No newline at end of file
 diff -ruN darkcast-master/utils.py darkcast_updated/utils.py
 --- darkcast-master/utils.py	2021-04-03 07:34:51.000000000 +1100
 +++ darkcast_updated/utils.py	1970-01-01 10:00:00.000000000 +1000

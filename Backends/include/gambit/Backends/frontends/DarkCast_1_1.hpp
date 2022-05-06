@@ -26,9 +26,11 @@
 
 LOAD_LIBRARY
 
-/// Need dictionary type input, array of string input
-BE_FUNCTION(dark_photon_decay_width, double, (std::map<string, double>, std::list<string>, double), "be_decay_width", "dark_photon_decay_width_capability")
-BE_FUNCTION(dark_photon_branching_fraction, double, (std::map<string, double>, std::list<string>, double), "be_bfrac", "dark_photon_branching_fraction_capability")
+//Input: coupling parameter kappa, (list of) decay states, mass [GeV] => Output: decay width [GeV]
+BE_FUNCTION(dark_photon_decay_width, double, (double, std::list<string>, double), "dark_photon_decay_width", "dark_photon_decay_width_capability")
+
+//Input: (list of) decay states, mass [GeV] => Output: branching fraction [1]
+BE_FUNCTION(dark_photon_branching_fraction, double, (std::list<string>, double), "dark_photon_branching_fraction", "dark_photon_branching_fraction_capability")
 
 
 #include "gambit/Backends/backend_undefs.hpp"
