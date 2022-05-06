@@ -27,10 +27,10 @@
 LOAD_LIBRARY
 
 //Input: coupling parameter kappa, (list of) decay states, mass [GeV] => Output: decay width [GeV]
-BE_FUNCTION(dark_photon_decay_width, double, (double, std::list<string>, double), "dark_photon_decay_width", "dark_photon_decay_width_capability")
+BE_FUNCTION(dark_photon_decay_width, double, (double, std::vector<std::string>, double), "dark_photon_decay_width", "dark_photon_decay_width_capability")
 
 //Input: (list of) decay states, mass [GeV] => Output: branching fraction [1]
-BE_FUNCTION(dark_photon_branching_fraction, double, (std::list<string>, double), "dark_photon_branching_fraction", "dark_photon_branching_fraction_capability")
+BE_FUNCTION(dark_photon_branching_fraction, double, (std::vector<std::string>, double), "dark_photon_branching_fraction", "dark_photon_branching_fraction_capability")
 
 
 #include "gambit/Backends/backend_undefs.hpp"
