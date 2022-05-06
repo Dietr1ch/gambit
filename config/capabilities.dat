@@ -3957,6 +3957,12 @@ supbar_r_decay_rates: |
 DMEFT_parameters: |
    Parameters for the DMEFT model (see ./gambit DMEFT)
 
+SubGeVDM_scalar_parameters: |
+   Parameters for the SubGeVDM model (see ./gambit SubGeVDM_scalar)
+
+SubGeVDM_fermion_scalar_parameters: |
+   Parameters for the SubGeVDM model (see ./gambit SubGeVDM_fermion)
+
 Halo_Einasto_parameters: |
    Parameters of the Einasto halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha).
    See also ./gambit Halo_Einasto
