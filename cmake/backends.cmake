@@ -85,16 +85,13 @@
 #          (wh260@cam.ac.uk)
 #  \date 2020 Mar
 #
-<<<<<<< HEAD
 #  \author Timon Emken
 #          (timon.emken@fysik.su.se)
 #  \date 2022 Mar
 #
-=======
 #  \author Quan Huynh
 #          (qhuy0003@student.monash.edu)
 #  \date 2022 Apr
->>>>>>> Sub-GeV-DM
 #************************************************
 
 
