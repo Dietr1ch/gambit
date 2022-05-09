@@ -1,0 +1,97 @@
+##########################################################################
+## GAMBIT configuration for a Diver scan of the scalar Sub-GeV DM model
+##
+## Includes direct detection likelihoods.
+##########################################################################
+
+
+Parameters:
+
+  SubGeVDM_scalar:
+    mDM: 1
+    gDM: 1
+    kappa: 1e-2
+    mAp: 10
+    etaDM: 0
+
+  Halo_gNFW_rho0:
+    rho0: 0.4
+    v0: 235.0
+    vesc: 550.0
+    vrot: 235.0
+    rs: 20.0
+    r_sun: 8.5
+    alpha: 1
+    beta: 3
+    gamma: 1
+
+
+Priors:
+
+  # All the priors are simple for this scan, so they are specified directly in the Parameters section.
+
+
+Printer:
+
+  printer: cout
+  # printer: hdf5
+
+  #options:
+  #  output_file: "ScalarSingletDM_Z2.hdf5"
+  #  group: "/ScalarSingletDM_Z2"
+
+Scanner:
+
+  use_scanner: square_grid
+
+  scanners:
+
+    square_grid:
+      plugin: square_grid
+      like: LogLike
+      grid_pts: 1
+
+ObsLikes:
+
+    - capability: CRESST_III_LogLikelihood
+      purpose:    LogLike
+
+    - purpose:    Observable
+      capability: mwimp
+
+    - purpose:    Observable
+      capability: sigma_SI_p
+
+Rules:
+
+  - capability: RD_fraction
+    function: RD_fraction_one
+
+  # Use DarkBit's own calculations of the direct detection couplings
+  - capability: DD_couplings
+    function: DD_couplings_SubGeVDM_scalar
+    
+  # Select WIMP-nucleon couplings for DDCalc 2.1.0 WIMP object
+  - capability: DDCalc_Couplings
+    function: DDCalc_Couplings_WIMP_nucleon
+
+Logger:
+
+  redirection:
+    [Default] : "default.log"
+    [DecayBit] : "DecayBit.log"
+    [DarkBit] : "DarkBit.log"
+    [PrecisionBit] : "PrecisionBit.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -5e5
+    model_invalid_for_lnlike_below_alt: -1e5
+
+  default_output_path: "runs/SubGeVDM_scalar/"

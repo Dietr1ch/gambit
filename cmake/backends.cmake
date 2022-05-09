@@ -85,10 +85,16 @@
 #          (wh260@cam.ac.uk)
 #  \date 2020 Mar
 #
+<<<<<<< HEAD
 #  \author Timon Emken
 #          (timon.emken@fysik.su.se)
 #  \date 2022 Mar
 #
+=======
+#  \author Quan Huynh
+#          (qhuy0003@student.monash.edu)
+#  \date 2022 Apr
+>>>>>>> Sub-GeV-DM
 #************************************************
 
 
@@ -97,15 +103,14 @@ set(name "castxml")
 set(dir "${CMAKE_SOURCE_DIR}/Backends/scripts/BOSS/castxml")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
-    set(castxml_hash 5faef93541cb5f30414286a844e47b5732777f26246c6e0933170668e9cf2ff4f3fa4292e861e73e91ed50971caa9d6e7481eead9c9cefda6d54a9042634bf5c)
-    set(castxml_dl "https://data.kitware.com/api/v1/file/hashsum/sha512/${castxml_hash}/download")
+    set(castxml_dl "https://data.kitware.com/api/v1/file/606cff072fa25629b9688ac6/download")
     set(castxml_dl_filename "castxml-macos-arm64.tar.gz")
   else()
-    set(castxml_dl "https://data.kitware.com/api/v1/file/57b5de9f8d777f10f2696378/download")
+    set(castxml_dl "https://data.kitware.com/api/v1/file/622961284acac99f42134a6a/download")
     set(castxml_dl_filename "castxml-macosx.tar.gz")
   endif()
 else()
-  set(castxml_dl "https://data.kitware.com/api/v1/file/57b5dea08d777f10f2696379/download")
+  set(castxml_dl "https://data.kitware.com/api/v1/file/622961384acac99f42134a8a/download")
   set(castxml_dl_filename "castxml-linux.tar.gz")
 endif()
 ExternalProject_Add(${name}
@@ -187,6 +192,28 @@ if(NOT ditched_${name}_${ver})
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
+# DarkCast
+set(name "darkcast")
+set(ver "1.1")
+set(lib "darkcastlib")
+set(dl "https://gitlab.com/philten/darkcast/-/archive/v1.1/darkcast-v1.1.tar.gz")
+set(md5 "b9a4cd71e6959230480478ed5262835d")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/${name}_${ver}.diff")
+check_ditch_status(${name} ${ver} ${dir})
+if(NOT ditched_${name}_${ver})
+  ExternalProject_Add(${name}_${ver}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+    SOURCE_DIR ${dir}
+    BUILD_IN_SOURCE 1
+    PATCH_COMMAND patch -p1 < ${patch}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+  )
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+  set_as_default_version("backend" ${name} ${ver})
+endif()
 
 # DarkSUSY
 set(name "darksusy")
@@ -1577,7 +1604,8 @@ set(dl "https://github.com/DirectDM/directdm-py/archive/v2.2.0.tar.gz")
 set(md5 "c22d26ae7bec44bbfe1eb5f4306a23e0")
 set(lib "libdirectdm")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-check_ditch_status(${name} ${ver} ${dir})
+set(ditch_if_absent "Python")
+check_ditch_status(${name} ${ver} ${dir} ${ditch_if_absent})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}

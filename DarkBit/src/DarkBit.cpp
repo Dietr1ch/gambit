@@ -94,6 +94,18 @@ namespace Gambit
         props.mass = Dep::MDM_spectrum->get(Par::Pole_Mass, props.name);
       if(ModelInUse("DMEFT"))
         props.mass = Dep::DMEFT_spectrum->get(Par::Pole_Mass, props.name);
+      if(ModelInUse("SubGeVDM_scalar"))
+      {
+        props.mass = *Param["mDM"];
+        props.spinx2 = 0;
+        props.sc = false;
+      }
+      if(ModelInUse("SubGeVDM_fermion"))
+      {
+        props.mass = *Param["mDM"];
+        props.spinx2 = 2;
+        props.sc = false;
+      }
     }
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
