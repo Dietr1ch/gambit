@@ -91,6 +91,10 @@
 ///          (gonzalo@physik.rwth-aachen.de)
 ///  \date 2021 Sep
 ///
+///  \author Timon Emken
+///          (timon.emken@fysik.su.se )
+///  \date 2022 May
+///
 ///  *********************************************
 
 #pragma once
