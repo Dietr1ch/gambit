@@ -54,6 +54,9 @@ diff -ruN darkcast-master/__init__.py darkcast_updated/__init__.py
 -from .production import BreitWigner, Production
 -from .efficiency import Efficiency
 -from .limit import Limit, Limits
+Binary files darkcast-master/__pycache__/dark_photon.cpython-38.pyc and darkcast_updated/__pycache__/dark_photon.cpython-38.pyc differ
+Binary files darkcast-master/__pycache__/darkcast_be.cpython-37.pyc and darkcast_updated/__pycache__/darkcast_be.cpython-37.pyc differ
+Binary files darkcast-master/__pycache__/darkcast_be.cpython-38.pyc and darkcast_updated/__pycache__/darkcast_be.cpython-38.pyc differ
 diff -ruN darkcast-master/dark_photon.py darkcast_updated/dark_photon.py
 --- darkcast-master/dark_photon.py	1970-01-01 10:00:00.000000000 +1000
 +++ darkcast_updated/dark_photon.py	2021-04-03 07:34:51.000000000 +1100
@@ -133,6 +136,20 @@ diff -ruN darkcast-master/darkcast/__init__.py darkcast_updated/darkcast/__init_
 +from .production import BreitWigner, Production
 +from .efficiency import Efficiency
 +from .limit import Limit, Limits
+Binary files darkcast-master/darkcast/__pycache__/__init__.cpython-37.pyc and darkcast_updated/darkcast/__pycache__/__init__.cpython-37.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/__init__.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/__init__.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/efficiency.cpython-37.pyc and darkcast_updated/darkcast/__pycache__/efficiency.cpython-37.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/efficiency.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/efficiency.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/limit.cpython-37.pyc and darkcast_updated/darkcast/__pycache__/limit.cpython-37.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/limit.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/limit.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/model.cpython-37.pyc and darkcast_updated/darkcast/__pycache__/model.cpython-37.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/model.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/model.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/pars.cpython-37.pyc and darkcast_updated/darkcast/__pycache__/pars.cpython-37.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/pars.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/pars.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/production.cpython-37.pyc and darkcast_updated/darkcast/__pycache__/production.cpython-37.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/production.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/production.cpython-38.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/utils.cpython-37.pyc and darkcast_updated/darkcast/__pycache__/utils.cpython-37.pyc differ
+Binary files darkcast-master/darkcast/__pycache__/utils.cpython-38.pyc and darkcast_updated/darkcast/__pycache__/utils.cpython-38.pyc differ
 diff -ruN darkcast-master/darkcast/efficiency.py darkcast_updated/darkcast/efficiency.py
 --- darkcast-master/darkcast/efficiency.py	1970-01-01 10:00:00.000000000 +1000
 +++ darkcast_updated/darkcast/efficiency.py	2021-04-03 07:34:51.000000000 +1100
@@ -27534,7 +27551,7 @@ diff -ruN darkcast-master/darkcast/vmd/rf.pi0_gamma.omega.dat darkcast_updated/d
 + 2.0000e+00  8.0476e-05
 diff -ruN darkcast-master/darkcast_be.py darkcast_updated/darkcast_be.py
 --- darkcast-master/darkcast_be.py	1970-01-01 10:00:00.000000000 +1000
-+++ darkcast_updated/darkcast_be.py	2022-05-06 13:26:21.106801900 +1000
++++ darkcast_updated/darkcast_be.py	2022-05-20 12:24:57.949629400 +1000
 @@ -0,0 +1,80 @@
 +# This file provides the interface function to backend DarkCast with GAMBIT.
 +# 
@@ -27556,7 +27573,7 @@ diff -ruN darkcast-master/darkcast_be.py darkcast_updated/darkcast_be.py
 +
 +
 +def dark_photon_decay_width(k: float, states: list, m: float):
-+    g = k * e #rescale kappa by e to get the EM coupling 
++    g = k#rescale kappa by e to get the EM coupling 
 +    myModel = darkcast.Model("dark_photon")
 +    return myModel.width(states, m, g)
 +
@@ -28628,8 +28645,8 @@ diff -ruN darkcast-master/production.py darkcast_updated/production.py
 -        return (g0/g1)**2*ratio
 diff -ruN darkcast-master/test_darkcast_be.py darkcast_updated/test_darkcast_be.py
 --- darkcast-master/test_darkcast_be.py	1970-01-01 10:00:00.000000000 +1000
-+++ darkcast_updated/test_darkcast_be.py	2022-05-05 13:07:53.413247600 +1000
-@@ -0,0 +1,106 @@
++++ darkcast_updated/test_darkcast_be.py	2022-05-20 12:29:46.966681500 +1000
+@@ -0,0 +1,116 @@
 +from darkcast_be import be_decay_width, be_bfrac, dark_photon_decay_width, dark_photon_branching_fraction
 +from darkcast.pars import ge
 +from math import pi
@@ -28695,7 +28712,7 @@ diff -ruN darkcast-master/test_darkcast_be.py darkcast_updated/test_darkcast_be.
 +    color = ["red", "blue", "black", "green", "yellow"]
 +
 +    decay_width_execute_time = []
-+    bfrac_execute_time = []
++    bfrac_execute_time = 0
 +
 +    fig, ax = plt.subplots()
 +    ax.set_xlabel("Masses [GeV]")
@@ -28705,7 +28722,10 @@ diff -ruN darkcast-master/test_darkcast_be.py darkcast_updated/test_darkcast_be.
 +    ax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
 +
 +    for label, state in states.items():
++        start_time = time.time()
 +        width = [dark_photon_decay_width(g, state, mass) for mass in masses]
++        end_time = time.time()
++        decay_width_execute_time.append(end_time - start_time)
 +        ax.plot(masses, width,  color = color[i], label = darkcast.utils.latex(label))
 +        i += 1
 +
@@ -28716,12 +28736,15 @@ diff -ruN darkcast-master/test_darkcast_be.py darkcast_updated/test_darkcast_be.
 +
 +fig1, ax1 = plt.subplots()
 +ax1.set_xlabel("Masses [GeV]")
-+ax1.set_ylabel("Decay width [GeV]")
-+ax1.set_title("Decay width of dark photon with $\kappa e = $ {:.2f}".format(g))
++ax1.set_ylabel("Branching fraction")
++ax1.set_title("Branching fraction of dark photon")
 +ax1.ticklabel_format(axis="x", style="sci", scilimits=(0,0))
 +ax1.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
 +for label, state in states.items():
++    start_time = time.time()
 +    bfrac = [dark_photon_branching_fraction(state, mass) for mass in masses]
++    end_time = time.time()
++    bfrac_execute_time = end_time - start_time
 +    ax1.plot(masses, bfrac,  color = color[i], label = darkcast.utils.latex(label))
 +    i -= 1
 +
@@ -28736,6 +28759,10 @@ diff -ruN darkcast-master/test_darkcast_be.py darkcast_updated/test_darkcast_be.
 +# ax1.set_xlabel("Execute number")
 +# leg = ax1.legend()
 +# fig1.savefig("runtime.jpg")
++
++print(f'It takes an average of {bfrac_execute_time/len(bfrac)}s to execute bfrac function')
++for myTime in decay_width_execute_time:
++   print(f'It takes an average of {myTime/len(bfrac)}s to execute decay width function') 
 \ No newline at end of file
 diff -ruN darkcast-master/utils.py darkcast_updated/utils.py
 --- darkcast-master/utils.py	2021-04-03 07:34:51.000000000 +1100
