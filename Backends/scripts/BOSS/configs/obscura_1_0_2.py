@@ -42,9 +42,7 @@ input_files = [
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection_Crystal.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection_ER.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/DM_Halo_Models.hpp',
-    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/DM_Distribution.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/DM_Particle_Standard.hpp',
-    # '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/DM_Particle.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Experiments.hpp',
 ]
 include_paths = [
@@ -61,9 +59,7 @@ load_classes = [
     'obscura::DM_Detector_Crystal',
     'obscura::DM_Detector_Ionization_ER',
     'obscura::Standard_Halo_Model',
-    'obscura::DM_Distribution',
-    'obscura::DM_Particle_SI',
-    # 'obscura::DM_Particle',
+    'obscura::DM_Particle_SI'
 ]
 
 load_functions = [
@@ -81,7 +77,7 @@ ditch = []
 auto_detect_stdlib_paths = False
 
 
-load_parent_classes    = False
+load_parent_classes    = True
 wrap_inherited_members = False
 
 
