@@ -13,15 +13,14 @@
 ///                                                  
 ///  ********************************************* 
 ///
-/// TODO:
-/// - Implement table with hadronic cross section ratio
+/// - Tell DarkSUSY about resonances in cross section ratio 
 /// - Implement DecayBit routine for dark photon decays
 /// - Tons of bug testing
 
 #include "boost/make_shared.hpp"
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/virtual_higgs.hpp"
+#include "gambit/Elements/virtual_photon.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ascii_table_reader.hpp"
 #include "boost/make_shared.hpp"
@@ -72,7 +71,7 @@ namespace Gambit
           if ( channel == "ee" ) return sv_ff(gDM, gSM, mass, v, me, -1., 1);
           if ( channel == "mumu" ) return sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
           if ( channel == "tautau" ) return sv_ff(gDM, gSM, mass, v, mtau, -1., 1);
-          if ( channel == "pipi" ) return Rratio(sqrts) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
+          if ( channel == "pipi" ) return hadronic_cross_section_ratio(sqrts) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
           if ( channel == "ApAp" ) return sv_ApAp(gDM, mass, v);
           
           return 0;
@@ -86,8 +85,7 @@ namespace Gambit
           double vf = sqrt(1-4*pow(mf,2)/s);
           double y = s/pow(mass, 2);
           double GeV2tocm3s1 = gev2cm2*s2cm;
-          return colour*pow(gDM,2)*pow(gSM,2)*pow(v,2)*vf*(2*pow(mass,2)+pow(mf,2))/3/M_PI*DAp2(s)*GeV2tocm3s1;
-          
+          return colour*pow(gDM*gSM*charge,2)*pow(v,2)*vf*(2*pow(mass,2)+pow(mf,2))/3/M_PI*DAp2(s)*GeV2tocm3s1;
       }
 
         /// Annihilation into ApAp
