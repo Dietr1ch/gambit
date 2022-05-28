@@ -26,11 +26,17 @@
 
 LOAD_LIBRARY
 
-//Input: coupling parameter kappa, (list of) decay states, mass [GeV] => Output: decay width [GeV]
-BE_FUNCTION(dark_photon_decay_width, double, (double, std::vector<std::string>, double), "dark_photon_decay_width", "dark_photon_decay_width_capability")
+#ifdef HAVE_PYBIND11
+  // //** Function handle for version 1 and 3 of the source code file
+  
+  BE_CONV_FUNCTION(dark_photon_decay_width, double, (double, std::vector<std::string>, double), "dark_photon_decay_width");
+  BE_CONV_FUNCTION(dark_photon_bfrac, double, (double, std::vector<std::string>), "dark_photon_branching_fraction");
 
-//Input: (list of) decay states, mass [GeV] => Output: branching fraction [1]
-BE_FUNCTION(dark_photon_branching_fraction, double, (std::vector<std::string>, double), "dark_photon_branching_fraction", "dark_photon_branching_fraction_capability")
+  // //** Function handle for version 2 of the source code file
 
+  // BE_CONV_FUNCTION(get_dark_photon_instance, pybind11::object, (), "get_dark_photon_instance");
+  // BE_CONV_FUNCTION(dark_photon_decay_width, double, (pybind11::object&, double, std::vector<std::string>, double), "dark_photon_decay_width");
+  // BE_CONV_FUNCTION(dark_photon_bfrac, double, (pybind11::object, double, std::vector<std::string>), "dark_photon_branching_fraction");
+#endif
 
 #include "gambit/Backends/backend_undefs.hpp"
