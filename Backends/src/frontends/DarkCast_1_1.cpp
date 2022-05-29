@@ -27,12 +27,13 @@
   #include <pybind11/functional.h>
   #include "gambit/Utils/end_ignore_warnings.hpp"
   #include <pybind11/embed.h>
+  #include <cstring>
   
   BE_NAMESPACE
   {
     namespace py = pybind11;
 
-    py::scoped_interpreter guard{};
+    // py::scoped_interpreter guard{};
     static py::object dark_photon;
 
     //I think using BE_INI_FUNCTION would be better but I don't know how it works
@@ -40,8 +41,10 @@
     {
       std::string model_name = "dark_photon";
       // I hope this give me the darkcast module
-      py::module_ dark_cast_module = py::module_::import(backendDir); 
-      dark_photon = dark_cast_module.attr("Model")(model_name);
+      // std::string module_name = backendDir.append(".model");
+      // py::module dark_cast_module = py::module::import(module_name.c_str()); 
+
+      dark_photon = DarkCast.attr("Model")(model_name);
     }
 
     double dark_photon_decay_width(double mass, std::vector<std::string> states, double k)
@@ -66,7 +69,12 @@
       return bfrac;
     }
   }
+  END_BE_NAMESPACE
+
 #endif
+
+BE_INI_FUNCTION{}
+END_BE_INI_FUNCTION
 
 // //** Version 2: Also very fast but require to run pybind11:scoped_interpreter guard{}; before
 // // calling the functions
