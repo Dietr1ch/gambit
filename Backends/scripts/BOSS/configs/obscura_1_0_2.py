@@ -63,12 +63,13 @@ load_classes = [
 ]
 
 load_functions = [
-    'obscura::XENON10_S2_ER',
-    'obscura::XENON100_S2_ER',
-    'obscura::XENON1T_S2_ER',
-    'obscura::DarkSide50_S2_ER',
-    'obscura::SENSEI_at_MINOS',
-    'obscura::CDMS_HVeV_2020',
+    'obscura::XENON1T_S2_ER()',
+    'obscura::XENON10_S2_ER()',
+    'obscura::XENON100_S2_ER()',
+    'obscura::XENON1T_S2_ER()',
+    'obscura::DarkSide50_S2_ER()',
+    'obscura::SENSEI_at_MINOS()',
+    'obscura::CDMS_HVeV_2020()',
 ]
 
 ditch = []
