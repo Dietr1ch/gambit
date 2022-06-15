@@ -44,7 +44,7 @@ END_BE_INI_FUNCTION
       dark_photon = DarkCast.attr("Model")(model_name);
     }
 
-    double dark_photon_decay_width(double mass, std::vector<std::string> states, double k)
+    double dark_photon_decay_width(double k, std::vector<std::string> states, double mass)
     {
       if (dark_photon == NULL) 
       {
@@ -55,7 +55,7 @@ END_BE_INI_FUNCTION
       return width;
     }
 
-    double dark_photon_bfrac(double mass, std::vector<std::string> states)
+    double dark_photon_bfrac(std::vector<std::string> states, double mass)
     {
       if (dark_photon == NULL)
       {
