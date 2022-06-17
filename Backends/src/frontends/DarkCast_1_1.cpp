@@ -55,7 +55,7 @@ END_BE_INI_FUNCTION
       return width;
     }
 
-    double dark_photon_bfrac(std::vector<std::string> states, double mass)
+    double dark_photon_branching_fraction(std::vector<std::string> states, double mass)
     {
       if (dark_photon == NULL)
       {

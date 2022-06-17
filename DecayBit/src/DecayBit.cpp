@@ -3032,9 +3032,29 @@ namespace Gambit
 
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version();
-      result.width_in_GeV = BEreq::dark_photon_decay_width(kappa,"Gamma",mAp);
+      result.width_in_GeV = BEreq::dark_photon_decay_width(kappa,"visible",mAp);
       //TODO: Set individual branching ratios
-      //result.set_BF(BEreq::dark_photon_decay_width(kappa,"ee",mh), 0.0, "e+", "e-");
+      // Fermion pairs:
+      result.set_BF(BEreq::dark_photon_branching_fraction("gamma_gamma_gamma",mAp), 0.0, "gamma", "gamma", "gamma");
+      result.set_BF(BEreq::dark_photon_branching_fraction("e_e",mAp), 0.0, "e+", "e-");
+      result.set_BF(BEreq::dark_photon_branching_fraction("mu_mu",mAp), 0.0, "mu+", "mu-");
+      result.set_BF(BEreq::dark_photon_branching_fraction("tau_tau",mAp), 0.0, "tau+", "tau-");
+      result.set_BF(BEreq::dark_photon_branching_fraction("nue_nue",mAp), 0.0, "nubar_e", "nu_e");
+      result.set_BF(BEreq::dark_photon_branching_fraction("numu_numu",mAp), 0.0, "nubar_mu", "nu_mu");
+      result.set_BF(BEreq::dark_photon_branching_fraction("nutau_nutau",mAp), 0.0, "nubar_tau", "nu_tau");
+      result.set_BF(BEreq::dark_photon_branching_fraction("c_c",mAp), 0.0, "cbar", "c");
+      result.set_BF(BEreq::dark_photon_branching_fraction("b_b",mAp), 0.0, "bbar", "b");
+      result.set_BF(BEreq::dark_photon_branching_fraction("t_t",mAp), 0.0, "tbar", "t");
+      // Hadrons: Use either "hardrons" modes or the entire list below it
+      // result.set_BF(BEreq::dark_photon_branching_fraction("hadrons",mAp), 0.0, "hadrons");
+      result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-",mAp), 0.0, "pi+", "pi-");
+      result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi+_pi-",mAp), 0.0, "pi+", "pi-", "pi+", "pi-");
+      result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0_pi0",mAp), 0.0,"pi+", "pi-", "pi0", "pi0");
+      result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0",mAp), 0.0, "pi+", "pi-", "pi0");
+      result.set_BF(BEreq::dark_photon_branching_fraction("pi0_gamma",mAp), 0.0, "pi0", "gamma");
+      result.set_BF(BEreq::dark_photon_branching_fraction("K_K",mAp), 0.0, "K", "K"); // KK = K+K- - K_S K_L
+      result.set_BF(BEreq::dark_photon_branching_fraction("K_K_pi",mAp), 0.0, "K", "K", "pi"); // Isoscalar component of KKpi
+      result.set_BF(BEreq::dark_photon_branching_fraction("others",mAp), 0.0, "others");
 
       // Add the dark photon invisible width to the total
       //TODO: Check expression
@@ -3042,7 +3062,7 @@ namespace Gambit
       result.width_in_GeV = result.width_in_GeV + gamma;
 
       // Rescale the visible branching fractions.
-      double wscaling = BEreq::dark_photon_decay_width(kappa,"Gamma",mAp)/result.width_in_GeV;
+      double wscaling = BEreq::dark_photon_decay_width(kappa,"visible",mAp)/result.width_in_GeV;
       for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
       {
         it->second.first  *= wscaling; // rescale BF
