@@ -616,6 +616,9 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
                 return_type = toWrapperType(class_name['short'], include_namespace=True)
             else:
                 return_type = toAbstractType(class_name['short'], add_pointer=True, include_namespace=True)
+
+            # Anders: Testing use of 'asm' to set symbol names
+            func_def += return_type + ' ' + factory_name + args_bracket + ' asm("' + factory_name + '");\n'
             func_def += return_type + ' ' + factory_name + args_bracket + '\n'
 
             # Generate body

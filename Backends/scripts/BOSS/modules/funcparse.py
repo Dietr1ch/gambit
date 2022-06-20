@@ -218,10 +218,6 @@ def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_ove
 
     return_type   = return_type_dict['name'] + '*'*pointerness + '&'*is_ref
 
-    # _Anders
-    print("DEBUG: generateFunctionWrapperClassVersion:")
-    print("DEBUG: return_is_loaded:", return_is_loaded, ",  return_type:", return_type, ",  pointerness:", pointerness, "  is_ref:", is_ref)
-
 
     # If return type is a known class, add '::' for absolute namespace.
     if (not return_is_loaded) and utils.isKnownClass(return_el):
@@ -265,6 +261,9 @@ def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_ove
             wrapper_return_type = return_type
 
         # Write declaration line
+
+        # Anders: Testing use of 'asm' to set symbol names
+        new_code += return_kw_str + wrapper_return_type + ' ' + wr_func_name + args_bracket + ' asm("' + wr_func_name + '"); \n'
         new_code += return_kw_str + wrapper_return_type + ' ' + wr_func_name + args_bracket + '\n'
 
         # Write function body
