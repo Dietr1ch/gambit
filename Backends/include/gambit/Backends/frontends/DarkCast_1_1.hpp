@@ -27,8 +27,13 @@
 LOAD_LIBRARY
 
 #ifdef HAVE_PYBIND11
-  BE_CONV_FUNCTION(dark_photon_decay_width, double, (double, std::vector<std::string>, double), "dark_photon_decay_width");
-  BE_CONV_FUNCTION(dark_photon_branching_fraction, double, (std::vector<std::string>, double), "dark_photon_branching_fraction");
+  //Single final state
+  BE_CONV_FUNCTION(dark_photon_decay_width, double, (double, std::string, double), "dark_photon_decay_width");
+  BE_CONV_FUNCTION(dark_photon_branching_fraction, double, (std::string, double), "dark_photon_branching_fraction");
+
+  //Multiple final states
+  BE_CONV_FUNCTION(dark_photon_decay_width_multi, double, (double, std::vector<std::string>, double), "dark_photon_decay_width_multi");
+  BE_CONV_FUNCTION(dark_photon_branching_fraction_multi, double, (std::vector<std::string>, double), "dark_photon_branching_fraction_multi");
 #endif
 
 #include "gambit/Backends/backend_undefs.hpp"
