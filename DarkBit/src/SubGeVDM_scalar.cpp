@@ -189,6 +189,8 @@ namespace Gambit
       addParticle("rho+",  meson_masses.rho_plus,  1)
       addParticle("rho-",  meson_masses.rho_minus, 1)
       addParticle("omega", meson_masses.omega,     1)
+      addParticle("K0",    meson_masses.kaon0,     1)
+
       
       // SubGeVDM-specific masses
       double mDM = spec.get(Par::Pole_Mass, "S");
@@ -203,8 +205,13 @@ namespace Gambit
       // Import decay table from DecayBit
       const DecayTable* tbl = &(*Dep::decay_rates);
       
+      std::cout << "OK\n";
+      
       // Save dark photon width for later
       double gammaAp = tbl->at("Ap").width_in_GeV;
+
+      std::cout << "Still OK\n";
+
 
       // Set of imported decays
       std::set<string> importedDecays;
@@ -215,7 +222,7 @@ namespace Gambit
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
       
-      auto excludeDecays = daFunk::vec<std::string>("Z0", "W+", "W-", "dbar_1", "d_1", "dbar_2", "d_2", "ubar_1", "u_1", "ubar_2", "u_2", "ubar_3", "u_3");
+      auto excludeDecays = daFunk::vec<std::string>("Z0", "W+", "W-", "u_3", "ubar_3", "e+_2", "e-_2", "e+_3", "e-_3","pi0","pi+","pi-","eta","rho0","rho+","rho-","omega","K0");
       
       ImportDecays("Ap", catalog, importedDecays, tbl, minBranching, excludeDecays);
       

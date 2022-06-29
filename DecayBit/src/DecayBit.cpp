@@ -3048,13 +3048,13 @@ namespace Gambit
       // Hadrons: Use either "hardrons" modes or the entire list below it
       // result.set_BF(BEreq::dark_photon_branching_fraction("hadrons",mAp), 0.0, "hadrons");
       result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-",mAp), 0.0, "pi+", "pi-");
-      result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi+_pi-",mAp), 0.0, "pi+", "pi-", "pi+", "pi-");
-      result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0_pi0",mAp), 0.0,"pi+", "pi-", "pi0", "pi0");
-      result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0",mAp), 0.0, "pi+", "pi-", "pi0");
+      // result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi+_pi-",mAp), 0.0, "pi+", "pi-", "pi+", "pi-");
+      // result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0_pi0",mAp), 0.0,"pi+", "pi-", "pi0", "pi0");
+      //result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0",mAp), 0.0, "pi+", "pi-", "pi0");
       result.set_BF(BEreq::dark_photon_branching_fraction("pi0_gamma",mAp), 0.0, "pi0", "gamma");
-      result.set_BF(BEreq::dark_photon_branching_fraction("K_K",mAp), 0.0, "K", "K"); // KK = K+K- - K_S K_L
-      result.set_BF(BEreq::dark_photon_branching_fraction("K_K_pi",mAp), 0.0, "K", "K", "pi"); // Isoscalar component of KKpi
-      result.set_BF(BEreq::dark_photon_branching_fraction("others",mAp), 0.0, "others");
+      result.set_BF(BEreq::dark_photon_branching_fraction("K_K",mAp), 0.0, "K0", "K0"); // KK = K+K- - K_S K_L
+      //result.set_BF(BEreq::dark_photon_branching_fraction("K_K_pi",mAp), 0.0, "K0", "K0", "pi0"); // Isoscalar component of KKpi
+      //result.set_BF(BEreq::dark_photon_branching_fraction("others",mAp), 0.0, "others");
 
       // Add the dark photon invisible width to the total
       //TODO: Check expression
@@ -3112,6 +3112,10 @@ namespace Gambit
       decays("rho-") = *Dep::rho_minus_decay_rates; // Add the rho- decays.
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
+      if (ModelInUse("SubGeVDM_scalar"))
+      {
+              decays("Ap") = *Dep::dark_photon_decay_rates;                 // Add the dark photon decays.
+      }
 
       // MSSM-specific
       if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
