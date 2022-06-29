@@ -71,7 +71,11 @@ namespace Gambit
           if ( channel == "ee" ) return sv_ff(gDM, gSM, mass, v, me, -1., 1);
           if ( channel == "mumu" ) return sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
           if ( channel == "tautau" ) return sv_ff(gDM, gSM, mass, v, mtau, -1., 1);
-          if ( channel == "pipi" ) return hadronic_cross_section_ratio(sqrts) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
+          if ( channel == "pipi" )
+          {
+            if (sqrt_s < mb*2 ) return hadronic_cross_section_ratio(sqrt_s) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
+            else return hadronic_cross_section_ratio(sqrt_s) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1) - sv_ff(gDM, gSM, mass, v, mb, -1/3., 3); //Avoid double-counting of bb final state
+          }
           if ( channel == "ApAp" ) return sv_ApAp(gDM, mass, v);
           
           return 0;
@@ -85,8 +89,10 @@ namespace Gambit
           double vf = sqrt(1-4*pow(mf,2)/s);
           double y = s/pow(mass, 2);
           double GeV2tocm3s1 = gev2cm2*s2cm;
-          return colour*pow(gDM*gSM*charge,2)*pow(v,2)*vf*(2*pow(mass,2)+pow(mf,2))/3/M_PI*DAp2(s)*GeV2tocm3s1;
+          return colour*pow(gDM*gSM*charge,2)*pow(v,2)*vf*(2*pow(mass,2)+pow(mf,2))/12/M_PI*DAp2(s)*GeV2tocm3s1;
       }
+
+
 
         /// Annihilation into ApAp
       double sv_ApAp(double gDM, double mass, double v)
@@ -195,7 +201,7 @@ namespace Gambit
       #undef addParticle
       
       // Import decay table from DecayBit
-      DecayTable tbl = *Dep::decay_rates;
+      const DecayTable* tbl = &(*Dep::decay_rates);
       
       // Save dark photon width for later
       double gammaAp = tbl->at("Ap").width_in_GeV;
@@ -204,17 +210,17 @@ namespace Gambit
       std::set<string> importedDecays;
       
       // Minimum branching ratio to include
-      double minBranching = runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
+      double minBranching = 0;
       
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
       
       auto excludeDecays = daFunk::vec<std::string>("Z0", "W+", "W-", "dbar_1", "d_1", "dbar_2", "d_2", "ubar_1", "u_1", "ubar_2", "u_2", "ubar_3", "u_3");
       
-      ImportDecays("Ap", catalog, importedDecays, &tbl, minBranching, excludeDecays);
+      ImportDecays("Ap", catalog, importedDecays, tbl, minBranching, excludeDecays);
       
       // Instantiate new SubGeVDM object.
-      auto pc = boost::make_shared<SubGeVDM>(&catalog, gammaAp);
+      auto pc = boost::make_shared<SubGeVDM_scalar>(&catalog, gammaAp);
       
       // Populate annihilation channel list and add thresholds to threshold list.
       process_ann.resonances_thresholds.threshold_energy.push_back(2*mDM);
@@ -232,7 +238,7 @@ namespace Gambit
         catalog.getParticleProperty(p2[i]).mass;  
         if (mDM*2 > mtot_final*0.5)
         {
-          daFunk::Funk kinematicFunction = daFunk::funcM(pc, &SubGeVDM::sv, channels[i], 
+          daFunk::Funk kinematicFunction = daFunk::funcM(pc, &SubGeVDM_scalar::sv, channels[i], 
           gDM, e*kappa, mDM, daFunk::var("v"));
           TH_Channel new_channel(daFunk::vec<string>(p1[i], p2[i]), kinematicFunction);
           process_ann.channelList.push_back(new_channel);
@@ -245,7 +251,7 @@ namespace Gambit
       }
       
       if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.
-          push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"), tbl.at("Ap").width_in_GeV));
+          push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"), tbl->at("Ap").width_in_GeV));
             
       catalog.processList.push_back(process_ann);
       

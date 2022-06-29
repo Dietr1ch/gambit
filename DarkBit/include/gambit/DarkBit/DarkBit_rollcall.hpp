@@ -485,6 +485,14 @@ START_MODULE
       BACKEND_REQ(CH_Sigma_V, (), double, (str&, std::vector<str>&, std::vector<str>&, double&, const DecayTable&))
       ALLOW_MODELS(DMEFT)
     #undef FUNCTION
+
+    #define FUNCTION TH_ProcessCatalog_SubGeVDM_scalar
+      START_FUNCTION(TH_ProcessCatalog)
+      DEPENDENCY(SubGeVDM_scalar_spectrum, Spectrum)
+      DEPENDENCY(decay_rates, DecayTable)
+      ALLOW_MODELS(SubGeVDM_scalar)
+    #undef FUNCTION
+
   #undef CAPABILITY
 
   /// Information about the nature of the DM process in question

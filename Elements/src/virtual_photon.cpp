@@ -60,7 +60,7 @@ namespace Gambit
     if (sqrts > maxsqrts)
     {
       std::stringstream msg;
-      msg << "Requested cross section ratio for sqrt(s) = " << sqrts << "; allowed range is sqrt(s) < " << maxmass << " GeV!";
+      msg << "Requested cross section ratio for sqrt(s) = " << sqrts << "; allowed range is sqrt(s) < " << maxsqrts << " GeV!";
       utils_error().raise(LOCAL_INFO, msg.str());
     }
 

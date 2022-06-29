@@ -41,7 +41,6 @@ namespace Gambit
   namespace SpecBit
   {
     using namespace LogTags;
-    using namespace flexiblesusy;
 
     /// Get a (simple) Spectrum object wrapper for the SubGeVDM_scalar model
     void get_SubGeVDM_scalar_spectrum(Spectrum& result)

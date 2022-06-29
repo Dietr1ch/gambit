@@ -3018,7 +3018,7 @@ namespace Gambit
     //////////// Vector singlet DM /////////////////////
 
     /// Add the decay of Higgs to vectors for the VectorSingletDM models (see arXiv:1512.06458v4)
-    void SubGeVDM_dark_photon_decays (DecayTable::Entry& result)
+    void SubGeVDM_scalar_dark_photon_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::SubGeVDM_scalar_dark_photon_decays;
 
@@ -3030,8 +3030,8 @@ namespace Gambit
       double gDM = he.get(Par::dimensionless,"gDM");
       double kappa = he.get(Par::dimensionless,"kappa");
 
-      result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = gambit_version();
+      result.calculator = BEreq::dark_photon_decay_width.origin();
+      result.calculator_version = BEreq::dark_photon_decay_width.version();
       result.width_in_GeV = BEreq::dark_photon_decay_width(kappa,"visible",mAp);
       //TODO: Set individual branching ratios
       // Fermion pairs:
@@ -3058,7 +3058,7 @@ namespace Gambit
 
       // Add the dark photon invisible width to the total
       //TODO: Check expression
-      double gamma = (2.0*mDM <= mAp) ? (pow(gDM,2)*mAp/(12.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2)) : 0.0;
+      double gamma = (2.0*mDM <= mAp) ? (pow(gDM,2)*mAp/(12.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2))) : 0.0;
       result.width_in_GeV = result.width_in_GeV + gamma;
 
       // Rescale the visible branching fractions.

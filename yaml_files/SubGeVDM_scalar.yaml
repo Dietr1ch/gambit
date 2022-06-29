@@ -7,6 +7,12 @@
 
 Parameters:
 
+  # SM parameters.
+  StandardModel_SLHA2: !import include/StandardModel_SLHA2_defaults.yaml
+
+  StandardModel_Higgs:
+     mH: 125.10 # PDG 2020 value
+
   SubGeVDM_scalar:
     mDM: 1
     gDM: 1
@@ -62,6 +68,9 @@ ObsLikes:
     - purpose:    Observable
       capability: sigma_SI_p
 
+    - capability: sigmav
+      purpose:    Observable
+
 Rules:
 
   - capability: RD_fraction
@@ -74,6 +83,12 @@ Rules:
   # Select WIMP-nucleon couplings for DDCalc 2.1.0 WIMP object
   - capability: DDCalc_Couplings
     function: DDCalc_Couplings_WIMP_nucleon
+
+  - capability: sigmav
+    function: sigmav_late_universe
+
+  - capability: decay_rates
+    function: all_decays
 
 Logger:
 
