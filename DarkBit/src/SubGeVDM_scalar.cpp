@@ -228,11 +228,11 @@ namespace Gambit
       
       // Instantiate new SubGeVDM object.
       auto pc = boost::make_shared<SubGeVDM_scalar>(&catalog, gammaAp);
-      
+          
       // Populate annihilation channel list and add thresholds to threshold list.
       process_ann.resonances_thresholds.threshold_energy.push_back(2*mDM);
       auto channels = 
-        daFunk::vec<string>("e+_3, e-_3", "e+_2, e-_2", "e+_1, e-_1", "pi+, pi-", "dbar_3, d_3", "Ap, Ap");
+        daFunk::vec<string>("tautau", "mumu", "ee", "pipi", "bb", "ApAp");
       auto p1 = 
         daFunk::vec<string>("e+_3", "e+_2", "e+_1", "pi+", "dbar_3", "Ap");
       auto p2 = 
