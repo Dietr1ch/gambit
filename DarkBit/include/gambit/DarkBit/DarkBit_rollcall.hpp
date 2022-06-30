@@ -161,7 +161,7 @@ START_MODULE
       DEPENDENCY(DarkMatterConj_ID, std::string)
       ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running,
                    ScalarSingletDM_Z3, ScalarSingletDM_Z3_running,
-                   DiracSingletDM_Z2, MajoranaSingletDM_Z2, VectorSingletDM_Z2, DMEFT, SubGeVDM_scalar)
+                   DiracSingletDM_Z2, MajoranaSingletDM_Z2, VectorSingletDM_Z2, DMEFT, SubGeVDM_scalar, SubGeVDM_fermion)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -217,7 +217,7 @@ START_MODULE
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(DarkMatterConj_ID, std::string)
       ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running,
-                   DiracSingletDM_Z2, MajoranaSingletDM_Z2, VectorSingletDM_Z2, DMEFT, SubGeVDM_scalar)
+                   DiracSingletDM_Z2, MajoranaSingletDM_Z2, VectorSingletDM_Z2, DMEFT, SubGeVDM_scalar, SubGeVDM_fermion)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -488,9 +488,16 @@ START_MODULE
 
     #define FUNCTION TH_ProcessCatalog_SubGeVDM_scalar
       START_FUNCTION(TH_ProcessCatalog)
-      DEPENDENCY(SubGeVDM_scalar_spectrum, Spectrum)
+      DEPENDENCY(SubGeVDM_spectrum, Spectrum)
       DEPENDENCY(decay_rates, DecayTable)
       ALLOW_MODELS(SubGeVDM_scalar)
+    #undef FUNCTION
+
+    #define FUNCTION TH_ProcessCatalog_SubGeVDM_fermion
+      START_FUNCTION(TH_ProcessCatalog)
+      DEPENDENCY(SubGeVDM_spectrum, Spectrum)
+      DEPENDENCY(decay_rates, DecayTable)
+      ALLOW_MODELS(SubGeVDM_fermion)
     #undef FUNCTION
 
   #undef CAPABILITY

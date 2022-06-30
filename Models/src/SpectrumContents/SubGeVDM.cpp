@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  Class defining the parameters that SubSpectrum
-///  objects providing SubGeVDM_scalar
+///  objects providing SubGeVDM
 ///  spectrum data must provide.
 ///
 ///  Authors (add name and date if you modify):    
@@ -19,14 +19,14 @@
 
 namespace Gambit
 {
-  SpectrumContents::SubGeVDM_scalar::SubGeVDM_scalar()
+  SpectrumContents::SubGeVDM::SubGeVDM()
   {
-    setName("SubGeVDM_scalar");
+    setName("SubGeVDM");
     
     std::vector<int> scalar = initVector(1); // i.e. get(Par::Tag, "name")
     std::vector<int> m3x3   = initVector(3,3); // i.e. get(Par::Tag, "name", i, j)
  
-    addParameter(Par::Pole_Mass, "S");
+    addParameter(Par::Pole_Mass, "DM");
     addParameter(Par::Pole_Mass, "Ap");
     addParameter(Par::dimensionless, "gDM");
     addParameter(Par::dimensionless, "kappa");

@@ -98,15 +98,15 @@ namespace Gambit
           double GeV2tocm3s1 = gev2cm2*s2cm;
           double s = 4*mass*mass/(1-v*v/4);  // v is relative velocity
           
-          return pow(gDM,4) / (M_PI * s) * sqrt(1 - pow(2 * mAp, 2) / s) * GeV2tocm3s1; // See eq. (6) of arXiv:0810.1502.
+          return pow(gDM,4) / (2 * M_PI * s) * sqrt(1 - pow(2 * mAp, 2) / s) * GeV2tocm3s1; // See eq. (6) of arXiv:0810.1502.
       }
 
       private:
         double Gamma_Ap, mb, me, mmu, mtau, mAp, mpi;      
     };
 
-    void DarkMatter_ID_SubGeVDM_scalar(std::string & result) { result = "S"; }
-    void DarkMatterConj_ID_SubGeVDM_scalar(std::string & result) { result = "S~"; }
+    void DarkMatter_ID_SubGeVDM_scalar(std::string & result) { result = "DM"; }
+    void DarkMatterConj_ID_SubGeVDM_scalar(std::string & result) { result = "DM~"; }
 
     void TH_ProcessCatalog_SubGeVDM_scalar(TH_ProcessCatalog &result)
     {
@@ -116,7 +116,7 @@ namespace Gambit
       
       // Initialize empty catalog, main annihilation process
       TH_ProcessCatalog catalog;
-      TH_Process process_ann("S", "S~");
+      TH_Process process_ann("DM", "DM~");
       
       // Explicitly state that complex scalar DM is not self-conjugate to add extra 
       // factors of 1/2 where necessary
@@ -129,7 +129,7 @@ namespace Gambit
       #define addParticle(Name, Mass, spinX2) catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> (Name, TH_ParticleProperty(Mass, spinX2)));
       
       // Import Spectrum objects
-      const Spectrum& spec = *Dep::SubGeVDM_scalar_spectrum;
+      const Spectrum& spec = *Dep::SubGeVDM_spectrum;
       const SubSpectrum& he = spec.get_HE();
       const SubSpectrum& SM = spec.get_LE();
       const SMInputs& SMI   = spec.get_SMInputs();
@@ -191,9 +191,9 @@ namespace Gambit
 
       
       // SubGeVDM-specific masses
-      double mDM = spec.get(Par::Pole_Mass, "S");
-      addParticle("S", mDM, 1);
-      addParticle("S~", mDM, 1);
+      double mDM = spec.get(Par::Pole_Mass, "DM");
+      addParticle("DM", mDM, 1);
+      addParticle("DM~", mDM, 1);
       addParticle("Ap", spec.get(Par::Pole_Mass, "Ap"), 2);
       
       // Get rid of convenience macros
@@ -203,13 +203,8 @@ namespace Gambit
       // Import decay table from DecayBit
       const DecayTable* tbl = &(*Dep::decay_rates);
       
-      std::cout << "OK\n";
-      
       // Save dark photon width for later
       double gammaAp = tbl->at("Ap").width_in_GeV;
-
-      std::cout << "Still OK\n";
-
 
       // Set of imported decays
       std::set<string> importedDecays;

@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  A simple SubSpectrum wrapper for the SubGeVDM_scalar
+///  A simple SubSpectrum wrapper for the SubGeVDM
 ///  model. No RGEs included.
 ///
 ///  *********************************************
@@ -16,8 +16,8 @@
 ///
 ///  *********************************************
 
-#ifndef __SubGeVDM_scalarSimpleSpec_hpp__
-#define __SubGeVDM_scalarSimpleSpec_hpp__
+#ifndef __SubGeVDMSimpleSpec_hpp__
+#define __SubGeVDMSimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
 #include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
@@ -31,7 +31,7 @@ namespace Gambit
       /// We could easily just put these in the wrapper itself, but
       /// I am leaving them in a separate struct for the sake of building
       /// up examples towards a more complicated "model" object
-      struct SubGeVDM_scalarModel
+      struct SubGeVDMModel
       {
          double SubGeV_DMPoleMass;
          double SubGeV_ApPoleMass;
@@ -45,29 +45,29 @@ namespace Gambit
 
       /// Forward declare the wrapper class so that we can use it
       /// as the template parameter for the SpecTraits specialisation.
-      class SubGeVDM_scalarSimpleSpec;
+      class SubGeVDMSimpleSpec;
    }
 
    /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
    template <>
-   struct SpecTraits<Models::SubGeVDM_scalarSimpleSpec> : DefaultTraits
+   struct SpecTraits<Models::SubGeVDMSimpleSpec> : DefaultTraits
    {
-      static std::string name() { return "SubGeVDM_scalarSimpleSpec"; }
-      typedef SpectrumContents::SubGeVDM_scalar Contents;
+      static std::string name() { return "SubGeVDMSimpleSpec"; }
+      typedef SpectrumContents::SubGeVDM Contents;
    };
 
    namespace Models
    {
-      class SubGeVDM_scalarSimpleSpec : public Spec<SubGeVDM_scalarSimpleSpec>
+      class SubGeVDMSimpleSpec : public Spec<SubGeVDMSimpleSpec>
       {
          private:
-            SubGeVDM_scalarModel params;
+            SubGeVDMModel params;
 
-            typedef SubGeVDM_scalarSimpleSpec Self;
+            typedef SubGeVDMSimpleSpec Self;
 
          public:
             /// @{ Constructors/destructors
-            SubGeVDM_scalarSimpleSpec(const SubGeVDM_scalarModel& p)
+            SubGeVDMSimpleSpec(const SubGeVDMModel& p)
              : params(p)
             {}
 
@@ -117,7 +117,7 @@ namespace Gambit
 
                getters[mass1]        .map0W["vev"]       = &Self::get_vev;
                getters[dimensionless].map0W["gDM"] = &Self::get_SubGeV_gDM;
-               getters[Pole_Mass].map0W["S"]       = &Self::get_SubGeV_DMPoleMass;
+               getters[Pole_Mass].map0W["DM"]       = &Self::get_SubGeV_DMPoleMass;
                getters[Pole_Mass].map0W["Ap"]       = &Self::get_SubGeV_ApPoleMass;
 
                getters[dimensionless].map0W["kappa"] = &Self::get_SubGeV_kappa;
@@ -146,7 +146,7 @@ namespace Gambit
                setters[mass1].map0W["vev"]       = &Self::set_vev;
                setters[dimensionless].map0W["gDM"] = &Self::set_SubGeV_gDM;
                setters[dimensionless].map0W["kappa"] = &Self::set_SubGeV_kappa;
-               setters[Pole_Mass].map0W["S"]       = &Self::set_SubGeV_DMPoleMass;
+               setters[Pole_Mass].map0W["DM"]       = &Self::set_SubGeV_DMPoleMass;
                setters[Pole_Mass].map0W["Ap"]       = &Self::set_SubGeV_ApPoleMass;
 
                setters[dimensionless].map0W["g1"] = &Self::set_g1;

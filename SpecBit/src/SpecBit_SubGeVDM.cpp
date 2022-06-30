@@ -5,7 +5,7 @@
 ///  Functions of module SpecBit
 ///
 ///  SpecBit module functions related to the
-///  SubGeVDM_scalar model.
+///  SubGeVDM model.
 ///
 ///  *********************************************
 ///
@@ -30,7 +30,7 @@
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 #include "gambit/Models/SimpleSpectra/SMHiggsSimpleSpec.hpp"
-#include "gambit/Models/SimpleSpectra/SubGeV_scalarSimpleSpec.hpp"
+#include "gambit/Models/SimpleSpectra/SubGeVDMSimpleSpec.hpp"
 
 // Switch for debug mode
 //#define SPECBIT_DEBUG
@@ -42,14 +42,14 @@ namespace Gambit
   {
     using namespace LogTags;
 
-    /// Get a (simple) Spectrum object wrapper for the SubGeVDM_scalar model
-    void get_SubGeVDM_scalar_spectrum(Spectrum& result)
+    /// Get a (simple) Spectrum object wrapper for the SubGeVDM model
+    void get_SubGeVDM_spectrum(Spectrum& result)
     {
-      namespace myPipe = Pipes::get_SubGeVDM_scalar_spectrum;
+      namespace myPipe = Pipes::get_SubGeVDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
       // Initialise an object to carry the Singlet plus Higgs sector information
-      Models::SubGeVDM_scalarModel SubGeVmodel;
+      Models::SubGeVDMModel SubGeVmodel;
 
       // quantities needed to fill container spectrum, intermediate calculations
       double alpha_em = 1.0 / sminputs.alphainv;
@@ -86,7 +86,7 @@ namespace Gambit
       SubGeVmodel.Yd[2] = sqrt2v * sminputs.mBmB;
 
       // Create a SubSpectrum object to wrap the EW sector information
-      Models::SubGeVDM_scalarSimpleSpec SubGeVspec(SubGeVmodel);
+      Models::SubGeVDMSimpleSpec SubGeVspec(SubGeVmodel);
 
       // Retrieve any mass cuts
       static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
@@ -98,19 +98,19 @@ namespace Gambit
     }
 
     // print spectrum out, stripped down copy from MSSM version with variable names changed
-    void fill_map_from_SubGeVDM_scalarspectrum(std::map<std::string,double>&, const Spectrum&);
+    void fill_map_from_SubGeVDM_spectrum(std::map<std::string,double>&, const Spectrum&);
 
-    void get_SubGeVDM_scalar_spectrum_as_map (std::map<std::string,double>& specmap)
+    void get_SubGeVDM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
-      namespace myPipe = Pipes::get_SubGeVDM_scalar_spectrum_as_map;
-      const Spectrum& SubGeVdmspec(*myPipe::Dep::SubGeVDM_scalar_spectrum);
-      fill_map_from_SubGeVDM_scalarspectrum(specmap, SubGeVdmspec);
+      namespace myPipe = Pipes::get_SubGeVDM_spectrum_as_map;
+      const Spectrum& SubGeVdmspec(*myPipe::Dep::SubGeVDM_spectrum);
+      fill_map_from_SubGeVDM_spectrum(specmap, SubGeVdmspec);
     }
 
-    void fill_map_from_SubGeVDM_scalarspectrum(std::map<std::string,double>& specmap, const Spectrum& SubGeVdmspec)
+    void fill_map_from_SubGeVDM_spectrum(std::map<std::string,double>& specmap, const Spectrum& SubGeVdmspec)
     {
       /// Add everything... use spectrum contents routines to automate task
-      static const SpectrumContents::SubGeVDM_scalar contents;
+      static const SpectrumContents::SubGeVDM contents;
       static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters();
 
       for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
@@ -154,7 +154,7 @@ namespace Gambit
          {
            // ERROR
            std::ostringstream errmsg;
-           errmsg << "Error, invalid parameter received while converting SubGeVDM_scalarspectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
+           errmsg << "Error, invalid parameter received while converting SubGeVDM_spectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
            errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape;
            utils_error().forced_throw(LOCAL_INFO,errmsg.str());
          }

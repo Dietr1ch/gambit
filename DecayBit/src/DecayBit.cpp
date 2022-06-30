@@ -3018,15 +3018,15 @@ namespace Gambit
     //////////// Vector singlet DM /////////////////////
 
     /// Add the decay of Higgs to vectors for the VectorSingletDM models (see arXiv:1512.06458v4)
-    void SubGeVDM_scalar_dark_photon_decays (DecayTable::Entry& result)
+    void SubGeVDM_dark_photon_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::SubGeVDM_scalar_dark_photon_decays;
+      using namespace Pipes::SubGeVDM_dark_photon_decays;
 
       // Get the spectrum information
-      const Spectrum& spec = *Dep::SubGeVDM_scalar_spectrum;
+      const Spectrum& spec = *Dep::SubGeVDM_spectrum;
       const SubSpectrum& he = spec.get_HE();
       double mAp = spec.get(Par::Pole_Mass,"Ap");
-      double mDM = spec.get(Par::Pole_Mass,"S");
+      double mDM = spec.get(Par::Pole_Mass,"DM");
       double gDM = he.get(Par::dimensionless,"gDM");
       double kappa = he.get(Par::dimensionless,"kappa");
 
@@ -3081,7 +3081,7 @@ namespace Gambit
       }
 
       // Add the h->VV branching fraction
-      result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S~");
+      result.set_BF(gamma/result.width_in_GeV, 0.0, "DM", "DM~");
 
       // Make sure the width is sensible.
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
@@ -3123,7 +3123,7 @@ namespace Gambit
       decays("rho-") = *Dep::rho_minus_decay_rates; // Add the rho- decays.
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
-      if (ModelInUse("SubGeVDM_scalar"))
+      if (ModelInUse("SubGeVDM_scalar") or ModelInUse("SubGeVDM_fermion"))
       {
               decays("Ap") = *Dep::dark_photon_decay_rates;                 // Add the dark photon decays.
       }
