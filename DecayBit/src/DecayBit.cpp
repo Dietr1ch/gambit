@@ -3058,7 +3058,18 @@ namespace Gambit
 
       // Add the dark photon invisible width to the total
       //TODO: Check expression
-      double gamma = (2.0*mDM <= mAp) ? (pow(gDM,2)*mAp/(12.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2))) : 0.0;
+
+      double gamma = 0;
+      if (ModelInUse("SubGeVDM_scalar"))
+      {
+          if (2.0*mDM <= mAp)
+              gamma = pow(gDM,2)*mAp/(48.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2)); //See eq. (5) or arXiv:1707.03835
+      }
+      if (ModelInUse("SubGeVDM_fermion"))
+      {
+          if (2.0*mDM <= mAp)
+              gamma = pow(gDM,2)*mAp/(12.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2)) * (1.0 + 2.0*pow(mDM/mAp,2)); //See eq. (7) or arXiv:1707.03835 in the limit Delta -> 0
+      }
       result.width_in_GeV = result.width_in_GeV + gamma;
 
       // Rescale the visible branching fractions.

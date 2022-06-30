@@ -89,18 +89,16 @@ namespace Gambit
           double vf = sqrt(1-4*pow(mf,2)/s);
           double y = s/pow(mass, 2);
           double GeV2tocm3s1 = gev2cm2*s2cm;
-          return colour*pow(gDM*gSM*charge,2)*pow(v,2)*vf*(2*pow(mass,2)+pow(mf,2))/12/M_PI*DAp2(s)*GeV2tocm3s1;
+          return colour*pow(gDM*gSM*charge,2)*pow(v,2)*vf*(2*pow(mass,2)+pow(mf,2))/12/M_PI*DAp2(s)*GeV2tocm3s1; // See eq. (28) of arXiv:1707.03835 and eq. (9) of arXiv:2010.02954.
       }
 
-
-
-        /// Annihilation into ApAp
+      /// Annihilation into ApAp
       double sv_ApAp(double gDM, double mass, double v)
       {
           double GeV2tocm3s1 = gev2cm2*s2cm;
           double s = 4*mass*mass/(1-v*v/4);  // v is relative velocity
-
-          return 0;
+          
+          return pow(gDM,4) / (M_PI * s) * sqrt(1 - pow(2 * mAp, 2) / s) * GeV2tocm3s1; // See eq. (6) of arXiv:0810.1502.
       }
 
       private:
@@ -257,8 +255,15 @@ namespace Gambit
         }
       }
       
+      // Tell DarkSUSY about dark photon resonance
       if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.
           push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"), tbl->at("Ap").width_in_GeV));
+
+      // Tell DarkSUSY about Phi resonance
+      double mPhi = 1.02;
+      double GammaPhi = 4.25e-3;
+
+      if (mPhi >= 2*mDM) process_ann.resonances_thresholds.resonances.push_back(TH_Resonance(mPhi, GammaPhi));
             
       catalog.processList.push_back(process_ann);
       
