@@ -183,6 +183,11 @@ Rules:
   # Calculate the constant f_eff by convolution of f_eff(z) with a weighting function
   - capability: f_eff
     function: f_eff_weighted
+    
+  - module: DarkBit
+    options:
+      out_of_range_zero_yield: true
+
 
 Logger:
 
