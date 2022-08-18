@@ -838,6 +838,7 @@ if(NOT ditched_${name}_${ver})
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
+
 # Libphysica
 set(name "libphysica")
 set(ver "0.1.4")
@@ -849,6 +850,7 @@ set(libphysica_ver "${ver}")
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
+    DEPENDS "castxml"
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${libphysica_dir} ${name} ${ver}
     SOURCE_DIR ${libphysica_dir}
     BUILD_IN_SOURCE 1 

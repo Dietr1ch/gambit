@@ -480,17 +480,17 @@ namespace Gambit
   void calc_obscuraTest(double& result){
     using namespace Pipes::calc_obscuraTest;
     // 1. Halo Model
-    // double v0 = 220.0 * obscura_default::libphysica::natural_units::km;
-    obscura_default::obscura::Standard_Halo_Model SHM;
-    double test  = SHM.Minimum_DM_Speed();
+    // // double v0 = 220.0 * obscura_default::libphysica::natural_units::km;
+    // obscura_default::obscura::Standard_Halo_Model SHM;
+    // double test  = SHM.Minimum_DM_Speed();
 
-    // 2. DM Particle with SI interactions
-    double mDM = 0.1; // in GeV
-    double mDP = 1.0; // in GeV
-    double sigma_e = 1.0e-36; // in cm^2
-    obscura_default::obscura::DM_Particle_SI DM(mDM);
-    // DM.Set_Sigma_Electron(sigma_e);
-    DM.Set_FormFactor_DM("General", mDP);
+    // // 2. DM Particle with SI interactions
+    // double mDM = 0.1; // in GeV
+    // double mDP = 1.0; // in GeV
+    // double sigma_e = 1.0e-36; // in cm^2
+    // obscura_default::obscura::DM_Particle_SI DM(mDM);
+    // // DM.Set_Sigma_Electron(sigma_e);
+    // DM.Set_FormFactor_DM("General", mDP);
 
     // 3. Experiment
     // obscura_default::obscura::DM_Detector_Ionization_ER experiment = obscura_default::obscura::XENON1T_S2_ER();
