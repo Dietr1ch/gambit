@@ -59,6 +59,9 @@ def run():
         namespaces = utils.getNamespaces(func_el)
         has_namespace = bool(len(namespaces))
 
+        # Check if this function makes use of any loaded types
+        uses_loaded_type = funcutils.usesLoadedType(func_el)
+
 
         # Check if this is a template function
         is_template = utils.isTemplateFunction(func_el)
@@ -89,8 +92,9 @@ def run():
         # - Generate include statements based on the types used in the function
         include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='none', input_element='function')
         include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='wrapper', input_element='function', use_full_path=True)
-        include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"' )
-        include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"' )
+        if uses_loaded_type:
+            include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"' )
+            include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"' )
         
         # - Then check if we have a header file for the function in question.
         #   If not, declare the original function as 'extern'
@@ -198,9 +202,6 @@ def run():
 def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_overloads):
 
     new_code = ''
-
-    # Check if this function makes use of any loaded types
-    uses_loaded_type = funcutils.usesLoadedType(func_el)
 
     # Function name
     func_name = func_el.get('name')
