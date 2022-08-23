@@ -78,10 +78,6 @@ def run():
         # Generate extra source file with overloaded and wrapper class versions
         #
 
-        # Construct a wrapper function name, eg "someFunction__BOSS_7"
-        wr_func_name = func_el.get('name') + gb.code_suffix + '_' + str(gb.symbol_name_counter)
-        gb.symbol_name_counter += 1
-
         # New source file name
         new_source_file_name = gb.function_files_prefix + func_el.get('name') + cfg.source_extension
         new_source_file_path = os.path.join(gb.boss_output_dir, new_source_file_name)
@@ -132,11 +128,8 @@ def run():
         # Generate code for wrapper class version
         #
         
-        # # Register the wrapper name
-        # func_name['wr_name'] = wr_func_name
-
         # Construct wrapper function code
-        wrapper_code = generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_overloads) 
+        wrapper_code, wr_func_names_generated = generateFunctionWrapperClassVersion(func_el, namespaces, n_overloads)
         wrapper_code = utils.addIndentation(wrapper_code, len(namespaces)*cfg.indent)
         wrapper_code += '\n'
 
@@ -181,7 +174,7 @@ def run():
         # Keep track of functions done
         #
         gb.functions_done.append(func_name)
-        gb.wr_func_names.append(wr_func_name)
+        gb.wr_func_names += wr_func_names_generated
 
         print()
 
@@ -199,10 +192,11 @@ def run():
 # Function for generating a source file containing wrapper
 # functions that make use of the wrapper classes.
 
-def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_overloads):
+def generateFunctionWrapperClassVersion(func_el, namespaces, n_overloads):
 
     new_code = ''
-
+    wr_func_names_generated = []
+    
     # Function name
     func_name = func_el.get('name')
 
@@ -243,6 +237,11 @@ def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_ove
         # Check that the function is acceptable
         if funcutils.ignoreFunction(func_el, limit_pointerness=True, remove_n_args=remove_n_args):
             continue
+
+        # Construct a wrapper function name, eg "someFunction__BOSS_7"
+        wr_func_name = func_el.get('name') + gb.code_suffix + '_' + str(gb.symbol_name_counter)
+        wr_func_names_generated.append(wr_func_name)
+        gb.symbol_name_counter += 1
 
         if remove_n_args == 0:
             use_args = args
@@ -306,7 +305,7 @@ def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_ove
     # Add 'extern "C" {...}' block
     new_code = 'extern "C"\n{\n' + new_code + '}\n'
 
-    return new_code
+    return new_code, wr_func_names_generated
 
 # ====== END: generateFunctionWrapperClassVersion ========
 
