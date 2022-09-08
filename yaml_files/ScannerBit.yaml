@@ -47,10 +47,13 @@ Scanner:
   # This tag specifies which plugin to use as the scanner.
   # Here the multinest scanner is choosen, but you could
   # choose any scanner defined under the scanners section
-  use_scanner: twalk
+  use_scanner: python #twalk
 
   scanners:
 
+    python:
+      plugin: python
+      
     mcmc:
       plugin: GreAT
       nTrialLists: 5

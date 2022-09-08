@@ -22,6 +22,7 @@
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Models/model_rollcall.hpp"
 #include "gambit/Elements/equivalency_singleton.hpp"
+#include "gambit/ScannerBit/py_module.hpp"
 #include "gambit/Backends/backend_rollcall.hpp"
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Core/yaml_parser.hpp"

@@ -249,6 +249,7 @@ namespace Gambit
             typedef shared_ptr< Function_Base< ret (args...) > > s_ptr;
 
         public:
+            using s_ptr::s_ptr;
             scan_ptr(){}
             scan_ptr(const scan_ptr &in) : s_ptr (in){}
             scan_ptr(scan_ptr &&in) : s_ptr (std::move(in)) {}
@@ -320,6 +321,7 @@ namespace Gambit
             std::unordered_map<std::string, double> map;
 
         public:
+            using s_ptr::s_ptr;
             like_ptr(){}
             like_ptr(const like_ptr &in) : s_ptr (in){}
             //like_ptr(like_ptr &&in) : s_ptr (std::move(in)) {}
