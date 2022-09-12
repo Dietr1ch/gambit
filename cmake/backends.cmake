@@ -853,7 +853,7 @@ if(NOT ditched_${name}_${ver})
     DEPENDS "castxml"
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${libphysica_dir} ${name} ${ver}
     SOURCE_DIR ${libphysica_dir}
-    BUILD_IN_SOURCE 1 
+    BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
@@ -881,7 +881,8 @@ if(NOT ditched_${name}_${ver})
           COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/generated/version.hpp"
           COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/external/libphysica"
           COMMAND ${CMAKE_COMMAND} -E copy_directory "${libphysica_dir}/" "${dir}/external/libphysica/"
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
+    #CONFIGURE_COMMAND ${CMAKE_COMMAND} -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
+    CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${BACKEND_CXX_FLAGS} -DCMAKE_C_FLAGS=${BACKEND_C_FLAGS} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
     BUILD_COMMAND ${CMAKE_COMMAND} --build ${dir} --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} --install ${dir}
   )
