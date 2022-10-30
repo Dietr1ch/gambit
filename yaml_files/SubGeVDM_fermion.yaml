@@ -19,6 +19,7 @@ Parameters:
     kappa: 1e-3
     mAp: 3
     etaDM: 0
+    smooth: 1 # 0 for using PDG value, 1 for using darkcast's fitted value
 
   Halo_gNFW_rho0:
     rho0: 0.4
