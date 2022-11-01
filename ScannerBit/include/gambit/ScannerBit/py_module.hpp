@@ -32,60 +32,21 @@ namespace Gambit
                     return o.attr("__class__").attr("__name__").cast<std::string>();
                 }
                 
-                bool is_float(py::kwargs args)
+                template<typename T>
+                bool is_type(py::kwargs args, const std::string &type = "dtype", bool def_type = false)
                 {
-                    if (args.contains("dtype")) 
+                    if (args.contains(type.c_str())) 
                     {
-                        if(pytype(args["dtype"]) == "type" ? py::handle(args["dtype"]).is(py::float_().get_type()) : 
-                            pytype(args["dtype"]) == "str" || pytype(args["dtype"]) == "unicode" ? args["dtype"].cast<std::string>() == "float" : false)
+                        auto arg = args[type.c_str()];
+                        
+                        if (pytype(arg) == "type" ? py::handle(arg).is(T().get_type()) : 
+                            pytype(arg) == "str" || pytype(arg) == "unicode" ? arg.cast<std::string>() == pytype(T()) : false)
                             return true;
                         else
                             return false;
                     }
                     else
-                        return true;
-                }
-                
-                bool is_str(py::kwargs args)
-                {
-                    if (args.contains("dtype")) 
-                    {
-                        if(pytype(args["dtype"]) == "type" ? py::handle(args["dtype"]).is(py::str().get_type()) : 
-                            pytype(args["dtype"]) == "str" || pytype(args["dtype"]) == "unicode" ? args["dtype"].cast<std::string>() == "str" : false)
-                            return true;
-                        else
-                            return false;
-                    }
-                    else
-                        return false;
-                }
-                
-                bool is_int(py::kwargs args)
-                {
-                    if (args.contains("dtype")) 
-                    {
-                        if(pytype(args["dtype"]) == "type" ? py::handle(args["dtype"]).is(py::int_().get_type()) : 
-                            pytype(args["dtype"]) == "str" || pytype(args["dtype"]) == "unicode" ? args["dtype"].cast<std::string>() == "int" : false)
-                            return true;
-                        else
-                            return false;
-                    }
-                    else
-                        return false;
-                }
-                
-                bool is_list(py::kwargs args)
-                {
-                    if (args.contains("dtype")) 
-                    {
-                        if(pytype(args["dtype"]) == "type" ? py::handle(args["dtype"]).is(py::list().get_type()) : 
-                            pytype(args["dtype"]) == "str" || pytype(args["dtype"]) == "unicode" ? args["dtype"].cast<std::string>() == "list" : false)
-                            return true;
-                        else
-                            return false;
-                    }
-                    else
-                        return false;
+                        return def_type;
                 }
             }
             
@@ -244,10 +205,13 @@ namespace Gambit
 PYBIND11_MAKE_OPAQUE(map_doub_type_);
 PYBIND11_MAKE_OPAQUE(vec_str_type_);
 
-PYBIND11_EMBEDDED_MODULE(scanner_plugin, m) 
+PYBIND11_EMBEDDED_MODULE(scannerbit, m) 
 {
     //typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
     //typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
+    
+    py::bind_map<map_doub_type_, std::shared_ptr<map_doub_type_>>(m, "std_unordered_map_double");
+    py::bind_vector<vec_str_type_, std::shared_ptr<vec_str_type_>>(m, "std_vector_string");
     
     py::class_<Gambit::Printers::BaseBasePrinter, std::unique_ptr<Gambit::Printers::BaseBasePrinter, py::nodelete>>(m, "printer")
     .def("print", [](Gambit::Printers::BaseBasePrinter &self, double in, const std::string& label,
@@ -320,69 +284,6 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         self.finalise(abnormal);
     });
     
-    m.def("get_printer", [&]()
-    {
-        return &Gambit::Scanner::Plugins::ScannerPyPlugin::get_printer();
-    });
-    
-    m.def("get_prior", [&]()
-    {
-        return &Gambit::Scanner::Plugins::ScannerPyPlugin::get_prior();
-    });
-    
-    m.def("get_inifile_value", [&](const std::string &val, py::kwargs args) -> py::object
-    {
-        using namespace Gambit::Scanner::Plugins::ScannerPyPlugin;
-        using namespace Gambit::Scanner::Plugins::Utils;
-        
-        if (args.contains("default"))
-        {
-            if (is_int(args))
-                return py::cast(get_inifile_value<int>(val, args["default"].cast<int>()));
-            else if (is_str(args))
-                return py::cast(get_inifile_value<std::string>(val, args["default"].cast<std::string>()));
-            else if (is_list(args))
-            {
-                py::list def = args["default"].cast<py::list>();
-                std::vector<double> defv;
-                for (auto &&l : def)
-                    defv.push_back(l.cast<double>());
-                
-                std::vector<double> ret = get_inifile_value<std::vector<double>>(val, defv);
-                
-                py::list list;
-                for (auto &&r : ret)
-                    list.append(r);
-                
-                return list;
-            }
-            else
-                return py::cast(get_inifile_value<double>(val, args["default"].cast<double>()));
-        }
-        else
-        {
-            if (is_int(args))
-                return py::cast(get_inifile_value<int>(val));
-            else if (is_str(args))
-                return py::cast(get_inifile_value<std::string>(val));
-            else if (is_list(args))
-            {
-                py::list list;
-                std::vector<double> ret = get_inifile_value<std::vector<double>>(val);
-                for (auto &&r : ret)
-                    list.append(r);
-                
-                return list;
-            }
-            else
-                return py::cast(get_inifile_value<double>(val));
-        }
-    });
-    
-    m.def("get_dimension", Gambit::Scanner::Plugins::ScannerPyPlugin::get_dimension);
-    
-    m.def("get_purpose", Gambit::Scanner::Plugins::ScannerPyPlugin::get_purpose);
-    
     py::class_<Gambit::Scanner::like_ptr>(m, "like_ptr")
     .def("__call__", [](Gambit::Scanner::like_ptr &self, Gambit::Scanner::hyper_cube<double> vec)
     {
@@ -400,41 +301,72 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     {
         return &self->getPrior();
     });
-    
 }
 
-PYBIND11_EMBEDDED_MODULE(objective_plugin, m2) 
+PYBIND11_EMBEDDED_MODULE(scanner_plugin, m) 
 {
-    //typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
-    //typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
-
-    py::bind_map<map_doub_type_, std::shared_ptr<map_doub_type_>>(m2, "std_unordered_map_double");
-    py::bind_vector<vec_str_type_, std::shared_ptr<vec_str_type_>>(m2, "std_vector_string");
+    using namespace Gambit::Scanner::Plugins::ScannerPyPlugin;
+    using namespace Gambit::Scanner::Plugins::Utils;
     
-    m2.def("get_inifile_value", [&](const std::string &val, py::kwargs args) -> py::object
+    m.import("scannerbit");
+    
+    m.def("get_printer", []()
     {
-        using namespace Gambit::Scanner::Plugins::ScannerPyPlugin;
-        using namespace Gambit::Scanner::Plugins::Utils;
-        
+        return &Gambit::Scanner::Plugins::ScannerPyPlugin::get_printer();
+    }, "", py::return_value_policy::reference);
+    
+    m.def("get_prior", []()
+    {
+        return &Gambit::Scanner::Plugins::ScannerPyPlugin::get_prior();
+    }, "", py::return_value_policy::reference);
+    
+    m.def("get_inifile_value", [](const std::string &val, py::kwargs args) -> py::object
+    {        
         if (args.contains("default"))
         {
-            if (is_int(args))
+            if (is_type<py::int_>(args, "dtype"))
                 return py::cast(get_inifile_value<int>(val, args["default"].cast<int>()));
-            else if (is_str(args))
+            else if (is_type<py::str>(args, "dtype"))
                 return py::cast(get_inifile_value<std::string>(val, args["default"].cast<std::string>()));
-            else if (is_list(args))
+            else if (is_type<py::list>(args, "dtype"))
             {
                 py::list def = args["default"].cast<py::list>();
-                std::vector<double> defv;
-                for (auto &&l : def)
-                    defv.push_back(l.cast<double>());
-                
-                std::vector<double> ret = get_inifile_value<std::vector<double>>(val, defv);
-                
                 py::list list;
-                for (auto &&r : ret)
-                    list.append(r);
                 
+                if (is_type<py::int_>(args, "etype"))
+                {
+                    std::vector<int> defv;
+                    for (auto &&l : def)
+                        defv.push_back(l.cast<int>());
+                    
+                    std::vector<int> ret = get_inifile_value<std::vector<int>>(val, defv);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else if (is_type<py::str>(args, "etype"))
+                {
+                    std::vector<std::string> defv;
+                    for (auto &&l : def)
+                        defv.push_back(l.cast<std::string>());
+                    
+                    std::vector<std::string> ret = get_inifile_value<std::vector<std::string>>(val, defv);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else
+                {
+                    std::vector<double> defv;
+                    for (auto &&l : def)
+                        defv.push_back(l.cast<double>());
+                    
+                    std::vector<double> ret = get_inifile_value<std::vector<double>>(val, defv);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+
                 return list;
             }
             else
@@ -442,16 +374,35 @@ PYBIND11_EMBEDDED_MODULE(objective_plugin, m2)
         }
         else
         {
-            if (is_int(args))
+            if (is_type<py::int_>(args, "dtype"))
                 return py::cast(get_inifile_value<int>(val));
-            else if (is_str(args))
+            else if (is_type<py::str>(args, "dtype"))
                 return py::cast(get_inifile_value<std::string>(val));
-            else if (is_list(args))
+            else if (is_type<py::list>(args, "dtype"))
             {
                 py::list list;
-                std::vector<double> ret = get_inifile_value<std::vector<double>>(val);
-                for (auto &&r : ret)
-                    list.append(r);
+                
+                if (is_type<py::int_>(args, "etype"))
+                {
+                    std::vector<int> ret = get_inifile_value<std::vector<int>>(val);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else if (is_type<py::str>(args, "etype"))
+                {
+                    std::vector<std::string> ret = get_inifile_value<std::vector<std::string>>(val);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else
+                {
+                    std::vector<double> ret = get_inifile_value<std::vector<double>>(val);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
                 
                 return list;
             }
@@ -460,10 +411,111 @@ PYBIND11_EMBEDDED_MODULE(objective_plugin, m2)
         }
     });
     
-    m2.def("get_keys", Gambit::Scanner::Plugins::ObjPyPlugin::get_keys);
-    m2.def("set_dimension", Gambit::Scanner::Plugins::ObjPyPlugin::set_dimension);
-    m2.def("print_parameters", Gambit::Scanner::Plugins::ObjPyPlugin::print_parameters);
+    m.def("get_dimension", get_dimension);
+    m.def("get_purpose", get_purpose);
+}
+
+PYBIND11_EMBEDDED_MODULE(objective_plugin, m) 
+{
+    using namespace ::Gambit::Scanner::Plugins::ObjPyPlugin;
+    using namespace ::Gambit::Scanner::Plugins::Utils;
+
+    m.import("scannerbit");
     
+    m.def("get_inifile_value", [](const std::string &val, py::kwargs args) -> py::object
+    {
+        if (args.contains("default"))
+        {
+            if (is_type<py::int_>(args, "dtype"))
+                return py::cast(get_inifile_value<int>(val, args["default"].cast<int>()));
+            else if (is_type<py::str>(args, "dtype"))
+                return py::cast(get_inifile_value<std::string>(val, args["default"].cast<std::string>()));
+            else if (is_type<py::list>(args, "dtype"))
+            {
+                py::list def = args["default"].cast<py::list>();
+                py::list list;
+                
+                if (is_type<py::int_>(args, "etype"))
+                {
+                    std::vector<int> defv;
+                    for (auto &&l : def)
+                        defv.push_back(l.cast<int>());
+                    
+                    std::vector<int> ret = get_inifile_value<std::vector<int>>(val, defv);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else if (is_type<py::str>(args, "etype"))
+                {
+                    std::vector<std::string> defv;
+                    for (auto &&l : def)
+                        defv.push_back(l.cast<std::string>());
+                    
+                    std::vector<std::string> ret = get_inifile_value<std::vector<std::string>>(val, defv);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else
+                {
+                    std::vector<double> defv;
+                    for (auto &&l : def)
+                        defv.push_back(l.cast<double>());
+                    
+                    std::vector<double> ret = get_inifile_value<std::vector<double>>(val, defv);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+
+                return list;
+            }
+            else
+                return py::cast(get_inifile_value<double>(val, args["default"].cast<double>()));
+        }
+        else
+        {
+            if (is_type<py::int_>(args, "dtype"))
+                return py::cast(get_inifile_value<int>(val));
+            else if (is_type<py::str>(args, "dtype"))
+                return py::cast(get_inifile_value<std::string>(val));
+            else if (is_type<py::list>(args, "dtype"))
+            {
+                py::list list;
+                
+                if (is_type<py::int_>(args, "etype"))
+                {
+                    std::vector<int> ret = get_inifile_value<std::vector<int>>(val);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else if (is_type<py::str>(args, "etype"))
+                {
+                    std::vector<std::string> ret = get_inifile_value<std::vector<std::string>>(val);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                else
+                {
+                    std::vector<double> ret = get_inifile_value<std::vector<double>>(val);
+                    
+                    for (auto &&r : ret)
+                        list.append(r);
+                }
+                
+                return list;
+            }
+            else
+                return py::cast(get_inifile_value<double>(val));
+        }
+    });
+    
+    m.def("get_keys", get_keys);
+    m.def("set_dimension", set_dimension);
+    m.def("print_parameters", print_parameters);
 }
 
 #endif
