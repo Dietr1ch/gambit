@@ -77,7 +77,7 @@ namespace Gambit
             
             std::vector<std::string> getShownParameters() const {return std::vector<std::string>();}
 
-            void transform(const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
+            void transform(hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const
             {
                 for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
                 {
@@ -87,7 +87,7 @@ namespace Gambit
                 iter = (iter + 1)%value.size();
             }
 
-            std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double>) const override
             {
                 const double rtol = 1e-4;
                 for (int i = 0, n = this->size(); i < n; i++)
@@ -101,8 +101,8 @@ namespace Gambit
                     }
                 }
                 // arbitrary as every value of unit hypercube maps to the same fixed parameter
-                std::vector<double> u(this->size(), 0.5);
-                return u;
+                //std::vector<double> u(this->size(), 0.5);
+                //return u;
             }
         };
 
@@ -166,7 +166,7 @@ namespace Gambit
             
             std::vector<std::string> getShownParameters() const {return std::vector<std::string>();}
 
-            void transform (const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
+            void transform (hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const
             {
                 double value = outputMap[name];
 
@@ -177,7 +177,7 @@ namespace Gambit
                 }
             }
 
-            std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double>) const override
             {
                 const double rtol = 1e-4;
                 for (int i = 0, n = this->size(); i < n; i++)
@@ -191,8 +191,8 @@ namespace Gambit
                     }
                 }
                 // arbitrary as every value of unit hypercube maps to the same fixed parameter
-                std::vector<double> u(this->size(), 0.5);
-                return u;
+                //std::vector<double> u(this->size(), 0.5);
+                //return u;
             }
 
         };

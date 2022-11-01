@@ -62,53 +62,74 @@ namespace Gambit
             inline std::vector<std::string> getShownParameters() const { return shown_param_names; }
             
             // Transformation from unit hypercube to physical parameters
-            void transform(const std::vector<double> &unitPars, std::unordered_map<std::string,double> &outputMap) const
+            void transform(hyper_cube<double> unitPars, std::unordered_map<std::string,double> &outputMap) const
             {
-                std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
-                for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
+                //std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
+                //for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
+                //{
+                //    unit_next = unit_it + (*it)->size();
+                //    std::vector<double> subUnit(unit_it, unit_next);
+                //    unit_it = unit_next;
+                //    (*it)->transform(subUnit, outputMap);
+                //}
+                
+                int unit_i = 0, unit_size;
+                for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; ++it)
                 {
-                    unit_next = unit_it + (*it)->size();
-                    std::vector<double> subUnit(unit_it, unit_next);
-                    unit_it = unit_next;
-                    (*it)->transform(subUnit, outputMap);
+                    unit_size = (*it)->size();
+                    (*it)->transform(unitPars.segment(unit_i, unit_size), outputMap);
+                    unit_i = unit_size;
                 }
             }
 
             // Transformation from physical parameters back to unit hypercube
-            std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
             {
-                std::vector<double> u;
+                //std::vector<double> u;
+                int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
                 {
-                    auto ublock = (*it)->inverse_transform(physical);
-                    u.insert(u.end(), ublock.begin(), ublock.end());
+                    //auto ublock = (*it)->inverse_transform(physical);
+                    //u.insert(u.end(), ublock.begin(), ublock.end());
+                    unit_size = (*it)->size();
+                    (*it)->inverse_transform(physical, unit.segment(unit_i, unit_size));
+                    unit_i += unit_size;
                 }
 
                 // check it
 
-                for (const auto &p : u)
+                //for (const auto &p : u)
+                //{
+                //    if (p > 1. || p < 0.)
+                //    {
+                //        throw std::runtime_error("unit hypercube outside 0 and 1");
+                //    }
+                //}
+                
+                for (int i = 0, end = unit.size(); i < end; ++i)
                 {
-                  if (p > 1. || p < 0.)
-                  {
-                    throw std::runtime_error("unit hypercube outside 0 and 1");
-                  }
+                    if (unit[i] >= 1. || unit[i] <= 0.)
+                    {
+                        throw std::runtime_error("unit hypercube outside 0 and 1");
+                    }
                 }
 
                 auto round_trip = physical;
-                transform(u, round_trip);
+                //transform(map_vector<double>(&u[0], u.size()), round_trip);
+                transform(unit, round_trip);
                 const double rtol = 1e-4;
                 for (const auto &s : physical) 
                 {
-                  const double a = round_trip.at(s.first);
-                  const double b = s.second;
-                  const double rdiff = std::abs(a - b) / std::max(std::abs(a), std::abs(b));
-                  if (rdiff > rtol)
-                  {
-                    throw std::runtime_error("could not convert physical parameters to hypercube");
-                  }
+                    const double a = round_trip.at(s.first);
+                    const double b = s.second;
+                    const double rdiff = std::abs(a - b) / std::max(std::abs(a), std::abs(b));
+                    if (rdiff > rtol)
+                    {
+                        throw std::runtime_error("could not convert physical parameters to hypercube");
+                    }
                 }
 
-                return u;        
+                //return u;        
             }
             
             //~CompositePrior() noexcept

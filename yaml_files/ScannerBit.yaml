@@ -47,12 +47,13 @@ Scanner:
   # This tag specifies which plugin to use as the scanner.
   # Here the multinest scanner is choosen, but you could
   # choose any scanner defined under the scanners section
-  use_scanner: python #twalk
+  use_scanner: grid #twalk
 
   scanners:
 
     python:
-      plugin: python
+      pyplugin: test.py
+      like: LogLike
       
     mcmc:
       plugin: GreAT
@@ -93,8 +94,8 @@ Scanner:
       grid_pts: 3 #NxN grid
 
     grid:
-      plugin: grid
-      version: ">=1.0"
+      pyplugin: grid
+      #version: ">=1.0"
       like: LogLike
       grid_pts: [5, 3]
       parameters: ["EggBox::param_1", "EggBox::param_0"]
@@ -111,8 +112,7 @@ Scanner:
       parameters:
         "EggBox::param_0": 3.14
         "EggBox::param_1": [.2, .3]
-
-
+  
   # Define built-in SB likelihoods
   objectives:
 
@@ -125,8 +125,10 @@ Scanner:
           range: [0, 4]
 
     EggBox:
-      plugin: EggBox
+      #plugin: EggBox
+      pyplugin: eggbox.py
       purpose: LogLike
+      length: [5.0, 5.0]
       parameters:
         param_0:
           #prior_type: none
@@ -170,4 +172,4 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e6
 
-  default_output_path: "runs/ScannerBit"
+  default_output_path: "runs/ScannerBit2"

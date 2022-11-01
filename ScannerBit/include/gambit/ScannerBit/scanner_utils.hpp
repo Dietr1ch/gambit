@@ -33,6 +33,7 @@
 #include <cctype>
 #include <boost/iterator/zip_iterator.hpp>
 #include <boost/range.hpp>
+#include <Eigen/Dense>
 
 #ifdef __GNUG__
   #include <cstdlib>
@@ -153,6 +154,35 @@ namespace Gambit
             return in;
 #endif
         }
+        
+        /****************************************/
+        /********* Eigen3 definitions ***********/
+        /****************************************/
+        
+        /// \brief A vector.
+        ///
+        template <typename T>
+        using vector = Eigen::Matrix<T, Eigen::Dynamic, 1>;
+        
+        /// \brief A row vector.
+        ///
+        template <typename T>
+        using row_vector = Eigen::Matrix<T, 1, Eigen::Dynamic>;
+        
+        /// \brief A matrix.
+        ///
+        template <typename T>
+        using matrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
+        
+        /// \brief Represents the unit hypercube.
+        ///
+        template <typename T>
+        using hyper_cube = Eigen::Ref<vector<T>>;
+        
+        /// \brief Vector using raw data.
+        ///
+        template <typename T>
+        using map_vector = Eigen::Map<vector<T>, Eigen::Unaligned, Eigen::Stride<1, 1>>;
 
         /****************************************/
         /****** get_yaml_vector function ********/

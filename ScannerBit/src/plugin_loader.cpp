@@ -547,6 +547,10 @@ namespace Gambit
                                 {
                                     temp.plugin = it_p->second["plugin"].as<std::string>();
                                 }
+                                else if (it_p->second["pyplugin"])
+                                {
+                                    temp.plugin = "python";
+                                }
                                 else
                                 {
                                     scan_warn << "Plugin name is not defined under the \"" << it->first << "\" tag.  "

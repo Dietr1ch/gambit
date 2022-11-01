@@ -323,9 +323,17 @@ namespace Gambit
         public:
             using s_ptr::s_ptr;
             like_ptr(){}
-            like_ptr(const like_ptr &in) : s_ptr (in){}
+            like_ptr(s_ptr in) : s_ptr(in) {}
+            like_ptr(const like_ptr &in) : s_ptr (in), map(in.map){}
             //like_ptr(like_ptr &&in) : s_ptr (std::move(in)) {}
             like_ptr(void *in) : s_ptr(in) {}
+            
+            like_ptr &operator=(const like_ptr &in)
+            {
+                map = in.map; 
+                s_ptr::operator=(in);
+                return *this;
+            }
 
             std::unordered_map<std::string, double> transform(const std::vector<double> &vec)
             {
@@ -345,6 +353,11 @@ namespace Gambit
 
             double operator()(const std::vector<double> &vec)
             {
+                return (*this)(map_vector<double>(const_cast<double *>(&vec[0]), vec.size()));
+            }
+            
+            double operator()(hyper_cube<double> vec)
+            {
                 int rank = (*this)->getRank();
                 (*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
@@ -354,7 +367,7 @@ namespace Gambit
                 (*this)->getPrinter().print(modified_ret_val, "Modified" + (*this)->getPurpose(), rank, id);
                 if (vec.size() > 0 && (*this)->getPrinter().get_printUnitcube())
                 {
-                  (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                    (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
                 }
                 (*this)->getPrinter().print(id,   "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);

@@ -67,9 +67,9 @@ def main(argv):
         elif opt in ('-x','--exclude-plugins','--exclude-plugin'):
             exclude_plugins.update(neatsplit(",",arg))
     # info for the different plugin types
-    src_paths = sorted(["./ScannerBit/src/scanners", "./ScannerBit/src/objectives"])
-    inc_paths = sorted(["./ScannerBit/include/gambit/ScannerBit/scanners", "./ScannerBit/include/gambit/ScannerBit/objectives"])
-    plug_type = sorted(["scanner", "objective"])
+    src_paths = sorted(["./ScannerBit/src/scanners", "./ScannerBit/src/objectives", "./ScannerBit/src/interps"])
+    inc_paths = sorted(["./ScannerBit/include/gambit/ScannerBit/scanners", "./ScannerBit/include/gambit/ScannerBit/objectives", "./ScannerBit/include/gambit/ScannerBit/interps"])
+    plug_type = sorted(["scanner", "objective", "interp"])
     config_files = []
     for ptype in plug_type:
         config_files += ["./config/" + ptype + "_locations.yaml"]
@@ -124,6 +124,9 @@ set( scannerbit_headers"""
 )
 
 add_gambit_library( ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers} )
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
+    target_include_directories( ScannerBit PUBLIC ${EIGEN3_INCLUDE_DIR})
+endif()
 """
     ## end adding scannerbit files to CMakeLists.txt ##
 
@@ -199,10 +202,12 @@ set( scanner_scanlibs_headers"""
                     text = comment_remover(f.read())
                     it = re.finditer(r'\breqd_inifile_entries\s*?\(.*?\)|\bREQD_INIFILE_ENTRIES\s*?\(.*?\)', text, re.DOTALL)
                     ini_finds = [[m.span()[0], -1, re.sub(r'\s', '', m.group())] for m in it]
+                    it = re.finditer(r'\binterp_plugin\s*?\(.*?\)\s*?\{|\bINTERP_PLUGIN\s*?\(.*?\)\s*?\{', text, re.DOTALL)
+                    interp_finds = [[m.span()[0], 0, m.group()] for m in it]
                     it = re.finditer(r'\bobjective_plugin\s*?\(.*?\)\s*?\{|\bOBJECTIVE_PLUGIN\s*?\(.*?\)\s*?\{', text, re.DOTALL)
-                    obj_finds = [[m.span()[0], 0, m.group()] for m in it]
+                    obj_finds = [[m.span()[0], 1, m.group()] for m in it]
                     it = re.finditer(r'\bscanner_plugin\s*?\(.*?\)\s*?\{|\bSCANNER_PLUGIN\s*?\(.*?\)\s*?\{', text, re.DOTALL)
-                    scan_finds = [[m.span()[0], 1, m.group()] for m in it]
+                    scan_finds = [[m.span()[0], 2, m.group()] for m in it]
                     it = re.finditer(r'\breqd_libraries\s*?\(.*?\)|\bREQD_LIBRARIES\s*?\(.*?\)', text, re.DOTALL)
                     lib_finds = [[m.span()[0], -2, re.sub(r'\s', '', m.group())] for m in it]
                     it = re.finditer(r'\breqd_headers\s*?\(.*?\)|\bREQD_HEADERS\s*?\(.*?\)', text, re.DOTALL)
@@ -211,7 +216,7 @@ set( scanner_scanlibs_headers"""
                     flag_finds = [[m.span()[0], -4, re.sub(r'\s', '', m.group())] for m in it]
                     it = re.finditer(r'\bcxx_flags\s*?\(.*?\)|\bCXX_FLAGS\s*?\(.*?\)', text, re.DOTALL)
                     cxx_finds = [[m.span()[0], -5, re.sub(r'\s|"', '', m.group())] for m in it]
-                    all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds + inc_finds + flag_finds + cxx_finds)
+                    all_finds  = sorted(scan_finds + obj_finds + interp_finds + ini_finds + lib_finds + inc_finds + flag_finds + cxx_finds)
                     for find in all_finds:
                         if find[1] >= 0:
                             processed = False
@@ -604,6 +609,7 @@ set( PLUGIN_INCLUDE_DIRECTORIES
                 ${GSL_INCLUDE_DIRS}
                 ${ROOT_INCLUDE_DIR}
                 ${ROOT_INCLUDE_DIRS}
+                ${EIGEN3_INCLUDE_DIR}
                 ${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit
 )\n
 if( ${PLUG_VERBOSE} )
@@ -814,6 +820,9 @@ if ({2}_FOUND)
         ${{{2}_INCLUDE_DIRS}}
     )
     set ({0}_plugin_found_incs_{1} \"${{{0}_plugin_found_incs_{1}}}    \\\"{2}\\\": ${{{2}_INCLUDE_DIRS}}\\n\")
+else()
+    message(\"-- Did not find {0} header {2}. Disabling scanners that depend on this.\")
+    set ({0}_ok_flag_{1} \"${{{0}_ok_flag_{1}}} \\n    - file missing: \\\"{2}\\\"\")
 endif()
 """.format(plug_type[i], directory, inc)
                         else:

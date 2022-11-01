@@ -214,17 +214,19 @@ namespace Gambit
 
             // Transformation from unit interval to specified range
             // (need to use vectors to be compatible with BasePrior virtual function)
-            void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &output) const
+            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string,double> &output) const
             {
                 output[myparameter] = (T::inv(unitpars[0]*(upper-lower) + lower)-shift_out)/scale_out;
             }
 
-            std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
             {
                 const double p = physical.at(myparameter);
                 const double x = T::limits(scale_out * p + shift_out);
                 const double u = (x - lower) / (upper - lower);
-                return {u};
+                
+                unit[0] = u;
+                //return {u};
             }
 
             double operator()(const std::vector<double> &vec) const {return T::prior(vec[0]*scale+shift)*scale;}

@@ -12,7 +12,7 @@
 ///  \date 2012 Oct onwards
 ///
 ///  *********************************************
-
+#define __GAMBIT_CPP__
 #include <csignal>
 
 #include "gambit/Core/gambit.hpp"
