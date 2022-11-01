@@ -1,4 +1,4 @@
-import scanner_plugin as sp
+import scanner_plugin as splug
 import numpy as np
 
 vecs = []
@@ -10,27 +10,27 @@ def plugin_constructor():
     global like
     
     # gets dimension of hyper cube.
-    dim = sp.get_dimension()
+    dim = splug.get_dimension()
     
-    # gets inifile value corresponding to "like" key
-    purpose = sp.get_inifile_value("like", dtype=str)
+    # gets inifile value corresplugonding to "like" key
+    purpose = splug.get_inifile_value("like", dtype=str)
     
-    # gets likelihood corresponding to the purpose "purpose"
-    like = sp.get_purpose(purpose)
+    # gets likelihood corresplugonding to the purpose "purpose"
+    like = splug.get_purpose(purpose)
     
     # get grids pt number from inifile. Return a list of ints
-    N = sp.get_inifile_value("grid_pts", dtype=list, etype=int)
+    N = splug.get_inifile_value("grid_pts", dtype=list, etype=int)
     
     if len(N) != dim:
         raise Exception("Grid Scanner: The dimension of gambit ({0}) does not match the dimension of the inputed grid_pts ({1}).".format(dim, len(N)))
     
     # gets "parameters" infile value with a default of []. Returns a list of strings
-    user_params = sp.get_inifile_value("parameters", dtype=list, etype=str, default=list());
+    user_params = splug.get_inifile_value("parameters", dtype=list, etype=str, default=list());
 
     if len(user_params) > 0:
         
         # get the parameters names from the prior
-        param_names = sp.get_prior().getShownParameters()
+        param_names = splug.get_prior().getShownParameters()
         
         if len(param_names) != len(user_params):
             raise Exception("Grid Scanner: The dimension of gambit ({0}) does not match the dimension of the inputed parameters ({1}).".format(len(param_names), len(user_params)))
@@ -57,6 +57,6 @@ def plugin_main():
         id = like.getPtID()
         
         # prints value
-        sp.get_printer().get_stream().print(1.0, "mult", rank, id)
+        splug.get_printer().get_stream().print(1.0, "mult", rank, id)
     
     return 0
