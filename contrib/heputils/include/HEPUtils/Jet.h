@@ -1,13 +1,14 @@
 // -*- C++ -*-
 //
-// This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2017 Andy Buckley <andy.buckley@cern.ch>
+// This file is part of HEPUtils -- https://gitlab.com/hepcedar/heputils/
+// Copyright (C) 2013-2022 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
 //
 #pragma once
 
+#include "HEPUtils/FastJet.h"
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/Vectors.h"
 
@@ -15,6 +16,7 @@ namespace HEPUtils {
 
 
   /// Simple jet class, encapsulating a momentum 4-vector and with some extra b-tag info
+  ///
   /// @todo Derive from a PhysObj base class to centralise the momentum handling
   class Jet {
 
@@ -24,6 +26,9 @@ namespace HEPUtils {
     P4 _p4;
     /// B and C tags
     bool _isB, _isC;
+    /// Optional FastJet PJ (contains link to ClusterSeq)
+    /// @todo Use std::optional when C++17 allowed
+    FJNS::PseudoJet _pj;
     /// @}
 
 
@@ -39,6 +44,10 @@ namespace HEPUtils {
     /// "Cartesian" constructor
     Jet(double px, double py, double pz, double E, bool isB=false, bool isC=false)
       : _p4(px, py, pz, E), _isB(isB), _isC(isC) {  }
+
+    /// "PseudoJet" constructor
+    Jet(const FJNS::PseudoJet& pj, bool isB=false, bool isC=false)
+      : _p4(mk_p4(pj)), _isB(isB), _isC(isC) {  }
 
     /// @}
 
@@ -110,6 +119,29 @@ namespace HEPUtils {
     void set_ctag(bool isc) { _isC = isc; }
 
     /// @todo Generalize for charm tags, tau tags, multiple tags of a single type?
+
+    /// @}
+
+
+    /// @name FastJet information
+    /// @{
+
+    /// Get the contained PseudoJet object (const)
+    const FJNS::PseudoJet& pseudojet() const { return _pj; }
+
+    /// Get the contained PseudoJet object
+    FJNS::PseudoJet& pseudojet() { return _pj; }
+
+    /// Set the contained PseudoJet object
+    void set_pseudojet(const FJNS::PseudoJet& pj) { _pj = pj; }
+
+    /// @brief Access the ClusterSequence object if possible (can be null)
+    ///
+    /// Optional template arg can be used to cast to a specific derived CS type if wanted.
+    template <typename CS=FJNS::ClusterSequence>
+    const CS* clusterseq() {
+      return dynamic_cast<CS*>(_pj.associated_cs());
+    }
 
     /// @}
 

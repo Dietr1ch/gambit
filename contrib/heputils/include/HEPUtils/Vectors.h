@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
-// This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2021 Andy Buckley <andy.buckley@cern.ch>
+// This file is part of HEPUtils -- https://gitlab.com/hepcedar/heputils/
+// Copyright (C) 2013-2022 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -370,13 +370,13 @@ namespace HEPUtils {
     /// Get the spatial phi
     double phi() const { if (rho2() == 0) return 0; else return atan2(py(),px()); }
     /// Get the spatial theta
-    double theta() const { if (p2() == 0) return 0; else if (pz() == 0) return M_PI; else return atan2(rho(),pz()); }
+    double theta() const { if (p2() == 0) return 0; else if (pz() == 0) return 0.5 * M_PI; else return atan2(rho(),pz()); }
     /// Get the spatial-vector pseudorapidity
     double eta() const { return std::copysign(log((p() + fabs(pz())) / pT()), pz()); }
     /// Get the spatial-vector absolute pseudorapidity
     double abseta() const { return fabs(eta()); }
     /// Get the 4-momentum rapidity
-    double rap() const { return 0.5 * (E() + pz()) / (E() - pz()); }
+    double rap() const { return 0.5 * log((E() + pz()) / (E() - pz())); }
     /// Get the 4-momentum absolute rapidity
     double absrap() const { return fabs(rap()); }
 

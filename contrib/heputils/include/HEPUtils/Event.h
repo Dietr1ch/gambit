@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
-// This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2021 Andy Buckley <andy.buckley@cern.ch>
+// This file is part of HEPUtils -- https://gitlab.com/hepcedar/heputils/
+// Copyright (C) 2013-2022 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -242,26 +242,11 @@ namespace HEPUtils {
           else if (p->abspid() == 11) _electrons.push_back(p);
           else if (p->abspid() == 13) _muons.push_back(p);
           else if (p->abspid() == 15) _taus.push_back(p);
-        // } else {
-        //   delete p;
         }
       }
 
       // Sort the collections
       if (ptsort) _sort_particles();
-
-      // else if (p->abspid() == 15)
-      // {
-      //   _taus.push_back(p);
-      //   _ctaus.push_back(p);
-      // }
-      // else if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 ||
-      //          p->pid() == 1000022 || p->pid() == 1000039 ||
-      //          in_range(p->abspid(), 50, 60)) //< invert definition to specify all *visibles*?
-      // {
-      //   _invisibles.push_back(p);
-      //   _cinvisibles.push_back(p);
-      // }
     }
 
 
@@ -406,6 +391,14 @@ namespace HEPUtils {
     // void add_jet(Jet* j, const std::string& key="CANONICAL") {
     //   add_jet(mkconst(j), key);
     // }
+
+    /// @brief Access the jets' ClusterSequence object if possible (can be null)
+    ///
+    /// Optional template arg can be used to cast to a specific derived CS type if wanted.
+    template <typename CS=FJNS::ClusterSequence>
+    const CS* clusterseq(const std::string& key="CANONICAL") {
+      return dynamic_cast<CS*>(jets(key).front().clusterseq());
+    }
 
     /// @}
 
