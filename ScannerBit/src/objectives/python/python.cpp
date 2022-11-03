@@ -59,6 +59,8 @@ objective_plugin(python, version(1, 0, 0))
 {
     reqd_headers("pybind11");
     py::module_ file;
+    py::object pyplugin;
+    py::object main_func;
     py::scoped_interpreter *guard = nullptr;
     
     plugin_constructor
@@ -69,6 +71,7 @@ objective_plugin(python, version(1, 0, 0))
         }
         catch(std::exception &)
         {
+            guard = nullptr;
         }
 
         ::Gambit::Scanner::Plugins::ObjPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
@@ -82,30 +85,27 @@ objective_plugin(python, version(1, 0, 0))
         std::string path = get_inifile_value<std::string>("dir", GAMBIT_DIR "/ScannerBit/src/objectives/python");
         
         py::list(py::module::import("sys").attr("path")).append(py::cast(path));
-  
-        file = py::module::import(fname.c_str());
 
-        if (py::hasattr(file, "plugin_constructor"))
-        {
-            auto attr = file.attr("plugin_constructor");
-            attr();
-        }
+        file = py::module::import(fname.c_str());
+        
+        if (!py::hasattr(file, "objective_plugin"))
+            scan_err << "\"objective_plugin\" has not been defined in \"" << fname << "\"." << scan_end;
+        
+        pyplugin = file.attr("objective_plugin")();
+        
+        if (!py::hasattr(pyplugin, "plugin_main"))
+            scan_err << "\"plugin_main\" has not been defined in \"" << fname << "\"." << scan_end;
+        
+        main_func = pyplugin.attr("plugin_main");
     }
 
     double plugin_main(std::unordered_map<std::string, double> &map)
     {
-        //auto file = py::module::import("test");
-        return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(file.attr("plugin_main"), map);
+        return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(main_func, map);
     }
     
     plugin_deconstructor
     {
-        if(py::hasattr(file, "plugin_deconstructor"))
-        {
-            auto attr = file.attr("plugin_deconstructor");
-            attr();
-        }
-        
         if (guard != nullptr)
             delete guard;
     }

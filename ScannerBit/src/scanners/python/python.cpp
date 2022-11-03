@@ -58,6 +58,8 @@ scanner_plugin(python, version(1, 0, 0))
 {
     reqd_headers("pybind11");
     py::module_ file;
+    py::object pyplugin;
+    py::object main_func;
     py::scoped_interpreter *guard = nullptr;
     
     plugin_constructor
@@ -83,27 +85,25 @@ scanner_plugin(python, version(1, 0, 0))
         py::list(py::module::import("sys").attr("path")).append(py::cast(path));
         
         file = py::module::import(fname.c_str());
-        if (py::hasattr(file, "plugin_constructor"))
-        {
-            auto attr = file.attr("plugin_constructor");
-            attr();
-        }
+        
+        if (!py::hasattr(file, "scanner_plugin"))
+            scan_err << "\"scanner_plugin\" has not been defined in \"" << fname << "\"." << scan_end;
+        
+        pyplugin = file.attr("scanner_plugin")();
+        
+        if (!py::hasattr(pyplugin, "plugin_main"))
+            scan_err << "\"plugin_main\" has not been defined in \"" << fname << "\"." << scan_end;
+        
+        main_func = pyplugin.attr("plugin_main");
     }
 
     int plugin_main()
     {
-        //auto file = py::module::import("test");
-        return file.attr("plugin_main")().cast<int>();
+        return main_func().template cast<int>();
     }
     
     plugin_deconstructor
     {
-        if (py::hasattr(file, "plugin_deconstructor"))
-        {
-            auto attr = file.attr("plugin_deconstructor");
-            attr();
-        }
-        
         if (guard != nullptr)
             delete guard;
     }
