@@ -41,6 +41,7 @@
 
 #include "gambit/Core/core.hpp"
 #include "gambit/Core/error_handlers.hpp"
+#include "gambit/Core/resolution_utilities.hpp"
 #include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Elements/functors.hpp"
@@ -71,35 +72,11 @@ namespace Gambit
     typedef std::map<std::string, std::vector<functor*> > outputMapType;
     /// @}
 
-    /// Minimal info about outputVertices
-    struct OutputVertexInfo
+    /// Bind purpose to output vertex
+    struct OutputVertex
     {
       VertexID vertex;
-      const IniParser::ObservableType * iniEntry;
-    };
-
-    /// A simple rule for dependency resolution (aka constraints on module and
-    /// function name).
-    struct Rule
-    {
-      Rule(std::string function, std::string module) : function(function), module(module) {};
-      Rule(IniParser::ObservableType t)
-      {
-        capability = t.capability;
-        type  = t.type;
-        function = t.function;
-        module = t.module;
-        backend = t.backend;
-        version = t.version;
-        options = t.options;
-      };
-      std::string capability;
-      std::string type;
-      std::string function;
-      std::string module;
-      std::string backend;
-      std::string version;
-      Options options;
+      str purpose;
     };
 
     /// Information in parameter queue
@@ -118,12 +95,6 @@ namespace Gambit
       int third;
       bool printme;
     };
-
-    /// Check whether s1 (wildcard + regex allowed) matches s2
-    bool stringComp(const str &s1, const str &s2, bool with_regex = true);
-
-    /// Type comparison taking into account equivalence classes
-    bool typeComp(str, str, const Utils::type_equivalency&, bool with_regex = true);
 
     /// Main dependency resolver
     class DependencyResolver
@@ -150,7 +121,7 @@ namespace Gambit
         /// Collect the citation keys for backends, modules, etc
         void getCitationKeys();
 
-        // Print citation keys
+        /// Print citation keys
         void printCitationKeys();
 
         /// Retrieve the order in which target vertices are to be evaluated.
@@ -188,15 +159,19 @@ namespace Gambit
           return (*module_ptr)(0);
         }
 
-        const IniParser::ObservableType * getIniEntry(VertexID);
+        /// Returns the purpose associated with a given functor.
+        /// Non-null only if the functor corresponds to an ObsLike entry in the ini file.
+        const str& getPurpose(VertexID);
 
+        /// Tell functor that it invalidated the current point in model space (due to a large or NaN contribution to lnL)
         void invalidatePointAt(VertexID, bool);
 
+        /// Reset all active functors and delete existing results.
         void resetAll();
 
         /// Check for unused rules and options
         void checkForUnusedRules(int);
-        
+
         /// Set the Scan ID
         void set_scanID();
         int scanID;
@@ -222,10 +197,6 @@ namespace Gambit
         void makeFunctorsModelCompatible();
 
         /// Resolution of individual module function dependencies
-        boost::tuple<const IniParser::ObservableType *, DRes::VertexID>
-          resolveDependency(DRes::VertexID toVertex, sspair quantity);
-
-        /// Resolution of individual module function dependencies
         DRes::VertexID resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity);
 
         /// Derive options from ini-entries
@@ -243,14 +214,6 @@ namespace Gambit
 
         /// Topological sort
         std::list<VertexID> run_topological_sort();
-
-        /// Find entries (comparison of inifile entry with quantity or functor)
-        /// @{
-        const IniParser::ObservableType * findIniEntry(
-            sspair quantity, const IniParser::ObservablesType &, const str &);
-        const IniParser::ObservableType * findIniEntry(
-            DRes::VertexID toVertex, const IniParser::ObservablesType &, const str &);
-        /// @}
 
         /// Main function for resolution of backend requirements
         void resolveVertexBackend(VertexID);
@@ -288,7 +251,7 @@ namespace Gambit
         Printers::BasePrinter *boundPrinter;
 
         /// Output Vertex Infos
-        std::vector<OutputVertexInfo> outputVertexInfos;
+        std::vector<OutputVertex> outputVertices;
 
         /// The central boost graph object
         MasterGraphType masterGraph;
@@ -323,7 +286,7 @@ namespace Gambit
 
         /// Global flag for triggering printing of unitCubeParameters
         bool print_unitcube = false;
-        
+
   };
   }
 }
