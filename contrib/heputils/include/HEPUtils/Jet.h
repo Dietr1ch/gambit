@@ -19,6 +19,13 @@ namespace HEPUtils {
   ///
   /// @todo Derive from a PhysObj base class to centralise the momentum handling
   class Jet {
+  public:
+
+    /// Typedef for tag PID -> counts dictionary
+    using TagCounts = std::map<int, int>;
+
+
+  private:
 
     /// @name Storage
     /// @{
@@ -27,7 +34,7 @@ namespace HEPUtils {
     P4 _p4;
 
     /// Tagging counts
-    std::map<int, int> _tags;
+    TagCounts _tags;
 
     /// Optional FastJet PJ (contains link to ClusterSeq)
     /// @todo Use std::optional when C++17 allowed
@@ -43,15 +50,31 @@ namespace HEPUtils {
 
     /// Constructor for a light jet without explicit constituents
     Jet(const P4& mom, bool isB=false, bool isC=false)
-      : _p4(mom), _isB(isB), _isC(isC) {  }
+      : _p4(mom)
+    { set_btag(isB); set_ctag(isC); }
 
     /// "Cartesian" constructor
     Jet(double px, double py, double pz, double E, bool isB=false, bool isC=false)
-      : _p4(px, py, pz, E), _isB(isB), _isC(isC) {  }
+      : _p4(px, py, pz, E)
+    { set_btag(isB); set_ctag(isC); }
 
     /// "PseudoJet" constructor
     Jet(const FJNS::PseudoJet& pj, bool isB=false, bool isC=false)
-      : _p4(mk_p4(pj)), _isB(isB), _isC(isC) {  }
+      : _p4(mk_p4(pj))
+    { set_btag(isB); set_ctag(isC); }
+
+
+    /// Constructor for a light jet without explicit constituents, with a general tags map
+    Jet(const P4& mom, const TagCounts& tags)
+      : _p4(mom), _tags(tags) {  }
+
+    /// "Cartesian" constructor, with a general tags map
+    Jet(double px, double py, double pz, double E, const TagCounts& tags)
+      : _p4(px, py, pz, E), _tags(tags) {  }
+
+    /// "PseudoJet" constructor, with a general tags map
+    Jet(const FJNS::PseudoJet& pj, const TagCounts& tags)
+      : _p4(mk_p4(pj)), _tags(tags) {  }
 
     /// @}
 

@@ -113,7 +113,11 @@ namespace Gambit
           {
             // Veto bosons not decaying into quarks or gluons
             abschildID = abs(childID);
-            if (abschildID == MCUtils::PID::Z0 || abschildID == MCUtils::PID::WPLUS || abschildID == MCUtils::PID::HIGGS || abschildID == MCUtils::PID::ELECTRON || abschildID == MCUtils::PID::MUON || abschildID == MCUtils::PID::TAU || abschildID == MCUtils::PID::NU_E || abschildID == MCUtils::PID::NU_MU || abschildID == MCUtils::PID::NU_TAU || abschildID == MCUtils::PID::GAMMA)
+            if (abschildID == MCUtils::PID::Z0 || abschildID == MCUtils::PID::WPLUS ||
+                abschildID == MCUtils::PID::HIGGS || abschildID == MCUtils::PID::ELECTRON ||
+                abschildID == MCUtils::PID::MUON || abschildID == MCUtils::PID::TAU ||
+                abschildID == MCUtils::PID::NU_E || abschildID == MCUtils::PID::NU_MU ||
+                abschildID == MCUtils::PID::NU_TAU || abschildID == MCUtils::PID::GAMMA)
             {
               isGoodBoson = false;
             }
@@ -127,7 +131,8 @@ namespace Gambit
           {
             isGoodBoson = false;
           }
-          // Check that the vector bosons do not come from a Higgs boson or top quark (in which case the tagging efficiency would be different)
+          // Check that the vector bosons do not come from a Higgs boson or top quark
+          // (in which case the tagging efficiency would be different)
           int absmotherID = abs(get_unified_mother1_pid(p, pevt));
           if(absmotherID == MCUtils::PID::HIGGS || absmotherID == MCUtils::PID::TQUARK)
           {
@@ -140,7 +145,7 @@ namespace Gambit
             if(apid == MCUtils::PID::WPLUS) WCandidates.push_back(HEPUtils::Particle(p4,pid));
             if(apid == MCUtils::PID::HIGGS) hCandidates.push_back(HEPUtils::Particle(p4,pid));
           }
-        }        
+        }
 
         //We only want final state particles:
         if (!get_unified_isFinal(p)) continue;
@@ -188,8 +193,10 @@ namespace Gambit
       }
 
       /// Jet finding
-      /// @todo Choose jet algorithm via detector _settings? Run several algs?
+      /// @todo Choose jet algorithm via detector _settings?
+      /// @todo We can now run several algs and store them under different jet-collection names
       const FJNS::JetDefinition jet_def(FJNS::antikt_algorithm, antiktR);
+      /// @todo For substructure we need to keep this ClusterSequence alive... make_unique() ctor and attach to the Event? Or manage at CB level?
       FJNS::ClusterSequence cseq(jetparticles, jet_def);
       std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(jet_pt_min));
 
@@ -271,8 +278,10 @@ namespace Gambit
           result.add_particle(gp);
         }
 
-        // Add jet to collection including tags
-        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB, isC, isW, isZ, ish));
+        // Add jet to collection including tags and PseudoJet
+        /// @todo We need to do something smart if we want to keep the ClusterSequence alive
+        HEPUtils::Jet::TagCounts tags{ {5,int(isB)}, {4,int(isC)}, {23,int(isZ)}, {24,int(isW)}, {25,int(ish)} };
+        result.add_jet(new HEPUtils::Jet(pj, tags));
       }
 
       /// Calculate missing momentum
