@@ -458,7 +458,17 @@ def proc_cat(dm, sv, products, propagators, gambit_pdg_dict,
                                      gambit_pdg_dict),
                      str(model_specific_particles[i].spinX2)
                      )
-
+            if not model_specific_particles[i].is_sc():
+                towrite += (
+                        "addParticle(\"{0}\", spec.get(Par::Pole_Mass,"
+                        " \"{1}\"), {2});\n"
+                ).format(pdg_to_particle(model_specific_particles[i].conjugate_PDG_code,
+                                         gambit_pdg_dict),
+                         pdg_to_particle(model_specific_particles[i].conjugate_PDG_code,
+                                         gambit_pdg_dict),
+                         str(model_specific_particles[i].spinX2)
+                         )
+ 
     towrite += (
             "\n"
             "// Get rid of convenience macros\n"
@@ -509,8 +519,8 @@ def proc_cat(dm, sv, products, propagators, gambit_pdg_dict,
             for i in np.arange(len(propagators)):
                 if abs(propagators[i]) != abs(dm.PDG_code):
                     towrite += (
-                            "if (spec.get(Par::Pole_Mass, \"{0}\") >= 2*{1}) "
-                            "process_ann.resonances_thresholds.resonances.\n    "
+                            "if ( (spec.has(Par::Pole_Mass, \"{0}\") ? spec.get(Par::Pole_Mass, \"{0}\") : spec.get(Par::mass1, \"{0}\")) >= 2*{1})\n"
+                            "  process_ann.resonances_thresholds.resonances."
                             "push_back(TH_Resonance(spec.get(Par::Pole_Mass, "
                             "\"{0}\"), tbl.at(\"{0}\").width_in_GeV));\n"
                     ).format(pdg_to_particle(propagators[i], gambit_pdg_dict),
@@ -533,6 +543,20 @@ def proc_cat(dm, sv, products, propagators, gambit_pdg_dict,
     )
 
     return towrite
+
+def write_wimp_props(model_name):
+
+    wimp_prop_h = dumb_indent(4, (
+              "MODEL_CONDITIONAL_DEPENDENCY({0}_spectrum, Spectrum, {0})\n"
+              "ALLOW_MODELS({0})\n"
+    ).format(model_name))
+    
+    wimp_prop_c = dumb_indent(6, (
+              "if(ModelInUse(\"{0}\"))\n"
+              "  props.mass = Dep::{0}_spectrum->get(Par::Pole_Mass, props.name);\n"
+    ).format(model_name))
+    
+    return wimp_prop_h, wimp_prop_c
 
 
 def write_darkbit_src(dm, pc, sv, products, propagators, does_DM_decay,
@@ -703,6 +727,7 @@ def write_darkbit_rollcall(model_name, pc, does_DM_decay):
         pro_cat = dumb_indent(4, (
                 "#define FUNCTION TH_ProcessCatalog_{0}\n"
                 "  START_FUNCTION(TH_ProcessCatalog)\n"
+                "  DEPENDENCY(WIMP_properties, WIMPprops)\n"
                 "  DEPENDENCY(decay_rates, DecayTable)\n"
                 "  DEPENDENCY({0}_spectrum, Spectrum)\n"
                 "{1}"
@@ -975,6 +1000,7 @@ def write_micromegas_header(gambit_model_name, mathpackage, params, cap_def):
             "#define BACKENDLANG CC\n"
             "#define VERSION {1}\n"
             "#define SAFE_VERSION {2}\n"
+            "#define REFERENCE Belanger:2001fz,Belanger:2004yn,Belanger:2006is,Belanger:2008sj,Belanger:2010gh,Belanger:2013oya,Belanger:2014vza"
             "\n"
             "LOAD_LIBRARY\n"
             "\n"
@@ -1157,6 +1183,10 @@ def add_micromegas_to_darkbit_rollcall(model_name, reset_dict, does_DM_decay):
         towrite = (
             "      BACKEND_OPTION((MicrOmegas_{}),(gimmemicro))\n"
             ).format(model_name)
+        if function == "RD_oh2_Xf_MicrOmegas":
+          towrite += (
+            "      ALLOW_MODEL({})\n"
+            ).format(model_name)
 
         if linenum != 0:
             amend_file("DarkBit_rollcall.hpp", "DarkBit", towrite, linenum,
@@ -1168,10 +1198,6 @@ def add_micromegas_to_darkbit_rollcall(model_name, reset_dict, does_DM_decay):
     # Add the model to the function arguments
     file = "DarkBit_rollcall.hpp"
     module = "DarkBit"
-    if not does_DM_decay:
-        add_new_model_to_function(file, module, "RD_oh2_Xf",
-                                  "RD_oh2_Xf_MicrOmegas", model_name,
-                                  reset_dict, pattern="ALLOW_MODELS")
     add_new_model_to_function(file, module, "DD_couplings",
                               "DD_couplings_MicrOmegas", model_name,
                               reset_dict, pattern="ALLOW_MODEL_DEPENDENCE")

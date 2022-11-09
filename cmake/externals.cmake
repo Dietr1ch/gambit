@@ -32,6 +32,7 @@
 #
 #  \author Tomas Gonzalo
 #          (tomas.gonzalo@monash.edu)
+#  \date 2019 Sep, Oct
 #  \date 2020 Nov
 #
 #************************************************
@@ -84,6 +85,7 @@ add_custom_target(nuke-pippi COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-d
                              COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
 add_dependencies(nuke-all nuke-pippi)
 set_target_properties(get-pippi PROPERTIES EXCLUDE_FROM_ALL 1)
+
 
 # Macro to clear the build stamp manually for an external project
 macro(enable_auto_rebuild package)
@@ -187,6 +189,11 @@ function(check_ditch_status name version dir)
       set (itch "${itch}" "${name}_${version}")
     elseif ((arg STREQUAL "x11") AND NOT X11_FOUND)
       set (itch "${itch}" "${name}_${version}")
+    elseif ((arg STREQUAL "c++14") AND NOT GAMBIT_SUPPORTS_CXX14 AND NOT GAMBIT_SUPPORTS_CXX17)
+      message("${BoldRed}   ${name} (${version}) needs to be compiled with c++14/17 but GAMBIT is compiled with a lower version. ${name} will be ditched.${ColourReset}")
+      set (itch "${itch}" "${name}_${version}")
+    elseif ((arg STREQUAL "rivet") AND ditched_rivet_3.1.4)
+      set (itch "${itch}" "${name}_${version}")
     endif()
   endforeach()
   foreach(ditch_command ${itch})
@@ -204,7 +211,13 @@ function(check_ditch_status name version dir)
       execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${name}_${version}-prefix)
       execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir})
     endif()
+    if(NOT "${itch_unique}" MATCHES ".*${ditch_command}.*")
+      set(itch_unique "${itch_unique}" "${ditch_command}")
+    endif()
   endforeach()
+  # Make sure the additions to itch are kept in the parent scope
+  set(itch "${itch_unique}")
+  set(itch "${itch_unique}" PARENT_SCOPE)
 endfunction()
 
 # Add a new target that just prints a helpful error explaining that the target for a backend base is not activated.
@@ -330,11 +343,11 @@ macro(inform_of_missing_modules name ver missing_with_commas)
   )
 endmacro()
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/Backends/")
-  include(cmake/backends.cmake)
-endif()
 if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   include(cmake/scanners.cmake)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/Backends/")
+  include(cmake/backends.cmake)
 endif()
 
 # Print outcomes of BOSSing efforts

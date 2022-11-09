@@ -7,6 +7,8 @@
 #include "Eigen/Eigen"
 #include "gambit/Utils/end_ignore_warnings.hpp"
 
+// #define CHECK_CUTFLOW
+
 namespace Gambit {
   namespace ColliderBit {
 
@@ -16,10 +18,13 @@ namespace Gambit {
 
     /// @brief ATLAS Run 2 0-lepton jet+MET SUSY analysis, with 139/fb of data
     ///
-    /// Based on:
+    /// Originally based on this confnote:
     ///   https://cds.cern.ch/record/2686254
     ///   https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/CONFNOTES/ATLAS-CONF-2019-040/
-    ///
+    /// Updated to the paper version:
+    ///   https://arxiv.org/abs/2010.14293
+    ///   https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/PAPERS/SUSY-2018-22/
+
     class Analysis_ATLAS_13TeV_0LEP_139invfb : public Analysis {
     public:
 
@@ -63,7 +68,11 @@ namespace Gambit {
                                          "pTx", "|eta_x|",
                                          "Aplanarity", "MET/sqrt(HT)", "m_eff(incl)",};
         _cutflows.addCutflow("2j-1600", cutnames);
-        _cutflows.addCutflow("2j-2200", cutnames);
+        _cutflows.addCutflow("2j-2200", {"Pre-sel + MET + pT1 + meff",
+                                         "Njet >= 2", "Cleaning",
+                                         "Dphi(j123,MET)min", "Dphi(j4+,MET)min",
+                                         "pT1", "|eta_x|",
+                                         "MET/sqrt(HT)", "m_eff(incl)",});
         _cutflows.addCutflow("2j-2800", cutnames);
         _cutflows.addCutflow("4j-1000", cutnames);
         _cutflows.addCutflow("4j-2200", cutnames);
@@ -222,7 +231,7 @@ namespace Gambit {
         if (nJets50 < 1 || signalJets50[0]->pT() < 200) return;
         if (met < 300) return;
         if (meff < 800) return;
-        if (dphimin_123 < 0.4) return;
+        if (dphimin_123 < 0.2) return;
         _cutflows.fillnext(w);
 
         // Njet >= 2
@@ -236,17 +245,16 @@ namespace Gambit {
 
         // 2 jet regions
         if (nJets50 >= 2) {
-          if (_cutflows["2j-1600"].filltail({
+          if (_cutflows["2j-1600"].fillnext({
                 signalJets[0]->pT() > 250,
                 dphimin_123 > 0.8, dphimin_more > 0.4,
                 signalJets[1]->pT() > 250, etamax_2 < 2.0,
                 true, met_sqrtHT > 16, meff > 1600}, w)) _counters.at("2j-1600").add_event(event);
 
           if (_cutflows["2j-2200"].fillnext({
-                signalJets[0]->pT() > 600,
                 dphimin_123 > 0.4, dphimin_more > 0.2,
-                signalJets[1]->pT() >  50, etamax_2 < 2.8,
-                true, met_sqrtHT > 16, meff > 2200}, w)) _counters.at("2j-2200").add_event(event);
+                signalJets[0]->pT() > 600, etamax_2 < 2.8,
+                met_sqrtHT > 16, meff > 2200}, w)) _counters.at("2j-2200").add_event(event);
           if (_cutflows["2j-2800"].fillnext({
                 signalJets[0]->pT() > 250,
                 dphimin_123 > 0.8, dphimin_more > 0.4,
@@ -258,17 +266,17 @@ namespace Gambit {
         if (nJets50 >= 4) {
           if (_cutflows["4j-1000"].fillnext({
                 signalJets.at(0)->pT() > 200,
-                dphimin_123 > 0.4, dphimin_more > 0.4,
+                dphimin_123 > 0.4, dphimin_more > 0.2,
                 signalJets.at(3)->pT() > 100, etamax_4 < 2.0,
                 aplanarity > 0.04, met_sqrtHT > 16, meff > 1000}, w)) _counters.at("4j-1000").add_event(event);
           if (_cutflows["4j-2200"].fillnext({
                 signalJets[0]->pT() > 200,
-                dphimin_123 > 0.4, dphimin_more > 0.4,
+                dphimin_123 > 0.4, dphimin_more > 0.2,
                 signalJets[3]->pT() > 100, etamax_4 < 2.0,
                 aplanarity > 0.04, met_sqrtHT > 16, meff > 2200}, w)) _counters.at("4j-2200").add_event(event);
           if (_cutflows["4j-3400"].fillnext({
                 signalJets[0]->pT() > 200,
-                dphimin_123 > 0.4, dphimin_more > 0.4,
+                dphimin_123 > 0.4, dphimin_more > 0.2,
                 signalJets[3]->pT() > 100, etamax_4 < 2.0,
                 aplanarity > 0.04, met_sqrtHT > 10, meff > 3400}, w)) _counters.at("4j-3400").add_event(event);
         }
@@ -317,31 +325,49 @@ namespace Gambit {
         add_result(SignalRegionData(_counters.at("2j-1600"), 2111, {2190., 130.}));
         add_result(SignalRegionData(_counters.at("2j-2200"),  971, { 980.,  50.}));
         add_result(SignalRegionData(_counters.at("2j-2800"),   78, {  87.,   8.}));
-        add_result(SignalRegionData(_counters.at("4j-1000"),  535, { 536.,  31.}));
+        add_result(SignalRegionData(_counters.at("4j-1000"),  535, { 536.,  32.}));
         add_result(SignalRegionData(_counters.at("4j-2200"),   60, {  60.,   5.}));
         add_result(SignalRegionData(_counters.at("4j-3400"),    4, {  5.7,  1.0}));
-        add_result(SignalRegionData(_counters.at("5j-1600"),  320, { 319.,  19.}));
-        add_result(SignalRegionData(_counters.at("6j-1000"),   25, {  21.,  2.9}));
+        add_result(SignalRegionData(_counters.at("5j-1600"),  320, { 319.,  20.}));
+        add_result(SignalRegionData(_counters.at("6j-1000"),   25, {  21.,  3.}));
         add_result(SignalRegionData(_counters.at("6j-2200"),    5, {  4.6,  1.0}));
         add_result(SignalRegionData(_counters.at("6j-3400"),    0, {  0.8,  0.4}));
 
         // Cutflow printout
-        // const double sf = 139*crossSection()/femtobarn/sumOfWeights();
-        _cutflows["2j-1600"].normalize(1763, 1);
-        _cutflows["2j-2200"].normalize(1763, 1);
-        _cutflows["2j-2800"].normalize(1763, 1);
-        _cutflows["4j-1000"].normalize(2562, 1);
-        _cutflows["4j-2200"].normalize(2562, 1);
-        _cutflows["4j-3400"].normalize(2562, 1);
-        _cutflows["5j-1600"].normalize(6101, 1);
-        _cutflows["6j-1000"].normalize(6101, 1);
-        _cutflows["6j-2200"].normalize(6101, 1);
-        _cutflows["6j-3400"].normalize(6101, 1);
-        cout << "\nCUTFLOWS:\n" << _cutflows << endl;
-        cout << "\nSRCOUNTS:\n";
-        // for (double x : _srnums) cout << x << "  ";
-        for (auto& pair : _counters) cout << pair.second.weight_sum() << "  ";
-        cout << "\n" << endl;
+        #ifdef CHECK_CUTFLOW
+          // const double sf = 139*crossSection()/femtobarn/sumOfWeights();
+
+          // // Confnote cutflows:
+          // _cutflows["2j-1600"].normalize(1763, 1);
+          // _cutflows["2j-2200"].normalize(1763, 1);
+          // _cutflows["2j-2800"].normalize(1763, 1);
+          // _cutflows["4j-1000"].normalize(2562, 1);
+          // _cutflows["4j-2200"].normalize(2562, 1);
+          // _cutflows["4j-3400"].normalize(2562, 1);
+          // _cutflows["5j-1600"].normalize(6101, 1);
+          // _cutflows["6j-1000"].normalize(6101, 1);
+          // _cutflows["6j-2200"].normalize(6101, 1);
+          // _cutflows["6j-3400"].normalize(6101, 1);
+
+          // Paper cutflows:
+          _cutflows["2j-1600"].normalize(1423, 1);  // m_sq = 1200, m_N1 = 600, direct decay
+          _cutflows["2j-2200"].normalize(1423, 1);  // m_sq = 1200, m_N1 = 600, direct decay
+          _cutflows["2j-2800"].normalize(1423, 1);  // m_sq = 1200, m_N1 = 600, direct decay
+          _cutflows["4j-1000"].normalize(1787, 1);  // m_g = 1400, m_N1 = 1000, direct decay  
+          _cutflows["4j-2200"].normalize(1787, 1);  // m_g = 1400, m_N1 = 1000, direct decay  
+          _cutflows["4j-3400"].normalize(1787, 1);  // m_g = 1400, m_N1 = 1000, direct decay  
+          _cutflows["5j-1600"].normalize(1787, 1);  // m_g = 1400, m_N1 = 1000, direct decay
+          _cutflows["6j-1000"].normalize(2651, 1);  // m_q = 800, m_C1 = 600, m_N1 = 400, one-step decay
+          _cutflows["6j-2200"].normalize(2651, 1);  // m_q = 800, m_C1 = 600, m_N1 = 400, one-step decay
+          _cutflows["6j-3400"].normalize(2651, 1);  // m_q = 800, m_C1 = 600, m_N1 = 400, one-step decay
+
+
+          cout << "\nCUTFLOWS:\n" << _cutflows << endl;
+          cout << "\nSRCOUNTS:\n";
+          // for (double x : _srnums) cout << x << "  ";
+          for (auto& pair : _counters) cout << pair.second.weight_sum() << "  ";
+          cout << "\n" << endl;
+        #endif
       }
 
 

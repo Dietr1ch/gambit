@@ -22,14 +22,16 @@ namespace HEPUtils {
 
     /// @name Storage
     /// @{
+
     /// Momentum vector
     P4 _p4;
+
     /// PDG ID code
-    int _pdgId;
+    int _pid;
+
     /// Promptness flag
     bool _prompt;
-    // /// Isolation value
-    // double _isol4;
+
     /// @}
 
 
@@ -40,35 +42,29 @@ namespace HEPUtils {
 
     /// Default constructor
     Particle()
-      : _pdgId(0), _prompt(false) { } //, _isol4(0.0) {  }
+      : _pid(0), _prompt(false) { }
 
     /// "Cartesian" constructor
     Particle(double px, double py, double pz, double E, int pdgid)
-      : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
-
-    /// "Cartesian" constructor for massless particles - or close enough
-    /// @todo AB: WTF?
-    // Particle(double px, double py, double pz, int pdgid)
-    //   : _p4(px, py, pz), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
+      : _p4(px, py, pz, E), _pid(pdgid), _prompt(false) { }
 
     /// 4-mom + PDG ID constructor
     Particle(const P4& mom, int pdgid)
-      : _p4(mom), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
+      : _p4(mom), _pid(pdgid), _prompt(false) { }
 
     /// Copy constructor
     Particle(const Particle& p)
-      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()) { } //, _isol4(p.isol()) {  }
+      : _p4(p.mom()), _pid(p.pid()), _prompt(p.is_prompt()) { }
 
     /// Copy constructor from a pointer
     Particle(const Particle* p)
-      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()) { } //, _isol4(p->isol()) {  }
+      : _p4(p->mom()), _pid(p->pid()), _prompt(p->is_prompt()) { }
 
     /// Copy assignment operator
-    Particle& operator=(const Particle& p) {
+    Particle& operator = (const Particle& p) {
       _p4 = p.mom();
-      _pdgId = p.pid();
+      _pid = p.pid();
       _prompt = p.is_prompt();
-      //_isol4 = p.isol();
       return *this;
     }
 
@@ -144,11 +140,11 @@ namespace HEPUtils {
     /// @{
 
     /// Get PDG ID code
-    int pid() const { return _pdgId; }
+    int pid() const { return _pid; }
     /// Get abs PDG ID code
-    int abspid() const { return abs(_pdgId); }
+    int abspid() const { return abs(_pid); }
     /// Set PDG ID code
-    void set_pid(int pid) { _pdgId = pid; }
+    void set_pid(int pdgid) { _pid = pdgid; }
 
     /// Is this particle usually visible in a detector?
     bool is_visible() {

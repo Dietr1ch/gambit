@@ -6,7 +6,7 @@
 
 // This is based on the ATLAS 139 invfb Monojet analysis, found at: https://arxiv.org/pdf/2102.10874.pdf
 
-#define CHECK_CUTFLOW
+// #define CHECK_CUTFLOW
 
 namespace Gambit {
   namespace ColliderBit {
@@ -51,7 +51,7 @@ namespace Gambit {
       Analysis_ATLAS_13TeV_MONOJET_139infb() {
 
         analysis_specific_reset();
-        set_analysis_name("Analysis_ATLAS_13TeV_MONOJET_139infb");
+        set_analysis_name("ATLAS_13TeV_MONOJET_139infb");
         set_luminosity(139.0);
         
         #ifdef CHECK_CUTFLOW
@@ -123,7 +123,7 @@ namespace Gambit {
         }
         
         // Fill tau object
-        for (const Particle* t : event->muons())
+        for (const Particle* t : event->taus())
         {
           if (t->pT() > 20 && t->abseta()<2.5) baselineTaus.push_back(t);
         }

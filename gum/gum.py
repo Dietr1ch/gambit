@@ -622,6 +622,8 @@ if args.file:
 
             pc_cap, dmid_cap, dmconj_cap = write_darkbit_rollcall(gum.name, pc,
                                                                   gum.dm_decays)
+                                                                  
+            wimp_prop_h, wimp_prop_c = write_wimp_props(gum.name)
 
         """
         CALCHEP SRC
@@ -777,6 +779,13 @@ if args.file:
             amend_rollcall("DarkMatter_ID", m, dmid_cap, reset_contents)
             amend_rollcall("DarkMatterConj_ID", m, dmconj_cap,
                            reset_contents)
+            # Add to the wimp properties
+            num = find_string("DarkBit_rollcall.hpp", m,"MODEL_CONDITIONAL_DEPENDENCY(DMEFT_spectrum, Spectrum, DMEFT)")[1]
+            amend_file("DarkBit_rollcall.hpp", m, wimp_prop_h,num, reset_contents)
+            
+            num = find_string("DarkBit.cpp", m,"if(ModelInUse(\"DMEFT\"))")[1]
+            amend_file("DarkBit.cpp", m, wimp_prop_c,num-1, reset_contents)
+            
             write_file(gum.name + ".cpp", m, darkbit_src, reset_contents)
             if pc:
                 amend_rollcall("TH_ProcessCatalog", m, pc_cap, reset_contents)
@@ -960,6 +969,11 @@ if args.file:
         # Write capability and model definitions
         write_capability_definitions("capabilities.dat", gum.name, capability_definitions, reset_contents)
         write_model_definitions("models.dat", gum.name, model_definitions, reset_contents)
+
+        # Generate a file containing all of the bib tags for the backends used.
+        bibtags = generate_bib_tags(output_opts,gum.math)
+        num = find_string("citation_keys.hpp", "Utils","      // GUM additions")[1]
+        amend_file("citation_keys.hpp", "Utils", bibtags, num,reset_contents)
 
         # Write a simple YAML file.
         drop_yaml_file(gum.name, model_parameters, add_higgs, reset_contents,

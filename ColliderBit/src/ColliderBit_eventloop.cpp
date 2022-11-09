@@ -38,7 +38,7 @@
 #include "gambit/ColliderBit/ColliderBit_eventloop.hpp"
 
 // #define COLLIDERBIT_DEBUG
-#define DEBUG_PREFIX "DEBUG: OMP thread " << omp_get_thread_num() << ":  "
+#define DEBUG_PREFIX "DEBUG: OMP thread " << omp_get_thread_num() << ":  " << __FILE__ << ":" << __LINE__ << ":  "
 
 namespace Gambit
 {
@@ -94,8 +94,11 @@ namespace Gambit
           result.event_count[collider]                                    = 0;
           // Check that the nEvents options given make sense.
           if (min_nEvents.at(collider) > max_nEvents.at(collider))
-           ColliderBit_error().raise(LOCAL_INFO,"Option min_nEvents is greater than corresponding max_nEvents for collider "
-                                                +collider+". Please correct your YAML file.");
+          {
+            ColliderBit_error().set_fatal(true); // This one must regarded fatal since there is something wrong in the user input
+            ColliderBit_error().raise(LOCAL_INFO,"Option min_nEvents is greater than corresponding max_nEvents for collider "
+                                                 +collider+". Please correct your YAML file.");
+          }
           // Check that the analyses all correspond to actual ColliderBit analyses, and sort them into separate maps for each detector.
           for (str& analysis : result.analyses.at(collider))
           {
@@ -139,6 +142,7 @@ namespace Gambit
         // Any problem during COLLIDER_INIT step?
         piped_warnings.check(ColliderBit_warning());
         piped_errors.check(ColliderBit_error());
+        piped_invalid_point.check();
 
         // Do the OMP parallelized part of the collider initialization
         #ifdef COLLIDERBIT_DEBUG
@@ -151,6 +155,7 @@ namespace Gambit
         // Any problems during the COLLIDER_INIT_OMP step?
         piped_warnings.check(ColliderBit_warning());
         piped_errors.check(ColliderBit_error());
+        piped_invalid_point.check();
 
         // Execute the sigle-thread iteration XSEC_CALCULATION 
         #ifdef COLLIDERBIT_DEBUG
@@ -160,6 +165,7 @@ namespace Gambit
         // Any problems during the XSEC_CALCULATION step?
         piped_warnings.check(ColliderBit_warning());
         piped_errors.check(ColliderBit_error());
+        piped_invalid_point.check();
 
         //
         // The main OMP parallelized sections begin here
@@ -175,6 +181,7 @@ namespace Gambit
         // Any problems during the START_SUBPROCESS step?
         piped_warnings.check(ColliderBit_warning());
         piped_errors.check(ColliderBit_error());
+        piped_invalid_point.check();
 
         // Convergence loop
         while(result.current_event_count() < max_nEvents.at(collider) and not *Loop::done)
@@ -241,6 +248,7 @@ namespace Gambit
           // Any problems during the main event loop?
           piped_warnings.check(ColliderBit_warning());
           piped_errors.check(ColliderBit_error());
+          piped_invalid_point.check();
 
           #ifdef COLLIDERBIT_DEBUG
             cout << DEBUG_PREFIX << "Did " << eventCountBetweenConvergenceChecks << " events of " << result.current_event_count() << " simulated so far." << endl;
@@ -272,9 +280,6 @@ namespace Gambit
           cerr << DEBUG_PREFIX << "Final event count: current_event_count() = " << result.current_event_count() << endl;
         #endif
 
-        // Skip to next collider if too many events fail
-        if(result.exceeded_maxFailedEvents) continue;
-
         #pragma omp parallel
         {
           Loop::executeIteration(END_SUBPROCESS);
@@ -282,21 +287,30 @@ namespace Gambit
         // Any problems during the END_SUBPROCESS step?
         piped_warnings.check(ColliderBit_warning());
         piped_errors.check(ColliderBit_error());
+        piped_invalid_point.check();
 
         //
         // OMP parallelized sections end here
         //
 
         Loop::executeIteration(COLLIDER_FINALIZE);
+
+        // Any problems during the COLLIDER_FINALIZE step?
+        piped_warnings.check(ColliderBit_warning());
+        piped_errors.check(ColliderBit_error());
+        piped_invalid_point.check();
       }
 
       // Nicely thank the loop for being quiet, and restore everyone's vocal chords
       if (silenceLoop) std::cout.rdbuf(coutbuf);
 
-      // Check for exceptions
+      Loop::executeIteration(BASE_FINALIZE);
+
+      // Any problems during the BASE_FINALIZE step?
+      piped_warnings.check(ColliderBit_warning());
+      piped_errors.check(ColliderBit_error());
       piped_invalid_point.check();
 
-      Loop::executeIteration(BASE_FINALIZE);
     }
 
 

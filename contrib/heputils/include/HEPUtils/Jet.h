@@ -22,13 +22,17 @@ namespace HEPUtils {
 
     /// @name Storage
     /// @{
+
     /// Momentum vector
     P4 _p4;
-    /// B and C tags
-    bool _isB, _isC;
+
+    /// Tagging counts
+    std::map<int, int> _tags;
+
     /// Optional FastJet PJ (contains link to ClusterSeq)
     /// @todo Use std::optional when C++17 allowed
     FJNS::PseudoJet _pj;
+
     /// @}
 
 
@@ -107,18 +111,29 @@ namespace HEPUtils {
     /// @name Tagging
     /// @{
 
+    /// Get the tags map (const)
+    const map<int,int>& tags() const { return _tags; }
+    /// Get the tags map (const)
+    map<int,int>& tags() { return _tags; }
+
+    /// Get the number of tags for the given PDG ID
+    int ntags(int pdgid) const { auto it = _tags.find(pdgid); return (it == _tags.end()) ? 0 : it->second; }
+    /// Get whether there is a non-zero number of tags for the given PDG ID
+    void tagged(int pdgid) const { return (ntags(pdgid) > 0); }
+    /// Set the number of tags for the given PDG ID
+    void set_ntags(int pdgid, int ntag) const { _tags[pdgid] = ntag; }
+
     /// Is this particle tagged as a b?
-    bool btag() const { return _isB; }
-    /// Set BTag value
-    void set_btag(bool isb) { _isB = isb; }
+    bool btag() const { return tagged(5); }
+    /// Set b-tag value
+    void set_btag(bool isb, int ntag=1) { set_ntags(5, ntag); }
 
     /// Is this particle tagged as a c?
+    ///
     /// @note Can be simultaneously btag()'d -- analyses should probably only use if fallback from b-tag.
-    bool ctag() const { return /* !btag() && */ _isC; }
-    /// Set CTag value
-    void set_ctag(bool isc) { _isC = isc; }
-
-    /// @todo Generalize for charm tags, tau tags, multiple tags of a single type?
+    bool ctag() const { return tagged(4); }
+    /// Set c-tag value
+    void set_ctag(bool isc, int ntag=1) { set_ntags(4, ntag); }
 
     /// @}
 

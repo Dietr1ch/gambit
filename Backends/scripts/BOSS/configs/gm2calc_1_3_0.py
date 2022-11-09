@@ -27,9 +27,10 @@ castxml_cc_opt = '-std=c++11'  # Additional option string passed to the compiler
 
 # ~~~~~ GAMBIT-specific options ~~~~~
 
-gambit_backend_name    = 'gm2calc'
-gambit_backend_version = '1.3.0'
-gambit_base_namespace  = ''
+gambit_backend_name      = 'gm2calc'
+gambit_backend_version   = '1.3.0'
+gambit_backend_reference = 'Athron:2015rva'
+gambit_base_namespace    = ''
 
 
 # ~~~~~ Information about the external code ~~~~~
@@ -104,6 +105,11 @@ known_classes = {
     "Eigen::Array" : "<Eigen/Core>",
 }
 
+# ~~~~~ Declarations to be added to the frontend header file ~~~~~
+
+convenience_functions = []
+
+ini_function_in_header = True
 
 # ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
 

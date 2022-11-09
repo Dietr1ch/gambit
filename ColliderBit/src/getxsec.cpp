@@ -464,7 +464,6 @@ namespace Gambit
 
       if(*Loop::iteration == XSEC_CALCULATION)
       {
-
         // Get a copy of the SLHA1 spectrum that we can modify
         SLHAstruct slha(*Dep::SLHA1Spectrum);
 
@@ -1169,6 +1168,12 @@ namespace Gambit
     {
       using namespace Pipes::getEvGenCrossSection;
 
+      // Reset the xsec object
+      if (*Loop::iteration == BASE_INIT)
+      {
+        result.reset();
+      }
+
       // Don't bother if there are no analyses that will use this.
       if (Dep::RunMC->analyses.empty()) return;
 
@@ -1276,6 +1281,8 @@ namespace Gambit
           // #endif
 
         }
+
+
       }
 
       // Gather the xsecs from all threads into one

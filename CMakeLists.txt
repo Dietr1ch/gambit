@@ -117,7 +117,7 @@ string(REGEX MATCH ";pybind;|;pybind11;|;Pybind;|;Pybind11;" DITCH_PYBIND ";${it
 # otherwise it seems to get it wrong.  Also, we need to add versions of python
 # greater than 3.3 manually, for compatibility with CMake 2.8.12.
 # If pybind11 is ditched, do not worry about PythonLibs
-set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7 3.8 3.9)
+set(Python_ADDITIONAL_VERSIONS 3.6 3.7 3.8 3.9)
 # If both FORCE_PYTHON2 and FORCE_PYTHON3 are set, throw error
 if (FORCE_PYTHON2 AND FORCE_PYTHON3)
   message(FATAL_ERROR "Two different versions of python requested. Switch either FORCE_PYTHON2 or FORCE_PYTHON3 off.")
@@ -207,7 +207,11 @@ else()
       endif()
     else()
       message("${BoldYellow}   Found pybind11 ${pybind11_VERSION} at ${pybind11_DIR}.${ColourReset}")
-      include_directories("${PYBIND11_INCLUDE_DIR}")
+      if(NOT pybind11_INCLUDE_DIR)
+          include_directories("${PYBIND11_INCLUDE_DIR}")
+      else()
+          include_directories("${pybind11_INCLUDE_DIR}")
+      endif()
     endif()
   endif()
   if(NOT pybind11_FOUND)
@@ -266,9 +270,9 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
 endif()
 
 # Add some Fortran compiler flags
-if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES "f95*")
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -ffixed-line-length-none -cpp")
-elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source -fpp")
 endif()
 
@@ -309,6 +313,7 @@ if(PERMIT_CXX17_CHECK)
 endif()
 if(COMPILER_SUPPORTS_CXX17)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+  set(GAMBIT_SUPPORTS_CXX17 TRUE)
 else()
   if(PERMIT_CXX17_CHECK)
     CHECK_CXX_COMPILER_FLAG("-std=c++1z" COMPILER_SUPPORTS_CXX1z)
@@ -316,15 +321,18 @@ else()
   CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
   if(COMPILER_SUPPORTS_CXX14)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    set(GAMBIT_SUPPORTS_CXX14 TRUE)
   else()
     CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
     CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
     if(COMPILER_SUPPORTS_CXX11)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+      set(GAMBIT_SUPPORTS_CXX11 TRUE)
     else()
       CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
       if(COMPILER_SUPPORTS_CXX0X)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+        set(GAMBIT_SUPPORTS_CXX0X TRUE)
       else()
         message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
       endif()
@@ -575,6 +583,12 @@ endif()
 # Add the main gambit sources and identify which modules are to be included.
 include(cmake/gambit.cmake)
 
+# Add backends and scanners
+include(cmake/externals.cmake)
+
+# Reprocess the ditch set into a comma-separated list again
+string (REPLACE ";" "," itch_with_commas "${itch}")
+
 # Identify the different harvester scripts
 set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Elements/scripts/module_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
@@ -636,9 +650,6 @@ execute_process(RESULT_VARIABLE result COMMAND ${PYTHON_EXECUTABLE} ${update_cma
 check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")
 
-# Add backends and scanners
-include(cmake/externals.cmake)
-
 # Add GAMBIT subdirectories.
 add_subdirectory(Logs)
 add_subdirectory(Utils)
@@ -656,6 +667,10 @@ set(GAMBIT_ALL_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
+  # Add dependencies that need to be built before any bit
+  foreach(dep ${MODULE_DEPENDENCIES})
+    add_dependencies(${bit} ${dep})
+  endforeach()
 endforeach()
 
 # If ColliderBit is in use, make the collider_harvest step a dependency of ColliderBit
@@ -668,6 +683,10 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   # If HepMC is in use, make it a dependency of ColliderBit
   if(NOT EXCLUDE_HEPMC)
     add_dependencies(ColliderBit hepmc)
+  endif()
+  # If YODA is in use, make it a dependency of ColliderBit
+  if(NOT EXCLUDE_YODA)
+    add_dependencies(ColliderBit yoda)
   endif()
 endif()
 
