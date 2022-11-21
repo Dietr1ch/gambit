@@ -872,6 +872,12 @@ set(lib "libobscura")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
+  set(obscura_CXX_FLAGS "${BACKEND_CXX_FLAGS}")
+  set(obscura_C_FLAGS "${BACKEND_C_FLAGS}")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(obscura_CXX_FLAGS "${obscura_CXX_FLAGS} -Wl,-undefined,dynamic_lookup,-flat_namespace")
+    set(obscura_C_FLAGS "${obscura_C_FLAGS} -Wl,-undefined,dynamic_lookup,-flat_namespace")
+  endif()
   ExternalProject_Add(${name}_${ver}
     DEPENDS "castxml;libphysica"
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
@@ -881,7 +887,7 @@ if(NOT ditched_${name}_${ver})
           COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/generated/version.hpp"
           COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/external/libphysica"
           COMMAND ${CMAKE_COMMAND} -E copy_directory "${libphysica_dir}/" "${dir}/external/libphysica/"
-    CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${BACKEND_CXX_FLAGS} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_C_FLAGS=${BACKEND_C_FLAGS} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
+    CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${obscura_CXX_FLAGS} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_C_FLAGS=${obscura_C_FLAGS} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
     BUILD_COMMAND ${CMAKE_COMMAND} --build ${dir} --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} --install ${dir}
   )
