@@ -62,6 +62,9 @@ ObsLikes:
     - purpose:    Observable
       capability: sigma_SI_p
 
+    - capability: obscuraTest
+      purpose: LogLike
+
 Rules:
 
   - capability: RD_fraction

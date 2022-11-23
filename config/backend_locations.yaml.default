@@ -113,6 +113,9 @@ nulike:
 obscura:
   1.0.2:       ./Backends/installed/obscura/1.0.2/lib/libobscura.so
 
+LibObscura:
+  1.0.2:       ./libobscura.so
+
 # Work in progress:
 # Rivet:
 #   3.0.0:       ./Backends/installed/Rivet/3.0.0/local/lib/libRivet.so

@@ -2203,7 +2203,7 @@ START_MODULE
     #define FUNCTION calc_obscuraTest
     START_FUNCTION(double)
     // NEEDS_CLASSES_FROM(obscura, default)
-    BACKEND_REQ(Fractional_Days_since_J2000, (), double, (int, int, int, double, double, double))
+    BACKEND_REQ(ObscuraTestFunction, (), double, (int, int, int, double, double, double))
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)    
     #undef FUNCTION  
 #undef CAPABILITY
