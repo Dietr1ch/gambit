@@ -26,13 +26,13 @@ LOAD_LIBRARY
 // Syntax for BE_FUNCTION:
 //  BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
 
- BE_FUNCTION(ObscuraTestFunction, double, (int,int,int,double,double, double), "__ZN7obscura27Fractional_Days_since_J2000Eiiiddd", "ObscuraTestCapability")
+ BE_FUNCTION(ObscuraTestFunction, double, (int,int,int,double,double, double), "_ZN7obscura27Fractional_Days_since_J2000Eiiiddd", "ObscuraTestCapability")
 
 /* Syntax for BE_VARIABLE:
  * BE_VARIABLE([name], [type], "[exact symbol name]", "[choose capability name]")
  * */
 
- BE_VARIABLE(LibphysicaMeter, double, "__ZN10libphysica13natural_units5meterE", "LibphysicaVariable")
+ BE_VARIABLE(LibphysicaMeter, double, "_ZN10libphysica13natural_units5meterE", "LibphysicaVariable")
 
 // Initialisation function (definition)
 BE_INI_FUNCTION{} END_BE_INI_FUNCTION
