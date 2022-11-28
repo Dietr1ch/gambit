@@ -499,8 +499,10 @@ namespace Gambit
   // 'obscura::Fractional_Days_since_J2000(int , int , int , double , double , double)'
         // double x = obscura_1_0_2::obscura::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);    // result = experiment.Likelihood(DM, SHM);
     // double x = BEreq::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
-    double x = BEreq::ObscuraTestFunction(1 , 1 , 2022 , 12 , 0, 0);
-    std::cout <<"x = " <<x <<std::endl;
+    double x = BEreq::FractionalDays(1 , 1 , 2022 , 12 , 0, 0);
+    double m = *BEreq::ObscuraMeter;
+    std::cout <<"x = " << x <<std::endl;
+    std::cout <<"meter = " << m <<std::endl;
     result = x;
   }
 

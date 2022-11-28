@@ -2198,12 +2198,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-#define CAPABILITY obscuraTest
+#define CAPABILITY ObscuraTestCapability
   START_CAPABILITY
     #define FUNCTION calc_obscuraTest
     START_FUNCTION(double)
     // NEEDS_CLASSES_FROM(obscura, default)
-    BACKEND_REQ(ObscuraTestFunction, (), double, (int, int, int, double, double, double))
+    BACKEND_REQ(FractionalDays, (), double, (int, int, int, double, double, double))
+    BACKEND_REQ(ObscuraMeter, (), double)
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)    
     #undef FUNCTION  
 #undef CAPABILITY
