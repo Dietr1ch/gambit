@@ -14,10 +14,12 @@ Parameters:
      mH: 125.10 # PDG 2020 value
 
   SubGeVDM_fermion:
-    mDM: 1
+    mDM: 
+      prior_type: log
+      range: [0.1,5]
     gDM: 2.5
-    kappa: 1e-3
-    mAp: 3
+    kappa: 5e-2
+    mAp: 10
     etaDM: 0
 
   Halo_gNFW_rho0:
@@ -55,7 +57,7 @@ Scanner:
     square_grid:
       plugin: square_grid
       like: LogLike
-      grid_pts: 1
+      grid_pts: 1000
 
 ObsLikes:
 
