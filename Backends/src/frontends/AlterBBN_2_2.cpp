@@ -88,6 +88,12 @@ BE_NAMESPACE
     if (AlterBBN_input.count("Nnu")){input_relicparam->Nnu = AlterBBN_input["Nnu"];}
     if (AlterBBN_input.count("dNnu")){input_relicparam->dNnu = AlterBBN_input["dNnu"];}
     if (AlterBBN_input.count("neutron_lifetime")){input_relicparam->life_neutron = AlterBBN_input["neutron_lifetime"];}
+    if (AlterBBN_input.count("m_chi")){input_relicparam->m_chi = AlterBBN_input["m_chi"];}
+    if (AlterBBN_input.count("g_chi")){input_relicparam->g_chi = AlterBBN_input["g_chi"];}
+    if (AlterBBN_input.count("fermion")){input_relicparam->fermion = AlterBBN_input["fermion"];}
+    if (AlterBBN_input.count("EM_coupled")){input_relicparam->EM_coupled = AlterBBN_input["EM_coupled"];}
+    if (AlterBBN_input.count("wimp")){input_relicparam->wimp = AlterBBN_input["wimp"];}
+    if (AlterBBN_input.count("selfConjugate")){input_relicparam->selfConjugate = AlterBBN_input["selfConjugate"];}
 
     // set error handling related parameters
     if (AlterBBN_input.count("failsafe")){input_relicparam->failsafe = (int)AlterBBN_input["failsafe"];}

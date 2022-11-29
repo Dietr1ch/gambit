@@ -105,7 +105,11 @@ namespace Gambit
       }
       else if (ModelInUse("SubGeVDM_fermion"))
       {
-        result["m_chi"] = *Param.at("mDM");
+        result["Nnu"] = 3.045; // contribution from SM neutrinos
+        result["dNnu"] = 0;                                // dNnu: within AlterBBN scenarios in which the sum Nnu+dNnu is the same are identical
+        result["eta0"] = 6.12e-10;                // eta at the end of BBN
+
+        result["m_chi"] = (*Param.at("mDM"))*1000;
         result["g_chi"] = 4;
         result["fermion"] = 1;
         result["selfConjugate"] = 0;
@@ -114,7 +118,11 @@ namespace Gambit
       }
       else if (ModelInUse("SubGeVDM_scalar"))
       {
-        result["m_chi"] = *Param.at("mDM");
+        result["Nnu"] = 3.045; // contribution from SM neutrinos
+        result["dNnu"] = 0;                                // dNnu: within AlterBBN scenarios in which the sum Nnu+dNnu is the same are identical
+        result["eta0"] = 6.12e-10;                // eta at the end of BBN
+
+        result["m_chi"] = (*Param.at("mDM"))*1000;
         result["g_chi"] = 2;
         result["fermion"] = 0;
         result["selfConjugate"] = 0;
