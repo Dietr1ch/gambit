@@ -73,6 +73,14 @@
 #          (aaron.vincent@cparc.ca)
 #  \date 2017 Sep, Nov
 #
+#  \author Marcin Chrzaszcz
+#          (mchrzasz@cern.ch)
+#  \date 2019 July
+#
+#  \author Jihyun Bhom
+#          (jihyun.bhom@ifj.edu.pl)
+#  \date 2019 July
+
 #  \author Janina Renk
 #          (janina.renk@fysik.su.se)
 #  \data 2018 Jun
@@ -80,6 +88,7 @@
 #  \author Patrick Stöcker
 #          (stoecker@physik.rwth-aachen.de)
 #  \date 2019 Aug
+#  \date 2021 Sep
 #
 #  \author Will Handley
 #          (wh260@cam.ac.uk)
@@ -118,6 +127,34 @@ add_custom_target(nuke-castxml COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}
 add_dependencies(nuke-all nuke-castxml)
 set_target_properties(castxml PROPERTIES EXCLUDE_FROM_ALL 1)
 
+# Acropolis
+set(name "acropolis")
+set(ver "1.2.1")
+set(dl "https://acropolis.hepforge.org/downloads/${name}-${ver}.tar.gz")
+set(md5 "e427da6d401d5b63ad485b4a8841f6d2")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/${name}_${ver}_patch.diff")
+set(required_modules "numpy,scipy,numba")
+check_ditch_status(${name} ${ver} ${dir})
+if(NOT ditched_${name}_${ver})
+  check_python_modules(${name} ${ver} ${required_modules})
+  if(modules_missing_${name}_${ver})
+    inform_of_missing_modules(${name} ${ver} ${modules_missing_${name}_${ver}})
+  else()
+    ExternalProject_Add(${name}_${ver}
+      DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+      SOURCE_DIR ${dir}
+      BUILD_IN_SOURCE 1
+      PATCH_COMMAND patch -p1 < ${patch}
+      CONFIGURE_COMMAND ""
+      BUILD_COMMAND ""
+      INSTALL_COMMAND ""
+    )
+  endif()
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+  set_as_default_version("backend" ${name} ${ver})
+endif()
+
 
 # Compiler flags for AlterBBN
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
@@ -149,7 +186,7 @@ if(NOT ditched_${name}_${ver})
     BUILD_IN_SOURCE 1
     PATCH_COMMAND patch -p1 < ${patch}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${MAKE_PARALLEL} CC=${CMAKE_C_COMPILER} ARFLAGS=rcs CFLAGS=${AlterBBN_C_FLAGS} CFLAGS_MP=${OpenMP_C_FLAGS}
+    BUILD_COMMAND ${MAKE_SERIAL} CC=${CMAKE_C_COMPILER} ARFLAGS=rcs CFLAGS=${AlterBBN_C_FLAGS} CFLAGS_MP=${OpenMP_C_FLAGS}
           COMMAND ar x src/libbbn.a
           COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} ${OpenMP_C_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -o ${lib}.so *.o" > make_so.sh
           COMMAND chmod u+x make_so.sh
@@ -159,6 +196,7 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
 endif()
+
 
 # CaptnGeneral
 set(name "capgen")
@@ -408,25 +446,69 @@ if(NOT ditched_${name}_${model}_${ver})
   set_as_default_version("backend model" ${name} ${ver} ${model})
 endif()
 
+
+# HepLikedata
+set(name "heplikedata")
+set(ver "1.2")
+set(dl "https://github.com/KrakowHEPSoft/HEPLikeData/archive/V${ver}.zip")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(md5 "a198174600f56258e90c3d84b6e362bd")
+check_ditch_status(${name} ${ver} ${dir})
+if(NOT ditched_${name}_${ver})
+  ExternalProject_Add(${name}_${ver}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+    SOURCE_DIR ${dir}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    )
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
+  set_as_default_version("backend" ${name} ${ver})
+endif()
+
+# HepLike
+set(name "heplike")
+set(ver "1.2")
+set(dl "https://github.com/KrakowHEPSoft/HEPLike/archive/V${ver}.zip")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(md5 "0854396f48f2257ad185064107d6f72f")
+set(HL_CXXFLAGS "${BACKEND_CXX_FLAGS} -I${yaml_INCLUDE_DIR}")
+check_ditch_status(${name} ${ver} ${dir})
+if(NOT ditched_${name}_${ver})
+  ExternalProject_Add(${name}_${ver}
+    DEPENDS heplikedata
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+    SOURCE_DIR ${dir}
+    BUILD_IN_SOURCE 1
+    CMAKE_COMMAND ${CMAKE_COMMAND} ..
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${HL_CXXFLAGS} -DCMAKE_MODULE_PATH=${PROJECT_SOURCE_DIR}/cmake
+    BUILD_COMMAND ${MAKE_PARALLEL} HEPLike_shared
+    INSTALL_COMMAND ""
+    )
+  BOSS_backend_with_ROOT(${name} ${ver})
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
+  set_as_default_version("backend" ${name} ${ver})
+endif()
+
+
 # SuperIso
 set(name "superiso")
-set(ver "3.6")
+set(ver "4.1")
 set(lib "libsuperiso")
-set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}.tgz")
-set(md5 "df864ceeccb72467bfbe572a8da9711d")
+set(dl "http://superiso.in2p3.fr/download/${name}_v${ver}_flavbit3.tgz")
+set(md5 "524ac68f60fbe76f9db4b760e88e77c4")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/remove_omp.patch")
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
+    PATCH_COMMAND patch -p1 < ${patch}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND sed ${dashi} -e "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" Makefile
-          COMMAND sed ${dashi} -e "s#rcsU#rcs#g" src/Makefile
-          COMMAND sed ${dashi} -e "s|CFLAGS= -O3 -pipe -fomit-frame-pointer|CFLAGS= -fPIC ${BACKEND_C_FLAGS}|g" Makefile
-          COMMAND ${MAKE_PARALLEL}
-          COMMAND ar x src/libisospin.a
+    BUILD_COMMAND ${MAKE_PARALLEL} CC=${CMAKE_C_COMPILER} ARFLAGS=rcs CFLAGS=${BACKEND_C_FLAGS}
+          COMMAND ar x src/libsuperiso.a
           COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -o ${lib}.so *.o" > make_so.sh
           COMMAND chmod u+x make_so.sh
           COMMAND ./make_so.sh
@@ -435,6 +517,7 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
 endif()
+
 
 # DDCalc
 set(name "ddcalc")
@@ -811,28 +894,66 @@ if(NOT ditched_${name}_${ver})
       DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
       SOURCE_DIR ${dir}
       BUILD_IN_SOURCE 1
+      # Apply main patch (modifications to existing likelihoods etc.)
       PATCH_COMMAND patch -p1 < ${patch}
+      # Add additional likelihoods that are not shipped with montepython
+      COMMAND patch -p1 < ${patchdir}/bao_correlations_likelihood.diff
+      COMMAND patch -p1 < ${patchdir}/bao_smallz_combined_2018_likelihood.diff
+      COMMAND patch -p1 < ${patchdir}/des_bao_Y1_likelihood.diff
+      COMMAND patch -p1 < ${patchdir}/WiggleZ_bao_highz.diff
+      # Add GAMBIT specific files that will fix the likelihoods to work with GAMBIT in the 'install' step
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/MontePythonLike.py ${dir}/montepython/MontePythonLike_${sfver}.py
-      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/fastPantheon__init__.py ${dir}/montepython/likelihoods/Pantheon/__init__.py
-      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/__init__eBOSS_DR14_Lya_combined.py ${dir}/montepython/likelihoods/eBOSS_DR14_Lya_combined/__init__.py
-      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/sdss_lrgDR7_fiducialmodel.dat ${dir}/data/sdss_lrgDR7/sdss_lrgDR7_fiducialmodel.dat
-      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/bao_eBOSS_2017.txt ${dir}/data/bao_eBOSS_2017.txt
-      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/bao_smallz_combined_2018.txt ${dir}/data/bao_smallz_combined_2018.txt
-      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/des_bao_Y1.txt ${dir}/data/des_bao_Y1.txt
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${patchdir}/WiggleZ_bao_highz ${dir}/montepython/likelihoods/WiggleZ_bao_highz/
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${patchdir}/bao_correlations ${dir}/montepython/likelihoods/bao_correlations/
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${patchdir}/bao_smallz_combined_2018 ${dir}/montepython/likelihoods/bao_smallz_combined_2018/
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${patchdir}/des_bao_Y1 ${dir}/montepython/likelihoods/des_bao_Y1/
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${patchdir}/bao_correlations_data ${dir}/data/bao_correlations/
-      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/MPLike_patch_script.py ${dir}/montepython/MPLike_patch_script.py
-      COMMAND sed ${dashi} -e "s#from MontePythonLike import#from MontePythonLike_${sfver} import#g" ${dir}/montepython/MPLike_patch_script.py
+      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/../MPLike_patch_script.py ${dir}/montepython/MPLike_patch_script.py
+      COMMAND sed ${dashi} -e "s/X_Y_Z/${sfver}/g" ${dir}/montepython/MPLike_patch_script.py
       BUILD_COMMAND ""
+      # Execute the script that fixes the likelihoods
+      INSTALL_COMMAND ${PYTHON_EXECUTABLE} ${dir}/montepython/MPLike_patch_script.py
+    )
+  endif()
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+endif()
+
+# MontePythonLike
+set(name "montepythonlike")
+set(ver "3.5.0")
+set(sfver "3_5_0")
+set(dl "https://github.com/brinckmann/montepython_public/archive/v${ver}.tar.gz")
+set(md5 "3467ba885320817d133e32493838e571")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patchdir "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/${name}_${ver}.diff")
+set(ditch_if_absent "Python")
+set(required_modules "numpy,scipy")
+check_ditch_status(${name} ${ver} ${dir} ${ditch_if_absent})
+if(NOT ditched_${name}_${ver})
+  check_python_modules(${name} ${ver} ${required_modules})
+  if(modules_missing_${name}_${ver})
+    inform_of_missing_modules(${name} ${ver} ${modules_missing_${name}_${ver}})
+  else()
+    ExternalProject_Add(${name}_${ver}
+      DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+      SOURCE_DIR ${dir}
+      BUILD_IN_SOURCE 1
+      # Apply main patch (modifications to existing likelihoods etc.)
+      PATCH_COMMAND patch -p1 < ${patch}
+      # Add additional likelihoods that are not shipped with montepython
+      COMMAND patch -p1 < ${patchdir}/bao_correlations_likelihood.diff
+      COMMAND patch -p1 < ${patchdir}/bao_smallz_combined_2018_likelihood.diff
+      COMMAND patch -p1 < ${patchdir}/des_bao_Y1_likelihood.diff
+      COMMAND patch -p1 < ${patchdir}/WiggleZ_bao_highz.diff
+      # Add GAMBIT specific files that will fix the likelihoods to work with GAMBIT in the 'install' step
+      CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/MontePythonLike.py ${dir}/montepython/MontePythonLike_${sfver}.py
+      COMMAND ${CMAKE_COMMAND} -E copy ${patchdir}/../MPLike_patch_script.py ${dir}/montepython/MPLike_patch_script.py
+      COMMAND sed ${dashi} -e "s/X_Y_Z/${sfver}/g" ${dir}/montepython/MPLike_patch_script.py
+      BUILD_COMMAND ""
+      # Execute the script that fixes the likelihoods
       INSTALL_COMMAND ${PYTHON_EXECUTABLE} ${dir}/montepython/MPLike_patch_script.py
     )
   endif()
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
 endif()
+
 
 # Pythia
 set(name "pythia")
@@ -882,12 +1003,11 @@ set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURC
 # - Setup HepMC-specific additions
 option(PYTHIA_WITH_HEPMC "Pythia is compiled with HepMC" ON)
 if(EXCLUDE_HEPMC)
-  set(pythia_depends_on "castxml")
   set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}_nohepmc.dif")
   set(EXTRA_CONFIG "")
   set(BOSS_suffix "nohepmc")
 else()
-  set(pythia_depends_on "hepmc;castxml")
+  set(pythia_depends_on "hepmc")
   set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${HEPMC_PATH}/local/include -I${HEPMC_PATH}/interfaces/pythia8/include")
   set(pythia_CXX_SHARED_FLAGS "${pythia_CXX_SHARED_FLAGS}  -L${HEPMC_PATH}/local/lib -Wl,-rpath ${HEPMC_PATH}/local/lib -lHepMC3")
@@ -934,7 +1054,6 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 endif()
 
-# Nulike
 set(name "nulike")
 set(ver "1.0.5")
 set(lib "libnulike")
@@ -954,7 +1073,6 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 endif()
 
-# Nulike
 set(name "nulike")
 set(ver "1.0.6")
 set(lib "libnulike")
@@ -974,7 +1092,6 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 endif()
 
-# Nulike
 set(name "nulike")
 set(ver "1.0.7")
 set(lib "libnulike")
@@ -994,7 +1111,6 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 endif()
 
-# Nulike
 set(name "nulike")
 set(ver "1.0.8")
 set(lib "libnulike")
@@ -1014,7 +1130,6 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} distclean)
 endif()
 
-# Nulike
 set(name "nulike")
 set(ver "1.0.9")
 set(lib "libnulike")
@@ -1074,10 +1189,10 @@ endif()
 
 # FeynHiggs
 set(name "feynhiggs")
-set(ver "2.12.0")
+set(ver "2.11.2")
 set(lib "libFH")
 set(dl "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${ver}.tar.gz")
-set(md5 "da2d0787311525213cd4721da9946b86")
+set(md5 "edb73eafa6dab291bd8827242c16ac0a")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(FH_Fortran_FLAGS "${BACKEND_Fortran_FLAGS_NO_BUILD_OPTIMISATIONS}") #For skipping -O2, which seems to cause issues
 set(FH_C_FLAGS "${BACKEND_C_FLAGS_NO_BUILD_OPTIMISATIONS}")             #For skipping -O2, which seems to cause issues
@@ -1101,7 +1216,6 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 endif()
 
-# FeynHiggs
 set(name "feynhiggs")
 set(ver "2.11.3")
 set(lib "libFH")
@@ -1131,12 +1245,11 @@ if(NOT ditched_${name}_${ver})
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
-# FeynHiggs
 set(name "feynhiggs")
-set(ver "2.11.2")
+set(ver "2.12.0")
 set(lib "libFH")
 set(dl "http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-${ver}.tar.gz")
-set(md5 "edb73eafa6dab291bd8827242c16ac0a")
+set(md5 "da2d0787311525213cd4721da9946b86")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(FH_Fortran_FLAGS "${BACKEND_Fortran_FLAGS_NO_BUILD_OPTIMISATIONS}") #For skipping -O2, which seems to cause issues
 set(FH_C_FLAGS "${BACKEND_C_FLAGS_NO_BUILD_OPTIMISATIONS}")             #For skipping -O2, which seems to cause issues
@@ -1181,8 +1294,43 @@ if(NOT ditched_${name}_${ver})
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
-
 # HiggsBounds
+set(name "higgsbounds")
+set(ver "4.2.1")
+set(lib "libhiggsbounds")
+set(dl "https://${name}.hepforge.org/downloads/HiggsBounds-${ver}.tar.gz")
+set(md5 "47b93330d4e0fddcc23b381548db355b")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(hb_tab_name "higgsbounds_tables")
+set(hb_tab_ver "0.0")
+set(hb_tab_dir "${PROJECT_SOURCE_DIR}/Backends/installed/${hb_tab_name}/${hb_tab_ver}")
+check_ditch_status(${name} ${ver} ${dir})
+if(NOT ditched_${name}_${ver})
+  ExternalProject_Add(${name}_${ver}
+    DEPENDS ${hb_tab_name}_${hb_tab_ver}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+    SOURCE_DIR ${dir}
+    BUILD_IN_SOURCE 1
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy configure-with-chisq my_configure
+              COMMAND sed ${dashi} -e "s|clsbtablesdir=.*|clsbtablesdir=\"${hb_tab_dir}/\"|" my_configure
+              COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" my_configure
+              COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
+              COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${BACKEND_Fortran_FLAGS}|" my_configure
+              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:${nl}${nl}.SUFFIXES|" makefile.in
+              COMMAND ${CMAKE_COMMAND} -E copy makefile.in makefile.in.tmp
+              COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.in.tmp > makefile.in
+              COMMAND ${CMAKE_COMMAND} -E remove makefile.in.tmp
+              COMMAND ./my_configure
+    BUILD_COMMAND ${MAKE_PARALLEL}
+          COMMAND ${CMAKE_COMMAND} -E make_directory lib
+          COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_Fortran_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LIBRARY_CREATE_Fortran_FLAGS} -o lib/${lib}.so *.o" > make_so.sh
+          COMMAND chmod u+x make_so.sh
+          COMMAND ./make_so.sh
+    INSTALL_COMMAND ""
+  )
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+endif()
+
 set(name "higgsbounds")
 set(ver "4.3.1")
 set(lib "libhiggsbounds")
@@ -1221,44 +1369,6 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
 endif()
-
-# HiggsBounds
-set(name "higgsbounds")
-set(ver "4.2.1")
-set(lib "libhiggsbounds")
-set(dl "https://${name}.hepforge.org/downloads/HiggsBounds-${ver}.tar.gz")
-set(md5 "47b93330d4e0fddcc23b381548db355b")
-set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(hb_tab_name "higgsbounds_tables")
-set(hb_tab_ver "0.0")
-set(hb_tab_dir "${PROJECT_SOURCE_DIR}/Backends/installed/${hb_tab_name}/${hb_tab_ver}")
-check_ditch_status(${name} ${ver} ${dir})
-if(NOT ditched_${name}_${ver})
-  ExternalProject_Add(${name}_${ver}
-    DEPENDS ${hb_tab_name}_${hb_tab_ver}
-    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
-    SOURCE_DIR ${dir}
-    BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy configure-with-chisq my_configure
-              COMMAND sed ${dashi} -e "s|clsbtablesdir=.*|clsbtablesdir=\"${hb_tab_dir}/\"|" my_configure
-              COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" my_configure
-              COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" my_configure
-              COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${BACKEND_Fortran_FLAGS}|" my_configure
-              COMMAND sed ${dashi} -e "s|\\.SUFFIXES|.NOTPARALLEL:${nl}${nl}.SUFFIXES|" makefile.in
-              COMMAND ${CMAKE_COMMAND} -E copy makefile.in makefile.in.tmp
-              COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.in.tmp > makefile.in
-              COMMAND ${CMAKE_COMMAND} -E remove makefile.in.tmp
-              COMMAND ./my_configure
-    BUILD_COMMAND ${MAKE_PARALLEL}
-          COMMAND ${CMAKE_COMMAND} -E make_directory lib
-          COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_Fortran_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LIBRARY_CREATE_Fortran_FLAGS} -o lib/${lib}.so *.o" > make_so.sh
-          COMMAND chmod u+x make_so.sh
-          COMMAND ./make_so.sh
-    INSTALL_COMMAND ""
-  )
-  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-endif()
-
 
 # HiggsSignals
 set(name "higgssignals")
@@ -1351,37 +1461,6 @@ if(NOT ditched_${name}_${ver})
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
-# gm2calc
-set(name "gm2calc")
-set(ver "1.3.0")
-set(dl "https://${name}.hepforge.org/downloads/${name}-${ver}.tar.gz")
-set(md5 "1bddab5a411a895edd382a1f8a991c15")
-set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
-set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
-# - Silence the deprecated-declarations warnings coming from Eigen3
-set(GM2CALC_CXX_FLAGS "${BACKEND_CXX_FLAGS}")
-set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
-# - gm2calc 1.3 depends on std::ptr_fun which is removed in c++17, so we need to fall back to c++14 (or c++11)
-if(COMPILER_SUPPORTS_CXX17)
-  string(REGEX REPLACE "-std=c\\+\\+17" "-std=c++14" GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS}")
-endif()
-set(GM2CALC_MAKESHAREDLIB "${CMAKE_CXX_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
-check_ditch_status(${name} ${ver} ${dir})
-if(NOT ditched_${name}_${ver})
-  ExternalProject_Add(${name}_${ver}
-    DEPENDS castxml
-    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
-    SOURCE_DIR ${dir}
-    BUILD_IN_SOURCE 1
-    PATCH_COMMAND patch -p1 < ${patch}_error.dif
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${MAKE_PARALLEL} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_INCLUDE_DIR} BOOSTFLAGS=-I${Boost_INCLUDE_DIR} MAKESHAREDLIB=${GM2CALC_MAKESHAREDLIB} alllib
-    INSTALL_COMMAND ""
-  )
-  BOSS_backend(${name} ${ver})
-  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
-  set_as_default_version("backend" ${name} ${ver})
-endif()
 
 # gm2calc
 set(name "gm2calc")
@@ -1401,7 +1480,6 @@ set(GM2CALC_MAKESHAREDLIB "${CMAKE_CXX_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
-    DEPENDS castxml
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
@@ -1415,6 +1493,37 @@ if(NOT ditched_${name}_${ver})
   BOSS_backend(${name} ${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
 endif()
+
+set(name "gm2calc")
+set(ver "1.3.0")
+set(dl "https://${name}.hepforge.org/downloads/${name}-${ver}.tar.gz")
+set(md5 "1bddab5a411a895edd382a1f8a991c15")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}")
+# - Silence the deprecated-declarations warnings coming from Eigen3
+set(GM2CALC_CXX_FLAGS "${BACKEND_CXX_FLAGS}")
+set_compiler_warning("no-deprecated-declarations" GM2CALC_CXX_FLAGS)
+# - gm2calc 1.3 depends on std::ptr_fun which is removed in c++17, so we need to fall back to c++14 (or c++11)
+if(COMPILER_SUPPORTS_CXX17)
+  string(REGEX REPLACE "-std=c\\+\\+17" "-std=c++14" GM2CALC_CXX_FLAGS "${GM2CALC_CXX_FLAGS}")
+endif()
+set(GM2CALC_MAKESHAREDLIB "${CMAKE_CXX_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
+check_ditch_status(${name} ${ver} ${dir})
+if(NOT ditched_${name}_${ver})
+  ExternalProject_Add(${name}_${ver}
+    DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+    SOURCE_DIR ${dir}
+    BUILD_IN_SOURCE 1
+    PATCH_COMMAND patch -p1 < ${patch}_error.dif
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ${MAKE_PARALLEL} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GM2CALC_CXX_FLAGS} EIGENFLAGS=-I${EIGEN3_INCLUDE_DIR} BOOSTFLAGS=-I${Boost_INCLUDE_DIR} MAKESHAREDLIB=${GM2CALC_MAKESHAREDLIB} alllib
+    INSTALL_COMMAND ""
+  )
+  BOSS_backend(${name} ${ver})
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+  set_as_default_version("backend" ${name} ${ver})
+endif()
+
 
 # phc
 set(name "phc")
@@ -1441,8 +1550,8 @@ if(NOT ditched_${name}_${ver})
           )
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
-
 endif()
+
 
 # hom4ps
 set(name "hom4ps")
@@ -1469,8 +1578,8 @@ if(NOT ditched_${name}_${ver})
           )
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean) # FIGURE THIS OUT
   set_as_default_version("backend" ${name} ${ver})
-
 endif()
+
 
 # Vevacious
 set(name "vevacious")
@@ -1495,7 +1604,6 @@ set(FLAGSregex2 "s#_FLAGS} -Wall -Wno-unused-local-typedefs -O3 -fPIC -fopenmp#_
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
-          DEPENDS castxml
           DEPENDS ${Minuit_name}_${Minuit_ver}
           DEPENDS phc_${phc_ver}
           DEPENDS hom4ps_${hom4ps_ver}
@@ -1516,6 +1624,7 @@ if(NOT ditched_${name}_${ver})
   set_as_default_version("backend" ${name} ${ver})
   BOSS_backend(${name} ${ver})
 endif()
+
 
 # SUSYHD
 set(name "susyhd")
@@ -1539,6 +1648,7 @@ if(NOT ditched_${name}_${ver})
   set_as_default_version("backend" ${name} ${ver})
 endif()
 
+
 # DirectDM
 set(name "directdm")
 set(ver "2.2.0")
@@ -1560,6 +1670,7 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
 endif()
+
 
 # CalcHEP
 set(name "calchep")
@@ -1972,6 +2083,45 @@ set(lib "classy")
 set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}")
 set(dl "https://github.com/lesgourg/class_public/archive/v${ver}.tar.gz")
 set(md5 "dac0e0920e333c553b76c9f4b063ec99")
+set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(ditch_if_absent "Python")
+set(required_modules "cython,numpy,scipy,six")
+check_ditch_status(${name} ${ver} ${dir} ${ditch_if_absent})
+if(NOT ditched_${name}_${ver})
+  check_python_modules(${name} ${ver} ${required_modules})
+  if(modules_missing_${name}_${ver})
+    inform_of_missing_modules(${name} ${ver} ${modules_missing_${name}_${ver}})
+  else()
+    ExternalProject_Add(${name}_${ver}
+      DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
+      SOURCE_DIR ${dir}
+      BUILD_IN_SOURCE 1
+      PATCH_COMMAND patch -p1 < ${patch}/${name}_${ver}.diff
+      CONFIGURE_COMMAND ""
+      COMMAND sed ${dashi} -e "s#'-lgomp'#${lgomp_REPLACEMENT}#g" python/setup.py
+      COMMAND sed ${dashi} -e "s#autosetup.py install#autosetup.py build#g" Makefile
+      COMMAND sed ${dashi} -e "s#rm -f libclass.a#rm -rf libclass.a lib#g" Makefile
+      COMMAND sed ${dashi} -e "s#\"[.]\"#\"${dir}\"#g" include/common.h
+      BUILD_COMMAND ${MAKE_PARALLEL} CC=${CMAKE_C_COMPILER} OMPFLAG=${CLASSY_OpenMP_C_FLAGS} OPTFLAG= CCFLAG=${BACKEND_C_FLAGS} LDFLAG=${CMAKE_SHARED_LINKER_FLAGS} PYTHON=${PYTHON_EXECUTABLE} all
+      COMMAND ${CMAKE_COMMAND} -E make_directory lib
+      COMMAND find python/ -name "classy*.so" | xargs -I {} cp "{}" lib/
+      COMMAND ${CMAKE_COMMAND} -E echo "#This is a trampoline script to import the cythonized python module under a different name" > lib/${lib}_${sfver}.py
+      COMMAND ${CMAKE_COMMAND} -E echo "from ${lib} import *" >> lib/${lib}_${sfver}.py
+      INSTALL_COMMAND ""
+      COMMAND ${PYTHON_EXECUTABLE} ${patch}/../create_SDSSDR7_fid.py ${dir} ${sfver}
+    )
+  endif()
+  add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
+endif()
+
+# classy
+set(name "classy")
+set(ver "3.1.0")
+set(sfver "3_1_0")
+set(lib "classy")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}")
+set(dl "https://github.com/lesgourg/class_public/archive/v${ver}.tar.gz")
+set(md5 "01b9ece412d34300df6c7984198c0d43")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(ditch_if_absent "Python")
 set(required_modules "cython,numpy,scipy,six")

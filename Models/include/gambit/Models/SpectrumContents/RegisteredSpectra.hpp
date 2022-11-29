@@ -17,6 +17,9 @@
 ///  \author Ankit Beniwal
 ///          (ankit.beniwal@adelaide.edu.au)
 ///  \date 2016 Aug
+///  
+///  \author Inigo Saez Casares
+///          (inigo.saez_casares@ens-paris-saclay.fr))
 ///
 ///  *********************************************
 
@@ -44,6 +47,11 @@ namespace Gambit
     struct DiracSingletDM_Z2    : SubSpectrumContents { DiracSingletDM_Z2(); };
     struct DMEFT                : SubSpectrumContents { DMEFT(); };
     struct SubGeVDM             : SubSpectrumContents { SubGeVDM(); };
+
+// TODO: Temporarily disabled until project is ready
+/*
+    struct SuperRenormHP        : SubSpectrumContents { SuperRenormHP(); };
+*/
 
   }
 }
