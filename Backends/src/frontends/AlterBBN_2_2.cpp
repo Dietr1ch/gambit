@@ -50,7 +50,7 @@ BE_NAMESPACE
   /// string set containing the name of all members of the AlterBBN relicparam structures that can currently
   /// be set with GAMBIT. If you add a new model and need to pass a different option to AlterBBN add e.g. "neutron_lifetime"
   /// here and in the function fill_cosmomodel below to modify the lifetime of the neutron
-  std::set<std::string> known_relicparam_options = {"eta0", "Nnu", "dNnu", "neutron_lifetime", "err","failsafe"};
+  std::set<std::string> known_relicparam_options = {"eta0", "Nnu", "dNnu", "neutron_lifetime", "err","failsafe","m_chi","g_chi","fermion","EM_coupled","wimp","selfConjugate"};
 
   /// Fill AlterBBN's relicparam with the entries from the AlterBBN_input
   void fill_cosmomodel(AlterBBN_2_2::relicparam * input_relicparam, map_str_dbl & AlterBBN_input)

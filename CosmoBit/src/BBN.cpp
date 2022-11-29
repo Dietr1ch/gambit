@@ -102,6 +102,24 @@ namespace Gambit
         result["dNnu"] = dNurBBN;                                // dNnu: within AlterBBN scenarios in which the sum Nnu+dNnu is the same are identical
         result["eta0"] = *Param.at("eta_BBN");                // eta at the end of BBN
       }
+      else if (ModelInUse("SubGeVDM_fermion"))
+      {
+        result["mchi"] = *Param.at("mDM");
+        result["gchi"] = 4;
+        result["fermion"] = 1;
+        result["selfConjugate"] = 0;
+        result["EM_coupled"] = 1;
+        result["wimp"] = 1;
+      }
+      else if (ModelInUse("SubGeVDM_scalar"))
+      {
+        result["mchi"] = *Param.at("mDM");
+        result["gchi"] = 2;
+        result["fermion"] = 0;
+        result["selfConjugate"] = 0;
+        result["EM_coupled"] = 1;
+        result["wimp"] = 1;
+      }      
       else // at this point either LCDM or LCDM_theta are in use so we assume standard values for Nnu and dNnu
       {
         result["Nnu"] = *Dep::Neff_SM; // contribution from SM neutrinos
