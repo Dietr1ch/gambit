@@ -105,8 +105,8 @@ namespace Gambit
       }
       else if (ModelInUse("SubGeVDM_fermion"))
       {
-        result["mchi"] = *Param.at("mDM");
-        result["gchi"] = 4;
+        result["m_chi"] = *Param.at("mDM");
+        result["g_chi"] = 4;
         result["fermion"] = 1;
         result["selfConjugate"] = 0;
         result["EM_coupled"] = 1;
@@ -114,8 +114,8 @@ namespace Gambit
       }
       else if (ModelInUse("SubGeVDM_scalar"))
       {
-        result["mchi"] = *Param.at("mDM");
-        result["gchi"] = 2;
+        result["m_chi"] = *Param.at("mDM");
+        result["g_chi"] = 2;
         result["fermion"] = 0;
         result["selfConjugate"] = 0;
         result["EM_coupled"] = 1;

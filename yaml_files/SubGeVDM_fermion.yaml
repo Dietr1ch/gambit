@@ -16,7 +16,7 @@ Parameters:
   SubGeVDM_fermion:
     mDM: 
       prior_type: log
-      range: [0.1,5]
+      range: [0.001,1]
     gDM: 2.5
     kappa: 5e-2
     mAp: 10
@@ -69,6 +69,13 @@ ObsLikes:
     - capability: RD_oh2
       purpose: Observable
 
+    - purpose:      LogLike
+      capability:   BBN_LogLike
+      sub_capabilities: [He4, D]
+
+    - purpose:      Observable
+      capability:   primordial_abundances
+
     - capability: CRESST_III_LogLikelihood
       purpose:    LogLike
 
@@ -92,6 +99,28 @@ ObsLikes:
       purpose: Observable
 
 Rules:
+
+  - capability: AlterBBN_Input
+    options:
+      failsafe: 3
+      err: 0
+
+  - capability: primordial_abundances_BBN
+    options:
+      isotope_basis: [Yp, D, He3, Li7, Li6, Be7]
+      correlation_matrix: [[1.000000, 0.007222, 0.021811, 0.021834, 0.001870, 0.020412],
+                           [0.007222, 1.000000, -0.799961, -0.358761, 0.010648, -0.371730],
+                           [0.021811, -0.799961, 1.000000, 0.370224, -0.011028, 0.382648],
+                           [0.021834, -0.358761, 0.370224, 1.000000, -0.003693, 0.996544],
+                           [0.001870, 0.010648, -0.011028, -0.003693, 1.000000, -0.003809],
+                           [0.020412, -0.371730, 0.382648, 0.996544, -0.003809, 1.000000]]
+      diff_uncertainties: true
+      # absolute_errors: [3.203e-04, 3.790e-07, 1.635e-07, 3.522e-11, 1.085e-14, 3.434e-11]
+      # relative_errors: [1.29466e-03, 1.5369e-02, 1.58124e-02, 6.56477e-02, 9.9816e-01, 6.76517e-02]
+
+  - capability: BBN_LogLike
+    options:
+      DataFile: default.dat     # Use the Yp measurement from PDG 2017 and the updated D/H measurement of 1801.08023
 
   # Relic density likelihood
   - capability: lnL_oh2

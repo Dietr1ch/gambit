@@ -906,9 +906,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION AlterBBN_Input
     START_FUNCTION(map_str_dbl)
-    ALLOW_MODELS(LCDM, LCDM_theta, LCDM_zreio, etaBBN_rBBN_rCMB_dNurBBN_dNurCMB)
+    ALLOW_MODELS(LCDM, LCDM_theta, LCDM_zreio, etaBBN_rBBN_rCMB_dNurBBN_dNurCMB,SubGeVDM_fermion,SubGeVDM_scalar)
     ALLOW_MODEL_DEPENDENCE(nuclear_params_neutron_lifetime)
-    MODEL_GROUP(cosmo,(LCDM, LCDM_theta, LCDM_zreio, etaBBN_rBBN_rCMB_dNurBBN_dNurCMB))
+    MODEL_GROUP(cosmo,(LCDM, LCDM_theta, LCDM_zreio, etaBBN_rBBN_rCMB_dNurBBN_dNurCMB,SubGeVDM_fermion,SubGeVDM_scalar))
     MODEL_GROUP(neutron,(nuclear_params_neutron_lifetime))
     ALLOW_MODEL_COMBINATION(cosmo,neutron)
     DEPENDENCY(Neff_SM, double)

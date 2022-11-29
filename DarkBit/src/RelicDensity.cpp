@@ -888,22 +888,25 @@ namespace Gambit
           if (Utils::isnan(weff))
             DarkBit_error().raise(LOCAL_INFO, "RD debug: Weff is NaN in RD_oh2_DS5_general.");
         }
-        // Set up timing
-        std::chrono::time_point<std::chrono::system_clock> start, end;
-        start = std::chrono::system_clock::now();
-        logger() << "Tabulating RD_eff_annrate..." << EOM;
-        std::cout << "Starting dsrdtab..." << std::endl;
       #endif
+
+      // Set up timing
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      start = std::chrono::system_clock::now();
+      logger() << "Tabulating RD_eff_annrate..." << EOM;
+      std::cout << "Starting dsrdtab..." << std::endl;
 
       // Tabulate the invariant rate
       BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart,fast);
 
+      // Get runtime
+      end = std::chrono::system_clock::now();
+      double runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+      std::cout << "Duration [ms]: " << runtime << std::endl;
+
       #ifdef DARKBIT_RD_DEBUG
         logger() << LogTags::repeat_to_cout << "...done!" << EOM;
-
-        // Get runtime
-        end = std::chrono::system_clock::now();
-        double runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
         // Check if runtime too long
         if ( runtime > 30. )
