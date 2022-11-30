@@ -55,7 +55,7 @@ namespace Gambit
         return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
       }
       
-      double sv(std::string channel, double gDM, double gSM, double mass, double v)
+      double sv(std::string channel, double gDM, double gSM, double mass, double v, bool smooth)
       {
           double s = 4*mass*mass/(1-v*v/4);
           double sqrt_s = sqrt(s);
@@ -73,8 +73,8 @@ namespace Gambit
           if ( channel == "tautau" ) return sv_ff(gDM, gSM, mass, v, mtau, -1., 1);
           if ( channel == "pipi" )
           {
-            if (sqrt_s < mb*2 ) return hadronic_cross_section_ratio(sqrt_s, *Pipes::DD_couplings_SubGeVDM_scalar::Param["smooth"]) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
-            else return hadronic_cross_section_ratio(sqrt_s, *Pipes::DD_couplings_SubGeVDM_scalar::Param["smooth"]) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1) - sv_ff(gDM, gSM, mass, v, mb, -1/3., 3); //Avoid double-counting of bb final state
+            if (sqrt_s < mb*2 ) return hadronic_cross_section_ratio(sqrt_s, smooth) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
+            else return hadronic_cross_section_ratio(sqrt_s, smooth) * sv_ff(gDM, gSM, mass, v, mmu, -1., 1) - sv_ff(gDM, gSM, mass, v, mb, -1/3., 3); //Avoid double-counting of bb final state
           }
           if ( channel == "ApAp" ) return sv_ApAp(gDM, mass, v);
           
@@ -239,7 +239,7 @@ namespace Gambit
         if (mDM*2 > mtot_final*0.5)
         {
           daFunk::Funk kinematicFunction = daFunk::funcM(pc, &SubGeVDM_scalar::sv, channels[i], 
-          gDM, e*kappa, mDM, daFunk::var("v"));
+          gDM, e*kappa, mDM, daFunk::var("v"), runOptions->getValueOrDef<bool>(true,"smooth"));
           TH_Channel new_channel(daFunk::vec<string>(p1[i], p2[i]), kinematicFunction);
           process_ann.channelList.push_back(new_channel);
         }
