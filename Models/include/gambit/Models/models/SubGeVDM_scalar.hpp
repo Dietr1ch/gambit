@@ -21,7 +21,7 @@
 #define MODEL SubGeVDM_scalar
   START_MODEL
 
-  DEFINEPARS(mDM,mAp,gDM,kappa,etaDM,smooth)
+  DEFINEPARS(mDM,mAp,gDM,kappa,etaDM)
 
 #undef MODEL
 

@@ -19,9 +19,8 @@ Parameters:
       range: [0.001,1]
     gDM: 2.5
     kappa: 5e-2
-    mAp: 10
+    mAp: 1.5
     etaDM: 0
-    smooth: 1 # 0 for using PDG value, 1 for using darkcast's fitted value
 
   Halo_gNFW_rho0:
     rho0: 0.4
@@ -60,11 +59,11 @@ Priors:
 
 Printer:
 
-  printer: cout
+  printer: ascii
   # printer: hdf5
 
-  #options:
-  #  output_file: "ScalarSingletDM_Z2.hdf5"
+  options:
+    output_file: "output.txt"
   #  group: "/ScalarSingletDM_Z2"
 
 Scanner:
@@ -90,12 +89,12 @@ ObsLikes:
     - capability: RD_oh2
       purpose: Observable
 
-    - purpose:      LogLike
-      capability:   BBN_LogLike
-      sub_capabilities: [He4, D]
+#    - purpose:      LogLike
+#      capability:   BBN_LogLike
+#      sub_capabilities: [He4, D]
 
-    - purpose:      Observable
-      capability:   primordial_abundances
+#    - purpose:      Observable
+#      capability:   primordial_abundances
 
     - capability: CRESST_III_LogLikelihood
       purpose:    LogLike
@@ -133,6 +132,10 @@ ObsLikes:
       function:     function_Planck_lowl_TTEE_2018_loglike
 
 Rules:
+
+  - capability: TH_ProcessCatalog
+    options:
+      smooth: true # false for using PDG value, true for using darkcast's fitted value
 
   - capability: AlterBBN_Input
     options:
@@ -275,3 +278,5 @@ KeyValues:
     model_invalid_for_lnlike_below_alt: -1e5
 
   default_output_path: "runs/SubGeVDM_fermion/"
+
+  print_timing_data: true
