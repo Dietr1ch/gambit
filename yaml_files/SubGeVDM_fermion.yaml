@@ -34,6 +34,24 @@ Parameters:
     beta: 3
     gamma: 1
 
+  LCDM_zreio:
+    omega_b: 0.02237
+    omega_cdm: 0.1200
+    H0: 67.36
+    T_cmb: 2.72548
+    z_reio: 7.67
+
+  PowerLaw_ps:
+    ln10A_s: 3.044
+    n_s: 0.9649
+    r: 0
+    N_pivot: 55
+    
+  cosmo_nuisance_Planck_lite: !import include/Planck_2018/cosmo_nuisance_Planck_lite_flat.yaml
+    
+  rBBN_dNurBBN:
+    r_BBN: 1.0
+    dNur_BBN: 0.0
 
 Priors:
 
@@ -65,6 +83,9 @@ ObsLikes:
     # Relic density
     - capability: lnL_oh2
       purpose:    LogLike
+      
+    - capability: Neff_after_BBN
+      purpose: Observable
 
     - capability: RD_oh2
       purpose: Observable
@@ -89,14 +110,27 @@ ObsLikes:
       purpose:    Observable
 
   # Cosmo likelihoods and observables
-    - capability: lnL_p_ann
-      purpose: LogLike
 
     - capability: p_ann
       purpose: Observable
 
     - capability: f_eff
       purpose: Observable
+      
+    - purpose:      LogLike
+      capability:   Planck_nuisance_prior_loglike
+
+    - purpose:      LogLike
+      capability:   Planck_highl_loglike
+      function:     function_Planck_highl_TTTEEE_lite_2018_loglike
+
+    - purpose:      LogLike
+      capability:   Planck_lensing_loglike
+      function:     function_Planck_lensing_2018_loglike
+
+    - purpose:      LogLike
+      capability:   Planck_lowl_loglike
+      function:     function_Planck_lowl_TTEE_2018_loglike
 
 Rules:
 

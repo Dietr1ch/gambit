@@ -613,6 +613,22 @@ namespace Gambit
       result = Dep::primordial_abundances->get_BBN_abund("He4");
     }
 
+    /// Extract helium-4 abundance from BBN abundance container
+    void extract_Neff_after_BBN(double &result)
+    {
+      using namespace Pipes::extract_Neff_after_BBN;
+      result = Dep::primordial_abundances->get_BBN_abund("Neff");
+    }
+    
+    void Neff_evolution_BBN(map_str_dbl& result)
+    {
+      // Delete results of previous iteration
+      result.clear();
+
+      result["dNur_CMB"] = 0;
+      result["r_CMB"] = pow(Dep::Neff_after_BBN/3.045,0.25);
+    }
+
     /// Compute the overall log-likelihood from BBN
     void compute_BBN_LogLike(double &result)
     {

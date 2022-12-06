@@ -162,6 +162,12 @@ START_MODULE
     ALLOW_MODELS(GeneralCosmoALP)
     DEPENDENCY(external_dNeff_etaBBN, map_str_dbl)
     #undef FUNCTION
+
+    #define FUNCTION Neff_evolution_BBN
+    START_FUNCTION(map_str_dbl)
+    ALLOW_MODELS(SubGeVDM_fermion,SubGeVDM_scalar)
+    DEPENDENCY(Neff_after_BBN, double)
+    #undef FUNCTION
   #undef CAPABILITY
 
   /// get the energy injection efficiency tables
@@ -958,6 +964,15 @@ START_MODULE
   #define CAPABILITY helium_abundance
   START_CAPABILITY
     #define FUNCTION extract_helium_abundance
+    START_FUNCTION(double)
+    DEPENDENCY(primordial_abundances, BBN_container)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  /// compute Neff after BBN
+  #define CAPABILITY Neff_after_BBN
+  START_CAPABILITY
+    #define FUNCTION extract_Neff_after_BBN
     START_FUNCTION(double)
     DEPENDENCY(primordial_abundances, BBN_container)
     #undef FUNCTION
