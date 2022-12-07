@@ -457,7 +457,7 @@ namespace Gambit
 
       // Fill relative (absolute) errors
       std::vector<double> err_ratio(NNUC+1,0);
-      if (use_custom_covariances) for (size_t ie=1; ie <= NNUC; ++ie)
+      if (use_custom_covariances) for (size_t ie=0; ie <= NNUC; ++ie)
       {
         if (has_relative_errors && (errors.at(ie) > 0.0))
           err_ratio.at(ie) =  errors.at(ie) * ratioH[ie];
@@ -475,10 +475,10 @@ namespace Gambit
       }
 
       // Fill abundances and covariance matrix of BBN_container with requested results from AlterBBN
-      for (size_t ie=1; ie <= NNUC; ++ie)
+      for (size_t ie=0; ie <= NNUC; ++ie)
       {
         result.set_BBN_abund(ie, triplet<double>(ratioH[ie],ratioH_upper[ie],ratioH_lower[ie]));
-        for (size_t je=1; je <= NNUC; ++je)
+        for (size_t je=0; je <= NNUC; ++je)
         {
           if (use_custom_covariances)
             result.set_BBN_covmat(ie, je, corr.at(ie).at(je) * err_ratio.at(ie) * err_ratio.at(je));
@@ -622,11 +622,18 @@ namespace Gambit
     
     void Neff_evolution_BBN(map_str_dbl& result)
     {
+    
+      using namespace Pipes::Neff_evolution_BBN;
       // Delete results of previous iteration
       result.clear();
 
       result["dNur_CMB"] = 0;
-      result["r_CMB"] = pow(Dep::Neff_after_BBN/3.045,0.25);
+      result["r_CMB"] = pow(*Dep::Neff_after_BBN/3.045,0.25);
+    }
+    
+    void eta_ratio_BBN(double& result)
+    {
+      result = 1;
     }
 
     /// Compute the overall log-likelihood from BBN

@@ -153,6 +153,11 @@ START_MODULE
     ALLOW_MODELS(GeneralCosmoALP)
     DEPENDENCY(external_dNeff_etaBBN, map_str_dbl)
     #undef FUNCTION
+    
+    #define FUNCTION eta_ratio_BBN
+    START_FUNCTION(double)
+    ALLOW_MODELS(SubGeVDM_fermion,SubGeVDM_scalar)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY Neff_evolution

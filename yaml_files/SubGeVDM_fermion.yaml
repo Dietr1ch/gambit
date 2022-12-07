@@ -46,11 +46,8 @@ Parameters:
     r: 0
     N_pivot: 55
     
-  cosmo_nuisance_Planck_lite: !import include/Planck_2018/cosmo_nuisance_Planck_lite_flat.yaml
-    
-  rBBN_dNurBBN:
-    r_BBN: 1.0
-    dNur_BBN: 0.0
+  cosmo_nuisance_Planck_lite:
+    A_planck: 1.0
 
 Priors:
 
@@ -75,7 +72,7 @@ Scanner:
     square_grid:
       plugin: square_grid
       like: LogLike
-      grid_pts: 1000
+      grid_pts: 150
 
 ObsLikes:
 
@@ -89,12 +86,12 @@ ObsLikes:
     - capability: RD_oh2
       purpose: Observable
 
-#    - purpose:      LogLike
-#      capability:   BBN_LogLike
-#      sub_capabilities: [He4, D]
+    - purpose:      LogLike
+      capability:   BBN_LogLike
+      sub_capabilities: [He4, D]
 
-#    - purpose:      Observable
-#      capability:   primordial_abundances
+    - purpose:      Observable
+      capability:   primordial_abundances
 
     - capability: CRESST_III_LogLikelihood
       purpose:    LogLike
@@ -113,9 +110,9 @@ ObsLikes:
     - capability: p_ann
       purpose: Observable
 
-    - capability: f_eff
-      purpose: Observable
-      
+#    - capability: f_eff
+#      purpose: Observable
+
     - purpose:      LogLike
       capability:   Planck_nuisance_prior_loglike
 
@@ -129,7 +126,7 @@ ObsLikes:
 
     - purpose:      LogLike
       capability:   Planck_lowl_loglike
-      function:     function_Planck_lowl_TTEE_2018_loglike
+      function:     function_Planck_lowl_TTEE_2018_loglike      
 
 Rules:
 
@@ -207,7 +204,12 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
+  - capability: classy_MPLike_input
+    function: set_classy_input_with_MPLike
 
+  - capability: classy_parameters_EnergyInjection
+    function: set_classy_parameters_EnergyInjection_AnnihilatingDM_onSpot
+    
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: GA_SimYieldTable
     #function: GA_SimYieldTable_DS5
