@@ -167,6 +167,15 @@ namespace Gambit
       logger() << "N_ur calculated to be " << result << EOM;
     }
 
+    // Returns the effective number of ultrarelativistic species today
+    void get_N_ur_from_BBN(double& result)
+    {
+      using namespace Pipes::get_N_ur;
+
+      result = *Dep::Neff_after_BBN;
+      logger() << "N_ur calculated to be " << result << EOM;
+    }
+
     /// Temperature of non-CDM in the (cosmological) SM.
     void T_ncdm_SM(double &result)
     {

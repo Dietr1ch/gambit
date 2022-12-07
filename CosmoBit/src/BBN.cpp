@@ -620,22 +620,6 @@ namespace Gambit
       result = Dep::primordial_abundances->get_BBN_abund("Neff");
     }
     
-    void Neff_evolution_BBN(map_str_dbl& result)
-    {
-    
-      using namespace Pipes::Neff_evolution_BBN;
-      // Delete results of previous iteration
-      result.clear();
-
-      result["dNur_CMB"] = 0;
-      result["r_CMB"] = pow(*Dep::Neff_after_BBN/3.045,0.25);
-    }
-    
-    void eta_ratio_BBN(double& result)
-    {
-      result = 1;
-    }
-
     /// Compute the overall log-likelihood from BBN
     void compute_BBN_LogLike(double &result)
     {

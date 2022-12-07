@@ -153,11 +153,6 @@ START_MODULE
     ALLOW_MODELS(GeneralCosmoALP)
     DEPENDENCY(external_dNeff_etaBBN, map_str_dbl)
     #undef FUNCTION
-    
-    #define FUNCTION eta_ratio_BBN
-    START_FUNCTION(double)
-    ALLOW_MODELS(SubGeVDM_fermion,SubGeVDM_scalar)
-    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY Neff_evolution
@@ -166,12 +161,6 @@ START_MODULE
     START_FUNCTION(map_str_dbl)
     ALLOW_MODELS(GeneralCosmoALP)
     DEPENDENCY(external_dNeff_etaBBN, map_str_dbl)
-    #undef FUNCTION
-
-    #define FUNCTION Neff_evolution_BBN
-    START_FUNCTION(map_str_dbl)
-    ALLOW_MODELS(SubGeVDM_fermion,SubGeVDM_scalar)
-    DEPENDENCY(Neff_after_BBN, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -274,6 +263,17 @@ START_MODULE
     ALLOW_MODEL_COMBINATION(group1, group2)
     DEPENDENCY(Neff_SM, double)
     #undef FUNCTION
+
+    #define FUNCTION get_N_ur_from_BBN
+    START_FUNCTION(double)
+    ALLOW_MODEL(StandardModel_SLHA2,SubGeVDM_fermion,SubGeVDM_scalar)
+    MODEL_GROUP(group1, StandardModel_SLHA2)
+    MODEL_GROUP(group2, SubGeVDM_fermion,SubGeVDM_scalar)
+    ALLOW_MODEL_COMBINATION(group1, group2)
+    DEPENDENCY(Neff_SM, double)
+    DEPENDENCY(Neff_after_BBN, double)
+    #undef FUNCTION
+_
   #undef CAPABILITY
 
   // ------------------------
