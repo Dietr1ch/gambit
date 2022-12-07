@@ -268,7 +268,7 @@ START_MODULE
     START_FUNCTION(double)
     ALLOW_MODEL(StandardModel_SLHA2,SubGeVDM_fermion,SubGeVDM_scalar)
     MODEL_GROUP(group1, StandardModel_SLHA2)
-    MODEL_GROUP(group2, SubGeVDM_fermion,SubGeVDM_scalar)
+    MODEL_GROUP(group2,(SubGeVDM_fermion,SubGeVDM_scalar))
     ALLOW_MODEL_COMBINATION(group1, group2)
     DEPENDENCY(Neff_SM, double)
     DEPENDENCY(Neff_after_BBN, double)

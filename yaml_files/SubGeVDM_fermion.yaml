@@ -204,6 +204,9 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
+  - capability: N_ur
+    function: get_N_ur_from_BBN
+
   - capability: classy_MPLike_input
     function: set_classy_input_with_MPLike
 
