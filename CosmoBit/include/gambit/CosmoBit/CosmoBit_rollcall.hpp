@@ -276,6 +276,15 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY N_eff_likelihood_Planck_BAO
+  START_CAPABILITY
+    #define FUNCTION compute_N_eff_likelihood_Planck_BAO
+    START_FUNCTION(double)
+    DEPENDENCY(Neff_after_BBN, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // ------------------------
 
   // Pivot scale (in Mpc^-1)

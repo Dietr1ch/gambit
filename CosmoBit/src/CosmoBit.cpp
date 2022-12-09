@@ -176,6 +176,16 @@ namespace Gambit
       logger() << "N_ur calculated to be " << result << EOM;
     }
 
+    // Neff likelihood from Planck TT,TE,EE+lowE+lensing+BAO (arXiv:1807.06209)
+    void compute_N_eff_likelihood_Planck_BAO(double& result)
+    {
+      using namespace Pipes::compute_N_eff_likelihood_Planck_BAO;
+      
+      double Neff = *Dep::Neff_after_BBN;
+      
+      result = Stats::gaussian_loglikelihood(Neff, 2.99, 0.0, 0.17, false);
+    }
+
     /// Temperature of non-CDM in the (cosmological) SM.
     void T_ncdm_SM(double &result)
     {
