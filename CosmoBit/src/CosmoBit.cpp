@@ -170,7 +170,7 @@ namespace Gambit
     // Returns the effective number of ultrarelativistic species today
     void get_N_ur_from_BBN(double& result)
     {
-      using namespace Pipes::get_N_ur;
+      using namespace Pipes::get_N_ur_from_BBN;
 
       result = *Dep::Neff_after_BBN;
       logger() << "N_ur calculated to be " << result << EOM;

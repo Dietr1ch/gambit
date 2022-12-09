@@ -16,7 +16,7 @@ Parameters:
   SubGeVDM_fermion:
     mDM: 
       prior_type: log
-      range: [0.001,1]
+      range: [0.01,0.1]
     gDM: 2.5
     kappa: 5e-2
     mAp: 1.5
@@ -34,9 +34,11 @@ Parameters:
     gamma: 1
 
   LCDM_zreio:
-    omega_b: 0.02237
+    omega_b: 0.022
     omega_cdm: 0.1200
-    H0: 67.36
+    H0:
+      prior_type: flat
+      range: [66.,68.]
     T_cmb: 2.72548
     z_reio: 7.67
 
@@ -47,7 +49,7 @@ Parameters:
     N_pivot: 55
     
   cosmo_nuisance_Planck_lite:
-    A_planck: 1.0
+    A_planck: 1
 
 Priors:
 
@@ -72,7 +74,7 @@ Scanner:
     square_grid:
       plugin: square_grid
       like: LogLike
-      grid_pts: 150
+      grid_pts: 10
 
 ObsLikes:
 
@@ -218,7 +220,7 @@ Rules:
     #function: GA_SimYieldTable_DS5
     function: GA_SimYieldTable_DarkSUSY
     options:
-      allow_yield_extrapolation: true
+      allow_yield_extrapolation: false
 
   # Also need to choose which tables to use for positrons,
   # antideuterons, and antiprotons (or opt for empty tables)

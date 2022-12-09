@@ -273,7 +273,7 @@ START_MODULE
     DEPENDENCY(Neff_SM, double)
     DEPENDENCY(Neff_after_BBN, double)
     #undef FUNCTION
-_
+
   #undef CAPABILITY
 
   // ------------------------
