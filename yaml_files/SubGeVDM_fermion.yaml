@@ -116,19 +116,7 @@ ObsLikes:
 #      purpose: Observable
 
     - purpose:      LogLike
-      capability:   Planck_nuisance_prior_loglike
-
-    - purpose:      LogLike
-      capability:   Planck_highl_loglike
-      function:     function_Planck_highl_TTTEEE_lite_2018_loglike
-
-    - purpose:      LogLike
-      capability:   Planck_lensing_loglike
-      function:     function_Planck_lensing_2018_loglike
-
-    - purpose:      LogLike
-      capability:   Planck_lowl_loglike
-      function:     function_Planck_lowl_TTEE_2018_loglike      
+      capability:   N_eff_likelihood_Planck_BAO
 
 Rules:
 
@@ -205,15 +193,6 @@ Rules:
 
   - capability: decay_rates
     function: all_decays
-
-  - capability: N_ur
-    function: get_N_ur_from_BBN
-
-  - capability: classy_MPLike_input
-    function: set_classy_input_with_MPLike
-
-  - capability: classy_parameters_EnergyInjection
-    function: set_classy_parameters_EnergyInjection_AnnihilatingDM_onSpot
     
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: GA_SimYieldTable
