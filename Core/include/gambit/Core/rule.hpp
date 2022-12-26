@@ -21,6 +21,7 @@
 #include "gambit/Core/observable.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Elements/type_equivalency.hpp"
 
 
@@ -30,53 +31,91 @@ namespace Gambit
   namespace DRes
   {
 
-    /// Base class rule for resolution of dependencies or backend requirements
+    /// Base rule for resolution of dependencies and backend requirements.
     struct Rule
     {
+
+      /// Rule has an antecedent ('if' clause)
       bool has_if;
+      /// Rule has a consequent ('then' clause)
       bool has_then;
 
+      /// Capability field targeted by the rule.
       std::string capability;
+      /// Capability field appears in 'if' clause.
       bool if_capability;
+      /// Capability field appears in 'then' clause.
       bool then_capability;
 
+      /// Type field targeted by the rule.
       std::string type;
+      /// Type field appears in 'if' clause.
       bool if_type;
+      /// Type field appears in 'then' clause.
       bool then_type;
 
+      /// Function field targeted by the rule.
       std::string function;
+      /// Function field appears in 'if' clause.
       bool if_function;
+      /// Function field appears in 'then' clause.
       bool then_function;
 
+      /// Version field targeted by the rule.
       std::string version;
+      /// Version field appears in 'if' clause.
       bool if_version;
+      /// Version field appears in 'then' clause.
       bool then_version;
 
       /// Indicates that rule can be broken
       bool weakrule;
 
-      ///Default constructor, to ensure the default values are not gibberish
+      ///Default constructor. Sets all fields empty.
       Rule():
+        has_if(false),
+        has_then(false),
         capability(),
+        if_capability(false),
+        then_capability(false),
         type(),
+        if_type(false),
+        then_type(false),
         function(),
+        if_function(false),
+        then_function(false),
         version(),
+        if_version(false),
+        then_version(false),
         weakrule(false)
       {}
     };
 
-    /// Derived class rule for resolution of backend requirements
+    /// Derived class rule for resolution of backend requirements.
     struct BackendRule : public Rule
     {
+
+      /// Backend field targeted by the rule.
       std::string backend;
+      /// Backend field appears in 'if' clause.
       bool if_backend;
+      /// Backend field appears in 'then' clause.
       bool then_backend;
 
-      //bool matches(backend_functor*, const Utils::type_equivalency&) // whether backend functor properties match all of the non-empty fields of the rule
-      //bool allows(backend_functor*, const Utils::type_equivalency&) // must be true for backend functor to be used to resolve a backend req.  check if backend functor either matches the rule or has no non-empty fields captured by the rule
-      //bool backend_reqs_allow(backend_functor*, const Utils::type_equivalency&) // must be true for backend functor to be used to resolve a backend req of another module functor that matches this rule. check if backend functor is allowed by all backend req subjugate rules.
+      /// True if and only if the passed backend functor matches the 'if' part of a rule
+      bool antecedent_matches(functor*, const Utils::type_equivalency&);
 
-      /// Default constructor, to ensure the default values are not gibberish
+      /// True if and only if the passed backend functor matches the 'then' part of a rule
+      bool consequent_matches(functor*, const Utils::type_equivalency&);
+
+      /// True if and only if the passed backend functor matches both the 'if' and 'then parts of a rule, i.e. if the backend functor matches all non-empty fields of the rule.
+      bool matches(functor*, const Utils::type_equivalency&);
+
+      /// Whether a rule allows a given backend functor or not.  Must be true for a backend functor to be used to resolve a backend requirement.   
+      /// True if a) the backend functor fails the antecedent ('if' part of the rule), or b) the backend functor passes the entire rule (both 'if' and 'then' portions).  Otherwise false. 
+      bool allows(functor*, const Utils::type_equivalency&);
+      
+      ///Default constructor. Sets all fields empty.
       BackendRule():
         Rule(),
         backend(),
@@ -88,30 +127,61 @@ namespace Gambit
       static bool permits_field(const str&);
     };
 
-    /// Derived class rule for resolution of dependencies
+    /// Derived class rule for resolution of dependencies.
     struct ModuleRule : public Rule
     {
+
+      /// Module field targeted by the rule.
       std::string module;
+      /// Module field appears in 'if' clause.
       bool if_module;
+      /// Module field appears in 'then' clause.
       bool then_module;
 
+      /// Options provided by the rule.
       Options options;
+      /// Options appear in 'then' clause.
       bool then_options;
 
+      /// Subjugate dependency rules provided by the rule.
       std::vector<ModuleRule> dependencies;
+      /// Subjugate dependency rules appear in 'then' clause.
       bool then_dependencies;
 
+      /// Subjugate backend rules provided by the rule.
       std::vector<BackendRule> backends;
+      /// Subjugate backend rules appear in 'then' clause.
       bool then_backends;
 
+      /// Function chain provided by the rule.
       std::vector<std::string> functionChain;
+      /// Function chain appears in the 'then' clause.
       bool then_functionChain;
 
-      //bool matches(module_functor*, const Utils::type_equivalency&) // whether module functor properties match all of the non-empty fields of the rule
-      //bool allows(module_functor*, const Utils::type_equivalency&) // must be true for module functor to be used to resolve a dependency.  check if module functor either matches the rule or has no non-empty fields captured by the rule
-      //bool dependencies_allow(module_functor*, const Utils::type_equivalency&) // must be true for module functor to be used to resolve a dependency of another module functor that matches this rule. check if functor is allowed by *all* the dependency subjugate rules
+      /// True if and only if the passed module functor matches the 'if' part of a rule
+      bool antecedent_matches(functor*, const Utils::type_equivalency&);
 
-      ///Default constructor, to ensure the default values are not gibberish
+      /// True if and only if the passed module functor matches the 'then' part of a rule
+      bool consequent_matches(functor*, const Utils::type_equivalency&);
+
+      /// True if and only if the passed module functor matches both the 'if' and 'then parts of a rule, i.e. if the module functor matches all non-empty fields of the rule.
+      bool matches(functor*, const Utils::type_equivalency&);
+
+      /// Whether a rule allows a given module functor or not.  Must be true for a module functor to be used to resolve a dependency.   
+      /// True if a) the module functor fails the antecedent ('if' part of the rule), or b) the module functor passes the entire rule (both 'if' and 'then' portions).  Otherwise false. 
+      bool allows(functor*, const Utils::type_equivalency&);
+      
+      /// Whether the set of dependency rules subjugate to this rule allow a given module functor or not. 
+      /// Must be true for the passed module functor to be used to resolve a dependency of another module functor that matches this rule (the dependee).
+      /// Does not test if the dependee actually matches the rule, so should typically only be used after confirming that \ref matches returns True when called with the dependee as argument.
+      bool dependencies_allow(functor*, const Utils::type_equivalency&);
+
+      /// Whether the set of backend rules subjugate to this rule allow a given backend functor or not. 
+      /// Must be true for the passed backend functor to be used to resolve a backend requirement of another module functor that matches this rule (the requiree).
+      /// Does not test if the requiree actually matches the rule, so should typically only be used after confirming that \ref matches returns True when called with the requiree as argument.
+      bool backend_reqs_allow(functor*, const Utils::type_equivalency&);
+
+      ///Default constructor. Sets all fields empty.
       ModuleRule():
         Rule(),
         module(),
