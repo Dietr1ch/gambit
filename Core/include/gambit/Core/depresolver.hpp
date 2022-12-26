@@ -222,7 +222,7 @@ namespace Gambit
         void resolveVertexClassLoading(VertexID);
 
         /// Find backend function matching any one of a number of capability-type pairs.
-        functor* solveRequirement(std::set<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
+        functor* solveRequirement(std::set<sspair>, const Observable*, VertexID, std::vector<functor*>, bool, str group="none");
 
         /// Resolve a specific backend requirement.
         void resolveRequirement(functor*, VertexID);

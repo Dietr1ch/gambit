@@ -24,22 +24,32 @@ namespace Gambit
   namespace DRes
   {
 
-    /// Constructor
-    Rule::Rule(IniParser::ObservableType t)
+    /// Check if a given string is a permitted field of the ModuleRule class
+    bool ModuleRule::permits_field(const str& field)
     {
-      capability = t.capability;
-      type  = t.type;
-      function = t.function;
-      module = t.module;
-      backend = t.backend;
-      version = t.version;
-      options = t.options;
+      static const std::set<str> fields =
+      {
+        "module",
+        "options",
+        "dependencies",
+        "backends",
+        "functionChain"
+      };
+      return (fields.find(field) != fields.end());
+    }
+
+    /// Check if a given string is a permitted field of the BackendRule class
+    bool BackendRule::permits_field(const str& field)
+    {
+      return field == "backend";
     }
 
 
+
+/*
     /// Check whether quantity matches observableType
     /// Matches capability and type
-    bool quantityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable, const Utils::type_equivalency & eq)
+    bool quantityMatchesIniEntry(const sspair & quantity, const Observable & observable, const Utils::type_equivalency & eq)
     {
       // Compares dependency specifications of rules entries or observable
       // entries with capability (capabilities have to be unique for these
@@ -50,7 +60,7 @@ namespace Gambit
 
     /// Check whether quantity matches observableType
     /// Matches capability
-    bool capabilityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
+    bool capabilityMatchesIniEntry(const sspair & quantity, const Observable & observable)
     {
       // Compares dependency specifications of rules entries or observable
       // entries with capability (capabilities have to be unique for these
@@ -60,7 +70,7 @@ namespace Gambit
 
     /// Check whether functor matches ObservableType
     /// Matches capability, type, function and module name
-    bool moduleFuncMatchesIniEntry(functor *f, const IniParser::ObservableType &e, const Utils::type_equivalency & eq)
+    bool moduleFuncMatchesIniEntry(functor *f, const ModuleRule &e, const Utils::type_equivalency & eq)
     {
       return (e.capability != "" ? stringComp(e.capability, f->capability()) : true)
          and (e.type       != "" ? typeComp  (e.type,       f->type(), eq)   : true)
@@ -70,7 +80,7 @@ namespace Gambit
 
     /// Check whether functor matches ObservableType
     /// Matches capability, type, function and backend name
-    bool backendFuncMatchesIniEntry(functor *f, const IniParser::ObservableType &e, const Utils::type_equivalency & eq)
+    bool backendFuncMatchesIniEntry(functor *f, const BackendRule &e, const Utils::type_equivalency & eq)
     {
       return (e.capability != "" ? stringComp(e.capability, f->capability()) : true)
          and (e.type       != "" ? typeComp  (e.type,       f->type(), eq)   : true)
@@ -80,7 +90,7 @@ namespace Gambit
     }
 
     /// Get entry level relevant for options
-    int getEntryLevelForOptions(const IniParser::ObservableType &e)
+    int getEntryLevelForOptions(const Observable &e)
     {
       int z = 0;
       if ( e.module != "" ) z = 1;
@@ -110,13 +120,12 @@ namespace Gambit
       return matches;
     }
 
-
     /// Find rules entry that matches vertex
-    const IniParser::ObservableType * findIniEntry(functor* f,
-     const IniParser::ObservablesType &entries, const str & errtag, const Utils::type_equivalency & eq)
+    const Observable * findIniEntry(functor* f,
+     const std::set<Observable> &entries, const str & errtag, const Utils::type_equivalency & eq)
     {
-      std::vector<const IniParser::ObservableType*> auxEntryCandidates;
-      for (IniParser::ObservablesType::const_iterator it =
+      std::vector<const Observable*> auxEntryCandidates;
+      for (std::set<Observable>::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
         if ( moduleFuncMatchesIniEntry(f, *it, eq) and it->capability != "" )
@@ -138,11 +147,11 @@ namespace Gambit
     }
 
     /// Find observable entry that matches capability/type
-    const IniParser::ObservableType* findIniEntry(
-            sspair quantity, const IniParser::ObservablesType & entries, const str & errtag)
+    const Observable* findIniEntry(
+            sspair quantity, const std::set<Observable> & entries, const str & errtag)
     {
-      std::vector<const IniParser::ObservableType*> obsEntryCandidates;
-      for (IniParser::ObservablesType::const_iterator it =
+      std::vector<const Observable*> obsEntryCandidates;
+      for (std::set<Observable>::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
         if ( capabilityMatchesIniEntry(quantity, *it) ) // use same criteria than for normal dependencies
@@ -159,7 +168,7 @@ namespace Gambit
       }
       return obsEntryCandidates[0]; // obsEntryCandidates.size() == 1
     }
-
+*/
 
 
 

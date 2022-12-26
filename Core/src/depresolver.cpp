@@ -16,10 +16,11 @@
 ///  \date 2014 Feb, Mar, Apr
 ///
 ///  \author Pat Scott
-///          (patscott@physics.mcgill.ca)
+///          (patrickcolinscott@gmail.com)
 ///  \date 2013 May, Jul, Aug, Nov
 ///        2014 Jan, Mar, Apr, Dec
 ///        2018 Sep, Nov
+///        2022 Nov
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu)
@@ -39,6 +40,7 @@
 ///  *********************************************
 
 #include "gambit/Core/depresolver.hpp"
+#include "gambit/Core/observable.hpp"
 #include "gambit/Core/rule.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
@@ -1501,7 +1503,7 @@ namespace Gambit
         }
         else // if output vertex
         {
-          const IniParser::ObservableType* iniEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
+          const Observable* iniEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
           outVertex.vertex = fromVertex;
           outVertex.purpose = iniEntry->purpose;
           outputVertices.push_back(outVertex);
@@ -2140,8 +2142,8 @@ namespace Gambit
       }
 
       // ObsLikes
-      const IniParser::ObservablesType &obslikes = boundIniFile->getObservables();
-      for (IniParser::ObservableType obslike : obslikes)
+      const std::vector<Observable> &obslikes = boundIniFile->getObservables();
+      for (Observable obslike : obslikes)
       {
         str key = "ObsLikes::" + obslike.capability;
         metadata[key + "::capability"] = obslike.capability;

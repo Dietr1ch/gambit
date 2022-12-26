@@ -22,21 +22,21 @@
 #************************************************
 
 set(source_files src/container_factory.cpp
-                 src/core.cpp
+                 src/core.cpp 
                  src/core_singleton.cpp
-                 src/depresolver.cpp
-                 src/diagnostics.cpp
+                 src/diagnostics.cpp          
                  src/error_handlers.cpp
                  src/functors.cpp
                  src/functors_with_signals.cpp
                  src/ini_functions.cpp
-                 src/likelihood_container.cpp
+                 src/likelihood_container.cpp 
                  src/modelgraph.cpp
-                 src/resolution_utilities.cpp
+                 src/resolution_utilities.cpp 
                  src/rule.cpp
                  src/yaml_description_database.cpp
-                 src/yaml_parser.cpp
-)
+                 src/yaml_parser.cpp 
+                 src/depresolver.cpp          #does not build
+                 )
 
 set(header_files include/gambit/Core/container_factory.hpp
                  include/gambit/Core/core.hpp
