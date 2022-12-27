@@ -71,6 +71,20 @@ namespace Gambit
       /// Indicates that rule can be broken
       bool weakrule;
 
+      /// True if and only if the passed functor matches the 'if' part of a rule
+      virtual bool antecedent_matches(functor*, const Utils::type_equivalency&) const;
+
+      /// True if and only if the passed functor matches the 'then' part of a rule
+      virtual bool consequent_matches(functor*, const Utils::type_equivalency&) const;
+
+      /// True if and only if the passed functor matches both the 'if' and 'then parts of a rule, i.e. if the backend functor matches all non-empty fields of the rule.
+      bool matches(functor*, const Utils::type_equivalency&) const;
+
+      /// Whether a rule allows a given functor or not.  
+      /// Must be true for a module functor to be used to resolve a dependency, or for a backend functor to be used to resolve a backend requirement.   
+      /// True if a) the functor fails the antecedent ('if' part of the rule), or b) the functor passes the entire rule (both 'if' and 'then' portions).  Otherwise false. 
+      bool allows(functor*, const Utils::type_equivalency&) const;
+
       ///Default constructor. Sets all fields empty.
       Rule():
         has_if(false),
@@ -89,6 +103,7 @@ namespace Gambit
         then_version(false),
         weakrule(false)
       {}
+
     };
 
     /// Derived class rule for resolution of backend requirements.
@@ -103,17 +118,10 @@ namespace Gambit
       bool then_backend;
 
       /// True if and only if the passed backend functor matches the 'if' part of a rule
-      bool antecedent_matches(functor*, const Utils::type_equivalency&);
+      virtual bool antecedent_matches(functor*, const Utils::type_equivalency&) const;
 
       /// True if and only if the passed backend functor matches the 'then' part of a rule
-      bool consequent_matches(functor*, const Utils::type_equivalency&);
-
-      /// True if and only if the passed backend functor matches both the 'if' and 'then parts of a rule, i.e. if the backend functor matches all non-empty fields of the rule.
-      bool matches(functor*, const Utils::type_equivalency&);
-
-      /// Whether a rule allows a given backend functor or not.  Must be true for a backend functor to be used to resolve a backend requirement.   
-      /// True if a) the backend functor fails the antecedent ('if' part of the rule), or b) the backend functor passes the entire rule (both 'if' and 'then' portions).  Otherwise false. 
-      bool allows(functor*, const Utils::type_equivalency&);
+      virtual bool consequent_matches(functor*, const Utils::type_equivalency&) const;
       
       ///Default constructor. Sets all fields empty.
       BackendRule():
@@ -125,6 +133,7 @@ namespace Gambit
 
       /// Check if a given string is a permitted field of this class
       static bool permits_field(const str&);
+
     };
 
     /// Derived class rule for resolution of dependencies.
@@ -159,27 +168,20 @@ namespace Gambit
       bool then_functionChain;
 
       /// True if and only if the passed module functor matches the 'if' part of a rule
-      bool antecedent_matches(functor*, const Utils::type_equivalency&);
+      virtual bool antecedent_matches(functor*, const Utils::type_equivalency&) const;
 
       /// True if and only if the passed module functor matches the 'then' part of a rule
-      bool consequent_matches(functor*, const Utils::type_equivalency&);
+      virtual bool consequent_matches(functor*, const Utils::type_equivalency&) const;
 
-      /// True if and only if the passed module functor matches both the 'if' and 'then parts of a rule, i.e. if the module functor matches all non-empty fields of the rule.
-      bool matches(functor*, const Utils::type_equivalency&);
-
-      /// Whether a rule allows a given module functor or not.  Must be true for a module functor to be used to resolve a dependency.   
-      /// True if a) the module functor fails the antecedent ('if' part of the rule), or b) the module functor passes the entire rule (both 'if' and 'then' portions).  Otherwise false. 
-      bool allows(functor*, const Utils::type_equivalency&);
-      
       /// Whether the set of dependency rules subjugate to this rule allow a given module functor or not. 
       /// Must be true for the passed module functor to be used to resolve a dependency of another module functor that matches this rule (the dependee).
       /// Does not test if the dependee actually matches the rule, so should typically only be used after confirming that \ref matches returns True when called with the dependee as argument.
-      bool dependencies_allow(functor*, const Utils::type_equivalency&);
+      bool dependencies_allow(functor*, const Utils::type_equivalency&) const;
 
       /// Whether the set of backend rules subjugate to this rule allow a given backend functor or not. 
       /// Must be true for the passed backend functor to be used to resolve a backend requirement of another module functor that matches this rule (the requiree).
       /// Does not test if the requiree actually matches the rule, so should typically only be used after confirming that \ref matches returns True when called with the requiree as argument.
-      bool backend_reqs_allow(functor*, const Utils::type_equivalency&);
+      bool backend_reqs_allow(functor*, const Utils::type_equivalency&) const;
 
       ///Default constructor. Sets all fields empty.
       ModuleRule():
@@ -199,6 +201,7 @@ namespace Gambit
 
       /// Check if a given string is a permitted field of this class
       static bool permits_field(const str&);
+
     };
 
 
