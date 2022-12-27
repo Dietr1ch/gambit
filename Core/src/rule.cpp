@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Function implementations for rules class.
+///  Function implementations for rule classes.
 ///
 ///  *********************************************
 ///
@@ -16,7 +16,7 @@
 
 #include "gambit/Core/rule.hpp"
 #include "gambit/Core/error_handlers.hpp"
-#include "gambit/Elements/functors.hpp"
+#include "gambit/Core/resolution_utilities.hpp"
 
 namespace Gambit
 {

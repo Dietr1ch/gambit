@@ -31,6 +31,7 @@ set(source_files src/container_factory.cpp
                  src/ini_functions.cpp
                  src/likelihood_container.cpp 
                  src/modelgraph.cpp
+                 src/observable.cpp
                  src/resolution_utilities.cpp 
                  src/rule.cpp
                  src/yaml_description_database.cpp

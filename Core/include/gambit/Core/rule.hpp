@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "gambit/Core/resolution_utilities.hpp"
-#include "gambit/Core/observable.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Elements/functors.hpp"
@@ -77,7 +75,7 @@ namespace Gambit
       /// True if and only if the passed functor matches the 'then' part of a rule
       virtual bool consequent_matches(functor*, const Utils::type_equivalency&) const;
 
-      /// True if and only if the passed functor matches both the 'if' and 'then parts of a rule, i.e. if the backend functor matches all non-empty fields of the rule.
+      /// True if and only if the passed functor matches both the 'if' and 'then parts of a rule, i.e. if the backend functor matches all matchable non-empty fields of the rule.
       bool matches(functor*, const Utils::type_equivalency&) const;
 
       /// Whether a rule allows a given functor or not.  

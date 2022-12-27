@@ -144,13 +144,18 @@ namespace YAML
     // Step through each of the entries in the node, making sure it is one of the permitted ones.
     for(auto& entry : node)
     {
-      if (entry.first.as<std::string>() == "purpose") rhs.purpose = entry.second.as<std::string>();
-      else if (entry.first.as<std::string>() == "capability") rhs.capability = entry.second.as<std::string>();
-      else if (entry.first.as<std::string>() == "type") rhs.type = entry.second.as<std::string>();
-      else if (entry.first.as<std::string>() == "function") rhs.function = entry.second.as<std::string>();
-      else if (entry.first.as<std::string>() == "module") rhs.module = entry.second.as<std::string>();
-      else if (entry.first.as<std::string>() == "printme") rhs.printme = entry.second.as<bool>();
-      else if (entry.first.as<std::string>() == "sub_capabilities") rhs.subcaps = entry.second;
+      const std::string key = entry.first.as<std::string>(); 
+      if      (key == "purpose")          rhs.purpose        = entry.second.as<std::string>();
+      else if (key == "capability")       rhs.capability     = entry.second.as<std::string>();
+      else if (key == "type")             rhs.type           = entry.second.as<std::string>();
+      else if (key == "function")         rhs.function       = entry.second.as<std::string>();
+      else if (key == "version")          rhs.version        = entry.second.as<std::string>();
+      else if (key == "module")           rhs.module         = entry.second.as<std::string>();
+      else if (key == "functionChain")    rhs.functionChain  = entry.second.as<std::vector<std::string>>();
+      else if (key == "sub_capabilities") rhs.subcaps        = entry.second;
+      else if (key == "printme")          rhs.printme        = entry.second.as<bool>();
+      else if (key == "dependencies") for (auto& de : entry.second) rhs.dependencies.push_back(de.as<ModuleRule>());
+      else if (key == "backends")     for (auto& be : entry.second) rhs.backends.push_back(be.as<BackendRule>());
       else
       {
         std::stringstream errmsg;
@@ -238,13 +243,14 @@ namespace YAML
     // Step through each of the entries in the node, making sure it is one of the permitted ones.
     for(auto& entry : node)
     {
-      if (entry.first.as<std::string>() == "capability")    {rhs.capability = entry.second.as<std::string>(); rhs.if_capability = true;}
-      else if (entry.first.as<std::string>() == "type")     {rhs.type = entry.second.as<std::string>(); rhs.if_type = true;}
-      else if (entry.first.as<std::string>() == "function") {rhs.function = entry.second.as<std::string>(); rhs.then_function = true;}
-      else if (entry.first.as<std::string>() == "version")  {rhs.version = entry.second.as<std::string>(); rhs.then_version = true;}
-      else if (entry.first.as<std::string>() == "if")       rhs.has_if = true;
-      else if (entry.first.as<std::string>() == "then")     rhs.has_then = true;
-      else contains_other_direct_fields = check_field_is_valid_in_derived_rule(entry.first.as<std::string>());
+      const std::string key = entry.first.as<std::string>(); 
+      if      (key == "capability"){rhs.capability = entry.second.as<std::string>(); rhs.if_capability = true;}
+      else if (key == "type")      {rhs.type = entry.second.as<std::string>(); rhs.if_type = true;}
+      else if (key == "function")  {rhs.function = entry.second.as<std::string>(); rhs.then_function = true;}
+      else if (key == "version")   {rhs.version = entry.second.as<std::string>(); rhs.then_version = true;}
+      else if (key == "if")        rhs.has_if = true;
+      else if (key == "then")      rhs.has_then = true;
+      else contains_other_direct_fields = check_field_is_valid_in_derived_rule(key);
     }
 
     // Make sure that if and then either appear together or not at all
@@ -279,21 +285,23 @@ namespace YAML
       // Step through each of the entries in the if node, making sure it is one of the permitted ones.
       for(auto& entry : node["if"])
       {
-        if (entry.first.as<std::string>() == "capability")    {rhs.capability = entry.second.as<std::string>(); rhs.if_capability = true;}
-        else if (entry.first.as<std::string>() == "type")     {rhs.type = entry.second.as<std::string>(); rhs.if_type = true;}
-        else if (entry.first.as<std::string>() == "function") {rhs.function = entry.second.as<std::string>(); rhs.if_function = true;}
-        else if (entry.first.as<std::string>() == "version")  {rhs.version = entry.second.as<std::string>(); rhs.if_version = true;}
-        else check_field_is_valid_in_derived_rule(entry.first.as<std::string>());
+        const std::string key = entry.first.as<std::string>(); 
+        if      (key == "capability") {rhs.capability = entry.second.as<std::string>(); rhs.if_capability = true;}
+        else if (key == "type")       {rhs.type = entry.second.as<std::string>();       rhs.if_type = true;}
+        else if (key == "function")   {rhs.function = entry.second.as<std::string>();   rhs.if_function = true;}
+        else if (key == "version")    {rhs.version = entry.second.as<std::string>();    rhs.if_version = true;}
+        else check_field_is_valid_in_derived_rule(key);
       }
 
       // Step through each of the entries in the then node, making sure it is one of the permitted ones.
       for(auto& entry : node["then"])
       {
-        if (entry.first.as<std::string>() == "capability")    {rhs.capability = entry.second.as<std::string>(); rhs.then_capability = true;}
-        else if (entry.first.as<std::string>() == "type")     {rhs.type = entry.second.as<std::string>(); rhs.then_type = true;}
-        else if (entry.first.as<std::string>() == "function") {rhs.function = entry.second.as<std::string>(); rhs.then_function = true;}
-        else if (entry.first.as<std::string>() == "version")  {rhs.version = entry.second.as<std::string>(); rhs.then_version = true;}
-        else check_field_is_valid_in_derived_rule(entry.first.as<std::string>());
+        const std::string key = entry.first.as<std::string>(); 
+        if      (key == "capability") {rhs.capability = entry.second.as<std::string>(); rhs.then_capability = true;}
+        else if (key == "type")       {rhs.type = entry.second.as<std::string>();       rhs.then_type = true;}
+        else if (key == "function")   {rhs.function = entry.second.as<std::string>();   rhs.then_function = true;}
+        else if (key == "version")    {rhs.version = entry.second.as<std::string>();    rhs.then_version = true;}
+        else check_field_is_valid_in_derived_rule(key);
       }
 
       // Make sure there are no fields common to the if and then blocks.
@@ -316,17 +324,18 @@ namespace YAML
   void set_other_module_rule_fields(const Node& node, ModuleRule& rhs)
   {
     auto& entry = *(node.begin());
-    if (entry.first.as<std::string>() == "options")
+    const std::string key = entry.first.as<std::string>(); 
+    if (key == "options")
     {
       rhs.options = Gambit::Options(entry.second);
       rhs.then_options = true;
     }
-    else if (entry.first.as<std::string>() == "functionChain")
+    else if (key == "functionChain")
     {
       rhs.functionChain = entry.second.as<std::vector<std::string>>();
       rhs.then_functionChain = true;
     }
-    else if (entry.first.as<std::string>() == "dependencies")
+    else if (key == "dependencies")
     {
       for (auto& dependencies_entry : entry.second)
       {
@@ -334,7 +343,7 @@ namespace YAML
         rhs.then_dependencies = true;
       }
     }
-    else if (entry.first.as<std::string>() == "backends")
+    else if (key == "backends")
     {
       for (auto& backends_entry : entry.second)
       {
@@ -342,7 +351,7 @@ namespace YAML
         rhs.then_backends = true;
       }
     }
-    else check_field_is_valid_in_backend_rule(entry.first.as<std::string>());
+    else check_field_is_valid_in_backend_rule(key);
   }
 
   /// Convert yaml node to dependency resolver ModuleRule type
@@ -354,7 +363,8 @@ namespace YAML
     // Step through each of the entries in the node, making sure it is one of the permitted ones.
     for(auto& entry : node)
     {
-      if (entry.first.as<std::string>() == "module")
+      const std::string key = entry.first.as<std::string>(); 
+      if (key == "module")
       {
         rhs.module = entry.second.as<std::string>(); 
         rhs.then_module = true;
@@ -369,7 +379,11 @@ namespace YAML
       for(auto& entry : node["if"])
       {
         const std::string key = entry.first.as<std::string>();
-        if (key == "module") {rhs.module = entry.second.as<std::string>(); rhs.if_module = true;}
+        if (key == "module")
+        {
+          rhs.module = entry.second.as<std::string>();
+          rhs.if_module = true;
+        }
         else if (key == "functionChain" or
                  key == "options"       or
                  key == "dependencies"  or
