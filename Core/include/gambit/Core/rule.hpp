@@ -19,12 +19,14 @@
 
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/yaml_options.hpp"
-#include "gambit/Elements/functors.hpp"
 #include "gambit/Elements/type_equivalency.hpp"
 
 
 namespace Gambit
 {
+
+  /// Forward declaration of functor class
+  class functor;
 
   namespace DRes
   {

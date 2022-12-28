@@ -540,6 +540,24 @@ namespace Gambit
       allowedGroupCombos.insert(group_combo);
     }
 
+    /// Add an observable to the set of those that this functor matches.
+    void functor::addMatchedObservable(const DRes::Observable* obs) { matched_observables.insert(obs); }
+    
+    /// Retrieve the set of observables that this functor matches.
+    std::set<const DRes::Observable*>& functor::getMatchedObservables() { return matched_observables; }
+
+    /// Add a rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
+    void functor::addIgnoredRule(const DRes::Rule* r) { ignored_rules.insert(r); }
+    
+    /// Retrieve the set of rules against which this functor has been tested, but which have been found to be inapplicable.
+    std::set<const DRes::Rule*>& functor::getIgnoredRules() { return ignored_rules; }
+
+    /// Add a rule to the set of those against which this functor has been tested and found to match.
+    void functor::addMatchedRule(const DRes::Rule* r) { matched_rules.insert(r); }
+    
+    /// Retrieve the set of rules against which this functor has been tested and found to match.
+    std::set<const DRes::Rule*>& functor::getMatchedRules() { return matched_rules; }
+
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
     {

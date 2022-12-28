@@ -13,6 +13,7 @@
 ///  \date 2013 Apr-July, Dec
 ///  \date 2014 Jan, Mar-May, Sep
 ///  \date 2015 Jan
+///  \date 2022 Dec
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -72,6 +73,9 @@ namespace Gambit
   /// Forward declaration of Models::ModelFunctorClaw class for use in constructors.
   namespace Models { class ModelFunctorClaw; }
 
+  /// Forward declaration of Rule and Observables classes for saving pointers to ignored and matched examples
+  namespace DRes { class Rule; class Observable; }
+
   /// Type redefinition to get around icc compiler bugs.
   template <typename TYPE, typename... ARGS>
   struct variadic_ptr { typedef TYPE(*type)(ARGS..., ...); };
@@ -96,7 +100,7 @@ namespace Gambit
       /// Constructor
       functor(str, str, str, str, Models::ModelFunctorClaw&);
 
-      //// Destructor
+      /// Destructor
       virtual ~functor() {}
 
       /// Virtual calculate(); needs to be redefined in daughters.
@@ -324,6 +328,24 @@ namespace Gambit
 
       /// Add a combination of model groups to the internal list of combinations for which this functor is allowed to be used.
       void setAllowedModelGroupCombo(str groups);
+      
+      /// Add an observable to the set of those that this functor matches.
+      void addMatchedObservable(const DRes::Observable*);
+      
+      /// Retrieve the set of observables that this functor matches.
+      std::set<const DRes::Observable*>& getMatchedObservables();
+
+      /// Add a rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
+      void addIgnoredRule(const DRes::Rule*);
+      
+      /// Retrieve the set of rules against which this functor has been tested, but which have been found to be inapplicable.
+      std::set<const DRes::Rule*>& getIgnoredRules();
+
+      /// Add a rule to the set of those against which this functor has been tested and found to match.
+      void addMatchedRule(const DRes::Rule*);
+      
+      /// Retrieve the set of rules against which this functor has been tested and found to match.
+      std::set<const DRes::Rule*>& getMatchedRules();
 
     protected:
 
@@ -381,6 +403,15 @@ namespace Gambit
 
       /// Map from model group names to group contents
       std::map<str, std::set<str> > modelGroups;
+      
+      /// The set of observables that this functor matches.
+      std::set<const DRes::Observable*> matched_observables;
+
+      /// Set of rules against which this functor has been tested, but which have been found to be inapplicable.
+      std::set<const DRes::Rule*> ignored_rules;
+
+      /// Set of rules against which this functor has been tested and found to match.
+      std::set<const DRes::Rule*> matched_rules;
 
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime(str method);

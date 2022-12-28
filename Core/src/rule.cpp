@@ -17,6 +17,7 @@
 #include "gambit/Core/rule.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/resolution_utilities.hpp"
+#include "gambit/Elements/functors.hpp"
 
 namespace Gambit
 {
@@ -57,8 +58,14 @@ namespace Gambit
     /// True unless the functor passes the antecedent ('if' part of the rule) but fails the consequent ('then' part of the rule). 
     bool Rule::allows(functor* f, const Utils::type_equivalency& te) const
     {
-      if (not antecedent_matches(f, te)) return true;
-      return consequent_matches(f, te);
+      if (not antecedent_matches(f, te))
+      {
+        f->addIgnoredRule(this);
+        return true;
+      }
+      bool result = consequent_matches(f, te);
+      if (result) f->addMatchedRule(this);
+      return result;
     }
 
     /// Check if a given string is a permitted field of the BackendRule class

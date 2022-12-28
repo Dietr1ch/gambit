@@ -17,13 +17,15 @@
 #pragma once
 
 #include "gambit/Core/rule.hpp"
-#include "gambit/Elements/functors.hpp"
 
 #include "yaml-cpp/yaml.h"
 
 
 namespace Gambit
 {
+
+  /// Forward declaration of functor class
+  class functor;
 
   namespace DRes
   {
