@@ -206,11 +206,10 @@ namespace Gambit
         Options collectSubCaps(const DRes::VertexID & vertex);
 
         /// Generate full dependency tree
-        void generateTree(std::queue<QueueEntry> parQueue);
+        void generateTree(std::queue<QueueEntry>& resolutionQueue);
 
         /// Helper functions/arrays
-        void fillParQueue(std::queue<QueueEntry> *parQueue,
-            DRes::VertexID vertex);
+        void fillResolutionQueue(std::queue<QueueEntry>& resolutionQueue, DRes::VertexID vertex);
 
         /// Topological sort
         std::list<VertexID> run_topological_sort();
@@ -241,14 +240,23 @@ namespace Gambit
         /// Model claw to which this dependency resolver is bound
         const Models::ModelFunctorClaw *boundClaw;
 
-        /// ini file to which this dependency resolver is bound
-        const IniParser::IniFile *boundIniFile;
-
         /// Type equivalency object to which this dependency resolver is bound
         const Utils::type_equivalency *boundTEs;
 
         /// Printer object to which this dependency resolver is bound
         Printers::BasePrinter *boundPrinter;
+
+        /// ini file to which this dependency resolver is bound
+        const IniParser::IniFile *boundIniFile;
+
+        /// ObsLike entries from the input yaml file 
+        const std::vector<Observable>& obslikes;
+
+        /// Module rules specified in the input yaml file
+        const std::vector<ModuleRule>& module_rules;
+
+        /// Backend rules specified in the input yaml file
+        const std::vector<BackendRule>& backend_rules;
 
         /// Output Vertex Infos
         std::vector<OutputVertex> outputVertices;
