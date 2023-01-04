@@ -546,17 +546,29 @@ namespace Gambit
     /// Retrieve the set of observables that this functor matches.
     std::set<const DRes::Observable*>& functor::getMatchedObservables() { return matched_observables; }
 
-    /// Add a rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
-    void functor::addIgnoredRule(const DRes::Rule* r) { ignored_rules.insert(r); }
+    /// Add a module rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
+    void functor::addIgnoredModuleRule(const DRes::ModuleRule* r) { ignored_module_rules.insert(r); }
     
-    /// Retrieve the set of rules against which this functor has been tested, but which have been found to be inapplicable.
-    std::set<const DRes::Rule*>& functor::getIgnoredRules() { return ignored_rules; }
+    /// Add a backend rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
+    void functor::addIgnoredBackendRule(const DRes::BackendRule* r) { ignored_backend_rules.insert(r); }
 
-    /// Add a rule to the set of those against which this functor has been tested and found to match.
-    void functor::addMatchedRule(const DRes::Rule* r) { matched_rules.insert(r); }
+    /// Retrieve the set of module rules against which this functor has been tested, but which have been found to be inapplicable.
+    const std::set<const DRes::ModuleRule*>& functor::getIgnoredModuleRules() const { return ignored_module_rules; }
+
+    /// Retrieve the set of backend rules against which this functor has been tested, but which have been found to be inapplicable.
+    const std::set<const DRes::BackendRule*>& functor::getIgnoredBackendRules() const { return ignored_backend_rules; }
+
+    /// Add a module rule to the set of those against which this functor has been tested and found to match.
+    void functor::addMatchedModuleRule(const DRes::ModuleRule* r) { matched_module_rules.insert(r); }
     
-    /// Retrieve the set of rules against which this functor has been tested and found to match.
-    std::set<const DRes::Rule*>& functor::getMatchedRules() { return matched_rules; }
+    /// Add a backend rule to the set of those against which this functor has been tested and found to match.
+    void functor::addMatchedBackendRule(const DRes::Rule* r) { matched_backend_rules.insert(r); }
+
+    /// Retrieve the set of module rules against which this functor has been tested and found to match.
+    const std::set<const DRes::ModuleRule*>& functor::getMatchedModuleRules() const { return matched_module_rules; }
+
+    /// Retrieve the set of backend rules against which this functor has been tested and found to match.
+    const std::set<const DRes::BackendRule*>& functor::getMatchedBackendRules() const { return matched_backend_rules; } 
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)

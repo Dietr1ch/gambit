@@ -79,21 +79,16 @@ namespace Gambit
       str purpose;
     };
 
-    /// Information in parameter queue
+    /// Information in resolution queue
     struct QueueEntry
     {
-      QueueEntry() {}
-      QueueEntry(sspair a, DRes::VertexID b, int c, bool d)
-      {
-        first = a;
-        second = b;
-        third = c;
-        printme = d;
-      }
-      sspair first;
-      DRes::VertexID second;
-      int third;
+      QueueEntry();
+      QueueEntry(sspair a, DRes::VertexID b, int c, bool d);
+      sspair quantity;
+      DRes::VertexID toVertex;
+      int dependency_type;
       bool printme;
+      const Observable* obslike;
     };
 
     /// Main dependency resolver
@@ -188,7 +183,7 @@ namespace Gambit
         str printGenericFunctorList(const std::vector<VertexID>&);
 
         /// Print quantity to be resolved
-        str printQuantityToBeResolved(const sspair & quantity, const DRes::VertexID & vertex);
+        str printQuantityToBeResolved(const QueueEntry&);
 
         /// Initialise the printer object with a list of functors for it to expect to be printed.
         void initialisePrinter();
@@ -196,8 +191,11 @@ namespace Gambit
         /// Deactivate functors that are not allowed to be used with the model(s) being scanned.
         void makeFunctorsModelCompatible();
 
+        /// Helper function to update vertex candidate lists in resolveDependencyFromRules
+        void updateCandidates(const DRes::VertexID&, std::vector<DRes::VertexID>&, std::vector<DRes::VertexID>&);
+
         /// Resolution of individual module function dependencies
-        DRes::VertexID resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity);
+        DRes::VertexID resolveDependencyFromRules(const QueueEntry&, const std::vector<DRes::VertexID>&);
 
         /// Derive options from ini-entries
         Options collectIniOptions(const DRes::VertexID & vertex);

@@ -74,7 +74,7 @@ namespace Gambit
   namespace Models { class ModelFunctorClaw; }
 
   /// Forward declaration of Rule and Observables classes for saving pointers to ignored and matched examples
-  namespace DRes { class Rule; class Observable; }
+  namespace DRes { class ModuleRule; class BackendRule; class Observable; }
 
   /// Type redefinition to get around icc compiler bugs.
   template <typename TYPE, typename... ARGS>
@@ -335,17 +335,29 @@ namespace Gambit
       /// Retrieve the set of observables that this functor matches.
       std::set<const DRes::Observable*>& getMatchedObservables();
 
-      /// Add a rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
-      void addIgnoredRule(const DRes::Rule*);
+      /// Add a module rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
+      void addIgnoredModuleRule(const DRes::ModuleRule*);
       
-      /// Retrieve the set of rules against which this functor has been tested, but which have been found to be inapplicable.
-      std::set<const DRes::Rule*>& getIgnoredRules();
+      /// Add a backend rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
+      void addIgnoredBackendRule(const DRes::BackendRule*);
 
-      /// Add a rule to the set of those against which this functor has been tested and found to match.
-      void addMatchedRule(const DRes::Rule*);
+      /// Retrieve the set of module rules against which this functor has been tested, but which have been found to be inapplicable.
+      std::set<const DRes::ModuleRule*>& getIgnoredModuleRules();
+
+      /// Retrieve the set of backend rules against which this functor has been tested, but which have been found to be inapplicable.
+      std::set<const DRes::BackendRule*>& getIgnoredBackendRules();
+
+      /// Add a module rule to the set of those against which this functor has been tested and found to match.
+      void addMatchedModuleRule(const DRes::ModuleRule*);
       
-      /// Retrieve the set of rules against which this functor has been tested and found to match.
-      std::set<const DRes::Rule*>& getMatchedRules();
+      /// Add a backend rule to the set of those against which this functor has been tested and found to match.
+      void addMatchedBackendRule(const DRes::BackendRule*);
+
+      /// Retrieve the set of module rules against which this functor has been tested and found to match.
+      std::set<const DRes::ModuleRule*>& getMatchedModuleRules();
+
+      /// Retrieve the set of backend rules against which this functor has been tested and found to match.
+      std::set<const DRes::BackendRule*>& getMatchedBackendRules();
 
     protected:
 
@@ -407,11 +419,17 @@ namespace Gambit
       /// The set of observables that this functor matches.
       std::set<const DRes::Observable*> matched_observables;
 
-      /// Set of rules against which this functor has been tested, but which have been found to be inapplicable.
-      std::set<const DRes::Rule*> ignored_rules;
+      /// Set of module rules against which this functor has been tested, but which have been found to be inapplicable.
+      std::set<const DRes::ModuleRule*> ignored_module_rules;
 
-      /// Set of rules against which this functor has been tested and found to match.
-      std::set<const DRes::Rule*> matched_rules;
+      /// Set of backend rules against which this functor has been tested, but which have been found to be inapplicable.
+      std::set<const DRes::BackendRule*> ignored_backend_rules;
+
+      /// Set of module rules against which this functor has been tested and found to match.
+      std::set<const DRes::ModuleRule*> matched_module_rules;
+
+      /// Set of backend rules against which this functor has been tested and found to match.
+      std::set<const DRes::BackendRule*> matched_backend_rules;
 
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime(str method);

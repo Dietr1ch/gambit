@@ -47,24 +47,14 @@ namespace Gambit
       return match;
     }
 
-    /// True if and only if the passed functor matches both the 'if' and 'then parts of a rule, i.e. if the backend functor matches all non-empty fields of the rule.
-    bool Rule::matches(functor* f, const Utils::type_equivalency& te) const
-    {
-      return (antecedent_matches(f, te) and consequent_matches(f, te));
-    }
-
     /// Whether a rule allows a given functor or not.  
     /// Must be true for a module functor to be used to resolve a dependency, or for a backend functor to be used to resolve a backend requirement.   
     /// True unless the functor passes the antecedent ('if' part of the rule) but fails the consequent ('then' part of the rule). 
-    bool Rule::allows(functor* f, const Utils::type_equivalency& te) const
+    bool Rule::allows(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
     {
-      if (not antecedent_matches(f, te))
-      {
-        f->addIgnoredRule(this);
-        return true;
-      }
+      if (ignore_if_weak and weakrule) return true;
+      if (not antecedent_matches(f, te)) return true;
       bool result = consequent_matches(f, te);
-      if (result) f->addMatchedRule(this);
       return result;
     }
 
@@ -83,6 +73,8 @@ namespace Gambit
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.
       if (match and if_backend) match = stringComp(backend, f->origin()); 
+      // Log the (lack of) a match
+      if (log_matches and not match) f->addIgnoredBackendRule(this);
       return match;
     }
 
@@ -95,6 +87,8 @@ namespace Gambit
       match = match and Rule::consequent_matches(f, te);
       // Check if the derived class part of the consequent was matched.
       if (match and then_backend) match = stringComp(backend, f->origin()); 
+      // Log match
+      if (match and log_matches) f->addMatchedBackendRule(this);
       return match;
     }
 
@@ -121,6 +115,8 @@ namespace Gambit
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.
       if (match and if_module) match = stringComp(module, f->origin()); 
+      // Log the (lack of) a match
+      if (log_matches and not match) f->addIgnoredModuleRule(this);
       return match;
     }
 
@@ -134,22 +130,42 @@ namespace Gambit
       match = match and Rule::consequent_matches(f, te);
       // Check if the derived class part of the consequent was matched.
       if (match and then_module) match = stringComp(module, f->origin()); 
+      // Log match
+      if (match and log_matches) f->addMatchedModuleRule(this);
       return match;
     }
 
     /// Whether the set of dependency rules subjugate to this rule allow a given module functor or not. 
-    bool ModuleRule::dependencies_allow(functor* f, const Utils::type_equivalency& te) const
+    bool ModuleRule::dependencies_allow(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
     {
+      if (ignore_if_weak and weakrule) return true;
       bool allow = true;
-      for (const ModuleRule& rule : dependencies) allow = allow and rule.allows(f, te);
+      for (const ModuleRule& rule : dependencies) allow = allow and rule.allows(f, te, ignore_if_weak);
       return allow;      
     }
 
-    /// Whether the set of backend rules subjugate to this rule allow a given backend functor or not. 
-    bool ModuleRule::backend_reqs_allow(functor* f, const Utils::type_equivalency& te) const
+    /// Whether the functionChain of this rule allows a given module functor to be used to resolve the dependency of another. 
+    bool ModuleRule::function_chain_allows(functor* candidate, functor* dependee, const Utils::type_equivalency& te, bool ignore_if_weak) const
     {
+      // Scenarios in which the functionChain is irrelevent.
+      if ((ignore_if_weak and weakrule) or
+          (not then_functionChain) or 
+          (not antecedent_matches(candidate, te))) return true;
+      // Iterate over the entries in the functionChain
+      for (auto it = functionChain.begin(); it != functionChain.end() - 1; ++it)
+      {
+        // Function is allowed if somewhere in the chain it is directly preceeded by the dependent function.
+        if ((*it) == dependee->name()) return (*(it+1) == candidate->name());
+      }
+      return true;
+    }
+
+    /// Whether the set of backend rules subjugate to this rule allow a given backend functor or not. 
+    bool ModuleRule::backend_reqs_allow(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
+    {
+      if (ignore_if_weak and weakrule) return true;
       bool allow = true;
-      for (const BackendRule& rule : backends) allow = allow and rule.allows(f, te);
+      for (const BackendRule& rule : backends) allow = allow and rule.allows(f, te, ignore_if_weak);
       return allow;      
     }
 

@@ -70,6 +70,9 @@ namespace Gambit
 
       /// Indicates that rule can be broken
       bool weakrule;
+      
+      /// Whether or not to log matches to the rule with functors
+      bool log_matches;
 
       /// True if and only if the passed functor matches the 'if' part of a rule
       virtual bool antecedent_matches(functor*, const Utils::type_equivalency&) const;
@@ -77,13 +80,10 @@ namespace Gambit
       /// True if and only if the passed functor matches the 'then' part of a rule
       virtual bool consequent_matches(functor*, const Utils::type_equivalency&) const;
 
-      /// True if and only if the passed functor matches both the 'if' and 'then parts of a rule, i.e. if the backend functor matches all matchable non-empty fields of the rule.
-      bool matches(functor*, const Utils::type_equivalency&) const;
-
       /// Whether a rule allows a given functor or not.  
       /// Must be true for a module functor to be used to resolve a dependency, or for a backend functor to be used to resolve a backend requirement.   
       /// True if a) the functor fails the antecedent ('if' part of the rule), or b) the functor passes the entire rule (both 'if' and 'then' portions).  Otherwise false. 
-      bool allows(functor*, const Utils::type_equivalency&) const;
+      bool allows(functor*, const Utils::type_equivalency&, bool ignore_if_weak = true) const;
 
       ///Default constructor. Sets all fields empty.
       Rule():
@@ -101,7 +101,8 @@ namespace Gambit
         version(),
         if_version(false),
         then_version(false),
-        weakrule(false)
+        weakrule(false),
+        log_matches(true)
       {}
 
     };
@@ -175,13 +176,17 @@ namespace Gambit
 
       /// Whether the set of dependency rules subjugate to this rule allow a given module functor or not. 
       /// Must be true for the passed module functor to be used to resolve a dependency of another module functor that matches this rule (the dependee).
-      /// Does not test if the dependee actually matches the rule, so should typically only be used after confirming that \ref matches returns True when called with the dependee as argument.
-      bool dependencies_allow(functor*, const Utils::type_equivalency&) const;
+      /// Does not test if the dependee actually matches the rule, so should typically only be used after confirming this first.
+      bool dependencies_allow(functor*, const Utils::type_equivalency&, bool ignore_if_weak = true) const;
+
+      /// Whether the functionChain of this rule allow a given module functor to be used to resolve the dependency of another. 
+      /// Does not test if the dependent functor actually matches the rule, so should typically only be used after confirming this first.
+      bool function_chain_allows(functor*, functor*, const Utils::type_equivalency&, bool ignore_if_weak = true) const;
 
       /// Whether the set of backend rules subjugate to this rule allow a given backend functor or not. 
       /// Must be true for the passed backend functor to be used to resolve a backend requirement of another module functor that matches this rule (the requiree).
-      /// Does not test if the requiree actually matches the rule, so should typically only be used after confirming that \ref matches returns True when called with the requiree as argument.
-      bool backend_reqs_allow(functor*, const Utils::type_equivalency&) const;
+      /// Does not test if the requiree actually matches the rule, so should typically only be used after confirming this first.
+      bool backend_reqs_allow(functor*, const Utils::type_equivalency&, bool ignore_if_weak = true) const;
 
       ///Default constructor. Sets all fields empty.
       ModuleRule():
