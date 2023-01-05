@@ -181,6 +181,7 @@ namespace Gambit
         /// Pretty print backend functor information
         str printGenericFunctorList(const std::vector<functor*>&);
         str printGenericFunctorList(const std::vector<VertexID>&);
+        str printGenericFunctorList(const std::vector<std::pair<VertexID, bool>>&);
 
         /// Print quantity to be resolved
         str printQuantityToBeResolved(const QueueEntry&);
@@ -192,7 +193,7 @@ namespace Gambit
         void makeFunctorsModelCompatible();
 
         /// Helper function to update vertex candidate lists in resolveDependencyFromRules
-        void updateCandidates(const DRes::VertexID&, std::vector<DRes::VertexID>&, std::vector<DRes::VertexID>&);
+        void updateCandidates(const DRes::VertexID&, int, std::vector<std::pair<DRes::VertexID, bool>>&, std::vector<std::pair<DRes::VertexID, bool>>&);
 
         /// Resolution of individual module function dependencies
         DRes::VertexID resolveDependencyFromRules(const QueueEntry&, const std::vector<DRes::VertexID>&);
@@ -226,7 +227,7 @@ namespace Gambit
 
         /// Find candidate functions that are tailor made for models that are
         /// scanned over.
-        std::vector<DRes::VertexID> closestCandidateForModel(std::vector<DRes::VertexID> candidates);
+        std::vector<std::pair<DRes::VertexID,bool>> closestCandidateForModel(std::vector<std::pair<DRes::VertexID,bool>> candidates);
 
         //
         // Private data members
