@@ -212,10 +212,6 @@ namespace Gambit
 
     /*
     /// Check whether quantity matches observableType
-    /// Matches capability and type
-    bool quantityMatchesIniEntry(const sspair & quantity, const Observable & observable, const Utils::type_equivalency & eq);
-
-    /// Check whether quantity matches observableType
     /// Matches capability
     bool capabilityMatchesIniEntry(const sspair & quantity, const Observable & observable);
 

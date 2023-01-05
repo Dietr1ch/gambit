@@ -172,17 +172,6 @@ namespace Gambit
 
 /*
     /// Check whether quantity matches observableType
-    /// Matches capability and type
-    bool quantityMatchesIniEntry(const sspair & quantity, const Observable & observable, const Utils::type_equivalency & eq)
-    {
-      // Compares dependency specifications of rules entries or observable
-      // entries with capability (capabilities have to be unique for these
-      // lists)
-      return ( stringComp( observable.capability, quantity.first ) and
-               typeComp  ( observable.type,       quantity.second, eq ));
-    }
-
-    /// Check whether quantity matches observableType
     /// Matches capability
     bool capabilityMatchesIniEntry(const sspair & quantity, const Observable & observable)
     {

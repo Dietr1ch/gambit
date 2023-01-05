@@ -1065,13 +1065,6 @@ namespace Gambit
       disabled[i] = {v, not vertex_allowed};
     }
 
-    template<template<class, class> class Container, class T >
-    void masked_erase(Container<std::pair<T,bool>, std::allocator<std::pair<T,bool>>> c)
-    {     
-      auto it = std::remove_if(c.begin(), c.end(), [](const std::pair<T,bool>& e) { return not e.second; }); 
-      c.erase(it, c.end());
-    }
-
     /// Resolve dependency by matching capability, type pair of input queue entry, ensuring consistency with all obslike entries and subjugate rules.
     /// As non-subjugate rules have global applicability, all (strong) instances are assumed to have already been applied before this function is called. 
     DRes::VertexID DependencyResolver::resolveDependencyFromRules(const QueueEntry& entry, const std::vector<DRes::VertexID>& vertexCandidates)
@@ -1388,11 +1381,15 @@ namespace Gambit
         // Apply resolved dependency to masterGraph and functors
         if (entry.obslike == NULL)
         {
-          // Resolve dependency on functor level...
-          //
+          // Resolve the dependency at the functor level.
+          // Default is to resolve dependency at functor level for entry.toVertex.
+          if (entry.dependency_type != LOOP_MANAGER_DEPENDENCY)
+          {
+            (*masterGraph[entry.toVertex]).resolveDependency(masterGraph[fromVertex]);
+          }
           // In case the fromVertex is a loop manager, store nested function
           // temporarily in loopManagerMap (they have to be sorted later)
-          if (entry.dependency_type == LOOP_MANAGER_DEPENDENCY)
+          else
           {
             // Check whether fromVertex is allowed to manage loops
             if (not masterGraph[fromVertex]->canBeLoopManager())
@@ -1418,19 +1415,14 @@ namespace Gambit
               for (auto it = edges_to_force_on_manager.at(entry.toVertex).begin();
                    it != edges_to_force_on_manager.at(entry.toVertex).end(); ++it)
               {
-                logger() << "Dynamically adding dependency of " << (*masterGraph[fromVertex]).origin()
-                         << "::" << (*masterGraph[fromVertex]).name() << " on "
-                         << (*masterGraph[*it]).origin() << "::" << (*masterGraph[*it]).name() << endl;
+                logger() << "Dynamically adding dependency of " << masterGraph[fromVertex]->origin()
+                         << "::" << masterGraph[fromVertex]->name() << " on "
+                         << masterGraph[*it]->origin() << "::" << masterGraph[*it]->name() << endl;
                 std::tie(edge, ok) = add_edge(*it, fromVertex, masterGraph);
               }
             }
           }
-          // Default is to resolve dependency on functor level of entry.toVertex
-          else
-          {
-            (*masterGraph[entry.toVertex]).resolveDependency(masterGraph[fromVertex]);
-          }
-          // ...and on masterGraph level.
+          // Now save the resolved dependency into the masterGraph.
           std::tie(edge, ok) = add_edge(fromVertex, entry.toVertex, masterGraph);
 
           // In the case that entry.toVertex is a nested function, add fromVertex to
@@ -1495,9 +1487,8 @@ namespace Gambit
         }
         else // if output vertex
         {
-          const Observable* iniEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
           outVertex.vertex = fromVertex;
-          outVertex.purpose = iniEntry->purpose;
+          outVertex.purpose = entry.obslike->purpose;;
           outputVertices.push_back(outVertex);
           // Don't need subcaps during dry-run
           if (not boundCore->show_runorder)
@@ -1547,7 +1538,7 @@ namespace Gambit
       {
         logger() << "Adding module function loop manager to resolution queue:" << endl;
         logger() << lmcap << " ()" << endl;
-        resolutionQueue->push(QueueEntry(sspair(lmcap, lmtype), vertex, LOOP_MANAGER_DEPENDENCY, printme_default));
+        resolutionQueue.push(QueueEntry(sspair(lmcap, lmtype), vertex, LOOP_MANAGER_DEPENDENCY, printme_default));
       }
 
       // Digest regular dependencies
@@ -1561,7 +1552,7 @@ namespace Gambit
         if (lmcap == "none" or lmtype == "any" or lmcap != ss.first or lmtype != ss.second)
         {
           logger() << ss.first << " (" << ss.second << ")" << endl;
-          resolutionQueue->push(QueueEntry(ss, vertex, NORMAL_DEPENDENCY, printme_default));
+          resolutionQueue.push(QueueEntry(ss, vertex, NORMAL_DEPENDENCY, printme_default));
         }
       }
 
