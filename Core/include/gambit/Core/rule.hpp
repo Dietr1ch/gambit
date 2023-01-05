@@ -223,9 +223,6 @@ namespace Gambit
     /// Matches capability, type, function and backend name
     bool backendFuncMatchesIniEntry(functor *f, const BackendRule &e, const Utils::type_equivalency & eq);
 
-    /// Get entry level relevant for options
-    int getEntryLevelForOptions(const Observable &e);
-
     /// Check whether functor matches rules
     /// Matches function name and type
     bool matchesRules( functor *f, const Rule & rule);

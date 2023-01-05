@@ -941,52 +941,35 @@ namespace Gambit
     /// Collect ini options
     Options DependencyResolver::collectIniOptions(const DRes::VertexID & vertex)
     {
+      functor* f = masterGraph[vertex];
       YAML::Node nodes;
-      YAML::Node zlevels;
 
       #ifdef DEPRES_DEBUG
-        cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
+        cout << "Searching options for " << f->capability() << endl;
       #endif
 
-      // TODO Iterate over all the rules that this functor has matched, and copy their options over 
-           
-      
-
-      const IniParser::ObservablesType & entries = boundIniFile->getRules();
-      for (IniParser::ObservablesType::const_iterator it =
-          entries.begin(); it != entries.end(); ++it)
+      for (const ModuleRule* rule : f->getMatchedModuleRules())
       {
-        if (moduleFuncMatchesIniEntry(masterGraph[vertex], *it, *boundTEs))
+        #ifdef DEPRES_DEBUG
+          cout << "Getting option from: " << rule->capability << " " << rule->type << endl;
+        #endif
+        // Option is a new addition to collector node
+        for (const auto& opt : rule->options)
         {
-          #ifdef DEPRES_DEBUG
-            cout << "Getting option from: " << it->capability << " " << it->type << endl;
-          #endif
-          for (auto jt = it->options.begin(); jt != it->options.end(); ++jt)
+          if (not nodes[opt.first.as<std::string>()])
           {
-            if ( not nodes[jt->first.as<std::string>()] )
+            #ifdef DEPRES_DEBUG
+              cout << opt.first.as<std::string>() << ": " << opt.second << endl;
+            #endif
+            nodes[opt.first.as<std::string>()] = opt.second;
+          }
+          else // Option already exists in collector node
+          {
+            // Throw an error if the existing value differs from the new value
+            if (nodes[opt.first.as<std::string>()] != opt.second)
             {
-              #ifdef DEPRES_DEBUG
-                cout << jt->first.as<std::string>() << ": " << jt->second << endl;
-              #endif
-              nodes[jt->first.as<std::string>()] = jt->second;
-              zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
-            }
-            else
-            {
-              if ( zlevels[jt->first.as<std::string>()].as<int>() < getEntryLevelForOptions(*it) )
-              {
-                #ifdef DEPRES_DEBUG
-                  cout << "Replaced : " << jt->first.as<std::string>() << ": " << jt->second << endl;
-                #endif
-                zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
-                nodes[jt->first.as<std::string>()] = jt->second;
-              }
-              else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
-              {
-                std::ostringstream errmsg;
-                errmsg << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>();
-                dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
-              }
+              str errmsg = str("ERROR! Multiple option values for key: ") + opt.first.as<str>();
+              dependency_resolver_error().raise(LOCAL_INFO, errmsg);
             }
           }
         }

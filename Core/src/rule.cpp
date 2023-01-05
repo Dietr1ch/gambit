@@ -202,17 +202,6 @@ namespace Gambit
          and (e.version    != "" ? stringComp(e.version,    f->version())    : true);
     }
 
-    /// Get entry level relevant for options
-    int getEntryLevelForOptions(const Observable &e)
-    {
-      int z = 0;
-      if ( e.module != "" ) z = 1;
-      if ( e.capability != "" ) z = 2;
-      if ( e.type != "" ) z = 3;
-      if ( e.function != "" ) z = 4;
-      return z;
-    }
-
     /// Check whether functor matches rules
     /// Matches function name and type
     bool matchesRules( functor *f, const Rule & rule)
