@@ -995,50 +995,51 @@ namespace Gambit
     }
 
     /// Collect sub-capabilities
-    Options DependencyResolver::collectSubCaps(const DRes::VertexID & vertex)
+    Options DependencyResolver::collectSubCaps(const DRes::VertexID& v)
     {
-      #ifdef DEPRES_DEBUG
-        cout << "Searching for subcaps of " << masterGraph[vertex]->capability() << endl;
-      #endif
-
+      functor* f = masterGraph[v];
       YAML::Node nodes;
-      
-      // Iterate over the ObsLikes entries
-      for (auto it = observables.begin(); it != observables.end(); ++it)
+
+      #ifdef DEPRES_DEBUG
+        cout << "Searching for subcaps of " << f->capability() << endl;
+      #endif      
+
+      // Iterate over all ObsLikes entries that match this functor
+      for (const Observable* obslike : f->getMatchedObservables())
       {
-        // Select only those entries that match the current graph vertex (i.e. module function)
-        if (moduleFuncMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) and not it->subcaps.IsNull())
+        // Select only those entries that actually have subcaps
+        if (not obslike->subcaps.IsNull())
         {
           #ifdef DEPRES_DEBUG
-            cout << "Found subcaps for " << it->capability << " " << it->type << " " << it->module << ":" << endl;
+            cout << "Found subcaps for " << f->capability << " " << f->type << " " << f->module << ":" << endl;
           #endif
           // The user has given just a single entry as a subcap
-          if (it->subcaps.IsScalar())
+          if (obslike->subcaps.IsScalar())
           {
-            str key = it->subcaps.as<str>();
+            str key = obslike->subcaps.as<str>();
             if (nodes[key]) dependency_resolver_error().raise(LOCAL_INFO,"Duplicate sub-capability for " + key + ".");
             nodes[key] = YAML::Node();
           }
           // The user has passed a simple list of subcaps
-          else if (it->subcaps.IsSequence())
+          else if (obslike->subcaps.IsSequence())
           {
-            for (auto jt = it->subcaps.begin(); jt != it->subcaps.end(); ++jt)
+            for (const auto& subcap : obslike->subcaps)
             {
-              if (not jt->IsScalar())
-               dependency_resolver_error().raise(LOCAL_INFO,"Attempt to pass map using sequence syntax for subcaps of "+it->capability+".");
-              str key = jt->as<str>();
+              if (not subcap.IsScalar())
+               dependency_resolver_error().raise(LOCAL_INFO,"Attempt to pass map using sequence syntax for subcaps of "+obslike->capability+".");
+              str key = subcap.as<str>();
               if (nodes[key]) dependency_resolver_error().raise(LOCAL_INFO,"Duplicate sub-capability for " + key + ".");
               nodes[key] = YAML::Node();
             }
           }
           // The user has passed some more complicated subcap structure than just a list of strings
-          else if (it->subcaps.IsMap())
+          else if (obslike->subcaps.IsMap())
           {
-            for (auto jt = it->subcaps.begin(); jt != it->subcaps.end(); ++jt)
+            for (const auto& subcap : obslike->subcaps)
             {
-              str key = jt->first.as<str>();
+              str key = subcap.first.as<str>();
               if (nodes[key]) dependency_resolver_error().raise(LOCAL_INFO,"Duplicate sub-capability for " + key + ".");
-              nodes[key] = jt->second.as<YAML::Node>();
+              nodes[key] = subcap.second.as<YAML::Node>();
             }
           }
           #ifdef DEPRES_DEBUG
@@ -1111,8 +1112,8 @@ namespace Gambit
            updateCandidates(v, i, allowedVertexCandidates, disabledVertexCandidates);
         }
       }
-      masked_erase(allowedVertexCandidates);
-      masked_erase(disabledVertexCandidates);
+      Utils::masked_erase(allowedVertexCandidates);
+      Utils::masked_erase(disabledVertexCandidates);
       
       // Bail now if we are already down to zero candidates.
       if (allowedVertexCandidates.size() == 0)
@@ -1173,7 +1174,7 @@ namespace Gambit
             allowed = allowed and match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs);
           }
         }
-        masked_erase(allowedVertexCandidates);
+        Utils::masked_erase(allowedVertexCandidates);
       }       
 
       logger() << LogTags::dependency_resolver;
@@ -1231,7 +1232,7 @@ namespace Gambit
               if (match->weakrule and allowed) allowed = match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs, false);
             }
           }
-          masked_erase(allowedVertexCandidates);            
+          Utils::masked_erase(allowedVertexCandidates);            
 
           logger() << "Candidate vertices after applying weak rules:" << endl;
           logger() << printGenericFunctorList(allowedVertexCandidates) << EOM;
