@@ -40,6 +40,9 @@ namespace Gambit
       /// Rule has a consequent ('then' clause)
       bool has_then;
 
+      /// The original YAML (if any) from which this rule was derived.
+      YAML::Node yaml;
+
       /// Capability field targeted by the rule.
       std::string capability;
       /// Capability field appears in 'if' clause.

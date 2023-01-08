@@ -141,6 +141,9 @@ namespace YAML
       dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
     }
 
+    // Save the original node
+    rhs.yaml = node;
+
     // Step through each of the entries in the node, making sure it is one of the permitted ones.
     for(auto& entry : node)
     {
@@ -219,6 +222,9 @@ namespace YAML
   /// Build the base-class parts of a rule from a yaml node
   void build_rule(const Node& node, Rule& rhs)
   {
+    // Save the original node
+    rhs.yaml = node;
+
     // Register whether rule is weak or strong
     if (node.Tag() == "!weak" or node.Tag() == "!weakrule")
     {

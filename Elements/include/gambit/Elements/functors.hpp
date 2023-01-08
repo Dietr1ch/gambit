@@ -155,6 +155,8 @@ namespace Gambit
       /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
       virtual str safe_version() const;
       /// Getter for the wrapped function current status:
+      ///                    -6 = required external tool absent (pybind11)
+      ///                    -5 = required external tool absent (Mathematica)
       ///                    -4 = required backend absent (backend ini functions)
       ///                    -3 = required classes absent
       ///                    -2 = function absent
@@ -333,19 +335,7 @@ namespace Gambit
       void addMatchedObservable(const DRes::Observable*);
       
       /// Retrieve the set of observables that this functor matches.
-      std::set<const DRes::Observable*>& getMatchedObservables();
-
-      /// Add a module rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
-      void addIgnoredModuleRule(const DRes::ModuleRule*);
-      
-      /// Add a backend rule to the set of those against which this functor has been tested, but which have been found to be inapplicable.
-      void addIgnoredBackendRule(const DRes::BackendRule*);
-
-      /// Retrieve the set of module rules against which this functor has been tested, but which have been found to be inapplicable.
-      std::set<const DRes::ModuleRule*>& getIgnoredModuleRules();
-
-      /// Retrieve the set of backend rules against which this functor has been tested, but which have been found to be inapplicable.
-      std::set<const DRes::BackendRule*>& getIgnoredBackendRules();
+      std::set<DRes::Observable*>& getMatchedObservables();
 
       /// Add a module rule to the set of those against which this functor has been tested and found to match.
       void addMatchedModuleRule(const DRes::ModuleRule*);
@@ -354,10 +344,14 @@ namespace Gambit
       void addMatchedBackendRule(const DRes::BackendRule*);
 
       /// Retrieve the set of module rules against which this functor has been tested and found to match.
-      std::set<const DRes::ModuleRule*>& getMatchedModuleRules();
+      std::set<DRes::ModuleRule*>& getMatchedModuleRules();
 
       /// Retrieve the set of backend rules against which this functor has been tested and found to match.
-      std::set<const DRes::BackendRule*>& getMatchedBackendRules();
+      std::set<DRes::BackendRule*>& getMatchedBackendRules();
+
+      /// Retrieve matched rules by type.
+      template<class RuleT>
+      std::set<RuleT*>& getMatchedRules(); 
 
     protected:
 
@@ -383,6 +377,8 @@ namespace Gambit
       /// String label, used to label functor timing data for printer system
       const str myTimingLabel;
       /// Status:
+      ///                    -6 = required external tool absent (pybind11)
+      ///                    -5 = required external tool absent (Mathematica)
       ///                    -4 = required backend absent (backend ini functions)
       ///                    -3 = required classes absent
       ///                    -2 = function absent

@@ -32,6 +32,8 @@ namespace Gambit
 
     struct Observable
     {
+      /// The original YAML (if any) from which this observable was derived.
+      YAML::Node yaml;
  
       /// Designated purpose of the observable (LogLike, etc).
       std::string purpose;

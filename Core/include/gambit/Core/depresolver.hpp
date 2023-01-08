@@ -83,9 +83,9 @@ namespace Gambit
     struct QueueEntry
     {
       QueueEntry();
-      QueueEntry(sspair a, DRes::VertexID b, int c, bool d);
+      QueueEntry(sspair a, VertexID b, int c, bool d);
       sspair quantity;
-      DRes::VertexID toVertex;
+      VertexID toVertex;
       int dependency_type;
       bool printme;
       const Observable* obslike;
@@ -165,7 +165,7 @@ namespace Gambit
         void resetAll();
 
         /// Check for unused rules and options
-        void checkForUnusedRules(int);
+        void checkForUnusedRules();
 
         /// Set the Scan ID
         void set_scanID();
@@ -181,6 +181,7 @@ namespace Gambit
         /// Pretty print backend functor information
         str printGenericFunctorList(const std::vector<functor*>&);
         str printGenericFunctorList(const std::vector<VertexID>&);
+        str printGenericFunctorList(const std::vector<std::pair<functor *, bool>>&);
         str printGenericFunctorList(const std::vector<std::pair<VertexID, bool>>&);
 
         /// Print quantity to be resolved
@@ -193,41 +194,42 @@ namespace Gambit
         void makeFunctorsModelCompatible();
 
         /// Helper function to update vertex candidate lists in resolveDependencyFromRules
-        void updateCandidates(const DRes::VertexID&, int, std::vector<std::pair<DRes::VertexID, bool>>&, std::vector<std::pair<DRes::VertexID, bool>>&);
+        void updateCandidates(const VertexID&, int, std::vector<std::pair<VertexID, bool>>&, std::vector<std::pair<VertexID, bool>>&);
 
         /// Resolution of individual module function dependencies
-        DRes::VertexID resolveDependencyFromRules(const QueueEntry&, const std::vector<DRes::VertexID>&);
+        VertexID resolveDependencyFromRules(const QueueEntry&, const std::vector<VertexID>&);
 
         /// Derive options from ini-entries
-        Options collectIniOptions(const DRes::VertexID & vertex);
+        Options collectIniOptions(const VertexID & vertex);
 
         /// Collect sub-capabilities
-        Options collectSubCaps(const DRes::VertexID & vertex);
+        Options collectSubCaps(const VertexID & vertex);
 
         /// Generate full dependency tree
         void generateTree(std::queue<QueueEntry>& resolutionQueue);
 
-        /// Helper functions/arrays
-        void fillResolutionQueue(std::queue<QueueEntry>& resolutionQueue, DRes::VertexID vertex);
+        /// Put module function dependencies into the resolution queue
+        void fillResolutionQueue(std::queue<QueueEntry>& resolutionQueue, VertexID vertex);
 
         /// Topological sort
         std::list<VertexID> run_topological_sort();
 
         /// Main function for resolution of backend requirements
-        void resolveVertexBackend(VertexID);
+        void resolveVertexBackend(VertexID, const std::vector<functor*>&);
 
         /// Function for resolution of backends that need class loading
         void resolveVertexClassLoading(VertexID);
 
         /// Find backend function matching any one of a number of capability-type pairs.
-        functor* solveRequirement(std::set<sspair>, const Observable*, VertexID, std::vector<functor*>, bool, str group="none");
+        functor* solveRequirement(std::set<sspair>, VertexID, const std::vector<functor*>& backendFunctorCandidates, 
+        std::vector<functor*>, bool, str group="none");
 
         /// Resolve a specific backend requirement.
         void resolveRequirement(functor*, VertexID);
 
         /// Find candidate functions that are tailor made for models that are
         /// scanned over.
-        std::vector<std::pair<DRes::VertexID,bool>> closestCandidateForModel(std::vector<std::pair<DRes::VertexID,bool>> candidates);
+        std::vector<std::pair<VertexID,bool>> closestCandidateForModel(std::vector<std::pair<VertexID,bool>> candidates);
 
         //
         // Private data members

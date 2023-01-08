@@ -73,8 +73,6 @@ namespace Gambit
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.
       if (match and if_backend) match = stringComp(backend, f->origin()); 
-      // Log the (lack of) a match
-      if (log_matches and not match) f->addIgnoredBackendRule(this);
       return match;
     }
 
@@ -115,8 +113,6 @@ namespace Gambit
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.
       if (match and if_module) match = stringComp(module, f->origin()); 
-      // Log the (lack of) a match
-      if (log_matches and not match) f->addIgnoredModuleRule(this);
       return match;
     }
 
