@@ -335,7 +335,7 @@ namespace Gambit
       void addMatchedObservable(const DRes::Observable*);
       
       /// Retrieve the set of observables that this functor matches.
-      std::set<DRes::Observable*>& getMatchedObservables();
+      const std::set<const DRes::Observable*>& getMatchedObservables();
 
       /// Add a module rule to the set of those against which this functor has been tested and found to match.
       void addMatchedModuleRule(const DRes::ModuleRule*);
@@ -344,14 +344,14 @@ namespace Gambit
       void addMatchedBackendRule(const DRes::BackendRule*);
 
       /// Retrieve the set of module rules against which this functor has been tested and found to match.
-      std::set<DRes::ModuleRule*>& getMatchedModuleRules();
+      const std::set<const DRes::ModuleRule*>& getMatchedModuleRules();
 
       /// Retrieve the set of backend rules against which this functor has been tested and found to match.
-      std::set<DRes::BackendRule*>& getMatchedBackendRules();
+      const std::set<const DRes::BackendRule*>& getMatchedBackendRules();
 
       /// Retrieve matched rules by type.
       template<class RuleT>
-      std::set<RuleT*>& getMatchedRules(); 
+      const std::set<RuleT*>& getMatchedRules(); 
 
     protected:
 
@@ -414,12 +414,6 @@ namespace Gambit
       
       /// The set of observables that this functor matches.
       std::set<const DRes::Observable*> matched_observables;
-
-      /// Set of module rules against which this functor has been tested, but which have been found to be inapplicable.
-      std::set<const DRes::ModuleRule*> ignored_module_rules;
-
-      /// Set of backend rules against which this functor has been tested, but which have been found to be inapplicable.
-      std::set<const DRes::BackendRule*> ignored_backend_rules;
 
       /// Set of module rules against which this functor has been tested and found to match.
       std::set<const DRes::ModuleRule*> matched_module_rules;

@@ -2021,7 +2021,7 @@ namespace Gambit
           // Check only for enabled functors
           if (masterGraph[*vi]->status() == 2)
           {
-            const std::set<RuleT*>& matched = masterGraph[*vi]->getMatchedRules<RuleT>();
+            const std::set<const RuleT*>& matched = masterGraph[*vi]->getMatchedRules<const RuleT>();
             bool found = (std::find_if(matched.begin(), matched.end(), [&](const RuleT* r){ return r==&rule; } ) != matched.end());            
             if (found xor find_used)                       
             {

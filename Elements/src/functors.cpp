@@ -548,25 +548,25 @@ namespace Gambit
     void functor::addMatchedObservable(const DRes::Observable* obs) { matched_observables.insert(obs); }
     
     /// Retrieve the set of observables that this functor matches.
-    std::set<DRes::Observable*>& functor::getMatchedObservables() { return matched_observables; }
+    const std::set<const DRes::Observable*>& functor::getMatchedObservables() { return matched_observables; }
 
     /// Add a module rule to the set of those against which this functor has been tested and found to match.
     void functor::addMatchedModuleRule(const DRes::ModuleRule* r) { matched_module_rules.insert(r); }
     
     /// Add a backend rule to the set of those against which this functor has been tested and found to match.
-    void functor::addMatchedBackendRule(const DRes::Rule* r) { matched_backend_rules.insert(r); }
+    void functor::addMatchedBackendRule(const DRes::BackendRule* r) { matched_backend_rules.insert(r); }
 
     /// Retrieve the set of module rules against which this functor has been tested and found to match.
-    std::set<DRes::ModuleRule*>& functor::getMatchedModuleRules() { return matched_module_rules; }
+    const std::set<const DRes::ModuleRule*>& functor::getMatchedModuleRules() { return matched_module_rules; }
 
     /// Retrieve the set of backend rules against which this functor has been tested and found to match.
-    std::set<DRes::BackendRule*>& functor::getMatchedBackendRules() { return matched_backend_rules; } 
+    const std::set<const DRes::BackendRule*>& functor::getMatchedBackendRules() { return matched_backend_rules; } 
 
     // Retrieve matched rules by type.
-    template<ModuleRule>
-    std::set<DRes::BackendRule*>& functor::getMatchedRules() { return getMatchedModuleRules; } 
-    template<BackendRule>
-    std::set<DRes::BackendRule*>& functor::getMatchedRules() { return getMatchedBackendRules; } 
+    template<>
+    const std::set<const DRes::ModuleRule*>& functor::getMatchedRules() { return getMatchedModuleRules(); } 
+    template<>
+    const std::set<const DRes::BackendRule*>& functor::getMatchedRules() { return getMatchedBackendRules(); } 
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
