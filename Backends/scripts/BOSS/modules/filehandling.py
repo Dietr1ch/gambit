@@ -739,15 +739,16 @@ def createFrontendHeader(function_xml_files_dict):
         args = funcutils.getArgs(wr_func_el)
         args_bracket = funcutils.constrArgsBracket(args, include_arg_name=False, include_arg_type=True, include_namespace=True)
 
-        # Get mangled symbol
+        # Get mangled symbol, add both normal and with leading _ to work with OSX
         # symbol = wr_func_el.get('mangled')
         symbol = wr_func_el.get('name')
+        symbol_list = '("' + symbol + '","' + '_' + symbol + '")'
 
         be_function_macro_code += 'BE_FUNCTION('
         be_function_macro_code += func_name['short'] + ', '
         be_function_macro_code += return_type + ', '
         be_function_macro_code += args_bracket + ', '
-        be_function_macro_code += '"' + symbol + '"' + ', '
+        be_function_macro_code += symbol_list + ', '
         be_function_macro_code += '"' + func_name['short'] + '"' + ')\n'
 
 

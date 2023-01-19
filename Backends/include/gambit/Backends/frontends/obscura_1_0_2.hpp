@@ -17,7 +17,7 @@ namespace Gambit
 }
 
 // Functions
-BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int, double, double, double), "Fractional_Days_since_J2000__BOSS_1", "Fractional_Days_since_J2000")
+BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int, double, double, double), ("Fractional_Days_since_J2000__BOSS_1","_Fractional_Days_since_J2000__BOSS_1"), "Fractional_Days_since_J2000")
 // Variables
 
 // Initialisation function (dependencies)
