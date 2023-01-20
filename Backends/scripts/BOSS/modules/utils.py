@@ -1602,7 +1602,7 @@ def identifyIncludedHeaders(content, only_native=True):
 
         if line[0:8] == '#include':
 
-            # Make sure there's a whitespace after '#include' 
+            # Make sure there's a whitespace after '#include'
             if line[8] != ' ':
                 line = line[0:8] + ' ' + line[8:]
 
@@ -2046,7 +2046,8 @@ def constrLoadedTypesHeaderContent():
             class_line += '    /*constructors*/'
 
             for info_dict in gb.factory_info[ class_name['long'] ]:
-                class_line += '(("' + info_dict['name'] + '",' + info_dict['args_bracket'].replace(' ::', ' ').replace('(::', '(') + ')) '
+                # Add the class name, as well as the class name prepended with underscore
+                class_line += '((("' + info_dict['name'] + '","_' + info_dict['name'] + '"),'  + info_dict['args_bracket'].replace(' ::', ' ').replace('(::', '(') + ')) '
 
             class_line += ')) \\'
             class_lines.append(class_line)
@@ -2261,7 +2262,7 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, use_cast
         did_fail = True
 
     if did_fail:
-        print('  ' + modifyText('ERROR: CastXML failed.','red'))       
+        print('  ' + modifyText('ERROR: CastXML failed.','red'))
         # Get error message
         print()
         print(modifyText('START CASTXML OUTPUT','underline'))
@@ -2893,7 +2894,7 @@ def identifyStdIncludePaths():
 
 def isInList(search_entry, search_list, return_index=True, ignore_whitespace=True):
 
-    # In case search_list is passed in as a dict_keys object (Python3) 
+    # In case search_list is passed in as a dict_keys object (Python3)
     # instead of as a regular list, convert it to a list
     search_list = list(search_list)
 
@@ -2951,7 +2952,7 @@ def orderIncludeStatements(include_statements):
 
     ordered_include_statements = []
 
-    # This is not the fastest solution, but an easy way to 
+    # This is not the fastest solution, but an easy way to
     # to keep the existing order within each group of headers
 
     # Add standard headers (not Boost headers)
