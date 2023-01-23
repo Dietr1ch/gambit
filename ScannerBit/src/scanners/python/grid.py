@@ -1,4 +1,4 @@
-import scanner_plugin as splug
+import scanner_pyplugin as splug
 import numpy as np
 
 class scanner_plugin:

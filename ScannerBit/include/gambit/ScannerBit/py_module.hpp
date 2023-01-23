@@ -395,7 +395,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     });
 }
 
-PYBIND11_EMBEDDED_MODULE(scanner_plugin, m) 
+PYBIND11_EMBEDDED_MODULE(scanner_pyplugin, m) 
 {
     using namespace Gambit::Scanner::Plugins::ScannerPyPlugin;
     using namespace Gambit::Scanner::Plugins::Utils;
@@ -417,7 +417,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     m.def("get_purpose", get_purpose);
 }
 
-PYBIND11_EMBEDDED_MODULE(objective_plugin, m) 
+PYBIND11_EMBEDDED_MODULE(objective_pyplugin, m) 
 {
     using namespace ::Gambit::Scanner::Plugins::ObjPyPlugin;
     using namespace ::Gambit::Scanner::Plugins::Utils;

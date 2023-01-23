@@ -1,4 +1,4 @@
-import objective_plugin as oplug
+import objective_pyplugin as oplug
 import math
 
 class objective_plugin:
