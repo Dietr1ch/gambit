@@ -56,8 +56,10 @@ namespace Gambit
 
 scanner_plugin(python, version(1, 0, 0))
 {
+    reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
-    py::module_ file;
+    
+    //py::module_ file;
     py::object pyplugin;
     py::object main_func;
     py::scoped_interpreter *guard = nullptr;
@@ -84,7 +86,7 @@ scanner_plugin(python, version(1, 0, 0))
         
         py::list(py::module::import("sys").attr("path")).append(py::cast(path));
         
-        file = py::module::import(fname.c_str());
+        auto file = py::module::import(fname.c_str());
         
         if (!py::hasattr(file, "scanner_plugin"))
             scan_err << "\"scanner_plugin\" has not been defined in \"" << fname << "\"." << scan_end;

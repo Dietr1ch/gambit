@@ -459,7 +459,7 @@ message(\"${{BoldCyan}} X Excluding {0} from ScannerBit configuration.${{ColourR
                                                     inc_commands += [incdir]
                                                     scanbit_reqs[plugin[7]][plugin_name][version][5] += [incdir]
                                                     inc_files += [[inc, incdir]]
-                                                elif inc == "ROOT" or inc == "GSL" or inc == "pybind11" or inc == "PYTHON":
+                                                elif inc == "ROOT" or inc == "GSL" or inc == "pybind11" or inc == "Python" or inc == "PYTHONLIBS":
                                                     auto_incs += [inc]
                                                     #scanbit_reqs[plugin[7]][plugin_name][version][5] += [inc]
                                                     if scanbit_reqs[plugin[7]][plugin_name][version][2] == "":
@@ -812,7 +812,7 @@ endif()
 
                     temp = set(inc for inc in scanbit_auto_incs[plug_type[i]][directory])
                     for inc in temp:
-                        if inc == "ROOT" or inc == "pybind11" or inc == "PYTHON":
+                        if inc == "ROOT" or inc == "Python":
                             towrite += """
 if ({2}_FOUND)
     set ({0}_plugin_includes_{1}
@@ -825,6 +825,33 @@ else()
     set ({0}_ok_flag_{1} \"${{{0}_ok_flag_{1}}} \\n    - file missing: \\\"{2}\\\"\")
 endif()
 """.format(plug_type[i], directory, inc)
+                        elif inc == "pybind11":
+                            towrite += """
+if ({2}_FOUND)
+    set ({2}_REAL_INCLUDE_DIR "${{{2}_INCLUDE_DIR}}" "${{{3}_INCLUDE_DIR}}")
+    set ({0}_plugin_includes_{1}
+        ${{{0}_plugin_includes_{1}}}
+        ${{{2}_REAL_INCLUDE_DIR}}
+    )
+    set ({0}_plugin_found_incs_{1} \"${{{0}_plugin_found_incs_{1}}}    \\\"{2}\\\": ${{{2}_REAL_INCLUDE_DIR}}\\n\")
+else()
+    message(\"-- Did not find {0} header {2}. Disabling scanners that depend on this.\")
+    set ({0}_ok_flag_{1} \"${{{0}_ok_flag_{1}}} \\n    - file missing: \\\"{2}\\\"\")
+endif()
+""".format(plug_type[i], directory, inc, "PYBIND11")
+                        if inc == "PYTHONLIBS":
+                            towrite += """
+if ({2}_FOUND)
+    set ({0}_plugin_includes_{1}
+        ${{{0}_plugin_includes_{1}}}
+        ${{{3}_INCLUDE_DIRS}}
+    )
+    set ({0}_plugin_found_incs_{1} \"${{{0}_plugin_found_incs_{1}}}    \\\"{2}\\\": ${{{3}_INCLUDE_DIRS}}\\n\")
+else()
+    message(\"-- Did not find {0} header {2}. Disabling scanners that depend on this.\")
+    set ({0}_ok_flag_{1} \"${{{0}_ok_flag_{1}}} \\n    - file missing: \\\"{2}\\\"\")
+endif()
+""".format(plug_type[i], directory, inc, "PYTHON")
                         else:
                             towrite += """
 unset({0}_{1}_{3}_INCLUDE_PATH CACHE)

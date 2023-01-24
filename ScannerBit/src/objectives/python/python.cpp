@@ -57,8 +57,9 @@ namespace Gambit
 
 objective_plugin(python, version(1, 0, 0))
 {
-    reqd_headers("pybind11");
-    py::module_ file;
+    reqd_headers("PYTHONLIBS");
+
+    //py::module file;
     py::object pyplugin;
     py::object main_func;
     py::scoped_interpreter *guard = nullptr;
@@ -86,7 +87,7 @@ objective_plugin(python, version(1, 0, 0))
         
         py::list(py::module::import("sys").attr("path")).append(py::cast(path));
 
-        file = py::module::import(fname.c_str());
+        auto file = py::module::import(fname.c_str());
         
         if (!py::hasattr(file, "objective_plugin"))
             scan_err << "\"objective_plugin\" has not been defined in \"" << fname << "\"." << scan_end;

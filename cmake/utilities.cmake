@@ -298,6 +298,7 @@ macro(use_contributed_pybind11)
   message("${BoldYellow}   Found pybind11 ${pybind11_VERSION} at ${pybind11_DIR}.${ColourReset}")
   add_subdirectory("${pybind11_DIR}")
   include_directories("${PYBIND11_INCLUDE_DIR}")
+  #set(pybind11_INCLUDE_DIR "${PYBIND11_INCLUDE_DIR}") # GM: added to export to plugins
   add_custom_target(nuke-pybind11 COMMAND ${CMAKE_COMMAND} -E remove_directory "${pybind11_DIR}")
   add_dependencies(nuke-contrib nuke-pybind11)
 endmacro()

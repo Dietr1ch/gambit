@@ -95,6 +95,7 @@ Scanner:
 
     grid:
       plugin: grid
+      #pyplugin: grid
       #version: ">=1.0"
       like: LogLike
       grid_pts: [5, 3]
