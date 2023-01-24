@@ -58,6 +58,7 @@ namespace Gambit
 objective_plugin(python, version(1, 0, 0))
 {
     reqd_headers("PYTHONLIBS");
+    reqd_headers("pybind11")
 
     //py::module file;
     py::object pyplugin;

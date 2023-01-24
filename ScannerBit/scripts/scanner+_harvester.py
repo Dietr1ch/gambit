@@ -828,7 +828,7 @@ endif()
                         elif inc == "pybind11":
                             towrite += """
 if ({2}_FOUND)
-    set ({2}_REAL_INCLUDE_DIR "${{{2}_INCLUDE_DIR}}" "${{{3}_INCLUDE_DIR}}")
+    set ({2}_REAL_INCLUDE_DIR ${{{2}_INCLUDE_DIR}} ${{{3}_INCLUDE_DIR}})
     set ({0}_plugin_includes_{1}
         ${{{0}_plugin_includes_{1}}}
         ${{{2}_REAL_INCLUDE_DIR}}
@@ -839,7 +839,7 @@ else()
     set ({0}_ok_flag_{1} \"${{{0}_ok_flag_{1}}} \\n    - file missing: \\\"{2}\\\"\")
 endif()
 """.format(plug_type[i], directory, inc, "PYBIND11")
-                        if inc == "PYTHONLIBS":
+                        elif inc == "PYTHONLIBS":
                             towrite += """
 if ({2}_FOUND)
     set ({0}_plugin_includes_{1}
