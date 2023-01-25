@@ -367,7 +367,10 @@ namespace Gambit
                 (*this)->getPrinter().print(modified_ret_val, "Modified" + (*this)->getPurpose(), rank, id);
                 if (vec.size() > 0 && (*this)->getPrinter().get_printUnitcube())
                 {
-                    (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                    std::vector<double> temp(vec.size());
+                    for (int i = 0, end = vec.size(); i < end; ++i)
+                        temp[i] =vec[i];
+                    (*this)->getPrinter().print(temp, "unitCubeParameters", rank, id);
                 }
                 (*this)->getPrinter().print(id,   "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);

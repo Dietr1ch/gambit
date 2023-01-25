@@ -263,7 +263,7 @@ endif()
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")

@@ -60,7 +60,7 @@ objective_plugin(python, version(1, 0, 0))
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
 
-    //py::module file;
+    py::module file;
     py::object pyplugin;
     py::object main_func;
     py::scoped_interpreter *guard = nullptr;
@@ -87,8 +87,15 @@ objective_plugin(python, version(1, 0, 0))
         std::string path = get_inifile_value<std::string>("dir", GAMBIT_DIR "/ScannerBit/src/objectives/python");
         
         py::list(py::module::import("sys").attr("path")).append(py::cast(path));
-
-        auto file = py::module::import(fname.c_str());
+        
+        try
+        {
+            file = py::module::import(fname.c_str());
+        }
+        catch(std::exception &ex)
+        {
+            scan_err << "Problem loading objective python module \"" << fname << "\":\n" << ex.what() << scan_end;
+        }
         
         if (!py::hasattr(file, "objective_plugin"))
             scan_err << "\"objective_plugin\" has not been defined in \"" << fname << "\"." << scan_end;
