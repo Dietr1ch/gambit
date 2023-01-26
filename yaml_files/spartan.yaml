@@ -64,14 +64,13 @@ Scanner:
       plugin: random
       like: LogLike
       point_number: 1000
-      
+
     grid:
       plugin: grid
-      #pyplugin: grid
+      # pyplugin: grid
       #version: ">=1.0"
       like: LogLike
       grid_pts: [5, 3]
-      #parameters: ["EggBox::param_1", "EggBox::param_0"]
 
     de:
       plugin: diver
@@ -120,6 +119,17 @@ Scanner:
         NormalDist::mu: 5.
         NormalDist::sigma: 1.
 
+    scipy_dual_annealing:
+      pyplugin: scipy_dual_annealing
+      like: LogLike
+      maxiter: 1000
+      initial_temp: 5230.0
+      restart_temp_ratio: 2.0e-05
+      visit: 2.62
+      accept: -5.0
+      maxfun: 10000000.0
+
+
 
 ObsLikes:
 
@@ -145,6 +155,8 @@ Logger:
   debug: true
 
 KeyValues:
+
+  debug: true
 
   default_output_path: "${PWD}/runs/spartan"
 
