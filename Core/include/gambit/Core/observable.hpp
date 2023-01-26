@@ -68,8 +68,11 @@ namespace Gambit
       /// Instruction to printer as to whether to write result to disk.
       bool printme;
 
-      /// Whether or not to log matches to the observable with functors
+      /// Whether or not to log matches to the observable with functors.
       bool log_matches;
+
+      /// Whether to return multiple functor matches.
+      bool match_all;
 
       /// True if and only if the passed functor matches all matchable non-empty fields of the observable (i.e. everything except purpose, dependencies, backend_reqs, functionChain and subcaps).
       bool matches(functor*, const Utils::type_equivalency&) const;
@@ -101,7 +104,8 @@ namespace Gambit
         functionChain(),
         subcaps(),
         printme(true),
-        log_matches(true)
+        log_matches(true),
+        match_all(false)
       {}
     };
 

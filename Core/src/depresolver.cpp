@@ -1005,7 +1005,7 @@ namespace Gambit
         if (not obslike->subcaps.IsNull())
         {
           #ifdef DEPRES_DEBUG
-            cout << "Found subcaps for " << f->capability << " " << f->type << " " << f->module << ":" << endl;
+            cout << "Found subcaps for " << f->capability() << " " << f->type() << " " << f->origin() << ":" << endl;
           #endif
           // The user has given just a single entry as a subcap
           if (obslike->subcaps.IsScalar())

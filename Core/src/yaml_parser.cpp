@@ -65,7 +65,7 @@ namespace Gambit
         {
           module_rules.push_back(it->as<DRes::ModuleRule>());
         }
-        catch(const Gambit::exception& e)
+        catch(const std::exception& e)
         {
           module_rule_conversion_error = e.what();
         }
@@ -75,7 +75,7 @@ namespace Gambit
         {
           backend_rules.push_back(it->as<DRes::BackendRule>());
         }
-        catch(const Gambit::exception& e)
+        catch(const std::exception& e)
         {
           if (not module_rule_conversion_error.empty())
           // Failed to convert to either a module or a backend rule.  We got a problem.
@@ -91,9 +91,9 @@ namespace Gambit
             {
               // The two errors differ. This means that it fails the specific requirements of each type of rule.
               errmsg << "forms neither a valid rule for module functions," << std::endl
-                     << "nor a valid rule for backend functions." << std::endl
+                     << "nor a valid rule for backend functions." << std::endl << std::endl
                      << "Reason for failing as a rule for module functions: " << std::endl
-                     << module_rule_conversion_error << std::endl
+                     << module_rule_conversion_error << std::endl << std::endl
                      << "Reason for failing as a rule for backend functions: " << std::endl
                      << e.what() << std::endl;
             }
@@ -108,7 +108,6 @@ namespace Gambit
       YAML::Node scanNode    = getScannerNode();
       YAML::Node printerNode = getPrinterNode();
       YAML::Node logNode     = getLoggerNode();
-
     }
 
     /// Getters for private observable and rules entries
@@ -131,13 +130,15 @@ namespace YAML
   /// Convert yaml node to dependency resolver Observable type
   bool convert<Observable>::decode(const Node& node, Observable& rhs)
   {
-    // Stop if a tag has been given, as that isn't part of the current ObsLike spec.
-    if (not node.Tag().empty())
+    // Save the match_all tag if given
+    if (node.Tag() == "!match_all") rhs.match_all = true;
+    // Stop if any other tag has been given, as that isn't part of the current ObsLike spec.
+    else if (node.Tag() != "?")
     {
       std::stringstream errmsg;
       errmsg << "The ObsLikes entry " << std::endl << node << std::endl
              << "is invalid, because it contains tag \"" << node.Tag() << "\"."
-             << "Tags are not permitted in in ObsLikes entries." << std::endl;
+             << "The only tag permitted in ObsLikes entries is !match_all." << std::endl;
       dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
     }
 
@@ -199,7 +200,7 @@ namespace YAML
   {
     if (BackendRule::permits_field(field))
     {
-      dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " is not permitted in rules for module functions.");
+      dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " is only permitted in rules for backend functions.");
     }
   }
 
@@ -208,7 +209,7 @@ namespace YAML
   {
     if (ModuleRule::permits_field(field))
     {
-      dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " is not permitted in rules for backend functions.");
+      dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " is only permitted in rules for module functions.");
     }
   }
 
@@ -234,10 +235,10 @@ namespace YAML
     {
       rhs.weakrule = false;
       // Stop if any other tag has been given, as that isn't part of the Rules spec.
-      if (not node.Tag().empty())
+      if (node.Tag() != "?")
       {
         std::stringstream errmsg;
-        errmsg << "  The rule contains tag \"" << node.Tag() << "\"." << std::endl
+        errmsg << "  The Rules entry " << node << "contains tag \"" << node.Tag() << "\"." << std::endl
                << "  The only tags permitted in rules are \"!weak\" and \"!weakrule\"." << std::endl;
         dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
       }
@@ -327,9 +328,8 @@ namespace YAML
   }
 
   /// Set fields exclusive to module rules that can only appear as 'then' parts of a condition
-  void set_other_module_rule_fields(const Node& node, ModuleRule& rhs)
+  void set_other_module_rule_fields(const YAML::detail::iterator_value& entry, ModuleRule& rhs)
   {
-    auto& entry = *(node.begin());
     const std::string key = entry.first.as<std::string>(); 
     if (key == "options")
     {
