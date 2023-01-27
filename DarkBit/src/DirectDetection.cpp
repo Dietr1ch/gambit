@@ -43,6 +43,10 @@
 ///  \date 2018 Sep
 ///  \date 2020 Feb
 ///
+///  \author Timon Emken
+///          (timon.emken@fysik.su.se)
+///  \date 2022 April
+
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -480,12 +484,14 @@ namespace Gambit
   void calc_obscuraTest(double& result){
     using namespace Pipes::calc_obscuraTest;
 
-    // 1. DM halo model
-    double rhoDM = *Param["rho0"]; // in GeV/cm^3
-    double v0 = *Param["v0"]; // in km/s;
-    double vesc = *Param["vesc"]; // in km/s;
-    double vrot = *Param["vrot"]; // in km/s;
-    obscura_default::obscura::Standard_Halo_Model SHM(rhoDM, v0,  vrot, vesc);
+    // // 1. DM halo model (UNITS STILL FAULTY)
+    LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+    double rho0 = LocalHaloParameters.rho0;
+    double v0 = LocalHaloParameters.v0;
+    double vesc = LocalHaloParameters.vesc;
+    double vrot = LocalHaloParameters.vrot;
+
+    obscura_default::obscura::Standard_Halo_Model SHM(rho0, v0,  vrot, vesc);
     SHM.Print_Summary();
 
     // 2. DM Particle with SI interactions

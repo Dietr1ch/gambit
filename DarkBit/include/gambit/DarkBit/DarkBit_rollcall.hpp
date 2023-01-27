@@ -2205,6 +2205,7 @@ START_MODULE
     NEEDS_CLASSES_FROM(obscura, default)
     BACKEND_REQ(Fractional_Days_since_J2000, (), double, (int, int, int, double, double, double))
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)    
+    DEPENDENCY(LocalHalo,LocalMaxwellianHalo)    
     #undef FUNCTION  
 #undef CAPABILITY
 
