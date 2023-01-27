@@ -479,26 +479,35 @@ namespace Gambit
 
   void calc_obscuraTest(double& result){
     using namespace Pipes::calc_obscuraTest;
-    // 1. Halo Model
-    // // double v0 = 220.0 * obscura_default::libphysica::natural_units::km;
-    // obscura_default::obscura::Standard_Halo_Model SHM;
-    // double test  = SHM.Minimum_DM_Speed();
 
-    // // 2. DM Particle with SI interactions
-    // double mDM = 0.1; // in GeV
-    // double mDP = 1.0; // in GeV
-    // double sigma_e = 1.0e-36; // in cm^2
-    // obscura_default::obscura::DM_Particle_SI DM(mDM);
-    // // DM.Set_Sigma_Electron(sigma_e);
-    // DM.Set_FormFactor_DM("General", mDP);
+    // 1. DM halo model
+    double rhoDM = *Param["rho0"]; // in GeV/cm^3
+    double v0 = *Param["v0"]; // in km/s;
+    double vesc = *Param["vesc"]; // in km/s;
+    double vrot = *Param["vrot"]; // in km/s;
+    obscura_default::obscura::Standard_Halo_Model SHM(rhoDM, v0,  vrot, vesc);
+    SHM.Print_Summary();
+
+    // 2. DM Particle with SI interactions
+    double mDM = *Param["mDM"]; // in GeV
+    double gDM = *Param["gDM"];
+    double kappa = *Param["kappa"];
+    double mAp = *Param["mAp"]; // in GeV
+    double sigma_e = 1.0;
+    obscura_default::obscura::DM_Particle_SI DM(mDM);
+    DM.Set_Sigma_Electron(sigma_e);
+    DM.Set_FormFactor_DM("General", mAp);
+    DM.Print_Summary();
 
     // 3. Experiment
     // obscura_default::obscura::DM_Detector_Ionization_ER experiment = obscura_default::obscura::XENON1T_S2_ER();
     // auto experiment = obscura::XENON1T_S2_ER();
-    
+
     double x = BEreq::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
-    // double m = *BEreq::ObscuraMeter;
+    // double y = obscura_default::obscura::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
+    // double m =  obscura_default::libphysica::natural_units::meter;
     std::cout <<"x = " << x <<std::endl;
+    // std::cout <<"y = " << y <<std::endl;
     // std::cout <<"meter = " << m <<std::endl;
     result = x;
   }
