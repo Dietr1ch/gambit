@@ -67,6 +67,8 @@
     {                                                                                                   \
         if (is_type<py::int_>(args, "dtype"))                                                           \
             return py::cast(get_inifile_value<int>(val));                                               \
+        else if (is_type<py::bool_>(args, "dtype"))                                                     \
+            return py::cast(get_inifile_value<bool>(val));                                              \
         else if (is_type<py::str>(args, "dtype"))                                                       \
             return py::cast(get_inifile_value<std::string>(val));                                       \
         else if (is_type<py::list>(args, "dtype"))                                                      \
@@ -76,6 +78,13 @@
             if (is_type<py::int_>(args, "etype"))                                                       \
             {                                                                                           \
                 std::vector<int> ret = get_inifile_value<std::vector<int>>(val);                        \
+                                                                                                        \
+                for (auto &&r : ret)                                                                    \
+                    list.append(r);                                                                     \
+            }                                                                                           \
+            else if (is_type<py::bool_>(args, "etype"))                                                 \
+            {                                                                                           \
+                std::vector<bool> ret = get_inifile_value<std::vector<bool>>(val);                      \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
@@ -195,7 +204,6 @@ namespace Gambit
                 unsigned int &get_dimension() {return get_input_value<unsigned int>(0);}
                 
                 inline std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>>
-                //Gambit::Scanner::like_ptr
                 get_purpose(const std::string &purpose)
                 {
                     //typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
@@ -208,7 +216,6 @@ namespace Gambit
                     assign_aux_numbers(purpose, "pointID", "MPIrank");
 
                     return Gambit::Scanner::like_ptr(ptr);
-                    //return static_cast<std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>>>(Gambit::Scanner::like_ptr(ret));
                 }
         
             }
