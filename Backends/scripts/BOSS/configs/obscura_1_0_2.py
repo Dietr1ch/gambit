@@ -60,12 +60,13 @@ load_classes = [
     'obscura::DM_Detector_Crystal',
     'obscura::DM_Detector_Ionization_ER',
     'obscura::Standard_Halo_Model',
-    'obscura::DM_Particle_SI'
+    'obscura::DM_Particle_Standard',
+    'obscura::DM_Particle_SI',
 ]
 
 load_functions = [
     'obscura::Fractional_Days_since_J2000(int , int , int , double , double , double)',
-    # 'obscura::XENON1T_S2_ER()',
+    'obscura::XENON1T_S2_ER()',
     # 'obscura::XENON10_S2_ER()',
     # 'obscura::XENON100_S2_ER()',
     # 'obscura::XENON1T_S2_ER()',
@@ -80,7 +81,7 @@ ditch = []
 auto_detect_stdlib_paths = False
 
 
-load_parent_classes    = True
+load_parent_classes    = False
 wrap_inherited_members = False
 
 
