@@ -194,8 +194,8 @@ namespace Gambit
                 
                 unsigned int &get_dimension() {return get_input_value<unsigned int>(0);}
                 
-                //inline std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>>
-                Gambit::Scanner::like_ptr
+                inline std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>>
+                //Gambit::Scanner::like_ptr
                 get_purpose(const std::string &purpose)
                 {
                     //typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
@@ -207,8 +207,8 @@ namespace Gambit
                     static_cast <Function_Base<void(void)>*>(ptr)->setPrior(&get_prior());
                     assign_aux_numbers(purpose, "pointID", "MPIrank");
 
-                    //return  s_ptr(static_cast<s_func *>(ptr));
-                    return ptr;
+                    return Gambit::Scanner::like_ptr(ptr);
+                    //return static_cast<std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>>>(Gambit::Scanner::like_ptr(ret));
                 }
         
             }
@@ -299,9 +299,6 @@ PYBIND11_MAKE_OPAQUE(vec_str_type_);
 
 PYBIND11_EMBEDDED_MODULE(scannerbit, m) 
 {
-    //typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
-    //typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
-    
     py::bind_map<map_doub_type_, std::shared_ptr<map_doub_type_>>(m, "std_unordered_map_double");
     py::bind_vector<vec_str_type_, std::shared_ptr<vec_str_type_>>(m, "std_vector_string");
     
@@ -376,20 +373,24 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         self.finalise(abnormal);
     });
     
-    py::class_<Gambit::Scanner::like_ptr>(m, "like_ptr")
-    .def("__call__", [](Gambit::Scanner::like_ptr &self, Gambit::Scanner::hyper_cube<double> vec)
+    typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
+    typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
+    using Gambit::Scanner::like_ptr;
+    
+    py::class_<s_func, s_ptr>(m, "like_ptr")
+    .def("__call__", [](s_ptr self, Gambit::Scanner::hyper_cube<double> vec)
     {
-        return self(vec);
+        return static_cast<like_ptr &>(self)(vec);
     })
-    .def("getPtID", [&](Gambit::Scanner::like_ptr &self)
+    .def("getPtID", [&](s_ptr self)
     {
         return self->getPtID();
     })
-    .def("getPrinter", [&](Gambit::Scanner::like_ptr &self)
+    .def("getPrinter", [&](s_ptr self)
     {
         return &self->getPrinter();
     })
-    .def("getPrior", [&](Gambit::Scanner::like_ptr &self)
+    .def("getPrior", [&](s_ptr self)
     {
         return &self->getPrior();
     });
