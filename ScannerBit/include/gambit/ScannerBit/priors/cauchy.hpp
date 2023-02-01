@@ -36,6 +36,7 @@
 #include "gambit/ScannerBit/scanner_utils.hpp"
 
 namespace Gambit {
+
     namespace Priors {
         /**
         * @brief  Multi-dimensional Cauchy prior
@@ -107,7 +108,7 @@ namespace Gambit {
                     unit[i] = std::atan(rotated[i]) / M_PI + 0.5;
             }
 
-            double operator()(const std::vector<double>& vec) const
+            double operator()(const std::vector<double>& vec) const override
             {
                 static double norm = std::log(M_PI * col.DetSqrt());
                 return -std::log1p(col.Square(vec, location)) - norm;

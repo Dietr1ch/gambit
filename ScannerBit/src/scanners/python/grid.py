@@ -73,7 +73,7 @@ class scanner_plugin:
             id = self.like.getPtID()
             
             # prints value
-            splug.get_printer().get_stream().print(1.0, "mult", rank, id)
+            splug.get_printer().get_stream().print(1.0, "mult", self.rank, id)
         
         return 0
     

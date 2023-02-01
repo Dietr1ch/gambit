@@ -36,7 +36,7 @@ namespace Gambit
             {
             }
 
-            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const
+            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
             {
                 //auto it_vec = unitpars.begin();
                 //for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
@@ -73,7 +73,7 @@ namespace Gambit
             {
             }
 
-            void transform(hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const
+            void transform(hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const override
             {
                 for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
                 {

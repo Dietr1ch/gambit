@@ -60,7 +60,7 @@ namespace Gambit
             Gaussian(const std::vector<std::string>&, const Options&);
 
             /** @brief Transformation from unit interval to the Gaussian */
-            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const
+            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
             {
                 std::vector<double> vec(unitpars.size());
 

@@ -64,7 +64,7 @@ namespace Gambit
             LogNormal(const std::vector<std::string>&, const Options&);
 
             // Transformation from unit interval to the Log-Normal
-            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const
+            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
             {
                 std::vector<double> vec(unitpars.size());
 

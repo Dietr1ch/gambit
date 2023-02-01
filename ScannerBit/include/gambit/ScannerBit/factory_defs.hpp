@@ -319,7 +319,7 @@ namespace Gambit
         // happen. So we need to change something here so that they only get printed once
         // per point, no matter how many like_ptr's may be "active" at once.
         
-        /// likelihood holder for scanner plugins.
+        /// likelihood pointer holder for scanner plugins.
         class like_ptr : public scan_ptr<double (std::unordered_map<std::string, double> &)>
         {
         private:
@@ -328,6 +328,9 @@ namespace Gambit
         public:
             using s_ptr::s_ptr;
             like_ptr(){}
+            //like_ptr(const like_ptr &in) : s_ptr (in){}
+            //like_ptr(like_ptr &in) : s_ptr (in){}
+            //like_ptr& operator=(const like_ptr&) = default;
             like_ptr(void *in) : s_ptr(in) {}
 
             double operator()(const std::vector<double> &vec)
