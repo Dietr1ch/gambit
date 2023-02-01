@@ -1,9 +1,27 @@
+import scannerbit
 import scanner_pyplugin as splug
 import numpy as np
+
+try:
+    from mpi4py import MPI
+    if scannerbit.with_mpi:
+        with_mpi = True
+    else:
+        with_mpi = False
+except ImportError:
+    with_mpi = False
 
 class scanner_plugin:
     
     def __init__(self):
+        
+        if with_mpi:
+            comm = MPI.COMM_WORLD
+            self.numtasks = comm.Get_size()
+            self.rank = comm.Get_rank()
+        else:
+            self.numtasks = 1
+            self.rank = 0
         
         # gets dimension of hyper cube.
         self.dim = splug.get_dimension()
@@ -19,6 +37,8 @@ class scanner_plugin:
         
         if len(N) != self.dim:
             raise Exception("Grid Scanner: The dimension of gambit ({0}) does not match the dimension of the inputed grid_pts ({1}).".format(self.dim, len(N)))
+        
+        self.size = np.prod(np.asarray(N))
         
         # gets "parameters" infile value with a default of []. Returns a list of strings
         user_params = splug.get_inifile_value("parameters", dtype=list, etype=str, default=list());
@@ -44,10 +64,8 @@ class scanner_plugin:
                 self.vecs.append(np.linspace(0.0, 1.0, n))
             
     def plugin_main(self):
-        
-        rank = 0
 
-        for pt in np.vstack(np.meshgrid(*self.vecs)).reshape(self.dim, -1).T:
+        for pt in np.vstack(np.meshgrid(*self.vecs)).reshape(self.dim, -1).T[self.rank:self.size:self.numtasks]:
             # run likelihood
             self.like(pt)
             

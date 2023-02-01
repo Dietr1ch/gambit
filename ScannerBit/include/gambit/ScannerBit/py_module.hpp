@@ -309,6 +309,12 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     py::bind_map<map_doub_type_, std::shared_ptr<map_doub_type_>>(m, "std_unordered_map_double");
     py::bind_vector<vec_str_type_, std::shared_ptr<vec_str_type_>>(m, "std_vector_string");
     
+#ifdef WITH_MPI
+    m.attr("with_mpi") = py::bool_(true);
+#else
+    m.attr("with_mpi") = py::bool_(false);
+#endif
+    
     py::class_<Gambit::Printers::BaseBasePrinter, std::unique_ptr<Gambit::Printers::BaseBasePrinter, py::nodelete>>(m, "printer")
     .def("print", [](Gambit::Printers::BaseBasePrinter &self, double in, const std::string& label,
                    const int vertexID, const unsigned int rank,
@@ -393,13 +399,13 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     {
         return self->getPtID();
     })
-    .def("getPrinter", [&](s_ptr self)
+    .def("getPrinter", [&](s_func &self)
     {
-        return &self->getPrinter();
+        return &self.getPrinter();
     })
-    .def("getPrior", [&](s_ptr self)
+    .def("getPrior", [&](s_func &self)
     {
-        return &self->getPrior();
+        return &self.getPrior();
     });
 }
 
