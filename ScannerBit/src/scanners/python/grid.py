@@ -11,13 +11,20 @@ try:
         with_mpi = False
 except ImportError:
     if scannerbit.with_mpi:
-        raise Exception(f"GAMBIT is compiled with MPI parallelisation enabled (WITH_MPI=1), "
-                        f"but {__file__} failed to import the python module mpi4py. "
-                        f"Either install mpi4py or recompile GAMBIT with -DWITH_MPI=0.")
+        if scannerbit.numtasks() > 1:
+            raise Exception(f"GAMBIT is compiled with MPI parallelisation enabled (WITH_MPI=1), "
+                            f"but {__file__} failed to import the python module mpi4py "
+                            f"If you want to run multiple processes, "
+                            f"either install mpi4py or recompile GAMBIT with -DWITH_MPI=0.")
+        else:
+            print(f"WARNING: GAMBIT is compiled with MPI parallelisation enabled (WITH_MPI=1), "
+                  f"but {__file__} failed to import the python module mpi4py "
+                  f"If you want to run multiple processes, "
+                  f"either install mpi4py or recompile GAMBIT with -DWITH_MPI=0.")
     else:
-        print(f"Warning: The scanner plugin failed to import mpi4py in {__file__}, "
+        print(f"WARNING: The scanner plugin failed to import mpi4py in {__file__}, "
               f"but that's OK since GAMBIT anyway is running in serial mode (-DWITH_MPI=0).", flush=True)
-        with_mpi = False
+    with_mpi = False
 
 class scanner_plugin:
     

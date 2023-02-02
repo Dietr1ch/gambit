@@ -94,7 +94,7 @@ Scanner:
       grid_pts: 3 #NxN grid
 
     grid:
-      plugin: grid
+      pyplugin: grid
       #pyplugin: grid
       #version: ">=1.0"
       like: LogLike

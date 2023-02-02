@@ -311,8 +311,25 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     
 #ifdef WITH_MPI
     m.attr("with_mpi") = py::bool_(true);
+    m.def("rank", []()
+    {
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        
+        return rank;
+    });
+    
+     m.def("numtasks", []()
+    {
+        int numtasks;
+        MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+        
+        return numtasks;
+    });
 #else
     m.attr("with_mpi") = py::bool_(false);
+    m.def("rank", [](){return 0});
+    m.def("numtasks", [](){return 1});
 #endif
     
     py::class_<Gambit::Printers::BaseBasePrinter, std::unique_ptr<Gambit::Printers::BaseBasePrinter, py::nodelete>>(m, "printer")
@@ -347,12 +364,13 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         return self.getParameters();
     });
     
-    //virtual void new_stream(const std::string&, const Options&) = 0;
-    //virtual void new_reader(const std::string&, const Options&) = 0;
-    //virtual void create_resume_reader() = 0;
-    //virtual BaseBaseReader* get_reader(const std::string&) = 0;
-    //virtual bool reader_exists(const std::string&) = 0;
-    //virtual void delete_reader(const std::string&) = 0;
+    //Mmember functions not exported:
+    //  virtual void new_stream(const std::string&, const Options&) = 0;
+    //  virtual void new_reader(const std::string&, const Options&) = 0;
+    //  virtual void create_resume_reader() = 0;
+    //  virtual BaseBaseReader* get_reader(const std::string&) = 0;
+    //  virtual bool reader_exists(const std::string&) = 0;
+    //  virtual void delete_reader(const std::string&) = 0;
     py::class_<Gambit::Scanner::printer_interface, std::unique_ptr<Gambit::Scanner::printer_interface, py::nodelete>>(m, "printer_interface")
     .def("resume_mode", [&](Gambit::Scanner::printer_interface &self)
     {
