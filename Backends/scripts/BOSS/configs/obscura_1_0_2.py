@@ -41,6 +41,8 @@ gambit_minuit_version    = ''
 input_files = [
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Astronomy.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection_Crystal.hpp',
+    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection.hpp',
+    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection_Ionization.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/Direct_Detection_ER.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/DM_Halo_Models.hpp',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/obscura/DM_Particle_Standard.hpp',
@@ -58,6 +60,7 @@ src_files_to    = '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_
 
 load_classes = [
     'obscura::DM_Detector_Crystal',
+    # 'obscura::DM_Detector',
     'obscura::DM_Detector_Ionization_ER',
     'obscura::Standard_Halo_Model',
     'obscura::DM_Particle_Standard',

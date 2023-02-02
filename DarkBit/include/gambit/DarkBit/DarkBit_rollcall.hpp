@@ -2204,6 +2204,7 @@ START_MODULE
     START_FUNCTION(double)
     NEEDS_CLASSES_FROM(obscura, default)
     BACKEND_REQ(Fractional_Days_since_J2000, (), double, (int, int, int, double, double, double))
+    BACKEND_REQ(XENON1T_S2_ER, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)    
     DEPENDENCY(LocalHalo,LocalMaxwellianHalo)    
     #undef FUNCTION  

@@ -500,6 +500,7 @@ namespace Gambit
     double kappa = *Param["kappa"];
     double mAp = *Param["mAp"]; // in GeV
     double sigma_e = 1.0;
+
     obscura_default::obscura::DM_Particle_SI DM(mDM);
     DM.Set_Sigma_Electron(sigma_e);
     DM.Set_FormFactor_DM("General", mAp);
@@ -507,8 +508,9 @@ namespace Gambit
 
     // 3. Experiment
     // obscura_default::obscura::DM_Detector_Ionization_ER experiment = obscura_default::obscura::XENON1T_S2_ER();
-    // auto experiment = obscura::XENON1T_S2_ER();
-
+    obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::XENON1T_S2_ER();
+    // experiment.Print_Summary();
+    // double x = obscura_default::obscura::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
     double x = BEreq::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
     // double y = obscura_default::obscura::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
     // double m =  obscura_default::libphysica::natural_units::meter;
