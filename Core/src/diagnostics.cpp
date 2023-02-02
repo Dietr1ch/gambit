@@ -80,6 +80,13 @@ namespace Gambit
     print_to_screen(out.str(), "module");
   }
 
+  /// Basic module function diagnostic function
+  void gambit_core::module_function_diagnostic()
+  {
+    // TODO: Implement!
+    std::cout << "You invoked \"gambit_core::module_function_diagnostic()\", but there is nothing to see here yet." << std::endl;
+  }
+
   /// Basic backend diagnostic function
   void gambit_core::backend_diagnostic()
   {
@@ -145,6 +152,13 @@ namespace Gambit
     out << endl;
     out << table.str();
     print_to_screen(out.str(), "backend");
+  }
+
+  /// Basic backend function diagnostic function
+  void gambit_core::backend_function_diagnostic()
+  {
+    // TODO: Implement!
+    std::cout << "You invoked \"gambit_core::backend_function_diagnostic()\", but there is nothing to see here yet." << std::endl;
   }
 
   /// Basic model diagnostic function
@@ -321,6 +335,13 @@ namespace Gambit
     print_to_screen(out.str(), command);
   }
 
+  /// Free-form module function diagnostic function
+  void gambit_core::ff_module_function_diagnostic(const str &command)
+  {
+    // TODO: Implement!
+    std::cout << "You invoked \"gambit_core::ff_module_function_diagnostic(\'"<<command<<"\')\", but there is nothing to see here yet." << std::endl;
+  }
+
   /// Free-form backend diagnostic function
   void gambit_core::ff_backend_diagnostic(const str &command)
   {
@@ -416,6 +437,13 @@ namespace Gambit
       }
     }
     print_to_screen(out.str(), command);
+  }
+
+  /// Free-form backend function diagnostic function
+  void gambit_core::ff_backend_function_diagnostic(const str &command)
+  {
+    // TODO: Implement!
+    std::cout << "You invoked \"gambit_core::ff_backend_function_diagnostic(\'"<<command<<"\')\", but there is nothing to see here yet." << std::endl;
   }
 
   /// Free-form model diagnostic function

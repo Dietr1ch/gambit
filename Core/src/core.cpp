@@ -87,13 +87,16 @@ namespace Gambit
               "\n                                                                           "
               "\nAvailable commands:                                                        "
               "\n   modules               List registered modules                           "
+              "\n   module-functions      List registered module functions                  "
               "\n   backends              List registered backends and their status         "
+              "\n   backend-functions     List registered backend functions                 "
               "\n   models                List registered models and output model graph     "
               "\n   capabilities          List all registered function capabilities         "
               "\n   scanners              List registered scanners                          "
               "\n   test-functions        List registered scanner test objective functions  "
-              "\n   <name>                Give info on a specific module, backend, model,   "
-              "\n                           capability or scanner                           "
+              "\n   <name>                Give info on a specific module, module function,  "
+              "\n                           backend, backend function, model, capability,   "
+              "\n                           scanner or scanner test objective function      "
               "\n                           e.g.: gambit DarkBit                            "
               "\n                                 gambit Pythia                             "
               "\n                                 gambit MSSM                               "
@@ -622,7 +625,14 @@ namespace Gambit
     }
 
     // Initial list of valid diagnostic commands
-    std::vector<str> valid_commands = initVector<str>("modules", "backends", "models", "capabilities", "scanners", "test-functions");
+    std::vector<str> valid_commands = initVector<str>("modules",
+                                                      "module-functions",
+                                                      "backends",
+                                                      "backend-functions",
+                                                      "models",
+                                                      "capabilities",
+                                                      "scanners",
+                                                      "test-functions");
 
     // Test if the user has requested one of the basic diagnostics
     if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())
@@ -699,14 +709,18 @@ namespace Gambit
     if (mpirank == 0)
     {
       if (command == "modules") module_diagnostic();
+      if (command == "module-functions") module_function_diagnostic();
       if (command == "backends") backend_diagnostic();
+      if (command == "backend-functions") backend_function_diagnostic();
       if (command == "models") model_diagnostic();
       if (command == "capabilities") capability_diagnostic();
       if (command == "scanners") scanner_diagnostic();
       if (command == "test-functions") test_function_diagnostic();
       if (command == "priors") prior_diagnostic();
       ff_module_diagnostic(command);
+      ff_module_function_diagnostic(command);
       ff_backend_diagnostic(command);
+      ff_backend_function_diagnostic(command);
       ff_model_diagnostic(command);
       ff_capability_diagnostic(command);
       ff_scanner_diagnostic(command);
