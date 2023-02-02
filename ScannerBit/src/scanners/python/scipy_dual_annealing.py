@@ -24,9 +24,7 @@ class scanner_plugin:
         self.visit = splug.get_inifile_value("visit", dtype=float, default=2.62)
         self.accept = splug.get_inifile_value("accept", dtype=float, default=-5.0)
         self.maxfun = splug.get_inifile_value("maxfun", dtype=float, default=10000000.0)
-        # TODO: This way of reading a bool from the inifile apparently doesn't work yet.
-        # self.no_local_search = splug.get_inifile_value("no_local_search", dtype=bool, default=False)
-        self.no_local_search = False
+        self.no_local_search = splug.get_inifile_value("no_local_search", dtype=bool, default=False)
 
     def plugin_main(self):
         

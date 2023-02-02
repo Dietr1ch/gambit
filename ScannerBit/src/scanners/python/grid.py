@@ -2,6 +2,7 @@ import scannerbit
 import scanner_pyplugin as splug
 import numpy as np
 
+# Figure out if we can use mpi4py
 try:
     from mpi4py import MPI
     if scannerbit.with_mpi:
@@ -9,7 +10,14 @@ try:
     else:
         with_mpi = False
 except ImportError:
-    with_mpi = False
+    if scannerbit.with_mpi:
+        raise Exception(f"GAMBIT is compiled with MPI parallelisation enabled (WITH_MPI=1), "
+                        f"but {__file__} failed to import the python module mpi4py. "
+                        f"Either install mpi4py or recompile GAMBIT with -DWITH_MPI=0.")
+    else:
+        print(f"Warning: The scanner plugin failed to import mpi4py in {__file__}, "
+              f"but that's OK since GAMBIT anyway is running in serial mode (-DWITH_MPI=0).", flush=True)
+        with_mpi = False
 
 class scanner_plugin:
     
@@ -36,7 +44,7 @@ class scanner_plugin:
         N = splug.get_inifile_value("grid_pts", dtype=list, etype=int)
         
         if len(N) != self.dim:
-            raise Exception("Grid Scanner: The dimension of gambit ({0}) does not match the dimension of the inputed grid_pts ({1}).".format(self.dim, len(N)))
+            raise Exception("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed grid_pts ({1}).".format(self.dim, len(N)))
         
         self.size = np.prod(np.asarray(N))
         
@@ -45,27 +53,30 @@ class scanner_plugin:
         
         self.vecs=[]
 
+        # prepare the grid of points
         if len(user_params) > 0:
             
             # get the parameters names from the prior
             param_names = splug.get_prior().getShownParameters()
             
             if len(param_names) != len(user_params):
-                raise Exception("Grid Scanner: The dimension of gambit ({0}) does not match the dimension of the inputed parameters ({1}).".format(len(param_names), len(user_params)))
+                raise Exception("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed parameters ({1}).".format(len(param_names), len(user_params)))
             
             for param in param_names:
                 if param in user_params:
                     self.vecs.append(np.linspace(0.0, 1.0, N[user_params.index(param)]))
                 else:
-                    raise Exception("Grid Scanner: parameter \"{0}\" is not provided.".format(param))
-                
+                    raise Exception("Grid scanner: parameter \"{0}\" is not provided.".format(param))
+
         else:
             for n in N:
                 self.vecs.append(np.linspace(0.0, 1.0, n))
             
     def plugin_main(self):
 
+        # scan the grid of points, divided evenly across the numper of MPI processes
         for pt in np.vstack(np.meshgrid(*self.vecs)).reshape(self.dim, -1).T[self.rank:self.size:self.numtasks]:
+
             # run likelihood
             self.like(pt)
             
