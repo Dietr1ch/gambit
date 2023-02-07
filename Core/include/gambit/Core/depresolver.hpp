@@ -194,7 +194,7 @@ namespace Gambit
         void makeFunctorsModelCompatible();
 
         /// Helper function to update vertex candidate lists in resolveDependencyFromRules
-        void updateCandidates(const VertexID&, int, std::vector<std::pair<VertexID, bool>>&, std::vector<std::pair<VertexID, bool>>&);
+        void updateCandidates(bool, const VertexID&, int, std::vector<std::pair<VertexID, bool>>&, std::vector<std::pair<VertexID, bool>>&);
 
         /// Resolution of individual module function dependencies
         VertexID resolveDependencyFromRules(const QueueEntry&, const std::vector<VertexID>&);

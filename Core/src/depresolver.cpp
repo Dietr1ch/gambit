@@ -813,12 +813,18 @@ namespace Gambit
         // that are not to be used for the scan.
         if ( f->status() > 0 )
         {
+          #ifdef DEPRES_DEBUG
+            std::cout << "Adding primary model functor " << f->origin() << "::" << f->name() << " to masterGraph." << std::endl; 
+          #endif
           boost::add_vertex(f, this->masterGraph);
         }
       }
       // Add module functors to masterGraph
       for (const auto& f : boundCore->getModuleFunctors())
       {
+          #ifdef DEPRES_DEBUG
+            std::cout << "Adding module functor " << f->origin() << "::" << f->name() << " to masterGraph." << std::endl; 
+          #endif
           boost::add_vertex(f, this->masterGraph);
       }
     }
@@ -1045,20 +1051,29 @@ namespace Gambit
     }
 
     /// Helper function to update vertex candidate lists in resolveDependencyFromRules
-    void DependencyResolver::updateCandidates(const VertexID& v, int i,
+    void DependencyResolver::updateCandidates(bool match, const VertexID& v, int i,
                                               std::vector<std::pair<VertexID, bool>>& allowed, 
                                               std::vector<std::pair<VertexID, bool>>& disabled)
     {
-      // Add the vertex to the active list of vertex candidates if 
-      //   a) vertex is not disabled in any way;
-      //   b) we only want the list of backends, and the vertex comes from an ini function;           
-      //   c) we only want the list of backends, and the vertex comes from a funtion that relies on classes from a disabled backend.
-      // Otherwise, the vertex would have been fine except that it is disabled, so save it for printing in diagnostic messages.
-      int status = masterGraph[v]->status();
-      bool vertex_allowed = status > 0 or (boundCore->show_backends and (status == -3 or status == -4));
-      allowed[i] = {v, vertex_allowed};
-      disabled[i] = {v, not vertex_allowed};
+      if (match)
+      {
+        // Add the vertex to the active list of vertex candidates if
+        //   a) vertex is not disabled in any way;
+        //   b) we only want the list of backends, and the vertex comes from an ini function;
+        //   c) we only want the list of backends, and the vertex comes from a funtion that relies on classes from a disabled backend.
+        // Otherwise, the vertex would have been fine except that it is disabled, so save it for printing in diagnostic messages.
+        int status = masterGraph[v]->status();
+        bool vertex_allowed = status > 0 or (boundCore->show_backends and (status == -3 or status == -4));
+        allowed[i] = {v, vertex_allowed};
+        disabled[i] = {v, not vertex_allowed};
+      }
+      else
+      {
+        allowed[i] = {v, false};
+        disabled[i] = {v, false};
+      }
     }
+
 
     /// Resolve dependency by matching capability, type pair of input queue entry, ensuring consistency with all obslike entries and subjugate rules.
     /// As non-subjugate rules have global applicability, all (strong) instances are assumed to have already been applied before this function is called. 
@@ -1077,20 +1092,22 @@ namespace Gambit
         {
           const VertexID& v = vertexCandidates[i];
           // Require match to entry.quantity, and forbid self-resolution 
-          if (v != entry.toVertex and entry.obslike->matches(masterGraph[v], *boundTEs))
-           updateCandidates(v, i, allowedVertexCandidates, disabledVertexCandidates);
+          bool match = (v != entry.toVertex and entry.obslike->matches(masterGraph[v], *boundTEs));
+          updateCandidates(match, v, i, allowedVertexCandidates, disabledVertexCandidates);
         }      
       }
       else
       {
         // If this dependency does not come from an ObsLike entry, make a temporary rule to filter 
         // vertexCandidates down to only those that match the passed quantity. This rule has the format
-        // if: <anything>
+        // if:
+        //   module: any
         // then:
         //   capability: quantity.first
         //   type: quantity.second
         ModuleRule dep_rule;
-        dep_rule.has_if = dep_rule.has_then = dep_rule.then_capability = dep_rule.then_type = true;
+        dep_rule.has_if = dep_rule.if_module = dep_rule.has_then = dep_rule.then_capability = dep_rule.then_type = true;
+        dep_rule.module = "any";
         dep_rule.capability = entry.quantity.first;
         dep_rule.type = entry.quantity.second;
         // Don't let functors log this rule when it is matched, as it is only a temporary rule.
@@ -1102,8 +1119,8 @@ namespace Gambit
         {
           const VertexID& v = vertexCandidates[i];
           // Require match to quantity, and forbid self-resolution 
-          if (v != entry.toVertex and dep_rule.allows(masterGraph[v], *boundTEs))
-           updateCandidates(v, i, allowedVertexCandidates, disabledVertexCandidates);
+          bool match = (v != entry.toVertex and dep_rule.allows(masterGraph[v], *boundTEs));
+          updateCandidates(match, v, i, allowedVertexCandidates, disabledVertexCandidates);
         }
       }
       Utils::masked_erase(allowedVertexCandidates);
@@ -1174,7 +1191,6 @@ namespace Gambit
       logger() << LogTags::dependency_resolver;
       logger() << "List of candidate vertices after applying subjugate rules and functionChain constraints:" << endl;
       logger() << printGenericFunctorList(allowedVertexCandidates) << EOM;
-
 
       // Apply model-specific filter
       unsigned int remaining = allowedVertexCandidates.size();
