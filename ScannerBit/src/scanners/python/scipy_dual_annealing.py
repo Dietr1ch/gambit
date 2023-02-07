@@ -1,6 +1,13 @@
+import scannerbit
 import scanner_pyplugin as splug
 import numpy as np
 from scipy.optimize import dual_annealing
+
+# This scanner is not MPI parallelised. 
+if scannerbit.with_mpi:
+    if scannerbit.numtasks() > 1:
+        raise Exception(f"This scanner ({__file__}) is not MPI parallelised. Either run GAMBIT "
+                        f"with a single MPI process or use a different scanner.")        
 
 class scanner_plugin:
     
