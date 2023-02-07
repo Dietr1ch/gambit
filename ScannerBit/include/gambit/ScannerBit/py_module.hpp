@@ -1,10 +1,14 @@
 #ifdef __GAMBIT_CPP__
 
 #include <unordered_map>
+
+#include "gambit/Utils/begin_ignore_warnings_pybind11.hpp"
+#include "gambit/Utils/begin_ignore_warnings_eigen.hpp"
 #include <pybind11/embed.h>
 #include <pybind11/eigen.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
+#include "gambit/Utils/end_ignore_warnings.hpp"
 
 #include "gambit/ScannerBit/factory_defs.hpp"
 #include "gambit/ScannerBit/plugin_defs.hpp"
@@ -328,8 +332,8 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     });
 #else
     m.attr("with_mpi") = py::bool_(false);
-    m.def("rank", [](){return 0});
-    m.def("numtasks", [](){return 1});
+    m.def("rank", [](){return 0;});
+    m.def("numtasks", [](){return 1;});
 #endif
     
     py::class_<Gambit::Printers::BaseBasePrinter, std::unique_ptr<Gambit::Printers::BaseBasePrinter, py::nodelete>>(m, "printer")
