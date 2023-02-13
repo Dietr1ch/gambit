@@ -16,7 +16,7 @@ Parameters:
   SubGeVDM_fermion:
     mDM: 
       prior_type: log
-      range: [0.01,0.1]
+      range: [0.001,1.]
     gDM: 2.5
     kappa: 5e-2
     mAp: 1.5
@@ -32,24 +32,6 @@ Parameters:
     alpha: 1
     beta: 3
     gamma: 1
-
-  LCDM_zreio:
-    omega_b: 0.022
-    omega_cdm: 0.1200
-    H0:
-      prior_type: flat
-      range: [66.,68.]
-    T_cmb: 2.72548
-    z_reio: 7.67
-
-  PowerLaw_ps:
-    ln10A_s: 3.044
-    n_s: 0.9649
-    r: 0
-    N_pivot: 55
-    
-  cosmo_nuisance_Planck_lite:
-    A_planck: 1
 
 Priors:
 
@@ -74,7 +56,7 @@ Scanner:
     square_grid:
       plugin: square_grid
       like: LogLike
-      grid_pts: 10
+      grid_pts: 100
 
 ObsLikes:
 
