@@ -59,6 +59,7 @@
 #include "gambit/CosmoBit/CosmoBit_rollcall.hpp"
 #include "gambit/CosmoBit/CosmoBit_types.hpp"
 #include "gambit/Utils/numerical_constants.hpp"
+#include "gambit/Utils/statistics.hpp"
 
 namespace Gambit
 {

@@ -22,33 +22,6 @@ Parameters:
     mAp: 1.5
     etaDM: 0
 
-  Halo_gNFW_rho0:
-    rho0: 0.4
-    v0: 235.0
-    vesc: 550.0
-    vrot: 235.0
-    rs: 20.0
-    r_sun: 8.5
-    alpha: 1
-    beta: 3
-    gamma: 1
-
-  LCDM_zreio:
-    omega_b: 0.022
-    omega_cdm: 0.1200
-    H0: 67.32
-    T_cmb: 2.72548
-    z_reio: 7.67
-
-  PowerLaw_ps:
-    ln10A_s: 3.044
-    n_s: 0.9649
-    r: 0
-    N_pivot: 55
-    
-  cosmo_nuisance_Planck_lite:
-    A_planck: 1
-
 Priors:
 
   # All the priors are simple for this scan, so they are specified directly in the Parameters section.
@@ -56,7 +29,7 @@ Priors:
 
 Printer:
 
-  printer: ascii
+  printer: cout
   # printer: hdf5
 
   options:
