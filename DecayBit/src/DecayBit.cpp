@@ -3015,9 +3015,6 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
-    //////////// Vector singlet DM /////////////////////
-
-    /// Add the decay of Higgs to vectors for the VectorSingletDM models (see arXiv:1512.06458v4)
     void SubGeVDM_dark_photon_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::SubGeVDM_dark_photon_decays;
@@ -3084,11 +3081,122 @@ namespace Gambit
       result.set_BF(gamma/result.width_in_GeV, 0.0, "DM", "DM~");
 
       // Make sure the width is sensible.
+    }
+
+    //////////// Vector singlet DM /////////////////////
+
+    /// Add the decay of Higgs to vectors for the VectorSingletDM models (see arXiv:1512.06458v4)
+    //////////// Dirac DM Simplified Model /////////////////////
+    void CH_DMsimpVectorMedDiracDM_Y1_decays(DecayTable::Entry& result)
+    {
+      using namespace Pipes::CH_DMsimpVectorMedDiracDM_Y1_decays;
+      // Clear previous decays
+      result = DecayTable::Entry();
+      
+      str model = "DMsimpVectorMedDiracDM";
+      str in = "Y1"; // In state: CalcHEP particle name
+      std::vector<std::vector<str>> out_calchep = {{"b~", "b"}, {"c~", "c"}, {"d~", "d"}, {"s~", "s"}, {"t~", "t"}, {"u~", "u"}, {"Xd~", "Xd"}}; // Out states: CalcHEP particle names
+      std::vector<std::vector<str>> out_gambit = {{"dbar_3", "d_3"}, {"ubar_2", "u_2"}, {"dbar_1", "d_1"}, {"dbar_2", "d_2"}, {"ubar_3", "u_3"}, {"ubar_1", "u_1"}, {"Xd~", "Xd"}}; // Out states: GAMBIT particle names
+      
+      for (unsigned int i=0; i<out_calchep.size(); i++)
+      {
+        
+        double gamma = BEreq::CH_Decay_Width(model, in, out_calchep[i]); // Partial width
+        double newwidth = result.width_in_GeV + gamma;  // Adjust total width
+        double wscaling = ( gamma == 0. ) ? 1 : result.width_in_GeV/newwidth; // Scaling for BFs, avoid NaNs
+        result.width_in_GeV = newwidth;
+        
+        for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
+        {
+          it->second.first  *= wscaling; // rescale BF 
+          it->second.second *= wscaling; // rescale error on BF 
+        }
+        
+        // Avoid NaNs!
+        double BF = ( gamma == 0. ) ? 0. : gamma/result.width_in_GeV;
+        
+        result.set_BF(BF, 0.0, out_gambit[i][0], out_gambit[i][1]);
+        
+      }
+      
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
+    }
+    
+    //////////// Majorana DM Simplified Model /////////////////////
+    void CH_DMsimpVectorMedMajoranaDM_Y1_decays(DecayTable::Entry& result)
+    {
+      using namespace Pipes::CH_DMsimpVectorMedMajoranaDM_Y1_decays;
+      // Clear previous decays
+      result = DecayTable::Entry();
+      
+      str model = "DMsimpVectorMedMajoranaDM";
+      str in = "Y1"; // In state: CalcHEP particle name
+      std::vector<std::vector<str>> out_calchep = {{"b~", "b"}, {"c~", "c"}, {"d~", "d"}, {"s~", "s"}, {"t~", "t"}, {"u~", "u"}, {"Xm", "Xm"}}; // Out states: CalcHEP particle names
+      std::vector<std::vector<str>> out_gambit = {{"dbar_3", "d_3"}, {"ubar_2", "u_2"}, {"dbar_1", "d_1"}, {"dbar_2", "d_2"}, {"ubar_3", "u_3"}, {"ubar_1", "u_1"}, {"Xm", "Xm"}}; // Out states: GAMBIT particle names
+      
+      for (unsigned int i=0; i<out_calchep.size(); i++)
+      {
+        
+        double gamma = BEreq::CH_Decay_Width(model, in, out_calchep[i]); // Partial width
+        double newwidth = result.width_in_GeV + gamma;  // Adjust total width
+        double wscaling = ( gamma == 0. ) ? 1 : result.width_in_GeV/newwidth; // Scaling for BFs, avoid NaNs
+        result.width_in_GeV = newwidth;
+        
+        for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
+        {
+          it->second.first  *= wscaling; // rescale BF 
+          it->second.second *= wscaling; // rescale error on BF 
+        }
+        
+        // Avoid NaNs!
+        double BF = ( gamma == 0. ) ? 0. : gamma/result.width_in_GeV;
+        
+        result.set_BF(BF, 0.0, out_gambit[i][0], out_gambit[i][1]);
+        
+      }
+      
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
+      
+    }
+    
+    //////////// Scalar DM Simplified Model /////////////////////
+    void CH_DMsimpVectorMedScalarDM_Y1_decays(DecayTable::Entry& result)
+    {
+      using namespace Pipes::CH_DMsimpVectorMedScalarDM_Y1_decays;
+      // Clear previous decays
+      result = DecayTable::Entry();
+      
+      str model = "DMsimpVectorMedScalarDM";
+      str in = "Y1"; // In state: CalcHEP particle name
+      std::vector<std::vector<str>> out_calchep = {{"Xc", "Xc~"}, {"b~", "b"}, {"c~", "c"}, {"d~", "d"}, {"s~", "s"}, {"t~", "t"}, {"u~", "u"}}; // Out states: CalcHEP particle names
+      std::vector<std::vector<str>> out_gambit = {{"Xc", "Xc~"}, {"dbar_3", "d_3"}, {"ubar_2", "u_2"}, {"dbar_1", "d_1"}, {"dbar_2", "d_2"}, {"ubar_3", "u_3"}, {"ubar_1", "u_1"}}; // Out states: GAMBIT particle names
+      
+      for (unsigned int i=0; i<out_calchep.size(); i++)
+      {
+        
+        double gamma = BEreq::CH_Decay_Width(model, in, out_calchep[i]); // Partial width
+        double newwidth = result.width_in_GeV + gamma;  // Adjust total width
+        double wscaling = ( gamma == 0. ) ? 1 : result.width_in_GeV/newwidth; // Scaling for BFs, avoid NaNs
+        result.width_in_GeV = newwidth;
+        
+        for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
+        {
+          it->second.first  *= wscaling; // rescale BF 
+          it->second.second *= wscaling; // rescale error on BF 
+        }
+        
+        // Avoid NaNs!
+        double BF = ( gamma == 0. ) ? 0. : gamma/result.width_in_GeV;
+        
+        result.set_BF(BF, 0.0, out_gambit[i][0], out_gambit[i][1]);
+        
+      }
+      
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
     //////////// Everything ///////////////////
-
+    
     /// Collect all the DecayTable entries into an actual DecayTable
     void all_decays (DecayTable &decays)
     {
@@ -3128,6 +3236,12 @@ namespace Gambit
               decays("Ap") = *Dep::dark_photon_decay_rates;                 // Add the dark photon decays.
       }
 
+      // DMsimp-specific
+      if (ModelInUse("DMsimpVectorMedDiracDM") or ModelInUse("DMsimpVectorMedMajoranaDM") or ModelInUse("DMsimpVectorMedScalarDM"))
+      {
+        decays("Y1") = *Dep::Y1_decay_rates;
+      }
+      
       // MSSM-specific
       if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
       {
