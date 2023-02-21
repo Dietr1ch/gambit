@@ -167,8 +167,8 @@ START_MODULE
       DEPENDENCY(DarkMatterConj_ID, std::string)
       ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running,
                    ScalarSingletDM_Z3,ScalarSingletDM_Z3_running,
-                   DiracSingletDM_Z2, MajoranaSingletDM_Z2,VectorSingletDM_Z2,
-                   DMEFT,SubGeVDM_scalar, SubGeVDM_fermion,
+                   DiracSingletDM_Z2, MajoranaSingletDM_Z2,VectorSingletDM_Z2)
+      ALLOW_MODELS(DMEFT, SubGeVDM_scalar, SubGeVDM_fermion,
                    DMsimpVectorMedDiracDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedScalarDM)
     #undef FUNCTION
   #undef CAPABILITY
