@@ -36,18 +36,20 @@ END_BE_INI_FUNCTION
     namespace py = pybind11;
 
     static py::object dark_photon;
+    static bool object_initialised;
 
     //Initialise and store the dark_photon instance
     void dark_photon_ini()
     {
       std::string model_name = "dark_photon";
       dark_photon = DarkCast.attr("Model")(model_name);
+      object_initialised = true;
     }
 
     //For a single final state
     double dark_photon_decay_width(double& k, std::string state, double& mass)
     {
-      if (dark_photon == NULL) 
+      if (!object_initialised) 
       {
         dark_photon_ini();
       }
@@ -58,7 +60,7 @@ END_BE_INI_FUNCTION
 
     double dark_photon_branching_fraction(std::string state, double& mass)
     {
-      if (dark_photon == NULL)
+      if (!object_initialised) 
       {
         dark_photon_ini();
       }
@@ -70,7 +72,7 @@ END_BE_INI_FUNCTION
     //For a combination of final states. Take a vector of string input, eg: std::vector<std::string> ("e_e","u_u","d_d")
     double dark_photon_decay_width_multi(double& k, std::vector<std::string> states, double& mass)
     {
-      if (dark_photon == NULL) 
+      if (!object_initialised)  
       {
         dark_photon_ini();
       }
@@ -81,7 +83,7 @@ END_BE_INI_FUNCTION
 
     double dark_photon_branching_fraction_multi(std::vector<std::string> states, double& mass)
     {
-      if (dark_photon == NULL)
+      if (!object_initialised) 
       {
         dark_photon_ini();
       }
