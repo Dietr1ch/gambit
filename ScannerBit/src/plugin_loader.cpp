@@ -430,11 +430,7 @@ namespace Gambit
 
             std::string Plugin_Loader::print_all(const std::string &plug_type) const
             {
-                if (plug_type == "pyscanner")
-                    return print_pyplugins("scanner");
-                else if (plug_type == "pyobjective")
-                    return print_pyplugins("objective");
-                else if (plug_type != "")
+                if (plug_type != "")
                 {
                     auto plugins = total_plugin_map.find(plug_type);
                     if (plugins == total_plugin_map.end())
@@ -443,7 +439,7 @@ namespace Gambit
                     }
                     else
                     {
-                        return print_plugins(plugins);
+                        return print_plugins(plugins) + print_pyplugins(plug_type);
                     }
                 }
                 else
@@ -451,7 +447,7 @@ namespace Gambit
                     std::string ret = "";
                     for (auto it = total_plugin_map.begin(), end = total_plugin_map.end(); it != end; it++)
                     {
-                        ret += print_plugins(it);
+                        ret += print_plugins(it) + print_pyplugins(it->first);
                     }
                     
                     return ret;
