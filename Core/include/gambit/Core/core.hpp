@@ -104,7 +104,9 @@ namespace Gambit
     void capability_diagnostic();
     void model_diagnostic();
     void scanner_diagnostic();
+    void py_scanner_diagnostic();
     void test_function_diagnostic();
+    void py_test_function_diagnostic();
     void prior_diagnostic();
 
     /// Free-form diagnostic functions

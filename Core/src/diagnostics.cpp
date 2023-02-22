@@ -230,12 +230,27 @@ namespace Gambit
     const std::string output = Scanner::Plugins::plugin_info().print_all("scanner");
     print_to_screen(output, "scanners");
   }
+  
+  /// Basic python scanner diagnostic function
+  void gambit_core::py_scanner_diagnostic()
+  {
+    // Import scanner plugin info from ScannerBit
+    const std::string output = Scanner::Plugins::plugin_info().print_all("pyscanner");
+    print_to_screen(output, "pyscanners");
+  }
 
   /// Basic test function diagnostic function
   void gambit_core::test_function_diagnostic()
   {
     const std::string output = Scanner::Plugins::plugin_info().print_all("objective");
     print_to_screen(output, "objectives");
+  }
+  
+  /// Basic python test function diagnostic function
+  void gambit_core::py_test_function_diagnostic()
+  {
+    const std::string output = Scanner::Plugins::plugin_info().print_all("pyobjective");
+    print_to_screen(output, "pyobjectives");
   }
 
   void gambit_core::prior_diagnostic()

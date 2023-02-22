@@ -622,7 +622,7 @@ namespace Gambit
     }
 
     // Initial list of valid diagnostic commands
-    std::vector<str> valid_commands = initVector<str>("modules", "backends", "models", "capabilities", "scanners", "test-functions");
+    std::vector<str> valid_commands = initVector<str>("modules", "backends", "models", "capabilities", "scanners", "pyscanners", "test-functions", "python-test-functions");
 
     // Test if the user has requested one of the basic diagnostics
     if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())
@@ -703,7 +703,9 @@ namespace Gambit
       if (command == "models") model_diagnostic();
       if (command == "capabilities") capability_diagnostic();
       if (command == "scanners") scanner_diagnostic();
+      if (command == "pyscanners") py_scanner_diagnostic();
       if (command == "test-functions") test_function_diagnostic();
+      if (command == "python-test-functions") py_test_function_diagnostic();
       if (command == "priors") prior_diagnostic();
       ff_module_diagnostic(command);
       ff_backend_diagnostic(command);

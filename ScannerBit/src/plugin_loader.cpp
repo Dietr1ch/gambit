@@ -41,6 +41,12 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/ScannerBit/priors_rollcall.hpp"
 
+#include "gambit/Utils/begin_ignore_warnings_pybind11.hpp"
+#include <pybind11/embed.h>
+#include "gambit/Utils/end_ignore_warnings.hpp"
+
+namespace py = pybind11;
+
 namespace Gambit
 {
 
@@ -49,6 +55,7 @@ namespace Gambit
 
         namespace Plugins
         {
+            
             inline std::string print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
             {
                 table_formatter table(plugins->first + " PLUGINS", "VERSION", "STATUS");
@@ -69,6 +76,71 @@ namespace Gambit
                     }
                 }
 
+                return table.str();
+            }
+            
+            inline std::string print_pyplugins(const std::string &type)
+            {
+                table_formatter table("py" + type + " PLUGINS", "PATH");
+                table.capitalize_title();
+                table.padding(1);
+                
+                std::string p_str, description;
+                std::string path = std::string(GAMBIT_DIR "/ScannerBit/src/") + type + "s/python";
+                auto sys_list = py::list(py::module::import("sys").attr("path"));
+                sys_list.append(py::cast(path));
+                py::scoped_interpreter *guard;
+                
+                try
+                {
+                    guard = new py::scoped_interpreter();
+                }
+                catch(std::exception &)
+                {
+                    guard = nullptr;
+                }
+                
+                if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
+                {
+                    char path_buffer[1024];
+                    int p_n;
+                    std::string fname;
+                    std::stringstream ss;
+                    
+                    while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
+                    {
+                        ss << std::string(path_buffer, p_n);
+                    }
+
+                    while (ss >> fname)
+                    {
+                        if (fname.substr(fname.size() - 3) == ".py")
+                        {
+                            std::string name = fname.substr(0, fname.size() - 3);
+                            
+                            try
+                            {
+                                auto file = py::module::import(name.c_str());
+                                
+                                if (py::hasattr(file, "scanner_plugin"))
+                                {
+                                    table << name;
+                                    table << (path + "/" + fname);
+                                }
+                            }
+                            catch(std::exception &ex)
+                            {
+                            }
+                        }
+                        
+                    }
+                }
+                
+                sys_list.attr("pop")();
+                
+                if (guard != nullptr)
+                    delete guard;
+                
                 return table.str();
             }
 
@@ -358,7 +430,11 @@ namespace Gambit
 
             std::string Plugin_Loader::print_all(const std::string &plug_type) const
             {
-                if (plug_type != "")
+                if (plug_type == "pyscanner")
+                    return print_pyplugins("scanner");
+                else if (plug_type == "pyobjective")
+                    return print_pyplugins("objective");
+                else if (plug_type != "")
                 {
                     auto plugins = total_plugin_map.find(plug_type);
                     if (plugins == total_plugin_map.end())
@@ -372,10 +448,13 @@ namespace Gambit
                 }
                 else
                 {
+                    std::string ret = "";
                     for (auto it = total_plugin_map.begin(), end = total_plugin_map.end(); it != end; it++)
                     {
-                        return print_plugins(it);
+                        ret += print_plugins(it);
                     }
+                    
+                    return ret;
                 }
 
                 return "";
