@@ -1733,12 +1733,14 @@ namespace Gambit
         for (const sspair& req : reqs)
         {
           // Make a temporary rule to filter down to only those that match the requirement. This rule has the format
-          // if: <anything>
+          // if:
+          //   backend: any
           // then:
-          //   capability: quantity.first
-          //   type: quantity.second
+          //   capability: req.first
+          //   type: req.second
           BackendRule req_rule;
-          req_rule.has_if = req_rule.has_then = req_rule.then_capability = req_rule.then_type = true;
+          req_rule.has_if = req_rule.has_then = req_rule.if_backend = req_rule.then_capability = req_rule.then_type = true;
+          req_rule.backend = "any";
           req_rule.capability = req.first;
           req_rule.type = req.second;
           // Don't let functors log this rule when it is matched, as it is only a temporary rule.
