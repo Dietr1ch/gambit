@@ -81,7 +81,8 @@ namespace Gambit
           // Failed to convert to either a module or a backend rule.  We got a problem.
           {
             std::stringstream errmsg;
-            errmsg << "Invalid entry in Rules section. The yaml snippet "<< std::endl << *it << std::endl;
+            errmsg << "Invalid entry in Rules section. The yaml snippet "<< std::endl
+                   << std::endl << *it << std::endl << std::endl;
             if (module_rule_conversion_error == e.what())
             {
               // Same error in both cases. This means that it fails the general requirements of a rule.
@@ -189,8 +190,7 @@ namespace YAML
   {
     if (not ModuleRule::permits_field(field) and not BackendRule::permits_field(field))
     {
-      dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " is not permitted in Rule specifications.");
-      return false;
+      throw std::runtime_error(std::string("  The field \"" + field + "\" is not permitted in Rule specifications."));
     }
     return true;
   }
@@ -200,7 +200,7 @@ namespace YAML
   {
     if (BackendRule::permits_field(field))
     {
-      dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " is only permitted in rules for backend functions.");
+      throw std::runtime_error(std::string("  The field \"" + field + "\" is only permitted in rules for backend functions."));
     }
   }
 
@@ -209,7 +209,7 @@ namespace YAML
   {
     if (ModuleRule::permits_field(field))
     {
-      dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " is only permitted in rules for module functions.");
+      throw std::runtime_error(std::string("  The field \"" + field + "\" is only permitted in rules for module functions."));
     }
   }
 
@@ -217,7 +217,7 @@ namespace YAML
   void forbid_both_true(const std::string& field, bool a, bool b)
   {
     if (not (a and b)) return;
-    dependency_resolver_error().raise(LOCAL_INFO, "  The field " + field + " appears in both the \"if\" and \"then\" blocks.");
+    throw std::runtime_error(std::string("  The field \"" + field + "\" appears in both the \"if\" and \"then\" blocks."));
   }
 
   /// Build the base-class parts of a rule from a yaml node
@@ -239,8 +239,8 @@ namespace YAML
       {
         std::stringstream errmsg;
         errmsg << "  The Rules entry " << node << "contains tag \"" << node.Tag() << "\"." << std::endl
-               << "  The only tags permitted in rules are \"!weak\" and \"!weakrule\"." << std::endl;
-        dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
+               << "  The only tags permitted in rules are \"!weak\" and \"!weakrule\".";
+        throw std::runtime_error(errmsg.str());
       }
     }
 
@@ -265,9 +265,7 @@ namespace YAML
     {
       std::string first = (rhs.has_if ? "if" : "then");
       std::string second = (rhs.has_if ? "then" : "if");
-      std::stringstream errmsg;
-      errmsg << "it contains \"" << first << "\" without \"" << second << "\"." << std::endl;
-      dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
+      throw std::runtime_error(std::string("  The rule contains \"" + first + "\" without \"" + second + "\"."));
     }
 
     // Validate if-then blocks
@@ -280,14 +278,14 @@ namespace YAML
                                                rhs.version.empty()))
       {
         std::stringstream errmsg;
-        errmsg << "it contains regular fields *and* an if-then clause. If a rule" << std::endl
-               << "contains an if-then clause, all fields of the rule must be within that clause." << std::endl;
-        dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
+        errmsg << "  The rule contains regular fields *and* an if-then clause. If a rule" << std::endl
+               << "  contains an if-then clause, all fields of the rule must be within that clause.";
+        throw std::runtime_error(errmsg.str());
       }
 
       // Make sure that if and then blocks are not empty
-      if (node["if"].size() == 0) dependency_resolver_error().raise(LOCAL_INFO, "it contains an empty 'if' block.");
-      if (node["then"].size() == 0) dependency_resolver_error().raise(LOCAL_INFO, "it contains an empty 'then' block.");
+      if (node["if"].size() == 0) throw std::runtime_error(std::string("  The rule contains an empty 'if' block."));
+      if (node["then"].size() == 0) throw std::runtime_error(std::string("  The rule contains an empty 'then' block."));
 
       // Step through each of the entries in the if node, making sure it is one of the permitted ones.
       for(auto& entry : node["if"])
@@ -320,7 +318,13 @@ namespace YAML
     // If there is no explicit if-then, make sure the default 'if' condition is actually implemented (the default 'then' will be ensured in the derived class convert)
     else
     {
-      if (not rhs.if_capability and not rhs.if_type) rhs.if_capability = true;
+      if (not rhs.if_capability)
+      {
+        std::stringstream errmsg;
+        errmsg << "  The rule contains neither an if-then block nor any capability entry" << std::endl
+               << "  able to be interpreted as an implicit if condition.";
+        throw std::runtime_error(errmsg.str());
+      }
     }
 
     // Strip leading "Gambit::" namespaces and whitespace, but preserve "const ".
@@ -395,7 +399,7 @@ namespace YAML
                  key == "dependencies"  or
                  key == "backends")
         {
-          dependency_resolver_error().raise(LOCAL_INFO, "  The field " + key + " cannot appear in an \"if\" block.");
+          throw std::runtime_error(std::string("  The field \"" + key + "\" cannot appear in an \"if\" block."));
         }
         else check_field_is_valid_in_backend_rule(key);
       }
@@ -425,7 +429,10 @@ namespace YAML
                rhs.then_dependencies or
                rhs.then_backends))
       {
-        rhs.then_function = true;
+        std::stringstream errmsg;
+        errmsg << "  The rule contains neither an if-then block nor an entry" << std::endl
+               << "  able to be interpreted as an implicit then condition.";
+        throw std::runtime_error(errmsg.str());
       }
     }
 
@@ -483,7 +490,13 @@ namespace YAML
     // If there is no explicit if-then, make sure the default 'then' condition is actually implemented
     else
     {
-      if (not (rhs.then_function or rhs.then_version or rhs.then_backend)) rhs.then_function = true;
+      if (not (rhs.then_function or rhs.then_version or rhs.then_backend))
+      {
+        std::stringstream errmsg;
+        errmsg << "  The rule contains neither an if-then block nor an entry" << std::endl
+               << "  able to be interpreted as an implicit then condition.";
+        throw std::runtime_error(errmsg.str());
+      }
     }
 
     return true;
