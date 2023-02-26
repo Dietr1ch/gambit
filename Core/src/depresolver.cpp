@@ -2059,19 +2059,12 @@ namespace Gambit
     {
       std::set<const ModuleRule*> unusedModuleRules = getUsedOrUnusedRules<ModuleRule>(false, module_rules, masterGraph);
       std::set<const BackendRule*> unusedBackendRules = getUsedOrUnusedRules<BackendRule>(false, backend_rules, masterGraph);
-
-        std::cout << "here8" << unusedModuleRules.size() << " " << unusedBackendRules.size() << std::endl;
-     
-
       if(unusedModuleRules.size() > 0 or unusedBackendRules.size() > 0)
       {
-        std::stringstream msg;
+        std::ostringstream msg;
         msg << "The following rules and options are not used in the current scan:" << endl;
-        std::cout << "here9" << std::endl;
-        for (const ModuleRule* rule : unusedModuleRules) std::cout << rule->capability << std::endl;
-        std::cout << "here10" << std::endl;
-        for (const BackendRule* rule : unusedBackendRules) msg << rule->yaml;
-        std::cout << "here11" << std::endl;
+        for (const ModuleRule* rule : unusedModuleRules) msg << endl << rule->yaml << endl;
+        for (const BackendRule* rule : unusedBackendRules) msg << endl << rule->yaml << endl;
         if (boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "unused_rule_is_an_error"))
           dependency_resolver_error().raise(LOCAL_INFO,msg.str());
         else dependency_resolver_warning().raise(LOCAL_INFO,msg.str());
