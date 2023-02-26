@@ -547,7 +547,7 @@ namespace Gambit
       str tex_output_file = boundIniFile->getValueOrDef<str>("GAMBIT.tex", "dependency_resolution", "tex_output_file");
       bibtex_file.dropTeXFile(citationKeys, tex_output_file, bibtex_output_file);
 
-      ss << "You can find the list of references to include in " << bibtex_output_file << ". And and example TeX file in " << tex_output_file << std::endl << std::endl;
+      ss << "You can find the list of references to include in " << bibtex_output_file << " and an example TeX file in " << tex_output_file << std::endl << std::endl;
 
       // Print to terminal
       std::cout << ss.str();
@@ -2021,10 +2021,10 @@ namespace Gambit
 
     /// Retrieve unused rules
     template<typename RuleT>
-    std::set<RuleT*> getUsedOrUnusedRules(bool find_used, const std::vector<RuleT>& rules, const MasterGraphType& masterGraph)
+    std::set<const RuleT*> getUsedOrUnusedRules(bool find_used, const std::vector<RuleT>& rules, const MasterGraphType& masterGraph)
     {
-      std::set<RuleT*> returnRules;
-      for(auto rule : rules)
+      std::set<const RuleT*> returnRules;
+      for(const auto& rule : rules)
       {
         #ifdef DEPRES_DEBUG
           std::cout << "Triggering for " << (find_used ? "used" : "unused") << "rules." << std::endl;
@@ -2042,7 +2042,7 @@ namespace Gambit
             if (found xor find_used)                       
             {
               #ifdef DEPRES_DEBUG
-                std::cout << "Rule for capability " << rule.capability <<"not triggered by vertex " << masterGraph[*vi]->capability() << std::endl;
+                std::cout << "Rule for capability " << rule.capability <<" not triggered by vertex " << masterGraph[*vi]->capability() << std::endl;
               #endif
               trigger = false;
               continue;
@@ -2057,16 +2057,22 @@ namespace Gambit
     /// Check for unused rules and options
     void DependencyResolver::checkForUnusedRules()
     {
-      std::set<ModuleRule*> unusedModuleRules = getUsedOrUnusedRules<ModuleRule>(false, module_rules, masterGraph);
-      std::set<BackendRule*> unusedBackendRules = getUsedOrUnusedRules<BackendRule>(false, backend_rules, masterGraph);
+      std::set<const ModuleRule*> unusedModuleRules = getUsedOrUnusedRules<ModuleRule>(false, module_rules, masterGraph);
+      std::set<const BackendRule*> unusedBackendRules = getUsedOrUnusedRules<BackendRule>(false, backend_rules, masterGraph);
+
+        std::cout << "here8" << unusedModuleRules.size() << " " << unusedBackendRules.size() << std::endl;
+     
 
       if(unusedModuleRules.size() > 0 or unusedBackendRules.size() > 0)
       {
         std::stringstream msg;
         msg << "The following rules and options are not used in the current scan:" << endl;
-        for (const auto* rule : unusedModuleRules) msg << rule->yaml;
-        for (const auto* rule : unusedBackendRules) msg << rule->yaml;
-        if (boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "unused_rule_is_an_error"))
+        std::cout << "here9" << std::endl;
+        for (const ModuleRule* rule : unusedModuleRules) std::cout << rule->capability << std::endl;
+        std::cout << "here10" << std::endl;
+        for (const BackendRule* rule : unusedBackendRules) msg << rule->yaml;
+        std::cout << "here11" << std::endl;
+        if (boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "unused_rule_is_an_error"))
           dependency_resolver_error().raise(LOCAL_INFO,msg.str());
         else dependency_resolver_warning().raise(LOCAL_INFO,msg.str());
       }
