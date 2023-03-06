@@ -65,7 +65,7 @@ namespace Gambit
         {
           module_rules.push_back(it->as<DRes::ModuleRule>());
         }
-        catch(const std::exception& e)
+        catch(const std::runtime_error& e)
         {
           module_rule_conversion_error = e.what();
         }
@@ -75,7 +75,7 @@ namespace Gambit
         {
           backend_rules.push_back(it->as<DRes::BackendRule>());
         }
-        catch(const std::exception& e)
+        catch(const std::runtime_error& e)
         {
           if (not module_rule_conversion_error.empty())
           // Failed to convert to either a module or a backend rule.  We got a problem.
@@ -128,6 +128,40 @@ namespace YAML
 {
   using namespace Gambit::DRes;
 
+  /// Helper function for trying to convert a YAML snippet to a nested module rule
+  void convert_to_module_rule(const YAML::detail::iterator_value y, std::vector<ModuleRule>& v)
+  {
+    try
+    {
+      v.push_back(y.as<ModuleRule>());
+    }
+    catch(const std::runtime_error& e)
+    {
+      std::stringstream errmsg;
+      errmsg << "Invalid entry in nested module rule contained in dependencies section. The yaml snippet "<< std::endl
+             << std::endl << y << std::endl << std::endl;
+      errmsg << "does not form a valid module rule. Reason: " << std::endl << e.what() << std::endl;
+      Gambit::DRes::dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
+    }
+  }
+
+  /// Helper function for trying to convert a YAML snippet to a nested backend rule
+  void convert_to_backend_rule(const YAML::detail::iterator_value y, std::vector<BackendRule>& v)
+  {
+    try
+    {
+      v.push_back(y.as<BackendRule>());
+    }
+    catch(const std::runtime_error& e)
+    {
+      std::stringstream errmsg;
+      errmsg << "Invalid entry in nested backend rule contained in backends section. The yaml snippet "<< std::endl
+             << std::endl << y << std::endl << std::endl;
+      errmsg << "does not form a valid backend rule. Reason: " << std::endl << e.what() << std::endl;
+      Gambit::DRes::dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
+    }
+  }
+
   /// Convert yaml node to dependency resolver Observable type
   bool convert<Observable>::decode(const Node& node, Observable& rhs)
   {
@@ -159,8 +193,8 @@ namespace YAML
       else if (key == "functionChain")    rhs.functionChain  = entry.second.as<std::vector<std::string>>();
       else if (key == "sub_capabilities") rhs.subcaps        = entry.second;
       else if (key == "printme")          rhs.printme        = entry.second.as<bool>();
-      else if (key == "dependencies") for (auto& de : entry.second) rhs.dependencies.push_back(de.as<ModuleRule>());
-      else if (key == "backends")     for (auto& be : entry.second) rhs.backends.push_back(be.as<BackendRule>());
+      else if (key == "dependencies") for (auto& de : entry.second) convert_to_module_rule(de, rhs.dependencies);
+      else if (key == "backends")     for (auto& be : entry.second) convert_to_backend_rule(be, rhs.backends);
       else
       {
         std::stringstream errmsg;
@@ -337,7 +371,7 @@ namespace YAML
     const std::string key = entry.first.as<std::string>(); 
     if (key == "options")
     {
-      rhs.options = Gambit::Options(entry.second);
+      rhs.options = Gambit::Options(entry.second.as<YAML::Node>());
       rhs.then_options = true;
     }
     else if (key == "functionChain")
@@ -349,7 +383,8 @@ namespace YAML
     {
       for (auto& dependencies_entry : entry.second)
       {
-        rhs.dependencies.push_back(dependencies_entry.as<ModuleRule>());
+        // Try converting the entry to a module rule.
+        convert_to_module_rule(dependencies_entry, rhs.dependencies);
         rhs.then_dependencies = true;
       }
     }
@@ -357,7 +392,8 @@ namespace YAML
     {
       for (auto& backends_entry : entry.second)
       {
-        rhs.backends.push_back(backends_entry.as<BackendRule>());
+        // Try converting the entry to a backend rule.
+        convert_to_backend_rule(backends_entry, rhs.backends);
         rhs.then_backends = true;
       }
     }
@@ -493,8 +529,14 @@ namespace YAML
       if (not (rhs.then_function or rhs.then_version or rhs.then_backend))
       {
         std::stringstream errmsg;
-        errmsg << "  The rule contains neither an if-then block nor an entry" << std::endl
-               << "  able to be interpreted as an implicit then condition.";
+        errmsg << "  The rule contains neither an if-then block, nor an entry" << std::endl
+               << "  able to be interpreted as an implicit then condition." << std::endl;
+        if (rhs.if_capability)
+        {
+          errmsg << "  Note that \"capability\" has already been implicitly interpreted as an if" << std::endl
+                 << "  condition.  Interpreting it as a then condition requires the presence of the" << std::endl
+                 << "  \"group\" keyword, which implicitly takes over the role of the if condition." << std::endl;
+        }
         throw std::runtime_error(errmsg.str());
       }
     }

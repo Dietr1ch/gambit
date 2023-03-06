@@ -129,6 +129,10 @@ namespace Gambit
     /// Convert a whole string to lowercase
     EXPORT_SYMBOLS std::string strtolower(const std::string& a);
 
+    /// Enclose a string in quotation marks if it contains commas
+    EXPORT_SYMBOLS std::string quote_if_contains_commas(str);
+
+
     /************************************************************************/
     /* Comparator for case-insensitive comparison in STL assos. containers  */
     /************************************************************************/

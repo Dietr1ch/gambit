@@ -121,6 +121,11 @@ namespace Gambit
       /// Backend field appears in 'then' clause.
       bool then_backend;
 
+      /// Backend group referenced by the rule.
+      std::string group;
+      /// Group appear in 'if' clause.
+      bool if_group;
+
       /// True if and only if the passed backend functor matches the 'if' part of a rule
       virtual bool antecedent_matches(functor*, const Utils::type_equivalency&) const;
 
@@ -132,7 +137,9 @@ namespace Gambit
         Rule(),
         backend(),
         if_backend(false),
-        then_backend(false)
+        then_backend(false),
+        group(),
+        if_group(false)
       {}
 
       /// Check if a given string is a permitted field of this class

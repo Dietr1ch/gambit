@@ -61,14 +61,19 @@ namespace Gambit
     /// Check if a given string is a permitted field of the BackendRule class
     bool BackendRule::permits_field(const str& field)
     {
-      return field == "backend";
+      static const std::set<str> fields =
+      {
+        "backend",
+        "group"
+      };
+      return (fields.find(field) != fields.end());
     }
 
     /// True if and only if the passed backend functor matches the 'if' part of a rule
     bool BackendRule::antecedent_matches(functor* f, const Utils::type_equivalency& te) const
     {
       // Allow matching only if the antecedent has been properly specified.
-      bool match = if_capability or if_type or if_function or if_version or if_backend;
+      bool match = if_capability or if_type or if_function or if_version or if_backend or if_group;
       // Check if the base class part of the antecedent was matched.
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.

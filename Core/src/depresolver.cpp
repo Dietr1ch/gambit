@@ -1293,7 +1293,7 @@ namespace Gambit
         errmsg += "as an untargeted rule:\n";
       }
       errmsg += "\n  - capability: "+f->capability();
-      errmsg += "\n    type: "+f->type();
+      errmsg += "\n    type: "+Utils::quote_if_contains_commas(f->type());
       errmsg += "\n    function: "+f->name();
       errmsg += "\n    module: " +f->origin() +"\n";
       dependency_resolver_error().raise(LOCAL_INFO,errmsg);
@@ -1976,7 +1976,7 @@ namespace Gambit
           errmsg += "\n    function: "+masterGraph[toVertex]->name();
           errmsg += "\n    backends:";
           errmsg += "\n      - {capability: "+allowedBackendFunctorCandidates.at(0).first->capability()+", type: "
-                                             +allowedBackendFunctorCandidates.at(0).first->type()+", backend: "
+                                             +Utils::quote_if_contains_commas(allowedBackendFunctorCandidates.at(0).first->type())+", backend: "
                                              +allowedBackendFunctorCandidates.at(0).first->origin()+", version: "
                                              +allowedBackendFunctorCandidates.at(0).first->version()+"}\n";
           dependency_resolver_error().raise(LOCAL_INFO,errmsg);
