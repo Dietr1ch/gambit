@@ -34,6 +34,7 @@ namespace Gambit
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
       if ( s1 == "any" ) return true;
+      if ( s2 == "any" ) return true;
       try
       {
         if (std::regex_match(s2, std::regex(s1))) return true;

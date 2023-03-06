@@ -1360,7 +1360,7 @@ namespace Gambit
         for (const BackendRule& rule : backend_rules)
         {
           // Filter out backend functors that fail any non-subjugate (undirected) rules.
-          allowed = allowed and rule.allows(f, *boundTEs); 
+          allowed = allowed and rule.allows(f, *boundTEs, "any"); 
         }
 
         if (allowed)
@@ -1715,7 +1715,7 @@ namespace Gambit
     /// this function is called. 
     functor* DependencyResolver::solveRequirement(std::set<sspair> reqs, VertexID toVertex, 
      const std::vector<functor*>& backendFunctorCandidates, std::vector<functor*> previous_successes, 
-     bool allow_deferral, str group)
+     bool allow_deferral, str group_being_resolved)
     {
       // Candidate vertices after applying rules
       std::vector<std::pair<functor*, bool>> allowedBackendFunctorCandidates(backendFunctorCandidates.size());
@@ -1734,18 +1734,18 @@ namespace Gambit
         {
           // Make a temporary rule to filter down to only those that match the requirement. This rule has the format
           // if:
-          //   backend: any
+          //   group: group_being_resolved 
           // then:
           //   capability: req.first
           //   type: req.second
           BackendRule req_rule;
-          req_rule.has_if = req_rule.has_then = req_rule.if_backend = req_rule.then_capability = req_rule.then_type = true;
-          req_rule.backend = "any";
+          req_rule.has_if = req_rule.has_then = req_rule.if_group = req_rule.then_capability = req_rule.then_type = true;
+          req_rule.group = group_being_resolved;
           req_rule.capability = req.first;
           req_rule.type = req.second;
           // Don't let functors log this rule when it is matched, as it is only a temporary rule.
           req_rule.log_matches = false;
-          if (req_rule.allows(f, *boundTEs))
+          if (req_rule.allows(f, *boundTEs, group_being_resolved))
           {
             allowed = true;
             break;
@@ -1778,11 +1778,17 @@ namespace Gambit
         }
 
         // Now we check if the candidate is compatible with all applicable subjugate backend rules. 
+        // Iterate over all observables that matched toVertex.
+        for (const Observable* match : masterGraph[toVertex]->getMatchedObservables())
+        {          
+          // Allow only candidates that match all subjugate backend rules of all observables that matched the entry.toVertex
+          allowed = allowed and match->backend_reqs_allow(f, *boundTEs, group_being_resolved);
+        }
         // Iterate over all module rules that matched toVertex.
         for (const ModuleRule* match : masterGraph[toVertex]->getMatchedModuleRules())
         {          
-          // Allow only candidates that match all subjugate module rules of all rules that matched the entry.toVertex
-          allowed = allowed and match->backend_reqs_allow(f, *boundTEs);
+          // Allow only candidates that match all subjugate backend rules of all rules that matched the entry.toVertex
+          allowed = allowed and match->backend_reqs_allow(f, *boundTEs, group_being_resolved);
         }
  
         // Next, we purge all candidates that conflict with a backend-matching rule given in the rollcall declaration.
@@ -1868,7 +1874,7 @@ namespace Gambit
         errmsg
           << "Found no candidates for backend requirements of "
           << masterGraph[toVertex]->origin() << "::" << masterGraph[toVertex]->name() << ":\n"
-          << reqs << "\nfrom group: " << group;
+          << reqs << "\nfrom group: " << group_being_resolved;
         if (disabledBackendFunctorCandidates.size() != 0)
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
@@ -1964,7 +1970,7 @@ namespace Gambit
         {
           str errmsg = "Found too many candidates for backend requirement ";
           if (reqs.size() == 1) errmsg += reqs.begin()->first + " (" + reqs.begin()->second + ")";
-          else errmsg += "group " + group;
+          else errmsg += "group " + group_being_resolved;
           errmsg += " of module function " + masterGraph[toVertex]->origin() + "::" + masterGraph[toVertex]->name()
            + "\nViable candidates are:\n" + printGenericFunctorList(allowedBackendFunctorCandidates);
           errmsg += "\nIf you don't need all the above backends, you can resolve the ambiguity simply by";

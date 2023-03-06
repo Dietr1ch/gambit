@@ -60,10 +60,10 @@ namespace Gambit
     }
 
     /// Whether the set of backend rules subjugate to this observable allow a given backend functor or not. 
-    bool Observable::backend_reqs_allow(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
+    bool Observable::backend_reqs_allow(functor* f, const Utils::type_equivalency& te, const str& group_being_resolved, bool ignore_if_weak) const
     {
       bool allow = true;
-      for (const BackendRule& rule : backends) allow = allow and rule.allows(f, te, ignore_if_weak);
+      for (const BackendRule& rule : backends) allow = allow and rule.allows(f, te, group_being_resolved, ignore_if_weak);
       return allow;      
     }
 

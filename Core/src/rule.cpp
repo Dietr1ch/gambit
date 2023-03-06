@@ -47,17 +47,6 @@ namespace Gambit
       return match;
     }
 
-    /// Whether a rule allows a given functor or not.  
-    /// Must be true for a module functor to be used to resolve a dependency, or for a backend functor to be used to resolve a backend requirement.   
-    /// True unless the functor passes the antecedent ('if' part of the rule) but fails the consequent ('then' part of the rule). 
-    bool Rule::allows(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
-    {
-      if (ignore_if_weak and weakrule) return true;
-      if (not antecedent_matches(f, te)) return true;
-      bool result = consequent_matches(f, te);
-      return result;
-    }
-
     /// Check if a given string is a permitted field of the BackendRule class
     bool BackendRule::permits_field(const str& field)
     {
@@ -70,7 +59,7 @@ namespace Gambit
     }
 
     /// True if and only if the passed backend functor matches the 'if' part of a rule
-    bool BackendRule::antecedent_matches(functor* f, const Utils::type_equivalency& te) const
+    bool BackendRule::antecedent_matches(functor* f, const Utils::type_equivalency& te, const str& group_being_resolved) const
     {
       // Allow matching only if the antecedent has been properly specified.
       bool match = if_capability or if_type or if_function or if_version or if_backend or if_group;
@@ -78,6 +67,7 @@ namespace Gambit
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.
       if (match and if_backend) match = stringComp(backend, f->origin()); 
+      if (match and if_group)   match = stringComp(group, group_being_resolved); 
       return match;
     }
 
@@ -93,6 +83,17 @@ namespace Gambit
       // Log match
       if (match and log_matches) f->addMatchedBackendRule(this);
       return match;
+    }
+
+    /// Whether a backend rule allows a given backend functor or not.  
+    /// Must be true for a backend functor to be used to resolve a backend requirement.   
+    /// True unless the functor passes the antecedent ('if' part of the rule) but fails the consequent ('then' part of the rule). 
+    bool BackendRule::allows(functor* f, const Utils::type_equivalency& te, const str& group_being_resolved, bool ignore_if_weak) const
+    {
+      if (ignore_if_weak and weakrule) return true;
+      if (not antecedent_matches(f, te, group_being_resolved)) return true;
+      bool result = consequent_matches(f, te);
+      return result;
     }
 
     /// Check if a given string is a permitted field of the ModuleRule class
@@ -136,6 +137,17 @@ namespace Gambit
       return match;
     }
 
+    /// Whether a module rule allows a given module functor or not.  
+    /// Must be true for a module functor to be used to resolve a dependency.   
+    /// True unless the functor passes the antecedent ('if' part of the rule) but fails the consequent ('then' part of the rule). 
+    bool ModuleRule::allows(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
+    {
+      if (ignore_if_weak and weakrule) return true;
+      if (not antecedent_matches(f, te)) return true;
+      bool result = consequent_matches(f, te);
+      return result;
+    }
+
     /// Whether the set of dependency rules subjugate to this rule allow a given module functor or not. 
     bool ModuleRule::dependencies_allow(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
     {
@@ -162,11 +174,11 @@ namespace Gambit
     }
 
     /// Whether the set of backend rules subjugate to this rule allow a given backend functor or not. 
-    bool ModuleRule::backend_reqs_allow(functor* f, const Utils::type_equivalency& te, bool ignore_if_weak) const
+    bool ModuleRule::backend_reqs_allow(functor* f, const Utils::type_equivalency& te, const str& group_being_resolved, bool ignore_if_weak) const
     {
       if (ignore_if_weak and weakrule) return true;
       bool allow = true;
-      for (const BackendRule& rule : backends) allow = allow and rule.allows(f, te, ignore_if_weak);
+      for (const BackendRule& rule : backends) allow = allow and rule.allows(f, te, group_being_resolved, ignore_if_weak);
       return allow;      
     }
 

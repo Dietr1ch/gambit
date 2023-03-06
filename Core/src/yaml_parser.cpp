@@ -86,7 +86,7 @@ namespace Gambit
             if (module_rule_conversion_error == e.what())
             {
               // Same error in both cases. This means that it fails the general requirements of a rule.
-              errmsg << "does not form a valid rule. Reason: " << std::endl << e.what() << std::endl;
+              errmsg << "does not form a valid rule. Reason: " << std::endl << std::endl << e.what() << std::endl;
             }
             else
             {
@@ -140,7 +140,7 @@ namespace YAML
       std::stringstream errmsg;
       errmsg << "Invalid entry in nested module rule contained in dependencies section. The yaml snippet "<< std::endl
              << std::endl << y << std::endl << std::endl;
-      errmsg << "does not form a valid module rule. Reason: " << std::endl << e.what() << std::endl;
+      errmsg << "does not form a valid module rule. Reason: " << std::endl << std::endl << e.what() << std::endl;
       Gambit::DRes::dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
     }
   }
@@ -157,7 +157,7 @@ namespace YAML
       std::stringstream errmsg;
       errmsg << "Invalid entry in nested backend rule contained in backends section. The yaml snippet "<< std::endl
              << std::endl << y << std::endl << std::endl;
-      errmsg << "does not form a valid backend rule. Reason: " << std::endl << e.what() << std::endl;
+      errmsg << "does not form a valid backend rule. Reason: " << std::endl << std::endl << e.what() << std::endl;
       Gambit::DRes::dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
     }
   }
@@ -490,6 +490,17 @@ namespace YAML
         rhs.backend = entry.second.as<std::string>(); 
         rhs.then_backend = true;
       }
+      else if (key == "group")
+      {
+        rhs.group = entry.second.as<std::string>(); 
+        rhs.if_group = true;
+        // Given that there is a group keyword, re-interpret capability (if it is outside an if block) as a then condition. 
+        if (not rhs.has_if and rhs.if_capability)
+        {
+          rhs.if_capability = false;
+          rhs.then_capability = true;
+        }
+      } 
       else check_field_is_valid_in_module_rule(key);
     }
 
@@ -505,6 +516,11 @@ namespace YAML
           rhs.backend = entry.second.as<std::string>(); 
           rhs.if_backend = true;
         }
+        else if (key == "group")
+        {
+          rhs.group = entry.second.as<std::string>(); 
+          rhs.if_group = true;
+        }
         else check_field_is_valid_in_module_rule(key);
       }
 
@@ -517,6 +533,10 @@ namespace YAML
           rhs.backend = entry.second.as<std::string>(); 
           rhs.then_backend = true;
         }
+        else if (key == "group")
+        {
+          throw std::runtime_error(std::string("  The field \"" + key + "\" cannot appear in a \"then\" block."));
+        }
         else check_field_is_valid_in_module_rule(key);
       }
 
@@ -526,14 +546,15 @@ namespace YAML
     // If there is no explicit if-then, make sure the default 'then' condition is actually implemented
     else
     {
-      if (not (rhs.then_function or rhs.then_version or rhs.then_backend))
+      if (not (rhs.then_function or rhs.then_version or rhs.then_backend or rhs.then_capability))
       {
         std::stringstream errmsg;
-        errmsg << "  The rule contains neither an if-then block, nor an entry" << std::endl
-               << "  able to be interpreted as an implicit then condition." << std::endl;
+        errmsg << "  The rule contains neither an if-then block, nor an entry able to be" << std::endl
+               << "  interpreted as an implicit then condition." << std::endl;
         if (rhs.if_capability)
         {
-          errmsg << "  Note that \"capability\" has already been implicitly interpreted as an if" << std::endl
+          errmsg << std::endl
+                 << "  Note that \"capability\" has already been implicitly interpreted as an if" << std::endl
                  << "  condition.  Interpreting it as a then condition requires the presence of the" << std::endl
                  << "  \"group\" keyword, which implicitly takes over the role of the if condition." << std::endl;
         }

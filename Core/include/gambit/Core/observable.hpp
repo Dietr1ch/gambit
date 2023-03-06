@@ -89,7 +89,7 @@ namespace Gambit
       /// Whether the set of backend rules subjugate to this observable allow a given backend functor or not. 
       /// Must be true for the passed backend functor to be used to resolve a backend requirement of the module functor that matches this observable (the requiree).
       /// Does not test if the requiree actually matches the observable, so should typically only be used after confirming this first.
-      bool backend_reqs_allow(functor*, const Utils::type_equivalency&, bool ignore_if_weak = true) const;
+      bool backend_reqs_allow(functor*, const Utils::type_equivalency&, const str&, bool ignore_if_weak = true) const;
 
       ///Default constructor. Sets all fields empty.
       Observable():
