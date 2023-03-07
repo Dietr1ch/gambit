@@ -340,8 +340,11 @@ ObsLikes:
 Rules:
 
   # Tell all functions that are able to dump SLHA files to do so.
-  #- options:
-  #    drop_SLHA_file: true
+  #- if:
+  #    capability: any
+  #  then:
+  #    options:
+  #      drop_SLHA_file: true
 
   # Choose to use DarkSUSY 6 rather than Capt'n General for calculating the capture rate of DM in the Sun
   - capability: capture_rate_Sun
@@ -349,9 +352,12 @@ Rules:
     function: capture_rate_Sun_const_xsec
 
   # Globally permit maximal mixing between gauge and family eigenstates
-  - options:
-      gauge_mixing_tolerance: 0.5
-      family_mixing_tolerance: 0.5
+  - if: 
+      function: any
+    then:
+      options:
+        gauge_mixing_tolerance: 0.5
+        family_mixing_tolerance: 0.5
 
   # Choose to use gm2calc for g-2
   - capability: muon_gm2
@@ -667,7 +673,7 @@ Rules:
   # Choose LHC likelihood form and options.
   - capability: LHC_LogLikes
     backends:
-    - {capability: lnlike_marg_poisson_lognormal_error}
+    - {group: lnlike_marg_poisson, capability: lnlike_marg_poisson_lognormal_error}
     options:
       # covariance_marg_convthres_abs: 0.05
       # covariance_marg_convthres_rel: 0.05

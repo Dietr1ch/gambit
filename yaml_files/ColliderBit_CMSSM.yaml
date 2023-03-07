@@ -179,13 +179,16 @@ Rules:
   - capability: MSSM_spectrum
     type: Spectrum
     function: make_MSSM_precision_spectrum_none
-
+k
   # These options set various tolerances in the spectrum generation
-  - options:
-      gauge_mixing_tolerance: 0.5
-      family_mixing_tolerance: 0.5
-      #gauge_mixing_tolerance_invalidates_point_only: false
-      #family_mixing_tolerance_invalidates_point_only: false
+  - if: 
+      function: any
+    then:
+      options:
+        gauge_mixing_tolerance: 0.5
+        family_mixing_tolerance: 0.5
+        #gauge_mixing_tolerance_invalidates_point_only: false
+        #family_mixing_tolerance_invalidates_point_only: false
 
   # Choose to use functions that get Higgs decays from SUSY-HIT, and t decays from DecayBit native implementation (instead of FeynHiggs)
   - capability: Reference_SM_Higgs_decay_rates
@@ -308,7 +311,7 @@ Rules:
   # Choose LHC likelihood form and options.
   - capability: LHC_LogLikes
     backends:
-    - {capability: lnlike_marg_poisson_lognormal_error}
+    - {group: lnlike_marg_poisson, capability: lnlike_marg_poisson_lognormal_error}
     options:
       covariance_marg_convthres_abs: 0.05
       covariance_marg_convthres_rel: 0.05

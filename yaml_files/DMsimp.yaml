@@ -216,7 +216,7 @@ Rules:
 
   - capability: LHC_LogLikes
     backends:
-    - {capability: lnlike_marg_poisson_lognormal_error}
+    - {group: lnlike_marg_poisson, capability: lnlike_marg_poisson_lognormal_error}
     options:
       use_covariances: true
       combine_SRs_without_covariances: false

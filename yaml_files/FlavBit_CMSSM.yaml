@@ -135,13 +135,19 @@ ObsLikes:
 Rules:
 
   # Tell all functions that are able to dump SLHA files to do so.
-  #- options:
-  #    drop_SLHA_file: true
+  #- if:
+  #    capability: any
+  #  then:
+  #    options:
+  #      drop_SLHA_file: true
 
   # Globally permit maximal mixing between gauge and family eigenstates
-  - options:
-      gauge_mixing_tolerance: 0.5
-      family_mixing_tolerance: 0.5
+  - if: 
+      function: any
+    then:
+      options:
+        gauge_mixing_tolerance: 0.5
+        family_mixing_tolerance: 0.5
 
   # Choose to use gm2calc for g-2
   - capability: muon_gm2
