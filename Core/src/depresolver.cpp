@@ -2027,7 +2027,7 @@ namespace Gambit
       logger() << EOM;
     }
 
-    /// Retrieve unused rules
+    /// Retrieve used or unused rules
     template<typename RuleT>
     std::set<const RuleT*> getUsedOrUnusedRules(bool find_used, const std::vector<RuleT>& rules, const MasterGraphType& masterGraph)
     {
@@ -2035,29 +2035,22 @@ namespace Gambit
       for(const auto& rule : rules)
       {
         #ifdef DEPRES_DEBUG
-          std::cout << "Triggering for " << (find_used ? "used" : "unused") << "rules." << std::endl;
+          std::cout << "Triggering for " << (find_used ? "used" : "unused") << " rules." << std::endl;
           std::cout << "Checking rule with capability " << rule.capability << std::endl;
         #endif
         graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
-        bool trigger = true;
+        bool unused = true;
         for (std::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
         {
           // Check only for enabled functors
           if (masterGraph[*vi]->status() == 2)
           {
             const std::set<const RuleT*>& matched = masterGraph[*vi]->getMatchedRules<const RuleT>();
-            bool found = (std::find_if(matched.begin(), matched.end(), [&](const RuleT* r){ return r==&rule; } ) != matched.end());            
-            if (found xor find_used)                       
-            {
-              #ifdef DEPRES_DEBUG
-                std::cout << "Rule for capability " << rule.capability <<" not triggered by vertex " << masterGraph[*vi]->capability() << std::endl;
-              #endif
-              trigger = false;
-              continue;
-            }
+            bool found = (std::find_if(matched.begin(), matched.end(), [&](const RuleT* r){ return r==&rule; } ) != matched.end());
+            if (found) unused = false;
           }
         }
-        if (trigger) returnRules.insert(&rule);
+        if (unused xor find_used) returnRules.insert(&rule);
       }
       return returnRules;
     }
@@ -2065,8 +2058,39 @@ namespace Gambit
     /// Check for unused rules and options
     void DependencyResolver::checkForUnusedRules()
     {
+      // Retrieve sets of used and unused module and backend rules
+      std::set<const ModuleRule*> usedModuleRules = getUsedOrUnusedRules<ModuleRule>(true, module_rules, masterGraph);
       std::set<const ModuleRule*> unusedModuleRules = getUsedOrUnusedRules<ModuleRule>(false, module_rules, masterGraph);
+      std::set<const BackendRule*> usedBackendRules = getUsedOrUnusedRules<BackendRule>(true, backend_rules, masterGraph);
       std::set<const BackendRule*> unusedBackendRules = getUsedOrUnusedRules<BackendRule>(false, backend_rules, masterGraph);
+
+      // Remove any unused module rules that are also backend rules, and have been used as such.
+      auto duplicate_rule1 = std::find_if(unusedModuleRules.begin(),
+                                          unusedModuleRules.end(),
+                                          [&](const ModuleRule* moduleRule)
+                                          {
+                                            for (const auto& backendRule : usedBackendRules)
+                                            {
+                                              if (moduleRule->yaml == backendRule->yaml) return true;
+                                            }
+                                            return false;
+                                          });
+      if (duplicate_rule1 != unusedModuleRules.end()) unusedModuleRules.erase(duplicate_rule1);
+
+      // Remove any unused backend rules that are also module rules, and have been used as such.
+      auto duplicate_rule2 = std::find_if(unusedBackendRules.begin(),
+                                          unusedBackendRules.end(),
+                                          [&](const BackendRule* backendRule)
+                                          {
+                                            for (const auto& moduleRule : usedModuleRules)
+                                            {
+                                              if (moduleRule->yaml == backendRule->yaml) return true;
+                                            }
+                                            return false;
+                                          });
+      if (duplicate_rule2 != unusedBackendRules.end()) unusedBackendRules.erase(duplicate_rule2);
+
+      // If any unused rules remain, trigger an error/warning.
       if(unusedModuleRules.size() > 0 or unusedBackendRules.size() > 0)
       {
         std::ostringstream msg;
@@ -2140,13 +2164,13 @@ namespace Gambit
       for (const ModuleRule* rule : getUsedOrUnusedRules<ModuleRule>(true, module_rules, masterGraph))
       {
         std::stringstream key;
-        key << "Rule::" << rule;
+        key << "Rule::" << rule->yaml;
         Options(rule->yaml).toMap(metadata, key.str());
       }
       for (const BackendRule* rule : getUsedOrUnusedRules<BackendRule>(true, backend_rules, masterGraph))
       {
         std::stringstream key;
-        key << "Rule::" << rule;
+        key << "Rule::" << rule->yaml;
         Options(rule->yaml).toMap(metadata, key.str());
       }
 
