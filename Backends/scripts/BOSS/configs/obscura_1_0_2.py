@@ -13,11 +13,11 @@
 #
 
 #
-# *** Special note for OS X *** 
-# 
+# *** Special note for OS X ***
+#
 # BOSS will most likely fail if 'g++' points to the Clang compiler.
-# Install GNU g++ and point the castxml_cc variable below the GNU 
-# g++ executable.   
+# Install GNU g++ and point the castxml_cc variable below the GNU
+# g++ executable.
 #
 
 castxml_cc_id  = 'gnu'         # Reference compiler: 'gnu', 'gnu-c', 'msvc', 'msvc-c'
@@ -70,12 +70,12 @@ load_classes = [
 load_functions = [
     'obscura::Fractional_Days_since_J2000(int , int , int , double , double , double)',
     'obscura::XENON1T_S2_ER()',
-    # 'obscura::XENON10_S2_ER()',
-    # 'obscura::XENON100_S2_ER()',
-    # 'obscura::XENON1T_S2_ER()',
-    # 'obscura::DarkSide50_S2_ER()',
-    # 'obscura::SENSEI_at_MINOS()',
-    # 'obscura::CDMS_HVeV_2020()',
+    'obscura::XENON10_S2_ER()',
+    'obscura::XENON100_S2_ER()',
+    'obscura::XENON1T_S2_ER()',
+    'obscura::DarkSide50_S2_ER()',
+    'obscura::SENSEI_at_MINOS()',
+    'obscura::CDMS_HVeV_2020()',
 ]
 
 ditch = []
@@ -84,7 +84,7 @@ ditch = []
 auto_detect_stdlib_paths = False
 
 
-load_parent_classes    = False
+load_parent_classes    = True
 wrap_inherited_members = False
 
 

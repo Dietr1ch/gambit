@@ -878,6 +878,7 @@ if(NOT ditched_${name}_${ver})
     set(obscura_CXX_FLAGS "${obscura_CXX_FLAGS} -Wl,-undefined,dynamic_lookup,-flat_namespace")
     set(obscura_C_FLAGS "${obscura_C_FLAGS} -Wl,-undefined,dynamic_lookup,-flat_namespace")
   endif()
+  set_compiler_warning("no-unused-parameter" obscura_CXX_FLAGS)
   ExternalProject_Add(${name}_${ver}
     DEPENDS "castxml;libphysica"
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}

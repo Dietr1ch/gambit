@@ -86,8 +86,8 @@ def run():
         include_statements = []
 
         # - Generate include statements based on the types used in the function
-        include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='none', input_element='function')
-        include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='wrapper', input_element='function', use_full_path=True)
+        include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='none', input_element='function', include_parents=cfg.load_parent_classes)
+        include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='wrapper', input_element='function', use_full_path=True, include_parents=cfg.load_parent_classes)
         if uses_loaded_type:
             include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"' )
             include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"' )

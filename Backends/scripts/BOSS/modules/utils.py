@@ -1197,7 +1197,7 @@ def constrWrpForwardDeclHeader(file_output_path):
 
 # ====== getParentClasses ========
 
-def getParentClasses(class_el, only_native_classes=False, only_loaded_classes=False):
+def getParentClasses(class_el, only_native_classes=False, only_loaded_classes=False, recursive=False):
 
     import modules.classutils as classutils
 
@@ -1242,6 +1242,9 @@ def getParentClasses(class_el, only_native_classes=False, only_loaded_classes=Fa
             temp_dict['loaded']           = is_loaded_class
 
             parent_classes.append(temp_dict)
+
+            if recursive:
+                parent_classes += getParentClasses(base_el, only_native_classes=only_native_classes, only_loaded_classes=only_loaded_classes, recursive=True)
 
     return parent_classes
 
@@ -1446,7 +1449,7 @@ def getMemberFunctions(class_el, include_artificial=False, include_inherited=Fal
 
 # ====== getAllTypesInFunction ========
 
-def getAllTypesInFunction(func_el):
+def getAllTypesInFunction(func_el, include_parents=False):
 
     import modules.classutils as classutils
     import modules.funcutils as funcutils
@@ -1468,6 +1471,18 @@ def getAllTypesInFunction(func_el):
 
             all_types.append(arg_type_dict)
 
+            if include_parents:
+                parent_classes = getParentClasses(arg_type_el, only_native_classes=False, only_loaded_classes=False, recursive=True)
+
+                for parent_dict in parent_classes:
+
+                    small_parent_dict = OrderedDict([])
+                    small_parent_dict['class_name'] = parent_dict['class_name']
+                    small_parent_dict['el']         = gb.id_dict[parent_dict['id']]
+
+                    all_types.append(small_parent_dict)
+
+
     if ('type' in func_el.keys()) or ('returns' in func_el.keys()) or (func_el.tag=='Constructor' and 'context' in func_el.keys()):
 
         mem_type_dict = findType(func_el)
@@ -1480,6 +1495,19 @@ def getAllTypesInFunction(func_el):
         type_dict['el']         = type_el
 
         all_types.append(type_dict)
+
+
+        if include_parents:
+            parent_classes = getParentClasses(type_el, only_native_classes=False, only_loaded_classes=False, recursive=True)
+
+            for parent_dict in parent_classes:
+
+                small_parent_dict = OrderedDict([])
+                small_parent_dict['class_name'] = parent_dict['class_name']
+                small_parent_dict['el']         = gb.id_dict[parent_dict['id']]
+
+                all_types.append(small_parent_dict)
+
 
     return all_types
 
@@ -1686,7 +1714,7 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
     if input_element == 'class':
         all_types = getAllTypesInClass(input_el, include_parents=include_parents)
     elif input_element == 'function':
-        all_types = getAllTypesInFunction(input_el)
+        all_types = getAllTypesInFunction(input_el, include_parents=include_parents)
 
     # Get file name and line number of the current class/function
     start_line_number = int( input_el.get('line') )
