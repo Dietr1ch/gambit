@@ -437,6 +437,18 @@ namespace Gambit
       return safe_ptr<std::set<sspair>>(&myDependees);
     }
 
+    /// Getter for listing allowed models
+    const std::set<str>& functor::getAllowedModels()
+    {
+      return allowedModels;
+    }
+
+    /// Getter for listing conditional models
+    const std::set<str>& functor::getConditionalModels()
+    {
+      return conditionalModels;
+    }
+
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
     bool functor::modelAllowed(str model)
     {
@@ -1172,6 +1184,9 @@ namespace Gambit
       }
       myModelConditionalDependencies[model].insert(key);
       dependency_map[key] = resolver;
+
+      // Add the model to the list of conditional models
+      conditionalModels.insert(model);
     }
 
     /// Add an unconditional backend requirement
@@ -1252,6 +1267,9 @@ namespace Gambit
         myModelConditionalBackendReqs[model] = newvec;
       }
       myModelConditionalBackendReqs[model].insert(key);
+
+      // Add the model to the list of conditional models
+      conditionalModels.insert(model);
     }
 
     /// Add a rule for dictating which backends can be used to fulfill which backend requirements.

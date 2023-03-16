@@ -338,8 +338,125 @@ namespace Gambit
   /// Free-form module function diagnostic function
   void gambit_core::ff_module_function_diagnostic(const str &command)
   {
-    // TODO: Implement!
-    std::cout << "You invoked \"gambit_core::ff_module_function_diagnostic(\'"<<command<<"\')\", but there is nothing to see here yet." << std::endl;
+    std::stringstream out;
+
+    // Iterate over all module functions to see if command matches one of them
+    for (const auto &functor : functorList)
+    {
+      const str indent = "  ";
+      const str &name = functor->name();
+      if (command == name)
+      {
+        out << "Information for module function \"" << name << "\"." << std::endl << std::endl;
+
+        // Basic information about the module function (all module function will have this)
+        out << indent << "module:      "  << functor->origin() << std::endl;
+        out << indent << "capability:  "  << functor->capability() << std::endl;
+        out << indent << "result type: "  << functor->type() << std::endl << std::endl;
+
+        // List models that are allowed
+        const auto& allowed_models = functor->getAllowedModels();
+        if (allowed_models.size() > 0)
+        {
+          out << indent << "allowed models:\n";
+          for (const auto &model : allowed_models)
+            out << indent << indent << model << std::endl;
+        }
+        else
+        {
+          out << indent << "ALL models allowed" << std::endl;
+        }
+
+        // List dependencies (if any)
+        const auto& dependencies = functor->dependencies();
+        if (dependencies.size() > 0)
+        {
+          out << "\n" << indent << "dependencies:\n";
+          for (const auto &dep : dependencies)
+            out << indent << indent << dep.first << " [" << dep.second  << "]" << std::endl;
+        }
+
+        // List backend requirements (if any)
+        const auto& be_reqs = functor->backendreqs();
+        if (be_reqs.size() > 0)
+        {
+          out << "\n" << indent << "backend requirements:\n";
+          for (const auto &be_req : be_reqs)
+            out << indent << indent << be_req.first << " {" << be_req.second  << "}" << std::endl;
+        }
+
+        // Conditional dependencies and backend requirements need a bit of tideous work.
+        const auto& all_cond_models = functor->getConditionalModels();
+
+        // All models in "allowed_models" are also part of "all_cond_models",
+        // as these models have a conditional dependency on their respective ModelParameters.
+        // We are only interested in the other condtional models here.
+        std::set<str> proper_cond_models{};
+        std::set_difference(all_cond_models.begin(), all_cond_models.end(),
+                            allowed_models.begin(), allowed_models.end(),
+                            std::inserter(proper_cond_models, proper_cond_models.begin()));
+
+        if (proper_cond_models.size() > 0)
+        {
+          // Go through all proper conditional models
+          // and collect all conditional dependencies and backend requirements
+          // in maps that contains the (name,type) pairs as keys and a set of models
+          // associated with it as value. (Inverted logic of the original maps).
+          std::map< std::pair<str,str>, std::set<str> > cond_deps_map{};
+          std::map< std::pair<str,str>, std::set<str> > cond_be_reqs_map{};
+
+          for (const auto &cond_model : proper_cond_models)
+          {
+            for (const auto &cond_dep: functor->model_conditional_dependencies(cond_model))
+            {
+              // If the "(name,type)"" pair of the conditional dependency is not yet a key,
+              // then create it, with an empty set.
+              if (cond_deps_map.count(cond_dep) == 0) cond_deps_map[cond_dep] = std::set<str>{};
+
+              // Add the model to the set.
+              cond_deps_map[cond_dep].insert(cond_model);
+            }
+            for (const auto &cond_be_req: functor->model_conditional_backend_reqs(cond_model))
+            {
+              // If the "(name,type)"" pair of the conditional backend requirement is not yet a key,
+              // then create it, with an empty set.
+              if (cond_be_reqs_map.count(cond_be_req) == 0) cond_be_reqs_map[cond_be_req] = std::set<str>{};
+
+              // Add the model to the set.
+              cond_be_reqs_map[cond_be_req].insert(cond_model);
+            }
+          }
+
+          // Now that we have collected all conditional dependencies and backend requirements, we can print them.
+          if (cond_deps_map.size() > 0)
+          {
+            out << "\n" << indent << "conditional dependencies:\n";
+            for (const auto &cond_dep : cond_deps_map)
+            {
+              out << indent << indent << cond_dep.first.first << " [" << cond_dep.first.second  << "]" << std::endl;
+              for (const auto &cond_model : cond_dep.second)
+                out << indent << indent << indent << cond_model << std::endl;
+            }
+          }
+
+          if (cond_be_reqs_map.size() > 0)
+          {
+            out << "\n" << indent << "conditional backend requirements:\n";
+            for (const auto &cond_be_req : cond_be_reqs_map)
+            {
+              out << indent << indent << cond_be_req.first.first << " {" << cond_be_req.first.second  << "}" << std::endl;
+              for (const auto &cond_model : cond_be_req.second)
+                out << indent << indent << indent << cond_model << std::endl;
+            }
+          }
+
+        }
+
+        out << std::endl;
+        break;
+      }
+    }
+    print_to_screen(out.str(), command);
   }
 
   /// Free-form backend diagnostic function

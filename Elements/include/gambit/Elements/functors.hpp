@@ -301,6 +301,12 @@ namespace Gambit
       /// Return a safe pointer to the vector of all capability,type pairs of functors arranged downstream of this one in the dependency tree.
       safe_ptr<std::set<sspair>> getDependees();
 
+      /// Getter for listing allowed models
+      virtual const std::set<str>& getAllowedModels();
+
+      /// Getter for listing conditional models
+      virtual const std::set<str>& getConditionalModels();
+
       /// Test whether the functor is allowed to be used with all models
       bool allModelsAllowed();
 
@@ -375,6 +381,9 @@ namespace Gambit
 
       /// List of allowed models
       std::set<str> allowedModels;
+
+      /// List of conditional models
+      std::set<str> conditionalModels;
 
       /// List of allowed model group combinations
       std::set<std::set<str> > allowedGroupCombos;
