@@ -646,6 +646,7 @@ namespace Gambit
       for (const auto &moduleFunctor : functorList) valid_commands.push_back(moduleFunctor->name());
       valid_commands.insert(valid_commands.end(), capabilities.begin(), capabilities.end());
       for (const auto &backend_version : backend_versions) valid_commands.push_back(backend_version.first);
+      for (const auto &backendFunctor : backendFunctorList) valid_commands.push_back(backendFunctor->name());
       for (const auto &primaryModelFunctor : primaryModelFunctorList) valid_commands.push_back(primaryModelFunctor->origin());
       const std::vector<std::string> scanner_names = Scanner::Plugins::plugin_info().print_plugin_names("scanner");
       const std::vector<std::string> objective_names = Scanner::Plugins::plugin_info().print_plugin_names("objective");

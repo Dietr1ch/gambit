@@ -559,8 +559,41 @@ namespace Gambit
   /// Free-form backend function diagnostic function
   void gambit_core::ff_backend_function_diagnostic(const str &command)
   {
-    // TODO: Implement!
-    std::cout << "You invoked \"gambit_core::ff_backend_function_diagnostic(\'"<<command<<"\')\", but there is nothing to see here yet." << std::endl;
+    std::stringstream out;
+
+    // Iterate over all backend functions to see if command matches one of them
+    for (const auto &functor : backendFunctorList)
+    {
+      const str indent = "  ";
+      const str &name = functor->name();
+      if (command == name)
+      {
+        out << "Information for backend function \"" << name << "\"." << std::endl << std::endl;
+
+        // Basic information about the module function (all module function will have this)
+        out << indent << "backend:     "  << functor->origin() << std::endl;
+        out << indent << "version:     "  << functor->version() << std::endl;
+        out << indent << "capability:  "  << functor->capability() << std::endl;
+        out << indent << "result type: "  << functor->type() << std::endl << std::endl;
+
+        // List models that are allowed
+        const auto& allowed_models = functor->getAllowedModels();
+        if (allowed_models.size() > 0)
+        {
+          out << indent << "allowed models:\n";
+          for (const auto &model : allowed_models)
+            out << indent << indent << model << std::endl;
+        }
+        else
+        {
+          out << indent << "ALL models allowed" << std::endl;
+        }
+
+        out << std::endl;
+        //break;
+      }
+    }
+    print_to_screen(out.str(), command);
   }
 
   /// Free-form model diagnostic function
