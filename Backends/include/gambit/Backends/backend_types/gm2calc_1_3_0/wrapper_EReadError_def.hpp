@@ -7,42 +7,42 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-   
+
    namespace gm2calc
    {
-      
-      // Member functions: 
-      inline ::std::basic_string<char> EReadError::what() const
+
+      // Member functions:
+      inline ::std::string EReadError::what() const
       {
          return get_BEptr()->what();
       }
-      
-      
-      // Wrappers for original constructors: 
-      inline EReadError::EReadError(const ::std::basic_string<char>& message_) :
+
+
+      // Wrappers for original constructors:
+      inline EReadError::EReadError(const std::string& message_) :
          Error(__factory0(message_))
       {
          get_BEptr()->set_wptr(this);
          get_BEptr()->set_delete_wrapper(false);
       }
-      
-      // Special pointer-based constructor: 
+
+      // Special pointer-based constructor:
       inline EReadError::EReadError(Abstract_EReadError* in) :
          Error(in)
       {
          get_BEptr()->set_wptr(this);
          get_BEptr()->set_delete_wrapper(false);
       }
-      
-      // Copy constructor: 
+
+      // Copy constructor:
       inline EReadError::EReadError(const EReadError& in) :
          Error(in.get_BEptr()->pointer_copy__BOSS())
       {
          get_BEptr()->set_wptr(this);
          get_BEptr()->set_delete_wrapper(false);
       }
-      
-      // Assignment operator: 
+
+      // Assignment operator:
       inline EReadError& EReadError::operator=(const EReadError& in)
       {
          if (this != &in)
@@ -51,9 +51,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
          }
          return *this;
       }
-      
-      
-      // Destructor: 
+
+
+      // Destructor:
       inline EReadError::~EReadError()
       {
          if (get_BEptr() != 0)
@@ -67,14 +67,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
          }
          set_delete_BEptr(false);
       }
-      
-      // Returns correctly casted pointer to Abstract class: 
+
+      // Returns correctly casted pointer to Abstract class:
       inline Abstract_EReadError* gm2calc::EReadError::get_BEptr() const
       {
          return dynamic_cast<Abstract_EReadError*>(BEptr);
       }
    }
-   
+
 }
 
 

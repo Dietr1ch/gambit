@@ -11,46 +11,46 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-   
+
    namespace gm2calc
    {
-      
+
       class Error : public WrapperBase
       {
-            // Member variables: 
+            // Member variables:
          public:
-            // -- Static factory pointers: 
+            // -- Static factory pointers:
             static Abstract_Error* (*__factory0)();
-      
-            // -- Other member variables: 
-      
-            // Member functions: 
+
+            // -- Other member variables:
+
+            // Member functions:
          public:
-            ::std::basic_string<char> what() const;
-      
-      
-            // Wrappers for original constructors: 
+            ::std::string what() const;
+
+
+            // Wrappers for original constructors:
          public:
             Error();
-      
-            // Special pointer-based constructor: 
+
+            // Special pointer-based constructor:
             Error(Abstract_Error* in);
-      
-            // Copy constructor: 
+
+            // Copy constructor:
             Error(const Error& in);
-      
-            // Assignment operator: 
+
+            // Assignment operator:
             Error& operator=(const Error& in);
-      
-            // Destructor: 
+
+            // Destructor:
             ~Error();
-      
-            // Returns correctly casted pointer to Abstract class: 
+
+            // Returns correctly casted pointer to Abstract class:
             Abstract_Error* get_BEptr() const;
-      
+
       };
    }
-   
+
 }
 
 
