@@ -12,46 +12,46 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-
+   
    namespace gm2calc
    {
-
+      
       class EReadError : public Error
       {
-            // Member variables:
+            // Member variables: 
          public:
-            // -- Static factory pointers:
+            // -- Static factory pointers: 
             static Abstract_EReadError* (*__factory0)(const std::string&);
-
-            // -- Other member variables:
-
-            // Member functions:
+      
+            // -- Other member variables: 
+      
+            // Member functions: 
          public:
             ::std::string what() const;
-
-
-            // Wrappers for original constructors:
+      
+      
+            // Wrappers for original constructors: 
          public:
             EReadError(const std::string& message_);
-
-            // Special pointer-based constructor:
+      
+            // Special pointer-based constructor: 
             EReadError(Abstract_EReadError* in);
-
-            // Copy constructor:
+      
+            // Copy constructor: 
             EReadError(const EReadError& in);
-
-            // Assignment operator:
+      
+            // Assignment operator: 
             EReadError& operator=(const EReadError& in);
-
-            // Destructor:
+      
+            // Destructor: 
             ~EReadError();
-
-            // Returns correctly casted pointer to Abstract class:
+      
+            // Returns correctly casted pointer to Abstract class: 
             Abstract_EReadError* get_BEptr() const;
-
+      
       };
    }
-
+   
 }
 
 

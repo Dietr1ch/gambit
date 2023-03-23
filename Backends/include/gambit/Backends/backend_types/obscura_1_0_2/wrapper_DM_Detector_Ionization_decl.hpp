@@ -24,9 +24,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
-                static Abstract_DM_Detector_Ionization* (*__factory0)(::std::basic_string<char>, double, ::std::basic_string<char>, ::std::basic_string<char>);
-                static Abstract_DM_Detector_Ionization* (*__factory1)(::std::basic_string<char>, double, ::std::basic_string<char>, ::std::vector<std::basic_string<char>>, ::std::vector<double>);
-                static Abstract_DM_Detector_Ionization* (*__factory2)(::std::basic_string<char>, double, ::std::basic_string<char>, ::std::vector<std::basic_string<char>>);
+                static Abstract_DM_Detector_Ionization* (*__factory0)(std::string, double, std::string, std::string);
+                static Abstract_DM_Detector_Ionization* (*__factory1)(std::string, double, std::string, std::vector<std::string>, std::vector<double>);
+                static Abstract_DM_Detector_Ionization* (*__factory2)(std::string, double, std::string, std::vector<std::string>);
         
                 // -- Other member variables: 
         
@@ -52,17 +52,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void Use_Electron_Bins(unsigned int ne_thr, unsigned int N_bins);
         
-                double R_S2(unsigned int S2, const obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, ::std::vector<double> electron_spectrum);
+                double R_S2(unsigned int S2, const obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> electron_spectrum);
         
                 double R_S2(unsigned int S2, const obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr);
         
                 void Use_PE_Threshold(double S2mu, double S2sigma, unsigned int nPE_thr, unsigned int nPE_max);
         
-                void Import_Trigger_Efficiency_PE(::std::basic_string<char> filename);
+                void Import_Trigger_Efficiency_PE(std::string filename);
         
-                void Import_Acceptance_Efficiency_PE(::std::basic_string<char> filename);
+                void Import_Acceptance_Efficiency_PE(std::string filename);
         
-                void Use_PE_Bins(double S2mu, double S2sigma, const ::std::vector<unsigned int>& bin_ranges);
+                void Use_PE_Bins(double S2mu, double S2sigma, const std::vector<unsigned int>& bin_ranges);
         
                 void Print_Summary(int MPI_rank) const;
         
@@ -71,9 +71,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Wrappers for original constructors: 
             public:
-                DM_Detector_Ionization(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_particles, ::std::basic_string<char> atom);
-                DM_Detector_Ionization(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_particles, ::std::vector<std::basic_string<char>> atoms, ::std::vector<double> mass_fractions);
-                DM_Detector_Ionization(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_particles, ::std::vector<std::basic_string<char>> atoms);
+                DM_Detector_Ionization(std::string label, double expo, std::string target_particles, std::string atom);
+                DM_Detector_Ionization(std::string label, double expo, std::string target_particles, std::vector<std::string> atoms, std::vector<double> mass_fractions);
+                DM_Detector_Ionization(std::string label, double expo, std::string target_particles, std::vector<std::string> atoms);
         
                 // Special pointer-based constructor: 
                 DM_Detector_Ionization(Abstract_DM_Detector_Ionization* in);

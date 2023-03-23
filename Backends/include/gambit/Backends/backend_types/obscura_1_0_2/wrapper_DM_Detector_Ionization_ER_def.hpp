@@ -24,21 +24,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Detector_Ionization_ER::DM_Detector_Ionization_ER(::std::basic_string<char> label, double expo, ::std::basic_string<char> atom) :
+        inline DM_Detector_Ionization_ER::DM_Detector_Ionization_ER(std::string label, double expo, std::string atom) :
             DM_Detector_Ionization(__factory1(label, expo, atom))
         {
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Detector_Ionization_ER::DM_Detector_Ionization_ER(::std::basic_string<char> label, double expo, ::std::vector<std::basic_string<char>> atoms, ::std::vector<double> mass_fractions) :
+        inline DM_Detector_Ionization_ER::DM_Detector_Ionization_ER(std::string label, double expo, std::vector<std::string> atoms, std::vector<double> mass_fractions) :
             DM_Detector_Ionization(__factory2(label, expo, atoms, mass_fractions))
         {
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Detector_Ionization_ER::DM_Detector_Ionization_ER(::std::basic_string<char> label, double expo, ::std::vector<std::basic_string<char>> atoms) :
+        inline DM_Detector_Ionization_ER::DM_Detector_Ionization_ER(std::string label, double expo, std::vector<std::string> atoms) :
             DM_Detector_Ionization(__factory3(label, expo, atoms))
         {
             get_BEptr()->set_wptr(this);

@@ -25,7 +25,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 // -- Static factory pointers: 
                 static Abstract_DM_Detector_Crystal* (*__factory0)();
-                static Abstract_DM_Detector_Crystal* (*__factory1)(::std::basic_string<char>, double, ::std::basic_string<char>);
+                static Abstract_DM_Detector_Crystal* (*__factory1)(std::string, double, std::string);
         
                 // -- Other member variables: 
         
@@ -57,7 +57,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Wrappers for original constructors: 
             public:
                 DM_Detector_Crystal();
-                DM_Detector_Crystal(::std::basic_string<char> label, double expo, ::std::basic_string<char> crys);
+                DM_Detector_Crystal(std::string label, double expo, std::string crys);
         
                 // Special pointer-based constructor: 
                 DM_Detector_Crystal(Abstract_DM_Detector_Crystal* in);

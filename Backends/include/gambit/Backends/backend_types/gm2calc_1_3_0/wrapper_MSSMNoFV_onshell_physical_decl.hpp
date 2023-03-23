@@ -12,18 +12,18 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-
+   
    namespace gm2calc
    {
-
+      
       class MSSMNoFV_onshell_physical : public WrapperBase
       {
-            // Member variables:
+            // Member variables: 
          public:
-            // -- Static factory pointers:
+            // -- Static factory pointers: 
             static Abstract_MSSMNoFV_onshell_physical* (*__factory0)();
-
-            // -- Other member variables:
+      
+            // -- Other member variables: 
          public:
             double& MVG;
             double& MGlu;
@@ -74,40 +74,40 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             ::Eigen::Matrix<std::complex<double>, 4, 4, 0>& ZN;
             ::Eigen::Matrix<std::complex<double>, 2, 2, 0>& UM;
             ::Eigen::Matrix<std::complex<double>, 2, 2, 0>& UP;
-
-            // Member functions:
+      
+            // Member functions: 
          public:
             void clear();
-
+      
             void convert_to_hk();
-
+      
             void convert_to_slha();
-
+      
             void print(std::ostream& arg_1) const;
-
-
-            // Wrappers for original constructors:
+      
+      
+            // Wrappers for original constructors: 
          public:
             MSSMNoFV_onshell_physical();
-
-            // Special pointer-based constructor:
+      
+            // Special pointer-based constructor: 
             MSSMNoFV_onshell_physical(Abstract_MSSMNoFV_onshell_physical* in);
-
-            // Copy constructor:
+      
+            // Copy constructor: 
             MSSMNoFV_onshell_physical(const MSSMNoFV_onshell_physical& in);
-
-            // Assignment operator:
+      
+            // Assignment operator: 
             MSSMNoFV_onshell_physical& operator=(const MSSMNoFV_onshell_physical& in);
-
-            // Destructor:
+      
+            // Destructor: 
             ~MSSMNoFV_onshell_physical();
-
-            // Returns correctly casted pointer to Abstract class:
+      
+            // Returns correctly casted pointer to Abstract class: 
             Abstract_MSSMNoFV_onshell_physical* get_BEptr() const;
-
+      
       };
    }
-
+   
 }
 
 

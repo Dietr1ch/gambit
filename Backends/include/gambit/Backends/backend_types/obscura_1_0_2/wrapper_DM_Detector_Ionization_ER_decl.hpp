@@ -25,9 +25,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 // -- Static factory pointers: 
                 static Abstract_DM_Detector_Ionization_ER* (*__factory0)();
-                static Abstract_DM_Detector_Ionization_ER* (*__factory1)(::std::basic_string<char>, double, ::std::basic_string<char>);
-                static Abstract_DM_Detector_Ionization_ER* (*__factory2)(::std::basic_string<char>, double, ::std::vector<std::basic_string<char>>, ::std::vector<double>);
-                static Abstract_DM_Detector_Ionization_ER* (*__factory3)(::std::basic_string<char>, double, ::std::vector<std::basic_string<char>>);
+                static Abstract_DM_Detector_Ionization_ER* (*__factory1)(std::string, double, std::string);
+                static Abstract_DM_Detector_Ionization_ER* (*__factory2)(std::string, double, std::vector<std::string>, std::vector<double>);
+                static Abstract_DM_Detector_Ionization_ER* (*__factory3)(std::string, double, std::vector<std::string>);
         
                 // -- Other member variables: 
         
@@ -36,9 +36,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Wrappers for original constructors: 
             public:
                 DM_Detector_Ionization_ER();
-                DM_Detector_Ionization_ER(::std::basic_string<char> label, double expo, ::std::basic_string<char> atom);
-                DM_Detector_Ionization_ER(::std::basic_string<char> label, double expo, ::std::vector<std::basic_string<char>> atoms, ::std::vector<double> mass_fractions);
-                DM_Detector_Ionization_ER(::std::basic_string<char> label, double expo, ::std::vector<std::basic_string<char>> atoms);
+                DM_Detector_Ionization_ER(std::string label, double expo, std::string atom);
+                DM_Detector_Ionization_ER(std::string label, double expo, std::vector<std::string> atoms, std::vector<double> mass_fractions);
+                DM_Detector_Ionization_ER(std::string label, double expo, std::vector<std::string> atoms);
         
                 // Special pointer-based constructor: 
                 DM_Detector_Ionization_ER(Abstract_DM_Detector_Ionization_ER* in);

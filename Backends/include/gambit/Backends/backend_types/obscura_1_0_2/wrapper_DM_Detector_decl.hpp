@@ -24,15 +24,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 // -- Static factory pointers: 
                 static Abstract_DM_Detector* (*__factory0)();
-                static Abstract_DM_Detector* (*__factory1)(::std::basic_string<char>, double, ::std::basic_string<char>);
+                static Abstract_DM_Detector* (*__factory1)(std::string, double, std::string);
         
                 // -- Other member variables: 
             public:
-                std::basic_string<char>& name;
+                std::string& name;
         
                 // Member functions: 
             public:
-                ::std::basic_string<char> Target_Particles();
+                ::std::string Target_Particles();
         
                 void Set_Flat_Efficiency(double eff);
         
@@ -54,7 +54,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double Likelihood(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr);
         
-                ::std::vector<std::vector<double>> Log_Likelihood_Scan(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, const ::std::vector<double>& masses, const ::std::vector<double>& couplings);
+                ::std::vector<std::vector<double>> Log_Likelihood_Scan(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, const std::vector<double>& masses, const std::vector<double>& couplings);
         
                 double P_Value(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr);
         
@@ -62,13 +62,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void Set_Expected_Background(double B);
         
-                void Set_Observed_Events(::std::vector<unsigned long> Ni);
+                void Set_Observed_Events(std::vector<unsigned long> Ni);
         
-                void Set_Bin_Efficiencies(const ::std::vector<double>& eff);
+                void Set_Bin_Efficiencies(const std::vector<double>& eff);
         
-                void Set_Expected_Background(const ::std::vector<double>& Bi);
+                void Set_Expected_Background(const std::vector<double>& Bi);
         
-                void Use_Maximum_Gap(::std::vector<double> energies);
+                void Use_Maximum_Gap(std::vector<double> energies);
         
                 void Use_Energy_Threshold(double Ethr, double Emax);
         
@@ -78,9 +78,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double Upper_Limit(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr);
         
-                ::std::vector<std::vector<double>> Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, ::std::vector<double> masses, double certainty);
+                ::std::vector<std::vector<double>> Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> masses, double certainty);
         
-                ::std::vector<std::vector<double>> Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, ::std::vector<double> masses);
+                ::std::vector<std::vector<double>> Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> masses);
         
                 void Print_Summary(int MPI_rank) const;
         
@@ -90,7 +90,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Wrappers for original constructors: 
             public:
                 DM_Detector();
-                DM_Detector(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_type);
+                DM_Detector(std::string label, double expo, std::string target_type);
         
                 // Special pointer-based constructor: 
                 DM_Detector(Abstract_DM_Detector* in);

@@ -17,12 +17,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Set_Mass(mDM);
         }
         
-        inline double DM_Particle_Standard::Get_Interaction_Parameter(::std::basic_string<char> target) const
+        inline double DM_Particle_Standard::Get_Interaction_Parameter(std::string target) const
         {
             return get_BEptr()->Get_Interaction_Parameter(target);
         }
         
-        inline void DM_Particle_Standard::Set_Interaction_Parameter(double par, ::std::basic_string<char> target)
+        inline void DM_Particle_Standard::Set_Interaction_Parameter(double par, std::string target)
         {
             get_BEptr()->Set_Interaction_Parameter(par, target);
         }

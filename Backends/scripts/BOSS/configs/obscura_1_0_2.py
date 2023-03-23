@@ -103,6 +103,10 @@ indent = 4
 #   known_classes = {"SomeNamespace::KnownClassOne" : "path_to_header/KnownClassOne.hpp",
 #                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
+convenience_functions = []
+
+ini_function_in_header = True
+
 known_classes = {
 #    "Eigen::Matrix" : "<Eigen/Core>",
 #    "Eigen::Array" : "<Eigen/Core>",
@@ -120,4 +124,14 @@ pragmas_begin = [
 pragmas_end = [
 ]
 
+# ~~~~~ Extra code to surround BOSS-generated code included in GAMBIT ~~~~~
+
+# The listed code will be added at the top/bottom in the frontend header file
+# and in the loaded_types.hpp header.
+
+surround_code_begin = '''
+'''
+
+surround_code_end = '''
+'''
 

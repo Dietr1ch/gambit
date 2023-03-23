@@ -12,46 +12,46 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-
+   
    namespace gm2calc
    {
-
+      
       class EInvalidInput : public Error
       {
-            // Member variables:
+            // Member variables: 
          public:
-            // -- Static factory pointers:
+            // -- Static factory pointers: 
             static Abstract_EInvalidInput* (*__factory0)(const std::string&);
-
-            // -- Other member variables:
-
-            // Member functions:
+      
+            // -- Other member variables: 
+      
+            // Member functions: 
          public:
             ::std::string what() const;
-
-
-            // Wrappers for original constructors:
+      
+      
+            // Wrappers for original constructors: 
          public:
             EInvalidInput(const std::string& message_);
-
-            // Special pointer-based constructor:
+      
+            // Special pointer-based constructor: 
             EInvalidInput(Abstract_EInvalidInput* in);
-
-            // Copy constructor:
+      
+            // Copy constructor: 
             EInvalidInput(const EInvalidInput& in);
-
-            // Assignment operator:
+      
+            // Assignment operator: 
             EInvalidInput& operator=(const EInvalidInput& in);
-
-            // Destructor:
+      
+            // Destructor: 
             ~EInvalidInput();
-
-            // Returns correctly casted pointer to Abstract class:
+      
+            // Returns correctly casted pointer to Abstract class: 
             Abstract_EInvalidInput* get_BEptr() const;
-
+      
       };
    }
-
+   
 }
 
 

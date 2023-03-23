@@ -65,7 +65,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Use_Electron_Bins(ne_thr, N_bins);
         }
         
-        inline double DM_Detector_Ionization::R_S2(unsigned int S2, const obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, ::std::vector<double> electron_spectrum)
+        inline double DM_Detector_Ionization::R_S2(unsigned int S2, const obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> electron_spectrum)
         {
             return get_BEptr()->R_S2__BOSS(S2, *DM.get_BEptr(), *DM_distr.get_BEptr(), electron_spectrum);
         }
@@ -80,17 +80,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Use_PE_Threshold(S2mu, S2sigma, nPE_thr, nPE_max);
         }
         
-        inline void DM_Detector_Ionization::Import_Trigger_Efficiency_PE(::std::basic_string<char> filename)
+        inline void DM_Detector_Ionization::Import_Trigger_Efficiency_PE(std::string filename)
         {
             get_BEptr()->Import_Trigger_Efficiency_PE(filename);
         }
         
-        inline void DM_Detector_Ionization::Import_Acceptance_Efficiency_PE(::std::basic_string<char> filename)
+        inline void DM_Detector_Ionization::Import_Acceptance_Efficiency_PE(std::string filename)
         {
             get_BEptr()->Import_Acceptance_Efficiency_PE(filename);
         }
         
-        inline void DM_Detector_Ionization::Use_PE_Bins(double S2mu, double S2sigma, const ::std::vector<unsigned int>& bin_ranges)
+        inline void DM_Detector_Ionization::Use_PE_Bins(double S2mu, double S2sigma, const std::vector<unsigned int>& bin_ranges)
         {
             get_BEptr()->Use_PE_Bins(S2mu, S2sigma, bin_ranges);
         }
@@ -107,21 +107,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         
         // Wrappers for original constructors: 
-        inline DM_Detector_Ionization::DM_Detector_Ionization(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_particles, ::std::basic_string<char> atom) :
+        inline DM_Detector_Ionization::DM_Detector_Ionization(std::string label, double expo, std::string target_particles, std::string atom) :
             DM_Detector(__factory0(label, expo, target_particles, atom))
         {
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Detector_Ionization::DM_Detector_Ionization(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_particles, ::std::vector<std::basic_string<char>> atoms, ::std::vector<double> mass_fractions) :
+        inline DM_Detector_Ionization::DM_Detector_Ionization(std::string label, double expo, std::string target_particles, std::vector<std::string> atoms, std::vector<double> mass_fractions) :
             DM_Detector(__factory1(label, expo, target_particles, atoms, mass_fractions))
         {
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Detector_Ionization::DM_Detector_Ionization(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_particles, ::std::vector<std::basic_string<char>> atoms) :
+        inline DM_Detector_Ionization::DM_Detector_Ionization(std::string label, double expo, std::string target_particles, std::vector<std::string> atoms) :
             DM_Detector(__factory2(label, expo, target_particles, atoms))
         {
             get_BEptr()->set_wptr(this);

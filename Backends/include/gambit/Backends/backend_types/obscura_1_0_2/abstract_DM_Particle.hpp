@@ -37,9 +37,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void Set_Fractional_Density(double) =0;
     
-                virtual double Get_Interaction_Parameter(::std::basic_string<char>) const =0;
+                virtual double Get_Interaction_Parameter(std::string) const =0;
     
-                virtual void Set_Interaction_Parameter(double, ::std::basic_string<char>) =0;
+                virtual void Set_Interaction_Parameter(double, std::string) =0;
     
                 virtual bool Interaction_Parameter_Is_Cross_Section() const =0;
     
@@ -77,9 +77,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double CDF_Scattering_Angle_Electron__BOSS(double, double) =0;
     
-                virtual double Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>&, double, double) =0;
+                virtual double Sample_Scattering_Angle_Electron(std::mt19937&, double, double) =0;
     
-                virtual double Sample_Scattering_Angle_Electron__BOSS(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>&, double) =0;
+                virtual double Sample_Scattering_Angle_Electron__BOSS(std::mt19937&, double) =0;
     
             public:
                 virtual void pointer_assign__BOSS(Abstract_DM_Particle*) =0;

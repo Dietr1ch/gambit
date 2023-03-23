@@ -23,9 +23,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void Set_Mass(double) =0;
     
-                virtual double Get_Interaction_Parameter(::std::basic_string<char>) const =0;
+                virtual double Get_Interaction_Parameter(std::string) const =0;
     
-                virtual void Set_Interaction_Parameter(double, ::std::basic_string<char>) =0;
+                virtual void Set_Interaction_Parameter(double, std::string) =0;
     
                 virtual void Set_Sigma_Proton(double) =0;
     

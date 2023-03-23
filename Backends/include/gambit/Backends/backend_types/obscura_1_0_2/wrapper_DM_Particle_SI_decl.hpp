@@ -30,9 +30,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void Set_FormFactor_DM(::std::basic_string<char> ff, double mMed);
+                void Set_FormFactor_DM(std::string ff, double mMed);
         
-                void Set_FormFactor_DM(::std::basic_string<char> ff);
+                void Set_FormFactor_DM(std::string ff);
         
                 void Set_Mediator_Mass(double m);
         
@@ -54,9 +54,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double CDF_Scattering_Angle_Electron(double cos_alpha, double vDM);
         
-                double Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM, double param);
+                double Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM, double param);
         
-                double Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM);
+                double Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM);
         
                 void Print_Summary(int MPI_rank) const;
         

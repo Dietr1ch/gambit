@@ -13,21 +13,21 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-
-
+   
+   
    namespace gm2calc
    {
       class Abstract_EReadError : virtual public gm2calc::Abstract_Error
       {
          public:
-
+   
             virtual ::std::string what() const =0;
-
+   
          public:
             using gm2calc::Abstract_Error::pointer_assign__BOSS;
             virtual void pointer_assign__BOSS(Abstract_EReadError*) =0;
             virtual Abstract_EReadError* pointer_copy__BOSS() =0;
-
+   
          private:
             EReadError* wptr;
             bool delete_wrapper;
@@ -36,41 +36,41 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             void set_wptr(EReadError* wptr_in) { wptr = wptr_in; }
             bool get_delete_wrapper() { return delete_wrapper; }
             void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
-
+   
          public:
             Abstract_EReadError()
             {
                wptr = 0;
                delete_wrapper = false;
             }
-
-            Abstract_EReadError(const Abstract_EReadError& in) :
+   
+            Abstract_EReadError(const Abstract_EReadError& in) : 
                gm2calc::Abstract_Error(in)
             {
                wptr = 0;
                delete_wrapper = false;
             }
-
+   
             Abstract_EReadError& operator=(const Abstract_EReadError&) { return *this; }
-
+   
             virtual void init_wrapper() =0;
-
+   
             EReadError* get_init_wptr()
             {
                init_wrapper();
                return wptr;
             }
-
+   
             EReadError& get_init_wref()
             {
                init_wrapper();
                return *wptr;
             }
-
+   
             virtual ~Abstract_EReadError() =0;
       };
    }
-
+   
 }
 
 

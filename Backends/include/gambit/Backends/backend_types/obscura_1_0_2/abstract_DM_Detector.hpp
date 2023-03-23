@@ -23,9 +23,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
     
-                virtual std::basic_string<char>& name_ref__BOSS() =0;
+                virtual std::string& name_ref__BOSS() =0;
     
-                virtual ::std::basic_string<char> Target_Particles() =0;
+                virtual ::std::string Target_Particles() =0;
     
                 virtual void Set_Flat_Efficiency(double) =0;
     
@@ -47,7 +47,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double Likelihood__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&) =0;
     
-                virtual ::std::vector<std::vector<double>> Log_Likelihood_Scan__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, const ::std::vector<double>&, const ::std::vector<double>&) =0;
+                virtual ::std::vector<std::vector<double>> Log_Likelihood_Scan__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, const std::vector<double>&, const std::vector<double>&) =0;
     
                 virtual double P_Value__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&) =0;
     
@@ -55,13 +55,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void Set_Expected_Background(double) =0;
     
-                virtual void Set_Observed_Events(::std::vector<unsigned long>) =0;
+                virtual void Set_Observed_Events(std::vector<unsigned long>) =0;
     
-                virtual void Set_Bin_Efficiencies(const ::std::vector<double>&) =0;
+                virtual void Set_Bin_Efficiencies(const std::vector<double>&) =0;
     
-                virtual void Set_Expected_Background(const ::std::vector<double>&) =0;
+                virtual void Set_Expected_Background(const std::vector<double>&) =0;
     
-                virtual void Use_Maximum_Gap(::std::vector<double>) =0;
+                virtual void Use_Maximum_Gap(std::vector<double>) =0;
     
                 virtual void Use_Energy_Threshold(double, double) =0;
     
@@ -71,9 +71,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double Upper_Limit__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&) =0;
     
-                virtual ::std::vector<std::vector<double>> Upper_Limit_Curve__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, ::std::vector<double>, double) =0;
+                virtual ::std::vector<std::vector<double>> Upper_Limit_Curve__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, std::vector<double>, double) =0;
     
-                virtual ::std::vector<std::vector<double>> Upper_Limit_Curve__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, ::std::vector<double>) =0;
+                virtual ::std::vector<std::vector<double>> Upper_Limit_Curve__BOSS(obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, std::vector<double>) =0;
     
                 virtual void Print_Summary(int) const =0;
     

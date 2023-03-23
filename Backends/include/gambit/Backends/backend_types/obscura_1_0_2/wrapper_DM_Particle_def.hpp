@@ -33,12 +33,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Set_Fractional_Density(f);
         }
         
-        inline double DM_Particle::Get_Interaction_Parameter(::std::basic_string<char> target) const
+        inline double DM_Particle::Get_Interaction_Parameter(std::string target) const
         {
             return get_BEptr()->Get_Interaction_Parameter(target);
         }
         
-        inline void DM_Particle::Set_Interaction_Parameter(double par, ::std::basic_string<char> target)
+        inline void DM_Particle::Set_Interaction_Parameter(double par, std::string target)
         {
             get_BEptr()->Set_Interaction_Parameter(par, target);
         }
@@ -133,12 +133,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return get_BEptr()->CDF_Scattering_Angle_Electron__BOSS(cos_alpha, vDM);
         }
         
-        inline double DM_Particle::Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM, double param)
+        inline double DM_Particle::Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM, double param)
         {
             return get_BEptr()->Sample_Scattering_Angle_Electron(PRNG, vDM, param);
         }
         
-        inline double DM_Particle::Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM)
+        inline double DM_Particle::Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM)
         {
             return get_BEptr()->Sample_Scattering_Angle_Electron__BOSS(PRNG, vDM);
         }

@@ -73,32 +73,32 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Print_Summary__BOSS();
         }
         
-        inline void DM_Distribution::Export_PDF_Speed(::std::basic_string<char> file_path, int v_points, bool log_scale)
+        inline void DM_Distribution::Export_PDF_Speed(std::string file_path, int v_points, bool log_scale)
         {
             get_BEptr()->Export_PDF_Speed(file_path, v_points, log_scale);
         }
         
-        inline void DM_Distribution::Export_PDF_Speed(::std::basic_string<char> file_path, int v_points)
+        inline void DM_Distribution::Export_PDF_Speed(std::string file_path, int v_points)
         {
             get_BEptr()->Export_PDF_Speed__BOSS(file_path, v_points);
         }
         
-        inline void DM_Distribution::Export_PDF_Speed(::std::basic_string<char> file_path)
+        inline void DM_Distribution::Export_PDF_Speed(std::string file_path)
         {
             get_BEptr()->Export_PDF_Speed__BOSS(file_path);
         }
         
-        inline void DM_Distribution::Export_Eta_Function(::std::basic_string<char> file_path, int v_points, bool log_scale)
+        inline void DM_Distribution::Export_Eta_Function(std::string file_path, int v_points, bool log_scale)
         {
             get_BEptr()->Export_Eta_Function(file_path, v_points, log_scale);
         }
         
-        inline void DM_Distribution::Export_Eta_Function(::std::basic_string<char> file_path, int v_points)
+        inline void DM_Distribution::Export_Eta_Function(std::string file_path, int v_points)
         {
             get_BEptr()->Export_Eta_Function__BOSS(file_path, v_points);
         }
         
-        inline void DM_Distribution::Export_Eta_Function(::std::basic_string<char> file_path)
+        inline void DM_Distribution::Export_Eta_Function(std::string file_path)
         {
             get_BEptr()->Export_Eta_Function__BOSS(file_path);
         }
@@ -114,7 +114,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Distribution::DM_Distribution(::std::basic_string<char> label, double rhoDM, double vMin, double vMax) :
+        inline DM_Distribution::DM_Distribution(std::string label, double rhoDM, double vMin, double vMax) :
             WrapperBase(__factory1(label, rhoDM, vMin, vMax)),
             DM_density( get_BEptr()->DM_density_ref__BOSS()),
             DD_use_eta_function( get_BEptr()->DD_use_eta_function_ref__BOSS())

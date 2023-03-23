@@ -13,12 +13,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void DM_Particle_SI::Set_FormFactor_DM(::std::basic_string<char> ff, double mMed)
+        inline void DM_Particle_SI::Set_FormFactor_DM(std::string ff, double mMed)
         {
             get_BEptr()->Set_FormFactor_DM(ff, mMed);
         }
         
-        inline void DM_Particle_SI::Set_FormFactor_DM(::std::basic_string<char> ff)
+        inline void DM_Particle_SI::Set_FormFactor_DM(std::string ff)
         {
             get_BEptr()->Set_FormFactor_DM__BOSS(ff);
         }
@@ -73,12 +73,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return get_BEptr()->CDF_Scattering_Angle_Electron__BOSS(cos_alpha, vDM);
         }
         
-        inline double DM_Particle_SI::Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM, double param)
+        inline double DM_Particle_SI::Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM, double param)
         {
             return get_BEptr()->Sample_Scattering_Angle_Electron(PRNG, vDM, param);
         }
         
-        inline double DM_Particle_SI::Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM)
+        inline double DM_Particle_SI::Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM)
         {
             return get_BEptr()->Sample_Scattering_Angle_Electron__BOSS(PRNG, vDM);
         }

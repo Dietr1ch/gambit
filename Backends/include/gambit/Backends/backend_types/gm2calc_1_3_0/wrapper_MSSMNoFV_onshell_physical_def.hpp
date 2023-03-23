@@ -8,33 +8,33 @@
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
-
+   
    namespace gm2calc
    {
-
-      // Member functions:
+      
+      // Member functions: 
       inline void MSSMNoFV_onshell_physical::clear()
       {
          get_BEptr()->clear();
       }
-
+      
       inline void MSSMNoFV_onshell_physical::convert_to_hk()
       {
          get_BEptr()->convert_to_hk();
       }
-
+      
       inline void MSSMNoFV_onshell_physical::convert_to_slha()
       {
          get_BEptr()->convert_to_slha();
       }
-
+      
       inline void MSSMNoFV_onshell_physical::print(std::ostream& arg_1) const
       {
          get_BEptr()->print(arg_1);
       }
-
-
-      // Wrappers for original constructors:
+      
+      
+      // Wrappers for original constructors: 
       inline MSSMNoFV_onshell_physical::MSSMNoFV_onshell_physical() :
          WrapperBase(__factory0()),
          MVG( get_BEptr()->MVG_ref__BOSS()),
@@ -90,8 +90,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
          get_BEptr()->set_wptr(this);
          get_BEptr()->set_delete_wrapper(false);
       }
-
-      // Special pointer-based constructor:
+      
+      // Special pointer-based constructor: 
       inline MSSMNoFV_onshell_physical::MSSMNoFV_onshell_physical(Abstract_MSSMNoFV_onshell_physical* in) :
          WrapperBase(in),
          MVG( get_BEptr()->MVG_ref__BOSS()),
@@ -147,8 +147,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
          get_BEptr()->set_wptr(this);
          get_BEptr()->set_delete_wrapper(false);
       }
-
-      // Copy constructor:
+      
+      // Copy constructor: 
       inline MSSMNoFV_onshell_physical::MSSMNoFV_onshell_physical(const MSSMNoFV_onshell_physical& in) :
          WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
          MVG( get_BEptr()->MVG_ref__BOSS()),
@@ -204,8 +204,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
          get_BEptr()->set_wptr(this);
          get_BEptr()->set_delete_wrapper(false);
       }
-
-      // Assignment operator:
+      
+      // Assignment operator: 
       inline MSSMNoFV_onshell_physical& MSSMNoFV_onshell_physical::operator=(const MSSMNoFV_onshell_physical& in)
       {
          if (this != &in)
@@ -214,9 +214,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
          }
          return *this;
       }
-
-
-      // Destructor:
+      
+      
+      // Destructor: 
       inline MSSMNoFV_onshell_physical::~MSSMNoFV_onshell_physical()
       {
          if (get_BEptr() != 0)
@@ -230,14 +230,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
          }
          set_delete_BEptr(false);
       }
-
-      // Returns correctly casted pointer to Abstract class:
+      
+      // Returns correctly casted pointer to Abstract class: 
       inline Abstract_MSSMNoFV_onshell_physical* gm2calc::MSSMNoFV_onshell_physical::get_BEptr() const
       {
          return dynamic_cast<Abstract_MSSMNoFV_onshell_physical*>(BEptr);
       }
    }
-
+   
 }
 
 

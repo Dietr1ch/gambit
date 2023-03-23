@@ -15,7 +15,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline ::std::basic_string<char> DM_Detector::Target_Particles()
+        inline ::std::string DM_Detector::Target_Particles()
         {
             return get_BEptr()->Target_Particles();
         }
@@ -70,7 +70,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return get_BEptr()->Likelihood__BOSS(*DM.get_BEptr(), *DM_distr.get_BEptr());
         }
         
-        inline ::std::vector<std::vector<double>> DM_Detector::Log_Likelihood_Scan(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, const ::std::vector<double>& masses, const ::std::vector<double>& couplings)
+        inline ::std::vector<std::vector<double>> DM_Detector::Log_Likelihood_Scan(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, const std::vector<double>& masses, const std::vector<double>& couplings)
         {
             return get_BEptr()->Log_Likelihood_Scan__BOSS(*DM.get_BEptr(), *DM_distr.get_BEptr(), masses, couplings);
         }
@@ -90,22 +90,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Set_Expected_Background(B);
         }
         
-        inline void DM_Detector::Set_Observed_Events(::std::vector<unsigned long> Ni)
+        inline void DM_Detector::Set_Observed_Events(std::vector<unsigned long> Ni)
         {
             get_BEptr()->Set_Observed_Events(Ni);
         }
         
-        inline void DM_Detector::Set_Bin_Efficiencies(const ::std::vector<double>& eff)
+        inline void DM_Detector::Set_Bin_Efficiencies(const std::vector<double>& eff)
         {
             get_BEptr()->Set_Bin_Efficiencies(eff);
         }
         
-        inline void DM_Detector::Set_Expected_Background(const ::std::vector<double>& Bi)
+        inline void DM_Detector::Set_Expected_Background(const std::vector<double>& Bi)
         {
             get_BEptr()->Set_Expected_Background(Bi);
         }
         
-        inline void DM_Detector::Use_Maximum_Gap(::std::vector<double> energies)
+        inline void DM_Detector::Use_Maximum_Gap(std::vector<double> energies)
         {
             get_BEptr()->Use_Maximum_Gap(energies);
         }
@@ -130,12 +130,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return get_BEptr()->Upper_Limit__BOSS(*DM.get_BEptr(), *DM_distr.get_BEptr());
         }
         
-        inline ::std::vector<std::vector<double>> DM_Detector::Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, ::std::vector<double> masses, double certainty)
+        inline ::std::vector<std::vector<double>> DM_Detector::Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> masses, double certainty)
         {
             return get_BEptr()->Upper_Limit_Curve__BOSS(*DM.get_BEptr(), *DM_distr.get_BEptr(), masses, certainty);
         }
         
-        inline ::std::vector<std::vector<double>> DM_Detector::Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, ::std::vector<double> masses)
+        inline ::std::vector<std::vector<double>> DM_Detector::Upper_Limit_Curve(obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> masses)
         {
             return get_BEptr()->Upper_Limit_Curve__BOSS(*DM.get_BEptr(), *DM_distr.get_BEptr(), masses);
         }
@@ -160,7 +160,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Detector::DM_Detector(::std::basic_string<char> label, double expo, ::std::basic_string<char> target_type) :
+        inline DM_Detector::DM_Detector(std::string label, double expo, std::string target_type) :
             WrapperBase(__factory1(label, expo, target_type)),
             name( get_BEptr()->name_ref__BOSS())
         {

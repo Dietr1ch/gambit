@@ -44,17 +44,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void Use_Electron_Bins(unsigned int, unsigned int) =0;
     
-                virtual double R_S2__BOSS(unsigned int, const obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, ::std::vector<double>) =0;
+                virtual double R_S2__BOSS(unsigned int, const obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, std::vector<double>) =0;
     
                 virtual double R_S2__BOSS(unsigned int, const obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&) =0;
     
                 virtual void Use_PE_Threshold(double, double, unsigned int, unsigned int) =0;
     
-                virtual void Import_Trigger_Efficiency_PE(::std::basic_string<char>) =0;
+                virtual void Import_Trigger_Efficiency_PE(std::string) =0;
     
-                virtual void Import_Acceptance_Efficiency_PE(::std::basic_string<char>) =0;
+                virtual void Import_Acceptance_Efficiency_PE(std::string) =0;
     
-                virtual void Use_PE_Bins(double, double, const ::std::vector<unsigned int>&) =0;
+                virtual void Use_PE_Bins(double, double, const std::vector<unsigned int>&) =0;
     
                 virtual void Print_Summary(int) const =0;
     

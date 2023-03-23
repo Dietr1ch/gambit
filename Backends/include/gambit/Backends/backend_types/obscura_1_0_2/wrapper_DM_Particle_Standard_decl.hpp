@@ -30,9 +30,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 void Set_Mass(double mDM);
         
-                double Get_Interaction_Parameter(::std::basic_string<char> target) const;
+                double Get_Interaction_Parameter(std::string target) const;
         
-                void Set_Interaction_Parameter(double par, ::std::basic_string<char> target);
+                void Set_Interaction_Parameter(double par, std::string target);
         
                 void Set_Sigma_Proton(double sigma);
         

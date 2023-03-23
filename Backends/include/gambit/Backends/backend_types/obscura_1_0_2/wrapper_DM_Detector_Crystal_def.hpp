@@ -79,7 +79,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->set_delete_wrapper(false);
         }
         
-        inline DM_Detector_Crystal::DM_Detector_Crystal(::std::basic_string<char> label, double expo, ::std::basic_string<char> crys) :
+        inline DM_Detector_Crystal::DM_Detector_Crystal(std::string label, double expo, std::string crys) :
             DM_Detector(__factory1(label, expo, crys))
         {
             get_BEptr()->set_wptr(this);

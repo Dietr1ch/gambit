@@ -42,9 +42,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void Set_Fractional_Density(double f);
         
-                double Get_Interaction_Parameter(::std::basic_string<char> target) const;
+                double Get_Interaction_Parameter(std::string target) const;
         
-                void Set_Interaction_Parameter(double par, ::std::basic_string<char> target);
+                void Set_Interaction_Parameter(double par, std::string target);
         
                 bool Interaction_Parameter_Is_Cross_Section() const;
         
@@ -82,9 +82,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double CDF_Scattering_Angle_Electron(double cos_alpha, double vDM);
         
-                double Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM, double param);
+                double Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM, double param);
         
-                double Sample_Scattering_Angle_Electron(::std::mersenne_twister_engine<unsigned long, 32, 624, 397, 31, 2567483615, 11, 4294967295, 7, 2636928640, 15, 4022730752, 18, 1812433253>& PRNG, double vDM);
+                double Sample_Scattering_Angle_Electron(std::mt19937& PRNG, double vDM);
         
         
                 // Wrappers for original constructors: 

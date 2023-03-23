@@ -22,7 +22,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 // -- Static factory pointers: 
                 static Abstract_DM_Distribution* (*__factory0)();
-                static Abstract_DM_Distribution* (*__factory1)(::std::basic_string<char>, double, double, double);
+                static Abstract_DM_Distribution* (*__factory1)(std::string, double, double, double);
         
                 // -- Other member variables: 
             public:
@@ -55,23 +55,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void Print_Summary();
         
-                void Export_PDF_Speed(::std::basic_string<char> file_path, int v_points, bool log_scale);
+                void Export_PDF_Speed(std::string file_path, int v_points, bool log_scale);
         
-                void Export_PDF_Speed(::std::basic_string<char> file_path, int v_points);
+                void Export_PDF_Speed(std::string file_path, int v_points);
         
-                void Export_PDF_Speed(::std::basic_string<char> file_path);
+                void Export_PDF_Speed(std::string file_path);
         
-                void Export_Eta_Function(::std::basic_string<char> file_path, int v_points, bool log_scale);
+                void Export_Eta_Function(std::string file_path, int v_points, bool log_scale);
         
-                void Export_Eta_Function(::std::basic_string<char> file_path, int v_points);
+                void Export_Eta_Function(std::string file_path, int v_points);
         
-                void Export_Eta_Function(::std::basic_string<char> file_path);
+                void Export_Eta_Function(std::string file_path);
         
         
                 // Wrappers for original constructors: 
             public:
                 DM_Distribution();
-                DM_Distribution(::std::basic_string<char> label, double rhoDM, double vMin, double vMax);
+                DM_Distribution(std::string label, double rhoDM, double vMin, double vMax);
         
                 // Special pointer-based constructor: 
                 DM_Distribution(Abstract_DM_Distribution* in);

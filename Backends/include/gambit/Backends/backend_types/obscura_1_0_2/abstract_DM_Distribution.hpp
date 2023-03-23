@@ -49,17 +49,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void Print_Summary__BOSS() =0;
     
-                virtual void Export_PDF_Speed(::std::basic_string<char>, int, bool) =0;
+                virtual void Export_PDF_Speed(std::string, int, bool) =0;
     
-                virtual void Export_PDF_Speed__BOSS(::std::basic_string<char>, int) =0;
+                virtual void Export_PDF_Speed__BOSS(std::string, int) =0;
     
-                virtual void Export_PDF_Speed__BOSS(::std::basic_string<char>) =0;
+                virtual void Export_PDF_Speed__BOSS(std::string) =0;
     
-                virtual void Export_Eta_Function(::std::basic_string<char>, int, bool) =0;
+                virtual void Export_Eta_Function(std::string, int, bool) =0;
     
-                virtual void Export_Eta_Function__BOSS(::std::basic_string<char>, int) =0;
+                virtual void Export_Eta_Function__BOSS(std::string, int) =0;
     
-                virtual void Export_Eta_Function__BOSS(::std::basic_string<char>) =0;
+                virtual void Export_Eta_Function__BOSS(std::string) =0;
     
             public:
                 virtual void pointer_assign__BOSS(Abstract_DM_Distribution*) =0;
