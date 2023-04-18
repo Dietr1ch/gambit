@@ -168,18 +168,11 @@ START_MODULE
       DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(DarkMatterConj_ID, std::string)
-<<<<<<< HEAD
-      ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running,
-                   ScalarSingletDM_Z3,ScalarSingletDM_Z3_running,
-                   DiracSingletDM_Z2, MajoranaSingletDM_Z2,VectorSingletDM_Z2)
-      ALLOW_MODELS(DMEFT, SubGeVDM_scalar, SubGeVDM_fermion,
-                   DMsimpVectorMedDiracDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedScalarDM)
-=======
       ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running, ScalarSingletDM_Z3,
                    ScalarSingletDM_Z3_running, DiracSingletDM_Z2, MajoranaSingletDM_Z2,
                    VectorSingletDM_Z2, DMEFT)
       ALLOW_MODELS(DMsimpVectorMedDiracDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedScalarDM, DMsimpVectorMedVectorDM)
->>>>>>> master
+      ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -234,13 +227,9 @@ START_MODULE
       DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(DarkMatterConj_ID, std::string)
-<<<<<<< HEAD
-      ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running, DiracSingletDM_Z2, MajoranaSingletDM_Z2, VectorSingletDM_Z2, DMEFT,SubGeVDM_scalar, SubGeVDM_fermion)
-      ALLOW_MODELS(DMsimpVectorMedDiracDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedScalarDM)
-=======
       ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running, DiracSingletDM_Z2, MajoranaSingletDM_Z2, VectorSingletDM_Z2, DMEFT)
       ALLOW_MODELS(DMsimpVectorMedDiracDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedScalarDM, DMsimpVectorMedVectorDM)
->>>>>>> master
+      ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -557,7 +546,6 @@ START_MODULE
       ALLOW_MODELS(DMEFT)
     #undef FUNCTION
 
-<<<<<<< HEAD
     #define FUNCTION TH_ProcessCatalog_SubGeVDM_scalar
       START_FUNCTION(TH_ProcessCatalog)
       DEPENDENCY(SubGeVDM_spectrum, Spectrum)
@@ -572,8 +560,6 @@ START_MODULE
       ALLOW_MODELS(SubGeVDM_fermion)
     #undef FUNCTION
 
-=======
->>>>>>> master
     #define FUNCTION TH_ProcessCatalog_DMsimpVectorMedDiracDM
       START_FUNCTION(TH_ProcessCatalog)
       DEPENDENCY(WIMP_properties, WIMPprops)
@@ -582,10 +568,7 @@ START_MODULE
       BACKEND_REQ(CH_Sigma_V, (), double, (str&, std::vector<str>&, std::vector<str>&, double&, const DecayTable&))
       ALLOW_MODELS(DMsimpVectorMedDiracDM)
     #undef FUNCTION
-<<<<<<< HEAD
-=======
 
->>>>>>> master
     #define FUNCTION TH_ProcessCatalog_DMsimpVectorMedMajoranaDM
       START_FUNCTION(TH_ProcessCatalog)
       DEPENDENCY(WIMP_properties, WIMPprops)
@@ -594,10 +577,7 @@ START_MODULE
       BACKEND_REQ(CH_Sigma_V, (), double, (str&, std::vector<str>&, std::vector<str>&, double&, const DecayTable&))
       ALLOW_MODELS(DMsimpVectorMedMajoranaDM)
     #undef FUNCTION
-<<<<<<< HEAD
-=======
 
->>>>>>> master
     #define FUNCTION TH_ProcessCatalog_DMsimpVectorMedScalarDM
       START_FUNCTION(TH_ProcessCatalog)
       DEPENDENCY(WIMP_properties, WIMPprops)
@@ -606,8 +586,6 @@ START_MODULE
       BACKEND_REQ(CH_Sigma_V, (), double, (str&, std::vector<str>&, std::vector<str>&, double&, const DecayTable&))
       ALLOW_MODELS(DMsimpVectorMedScalarDM)
     #undef FUNCTION
-<<<<<<< HEAD
-=======
 
     #define FUNCTION TH_ProcessCatalog_DMsimpVectorMedVectorDM
       START_FUNCTION(TH_ProcessCatalog)
@@ -617,7 +595,6 @@ START_MODULE
       BACKEND_REQ(CH_Sigma_V, (), double, (str&, std::vector<str>&, std::vector<str>&, double&, const DecayTable&))
       ALLOW_MODELS(DMsimpVectorMedVectorDM)
     #undef FUNCTION
->>>>>>> master
   #undef CAPABILITY
 
   /// Information about the nature of the DM process in question
@@ -1239,25 +1216,18 @@ START_MODULE
     MODEL_CONDITIONAL_DEPENDENCY(VectorSingletDM_Z2_spectrum, Spectrum, VectorSingletDM_Z2)
     MODEL_CONDITIONAL_DEPENDENCY(MDM_spectrum, Spectrum, MDM)
     MODEL_CONDITIONAL_DEPENDENCY(DMEFT_spectrum, Spectrum, DMEFT)
-<<<<<<< HEAD
-    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedScalarDM_spectrum, Spectrum, DMsimpVectorMedScalarDM)
-    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedMajoranaDM_spectrum, Spectrum, DMsimpVectorMedMajoranaDM)
-    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedDiracDM_spectrum, Spectrum, DMsimpVectorMedDiracDM)
-    ALLOW_MODELS(DMsimpVectorMedScalarDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedDiracDM)
-=======
     MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedVectorDM_spectrum, Spectrum, DMsimpVectorMedVectorDM)
     MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedScalarDM_spectrum, Spectrum, DMsimpVectorMedScalarDM)
     MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedMajoranaDM_spectrum, Spectrum, DMsimpVectorMedMajoranaDM)
     MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedDiracDM_spectrum, Spectrum, DMsimpVectorMedDiracDM)
     ALLOW_MODELS(DMsimpVectorMedScalarDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedDiracDM, DMsimpVectorMedVectorDM)
->>>>>>> master
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     ALLOW_MODELS(ScalarSingletDM_Z2_running, ScalarSingletDM_Z3_running)
     ALLOW_MODELS(VectorSingletDM_Z2, MajoranaSingletDM_Z2, DiracSingletDM_Z2)
     ALLOW_MODELS(AnnihilatingDM_mixture, DecayingDM_mixture)
     ALLOW_MODELS(NREO_scalarDM, NREO_MajoranaDM, NREO_DiracDM)
     ALLOW_MODELS(MDM, DMEFT)
-    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)    
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1419,21 +1389,21 @@ START_MODULE
       DEPENDENCY(MajoranaSingletDM_Z2_spectrum, Spectrum)
       ALLOW_MODEL(MajoranaSingletDM_Z2)
       #undef FUNCTION
-      
+
       #define FUNCTION DD_rel_WCs_flavscheme_DMsimpVectorMedScalarDM
       START_FUNCTION(map_str_dbl)
       DEPENDENCY(DMsimpVectorMedScalarDM_spectrum, Spectrum)
       DEPENDENCY(SMINPUTS, SMInputs)
       ALLOW_MODEL(DMsimpVectorMedScalarDM)
       #undef FUNCTION
-      
+
       #define FUNCTION DD_rel_WCs_flavscheme_DMsimpVectorMedMajoranaDM
       START_FUNCTION(map_str_dbl)
       DEPENDENCY(DMsimpVectorMedMajoranaDM_spectrum, Spectrum)
       DEPENDENCY(SMINPUTS, SMInputs)
       ALLOW_MODEL(DMsimpVectorMedMajoranaDM)
       #undef FUNCTION
-      
+
       #define FUNCTION DD_rel_WCs_flavscheme_DMsimpVectorMedDiracDM
       START_FUNCTION(map_str_dbl)
       DEPENDENCY(DMsimpVectorMedDiracDM_spectrum, Spectrum)
@@ -2175,17 +2145,14 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMEFT)
     #undef FUNCTION
-<<<<<<< HEAD
     #define FUNCTION DarkMatter_ID_SubGeVDM_scalar
     START_FUNCTION(std::string)
-    ALLOW_MODELS(SubGeVDM_scalar)    
+    ALLOW_MODELS(SubGeVDM_scalar)
     #undef FUNCTION
-    #define FUNCTION DarkMatter_ID_SubGeVDM_fermion    
+    #define FUNCTION DarkMatter_ID_SubGeVDM_fermion
     START_FUNCTION(std::string)
-    ALLOW_MODELS(SubGeVDM_fermion)    
+    ALLOW_MODELS(SubGeVDM_fermion)
     #undef FUNCTION
-=======
->>>>>>> master
     #define FUNCTION DarkMatter_ID_DMsimpVectorMedDiracDM
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMsimpVectorMedDiracDM)
@@ -2198,13 +2165,10 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMsimpVectorMedScalarDM)
     #undef FUNCTION
-<<<<<<< HEAD
-=======
     #define FUNCTION DarkMatter_ID_DMsimpVectorMedVectorDM
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMsimpVectorMedVectorDM)
     #undef FUNCTION
->>>>>>> master
   #undef CAPABILITY
 
   #define CAPABILITY DarkMatterConj_ID
@@ -2245,17 +2209,14 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMEFT)
     #undef FUNCTION
-<<<<<<< HEAD
     #define FUNCTION DarkMatterConj_ID_SubGeVDM_scalar
     START_FUNCTION(std::string)
-    ALLOW_MODELS(SubGeVDM_scalar)    
+    ALLOW_MODELS(SubGeVDM_scalar)
     #undef FUNCTION
-    #define FUNCTION DarkMatterConj_ID_SubGeVDM_fermion    
+    #define FUNCTION DarkMatterConj_ID_SubGeVDM_fermion
     START_FUNCTION(std::string)
-    ALLOW_MODELS(SubGeVDM_fermion)    
+    ALLOW_MODELS(SubGeVDM_fermion)
     #undef FUNCTION
-=======
->>>>>>> master
     #define FUNCTION DarkMatterConj_ID_DMsimpVectorMedDiracDM
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMsimpVectorMedDiracDM)
@@ -2268,13 +2229,10 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMsimpVectorMedScalarDM)
     #undef FUNCTION
-<<<<<<< HEAD
-=======
     #define FUNCTION DarkMatterConj_ID_DMsimpVectorMedVectorDM
     START_FUNCTION(std::string)
     ALLOW_MODELS(DMsimpVectorMedVectorDM)
     #undef FUNCTION
->>>>>>> master
   #undef CAPABILITY
 
   // Axion likelihoods and functions ===================================
