@@ -98,6 +98,10 @@ namespace Gambit
         props.mass = Dep::DMsimpVectorMedMajoranaDM_spectrum->get(Par::Pole_Mass, props.name);
       else if(ModelInUse("DMsimpVectorMedScalarDM"))
         props.mass = Dep::DMsimpVectorMedScalarDM_spectrum->get(Par::Pole_Mass, props.name);
+      else if(ModelInUse("DMsimpVectorMedVectorDM"))
+        props.mass = Dep::DMsimpVectorMedVectorDM_spectrum->get(Par::Pole_Mass, props.name);
+      else if(ModelInUse("DMEFT"))
+        props.mass = Dep::DMEFT_spectrum->get(Par::Pole_Mass, props.name);
       else if(ModelInUse("DMEFT"))
         props.mass = Dep::DMEFT_spectrum->get(Par::Pole_Mass, props.name);
       else if(ModelInUse("SubGeVDM_scalar"))
@@ -183,12 +187,12 @@ namespace Gambit
 
     }
 
-    /// Information about the nature of the DM process in question (i.e. decay or annihilation) 
+    /// Information about the nature of the DM process in question (i.e. decay or annihilation)
     /// to use the correct scaling for ID in terms of the DM density, phase space, etc.
     void DM_process_from_ProcessCatalog(std::string &result)
     {
       using namespace Pipes::DM_process_from_ProcessCatalog;
-      
+
       // Only need to check this once.
       static bool first = true;
       if (first)
@@ -202,7 +206,7 @@ namespace Gambit
         else result = "decay";
         first = false;
       }
-      
+
     }
 
 
