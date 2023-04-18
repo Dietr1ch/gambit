@@ -1511,7 +1511,6 @@ namespace Gambit
                                                                             "EM0","EM1", "EM2", "EM3", "EM4", "EM5", "EM6", "EM7", "EM8",
                                                                             "EM9", "EM10","EM11", "EM12"};
         Interpolation_columns["CMS_13TeV_MONOJET_137invfb_interpolated"] = {"mDMmV_ratio","mass_MED","gVchi","gAchi", "gq","xsec", "xsec_unc" ,
->>>>>>> master
                                                                           "SR1", "SR2", "SR3", "SR4", "SR5", "SR6", "SR7", "SR8", "SR9",
                                                                           "SR10","SR11", "SR12", "SR13", "SR14", "SR15", "SR16", "SR17",
                                                                           "SR18", "SR19", "SR20", "SR21", "SR22", "SR23", "SR24", "SR25",

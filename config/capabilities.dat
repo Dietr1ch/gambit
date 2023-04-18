@@ -550,11 +550,6 @@ Dijet_LogLike: |
    quark coupling scaled down by branching ratios to upper limits from a range of searches.
    Returns a log likelihood value.
 
-Dijet_LogLike: |
-   Interpolates dijet signal predictions and compares the
-   quark coupling scaled down by branching ratios to upper limits from a range of searches.
-   Returns a log likelihood value.
-
 DMEFT_profiled_LHC_nuisance_params: |
    Information on the result of profiling out the nuisance parameter 'a' in collider
    signal predictions for the DMEFT model. This parameter is used to smoothly suppress
@@ -1573,39 +1568,6 @@ LZ_2022_BinSignal: |
 LZ_2022_Bins: |
    The number of bins used in the LZ 2022 direct detection analysis.
 
-LZ_2022_Calculate: |
-   Perform rate and likelihood calculations for the LZ 2022 direct detection analysis.
-
-LZ_2022_Events: |
-   The number of observed events for the LZ 2022 direct detection analysis.
-
-LZ_2022_Background: |
-   The number of background events for the LZ 2022 direct detection analysis.
-
-LZ_2022_Signal: |
-   The number of signal events for the LZ 2022 direct detection analysis.
-
-LZ_2022_SignalSI: |
-   The number of spin-independent signal events for the LZ 2022 direct detection analysis.
-
-LZ_2022_SignalSD: |
-   The number of spin-dependent signal events for the LZ 2022 direct detection analysis.
-
-LZ_2022_LogLikelihood: |
-   Calculate the log-likelihood for the LZ 2022 direct detection analysis.
-
-LZ_2022_BinBackground: |
-   The number of expected background events in each bin for the LZ 2022 direct detection analysis.
-
-LZ_2022_BinEvents: |
-   The number of expected events in each bin for the LZ 2022 direct detection analysis.
-
-LZ_2022_BinSignal: |
-   The number of expected signal events in each bin for the LZ 2022 direct detection analysis.
-
-LZ_2022_Bins: |
-   The number of bins used in the LZ 2022 direct detection analysis.
-
 PandaX_2016_Calculate: |
    Perform rate and likelihood calculations for the PandaX 2016 direct detection analysis.
 
@@ -1671,39 +1633,6 @@ PandaX_2017_BinSignal: |
 
 PandaX_2017_Bins: |
    The number of bins used in the PandaX 2017 direct detection analysis.
-
-PandaX_4T_Calculate: |
-   Perform rate and likelihood calculations for the PandaX 4T direct detection analysis.
-
-PandaX_4T_Events: |
-   The number of observed events for the PandaX 4T direct detection analysis.
-
-PandaX_4T_Background: |
-   The number of background events for the PandaX 4T direct detection analysis.
-
-PandaX_4T_Signal: |
-   The number of signal events for the PandaX 4T direct detection analysis.
-
-PandaX_4T_SignalSI: |
-   The number of spin-independent signal events for the PandaX 4T direct detection analysis.
-
-PandaX_4T_SignalSD: |
-   The number of spin-dependent signal events for the PandaX 4T direct detection analysis.
-
-PandaX_4T_LogLikelihood: |
-   Calculate the log-likelihood for the PandaX 4T direct detection analysis.
-
-PandaX_4T_BinBackground: |
-   The number of expected background events in each bin for the PandaX 4T direct detection analysis.
-
-PandaX_4T_BinEvents: |
-   The number of expected events in each bin for the PandaX 4T direct detection analysis.
-
-PandaX_4T_BinSignal: |
-   The number of expected signal events in each bin for the PandaX 4T direct detection analysis.
-
-PandaX_4T_Bins: |
-   The number of bins used in the PandaX 4T direct detection analysis.
 
 PandaX_4T_Calculate: |
    Perform rate and likelihood calculations for the PandaX 4T direct detection analysis.
@@ -2524,9 +2453,6 @@ DDCalc_2_2_0_init: |
 DDCalc_2_3_0_init: |
    Initialises DDCalc 2.3.0.
 
-DDCalc_2_3_0_init: |
-   Initialises DDCalc 2.3.0.
-
 DDCalc_Couplings: |
    Initialise DDCalc couplings from a given DM interaction basis.
 
@@ -2617,9 +2543,6 @@ PandaX_2017_Init: |
 PandaX_4T_Init: |
    Initialises a direct detection experiment with the properties of the 4T analysis of PandaX.
 
-PandaX_4T_Init: |
-   Initialises a direct detection experiment with the properties of the 4T analysis of PandaX.
-
 XENON100_2012_Init: |
    Initialises a direct detection experiment with the properties of the 2012 analysis of Xenon100.
 
@@ -2652,9 +2575,6 @@ DARWIN_Init: |
 
 LZ_Init: |
    Initialises a direct detection experiment with the properties of the analysis of LZ.
-
-LZ_2022_Init: |
-   Initialises a direct detection experiment with the properties of the 2022 analysis of LZ.
 
 LZ_2022_Init: |
    Initialises a direct detection experiment with the properties of the 2022 analysis of LZ.
