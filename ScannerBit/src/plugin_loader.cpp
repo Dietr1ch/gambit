@@ -96,9 +96,6 @@ namespace Gambit
                                 
                                 if (py::hasattr(file, (type + "_plugin").c_str()))
                                 {
-                                    //auto scan_plug = file.attr((type + "_plugin").c_str());
-
-                                    //if (py::hasattr(scan_plug, "plugin_main"))
                                     ret.push_back(name);
                                 }
                             }

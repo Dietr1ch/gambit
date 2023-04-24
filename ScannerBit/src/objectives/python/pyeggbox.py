@@ -3,13 +3,14 @@ import math
 
 class objective_plugin:
     """
-Simple two dimensional EggBox likelihood of the form:
+A python example of a simple two dimensional EggBox likelihood of the form:
 
 L ~ (2.0 + std::cos(x*length[0]*pi/2)*std::cos(y*length[1]*pi/2))^5
 
 Inifile option:
     length[10, 10]: A two-vector representing the scale length (default [10, 10]).
 """
+
     __version__="1.0.0"
     
     def __init__(self):
