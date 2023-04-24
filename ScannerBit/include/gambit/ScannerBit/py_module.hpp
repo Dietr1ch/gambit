@@ -14,15 +14,14 @@
 #include "gambit/ScannerBit/plugin_defs.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
 
-#define SCAN_PLUGIN_GET_INIFILE_VALUE                                                                   \
-[](const std::string &val, py::kwargs args) -> py::object                                               \
+#define __SCAN_PLUGIN_GET_INIFILE_VALUE__(GET_INIFILE_VALUE)                                            \
 {                                                                                                       \
     if (args.contains("default"))                                                                       \
     {                                                                                                   \
         if (is_type<py::int_>(args, "dtype"))                                                           \
-            return py::cast(get_inifile_value<int>(val, args["default"].cast<int>()));                  \
+            return py::cast(GET_INIFILE_VALUE<int>(val, args["default"].cast<int>()));                  \
         else if (is_type<py::str>(args, "dtype"))                                                       \
-            return py::cast(get_inifile_value<std::string>(val, args["default"].cast<std::string>()));  \
+            return py::cast(GET_INIFILE_VALUE<std::string>(val, args["default"].cast<std::string>()));  \
         else if (is_type<py::list>(args, "dtype"))                                                      \
         {                                                                                               \
             py::list def = args["default"].cast<py::list>();                                            \
@@ -34,7 +33,7 @@
                 for (auto &&l : def)                                                                    \
                     defv.push_back(l.cast<int>());                                                      \
                                                                                                         \
-                std::vector<int> ret = get_inifile_value<std::vector<int>>(val, defv);                  \
+                std::vector<int> ret = GET_INIFILE_VALUE<std::vector<int>>(val, defv);                  \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
@@ -45,7 +44,7 @@
                 for (auto &&l : def)                                                                    \
                     defv.push_back(l.cast<std::string>());                                              \
                                                                                                         \
-                std::vector<std::string> ret = get_inifile_value<std::vector<std::string>>(val, defv);  \
+                std::vector<std::string> ret = GET_INIFILE_VALUE<std::vector<std::string>>(val, defv);  \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
@@ -56,7 +55,7 @@
                 for (auto &&l : def)                                                                    \
                     defv.push_back(l.cast<double>());                                                   \
                                                                                                         \
-                std::vector<double> ret = get_inifile_value<std::vector<double>>(val, defv);            \
+                std::vector<double> ret = GET_INIFILE_VALUE<std::vector<double>>(val, defv);            \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
@@ -65,44 +64,44 @@
             return list;                                                                                \
         }                                                                                               \
         else                                                                                            \
-            return py::cast(get_inifile_value<double>(val, args["default"].cast<double>()));            \
+            return py::cast(GET_INIFILE_VALUE<double>(val, args["default"].cast<double>()));            \
     }                                                                                                   \
     else                                                                                                \
     {                                                                                                   \
         if (is_type<py::int_>(args, "dtype"))                                                           \
-            return py::cast(get_inifile_value<int>(val));                                               \
+            return py::cast(GET_INIFILE_VALUE<int>(val));                                               \
         else if (is_type<py::bool_>(args, "dtype"))                                                     \
-            return py::cast(get_inifile_value<bool>(val));                                              \
+            return py::cast(GET_INIFILE_VALUE<bool>(val));                                              \
         else if (is_type<py::str>(args, "dtype"))                                                       \
-            return py::cast(get_inifile_value<std::string>(val));                                       \
+            return py::cast(GET_INIFILE_VALUE<std::string>(val));                                       \
         else if (is_type<py::list>(args, "dtype"))                                                      \
         {                                                                                               \
             py::list list;                                                                              \
                                                                                                         \
             if (is_type<py::int_>(args, "etype"))                                                       \
             {                                                                                           \
-                std::vector<int> ret = get_inifile_value<std::vector<int>>(val);                        \
+                std::vector<int> ret = GET_INIFILE_VALUE<std::vector<int>>(val);                        \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
             }                                                                                           \
             else if (is_type<py::bool_>(args, "etype"))                                                 \
             {                                                                                           \
-                std::vector<bool> ret = get_inifile_value<std::vector<bool>>(val);                      \
+                std::vector<bool> ret = GET_INIFILE_VALUE<std::vector<bool>>(val);                      \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
             }                                                                                           \
             else if (is_type<py::str>(args, "etype"))                                                   \
             {                                                                                           \
-                std::vector<std::string> ret = get_inifile_value<std::vector<std::string>>(val);        \
+                std::vector<std::string> ret = GET_INIFILE_VALUE<std::vector<std::string>>(val);        \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
             }                                                                                           \
             else                                                                                        \
             {                                                                                           \
-                std::vector<double> ret = get_inifile_value<std::vector<double>>(val);                  \
+                std::vector<double> ret = GET_INIFILE_VALUE<std::vector<double>>(val);                  \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
                     list.append(r);                                                                     \
@@ -111,9 +110,17 @@
             return list;                                                                                \
         }                                                                                               \
         else                                                                                            \
-            return py::cast(get_inifile_value<double>(val));                                            \
+            return py::cast(GET_INIFILE_VALUE<double>(val));                                            \
     }                                                                                                   \
 }                                                                                                       \
+
+#define SCAN_PLUGIN_GET_INIFILE_VALUE_FUNC                  \
+[](const std::string &val, py::kwargs args) -> py::object   \
+__SCAN_PLUGIN_GET_INIFILE_VALUE__(get_inifile_value)        \
+
+#define SCAN_PLUGIN_GET_INIFILE_VALUE_MEM_FUNC                                  \
+[](plugin_data &self, const std::string &val, py::kwargs args) -> py::object    \
+__SCAN_PLUGIN_GET_INIFILE_VALUE__(self.get_inifile_value)                       \
 
 namespace py = pybind11;
 
@@ -440,15 +447,15 @@ PYBIND11_EMBEDDED_MODULE(scanner_pyplugin, m)
     
     m.def("get_printer", []()
     {
-        return &Gambit::Scanner::Plugins::ScannerPyPlugin::get_printer();
+        return &get_printer();
     }, "", py::return_value_policy::reference);
     
     m.def("get_prior", []()
     {
-        return &Gambit::Scanner::Plugins::ScannerPyPlugin::get_prior();
+        return &get_prior();
     }, "", py::return_value_policy::reference);
     
-    m.def("get_inifile_value", SCAN_PLUGIN_GET_INIFILE_VALUE);
+    m.def("get_inifile_value", SCAN_PLUGIN_GET_INIFILE_VALUE_FUNC);
     m.def("get_dimension", get_dimension);
     m.def("get_purpose", get_purpose);
 }
@@ -460,7 +467,7 @@ PYBIND11_EMBEDDED_MODULE(objective_pyplugin, m)
 
     m.import("scannerbit");
     
-    m.def("get_inifile_value", SCAN_PLUGIN_GET_INIFILE_VALUE);
+    m.def("get_inifile_value", SCAN_PLUGIN_GET_INIFILE_VALUE_FUNC);
     m.def("get_keys", get_keys);
     m.def("set_dimension", set_dimension);
     m.def("print_parameters", print_parameters);

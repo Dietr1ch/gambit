@@ -50,10 +50,6 @@ Scanner:
   use_scanner: grid #twalk
 
   scanners:
-
-    python:
-      pyplugin: test.py
-      like: LogLike
       
     mcmc:
       plugin: GreAT
@@ -94,8 +90,8 @@ Scanner:
       grid_pts: 3 #NxN grid
 
     grid:
+      #plugin: pygrid
       plugin: grid
-      #pyplugin: grid
       #version: ">=1.0"
       like: LogLike
       grid_pts: [5, 3]
@@ -127,7 +123,7 @@ Scanner:
 
     EggBox:
       plugin: EggBox
-      #pyplugin: eggbox
+      #plugin: pyeggbox
       purpose: LogLike
       length: [5.0, 5.0]
       parameters:

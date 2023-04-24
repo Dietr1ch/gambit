@@ -26,6 +26,16 @@ except ImportError:
     with_mpi = False
 
 class scanner_plugin:
+    """
+Python implimentation of a simple grid scanner.  Evaluation points along a user-defined grid.
+
+YAML options:
+    grid_pts[req'd]: The number of points along each dimension on the grid.  A vector is given with each element corresponding to each dimension.
+    like:            Use the functors thats corresponds to the specified purpose.
+    parameters:      Specifies the order of parameters that corresponds to the grid points specified by the tag "grid_pts".
+"""
+
+    __version__="1.0.0"
     
     def __init__(self):
         

@@ -78,7 +78,7 @@ scanner_plugin(python, version(1, 0, 0))
         }
         
         ::Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
-        std::string fname = get_inifile_value<std::string>("pyplugin");
+        std::string fname = get_inifile_value<std::string>("plugin");
         if (fname.substr(fname.size() - 3) == ".py")
             fname = fname.substr(0, fname.size() - 3);
         if (fname.substr(fname.size() - 4) == ".pyc")
@@ -94,7 +94,8 @@ scanner_plugin(python, version(1, 0, 0))
         }
         catch(std::exception &ex)
         {
-            scan_err << "Problem loading scanner python module \"" << fname << "\":\n" << ex.what() << scan_end;
+            //scan_err << "Problem loading scanner python module \"" << fname << "\":\n" << ex.what() << scan_end;
+            scan_err << "There is no plugin named \"" << fname <<"\" of type \"scanner\"" << scan_end;
         }
         
         if (!py::hasattr(file, "scanner_plugin"))

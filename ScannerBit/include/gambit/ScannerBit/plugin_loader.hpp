@@ -102,7 +102,7 @@ namespace Gambit
                 int print_plugin_to_screen (const std::string &) const;
                 int print_plugin_to_screen (const std::string &, const std::string &) const;
                 int print_plugin_to_screen (const std::vector<std::string> &) const;
-                Plugin_Details &find (const std::string &, const std::string &, const std::string &, const std::string &) const;
+                Plugin_Details &find (const std::string &, std::string, const std::string &, const std::string &) const;
             };
 
             ///Virtual container base class to store plugin values for resume function
