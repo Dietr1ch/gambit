@@ -40,6 +40,53 @@ namespace Gambit
     namespace Scanner 
     {
         
+        inline py::object yaml_to_dict(const YAML::Node &node)
+        {
+            if (node.IsMap())
+            {
+                py::dict d;
+                for (auto &&n : node)
+                {
+                    d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
+                }
+                
+                return d;
+            }
+            else if (node.IsSequence())
+            {
+                py::list l;
+                
+                for (auto &&n : node)
+                {
+                    l.append(yaml_to_dict(n));
+                }
+                
+                return l;
+            }
+            else if (node.IsScalar())
+            {
+                try 
+                {
+                    return py::cast(node.as<int>());
+                }
+                catch(const YAML::BadConversion&)
+                {
+                    try 
+                    {
+                        return py::cast(node.as<double>());
+                    }
+                    catch(const YAML::BadConversion&)
+                    {
+                        return py::cast(node.as<std::string>());
+                    }
+                }
+            }
+            else
+            {
+                return py::object();
+            }
+        }
+        
         namespace Plugins
         {
             
@@ -101,7 +148,9 @@ scanner_plugin(python, version(1, 0, 0))
         if (!py::hasattr(file, "scanner_plugin"))
             scan_err << "\"scanner_plugin\" has not been defined in \"" << fname << "\"." << scan_end;
         
-        pyplugin = file.attr("scanner_plugin")();
+        py::kwargs options = yaml_to_dict(get_inifile_node());
+        
+        pyplugin = file.attr("scanner_plugin")(**options);
         
         if (!py::hasattr(pyplugin, "plugin_main"))
             scan_err << "\"plugin_main\" has not been defined in \"" << fname << "\"." << scan_end;

@@ -37,7 +37,9 @@ YAML options:
 
     __version__="1.0.0"
     
-    def __init__(self):
+    def __init__(self, **kwargs):
+        
+        print("here are the inifile entries: ", kwargs)
         
         if with_mpi:
             comm = MPI.COMM_WORLD

@@ -610,6 +610,7 @@ set( PLUGIN_INCLUDE_DIRECTORIES
                 ${ROOT_INCLUDE_DIR}
                 ${ROOT_INCLUDE_DIRS}
                 ${EIGEN3_INCLUDE_DIR}
+                ${BREW_LIBOMP_PREFIX}/include
                 ${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit
 )\n
 if( ${PLUG_VERBOSE} )
