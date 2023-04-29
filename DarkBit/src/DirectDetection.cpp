@@ -486,41 +486,39 @@ namespace Gambit
 
   void calc_obscuraTest(double& result){
     using namespace Pipes::calc_obscuraTest;
+    // This function is a template for a log likelihood, in this case for the XENON1T S2 only analysis.
 
-    // // 1. DM halo model (UNITS STILL FAULTY)
+    // 0. Units (this shouldn't be here in the end.)
+    const double GeV = 1.0;
+    const double cm			 = 5.067730214314311e13 / GeV;
+    const double meter = 100.0 * cm;
+    const double km = 1000.0 * meter;
+    const double sec	= 299792458.0 * meter;
+
+    // // 1. DM halo model (The units should convert everything to powers of GeV)
     LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
-    double rho0 = LocalHaloParameters.rho0;
-    double v0 = LocalHaloParameters.v0;
-    double vesc = LocalHaloParameters.vesc;
-    double vrot = LocalHaloParameters.vrot;
+    double rho0 = LocalHaloParameters.rho0 * GeV /cm/cm/cm;
+    double v0 = LocalHaloParameters.v0 * km/sec;
+    double vesc = LocalHaloParameters.vesc * km/sec;
+    double vrot = LocalHaloParameters.vrot * km /sec;
 
     obscura_default::obscura::Standard_Halo_Model SHM(rho0, v0,  vrot, vesc);
-    SHM.Print_Summary();
 
     // 2. DM Particle with SI interactions
     double mDM = *Param["mDM"]; // in GeV
     double gDM = *Param["gDM"];
     double kappa = *Param["kappa"];
     double mAp = *Param["mAp"]; // in GeV
-    double sigma_e = 1.0;
+    double sigma_e = 1.0e-36*cm*cm; // in GeV^-2 
+    // The correct sigma expression is still missing.
 
     obscura_default::obscura::DM_Particle_SI DM(mDM);
     DM.Set_Sigma_Electron(sigma_e);
     DM.Set_FormFactor_DM("General", mAp);
-    DM.Print_Summary();
 
     // 3. Experiment
-    // obscura_default::obscura::DM_Detector_Ionization_ER experiment = obscura_default::obscura::XENON1T_S2_ER();
     obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::XENON1T_S2_ER();
-    // experiment.Print_Summary();
-    // double x = obscura_default::obscura::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
-    double x = BEreq::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
-    // double y = obscura_default::obscura::Fractional_Days_since_J2000(1 , 1 , 2022 , 12 , 0, 0);
-    // double m =  obscura_default::libphysica::natural_units::meter;
-    std::cout <<"x = " << x <<std::endl;
-    // std::cout <<"y = " << y <<std::endl;
-    // std::cout <<"meter = " << m <<std::endl;
-    result = x;
+    result = experiment.Log_Likelihood(DM, SHM);
   }
 
   }
