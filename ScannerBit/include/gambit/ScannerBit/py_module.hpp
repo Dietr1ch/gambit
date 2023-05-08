@@ -358,13 +358,13 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     });
     
     py::class_<Gambit::Priors::BasePrior, std::unique_ptr<Gambit::Priors::BasePrior, py::nodelete>>(m, "prior")
-    .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube<double> vec, std::unordered_map<std::string, double> &map)
+    .def("transform", [](Gambit::Priors::BasePrior &self, std::vector<double> unit)
     {
-        self.transform(vec, map);
+        return self.transform(unit);
     })
-    .def("inverse_transform", [](Gambit::Priors::BasePrior &self, std::unordered_map<std::string, double> &map, Gambit::Scanner::hyper_cube<double> vec)
+    .def("inverse_transform", [](Gambit::Priors::BasePrior &self, std::unordered_map<std::string, double> &physical)
     {
-        self.inverse_transform(map, vec);
+        return self.inverse_transform(physical);
     })
     .def("getShownParameters", [](Gambit::Priors::BasePrior &self)
     {
@@ -373,6 +373,10 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     .def("getParameters", [](Gambit::Priors::BasePrior &self)
     {
         return self.getParameters();
+    })
+    .def("log_prior_density", [](Gambit::Priors::BasePrior &self, std::vector<double> physical)
+    {
+        return self.log_prior_density(physical);
     });
     
     //Mmember functions not exported:
