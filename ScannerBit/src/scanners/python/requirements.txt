@@ -9,3 +9,4 @@ ultranest
 zeus-mcmc
 h5py
 mpi4py
+pocomc
