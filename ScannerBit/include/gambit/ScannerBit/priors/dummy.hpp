@@ -35,6 +35,8 @@ namespace Gambit
             Dummy(const std::vector<std::string>& param, const Options&) : BasePrior(param, param.size())
             {
             }
+            
+            double log_prior_density(const std::vector<double>&) const override { return 1.; }
 
             void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
             {
@@ -71,6 +73,11 @@ namespace Gambit
         public:
             None(const std::vector<std::string>& param, const Options&) : BasePrior(param)
             {
+            }
+            
+            double log_prior_density(const std::vector<double>&) const override
+            {
+                scan_err << "'None' prior has no density" << scan_end;
             }
 
             void transform(hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const override

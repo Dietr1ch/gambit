@@ -229,7 +229,7 @@ namespace Gambit
                 //return {u};
             }
 
-            double operator()(const std::vector<double> &vec) const override {return T::prior(vec[0]*scale+shift)*scale;}
+            double log_prior_density(const std::vector<double> &vec) const override {return T::prior(vec[0]*scale+shift)*scale;}
         };
 
         LOAD_PRIOR(log, RangePrior1D<logprior>)

@@ -33,6 +33,7 @@
 
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/ScannerBit/priors.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 
 
 namespace Gambit 
@@ -59,6 +60,19 @@ namespace Gambit
             
             CompositePrior(const std::vector<std::string> &params, const Options &options);
             
+            double log_prior_density(const std::vector<double>& physical) const override {
+                int unit_i = 0, unit_size;
+                double log_pdf_density = 0.;
+                for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; ++it)
+                {
+                    unit_size = (*it)->size();
+                    std::vector<double> slice(physical.cbegin() + unit_i, physical.cbegin() + unit_i + unit_size);
+                    log_pdf_density += (*it)->log_prior_density(slice);
+                    unit_i += unit_size;
+                }
+                return log_pdf_density;
+            }
+            
             inline std::vector<std::string> getShownParameters() const override { return shown_param_names; }
             
             // Transformation from unit hypercube to physical parameters
@@ -78,7 +92,7 @@ namespace Gambit
                 {
                     unit_size = (*it)->size();
                     (*it)->transform(unitPars.segment(unit_i, unit_size), outputMap);
-                    unit_i = unit_size;
+                    unit_i += unit_size;
                 }
             }
 
@@ -108,9 +122,9 @@ namespace Gambit
                 
                 for (int i = 0, end = unit.size(); i < end; ++i)
                 {
-                    if (unit[i] >= 1. || unit[i] <= 0.)
+                    if (unit[i] >= 1 || unit[i] <= 0)
                     {
-                        throw std::runtime_error("unit hypercube outside 0 and 1");
+                        scan_warn << "unit hypercube outside 0 and 1" << scan_end;
                     }
                 }
 
@@ -125,7 +139,7 @@ namespace Gambit
                     const double rdiff = std::abs(a - b) / std::max(std::abs(a), std::abs(b));
                     if (rdiff > rtol)
                     {
-                        throw std::runtime_error("could not convert physical parameters to hypercube");
+                        scan_err << "could not convert physical parameters to hypercube" << scan_end;
                     }
                 }
 

@@ -100,9 +100,23 @@ namespace Gambit
                         throw std::runtime_error("no inverse as physical does not match fixed value");
                     }
                 }
-                // arbitrary as every value of unit hypercube maps to the same fixed parameter
-                //std::vector<double> u(this->size(), 0.5);
-                //return u;
+            }
+
+            double log_prior_density(const std::vector<double>& physical) const override {
+                const double rtol = 1e-4;
+                const double log_zero = -1e10;
+                const double log_delta_zero = 0;
+                for (int i = 0, n = this->size(); i < n; i++)
+                {
+                    const double a = physical[i];
+                    const double b = value[i];
+                    const double rdiff = std::abs(a - b) / std::max(std::abs(a), std::abs(b));
+                    if (rdiff > rtol)
+                    {
+                        return log_zero;
+                    }
+                }
+                return log_delta_zero;
             }
         };
 
@@ -166,7 +180,7 @@ namespace Gambit
             
             std::vector<std::string> getShownParameters() const override {return std::vector<std::string>();}
 
-            void transform (hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const override
+            void transform(hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const override
             {
                 double value = outputMap[name];
 
@@ -190,11 +204,25 @@ namespace Gambit
                         throw std::runtime_error("no inverse as physical does not match same as value");
                     }
                 }
-                // arbitrary as every value of unit hypercube maps to the same fixed parameter
-                //std::vector<double> u(this->size(), 0.5);
-                //return u;
             }
 
+            double log_prior_density(const std::vector<double>& physical) const override {
+                const double rtol = 1e-4;
+                const double log_zero = -1e10;
+                const double log_delta_zero = 0;
+                const int index = std::distance(param_names.begin(), std::find(param_names.begin(), param_names.end(), name));
+                for (int i = 0, n = this->size(); i < n; i++)
+                {
+                    const double a = physical[i];
+                    const double b = scale[i] * physical[index] + shift[i];;
+                    const double rdiff = std::abs(a - b) / std::max(std::abs(a), std::abs(b));
+                    if (rdiff > rtol)
+                    {
+                        return log_zero;
+                    }
+                }
+                return log_delta_zero;
+            }
         };
 
         LOAD_PRIOR(fixed_value, FixedPrior)

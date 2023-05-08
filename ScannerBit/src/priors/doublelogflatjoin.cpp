@@ -235,7 +235,7 @@ namespace Gambit
       }
     }
       
-    double DoubleLogFlatJoin::operator()(const std::vector<double> &vec) const
+    double DoubleLogFlatJoin::log_prior_density(const std::vector<double> &vec) const
     {
       double r = 0;
       double x = vec[0]; 

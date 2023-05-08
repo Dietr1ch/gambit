@@ -118,7 +118,7 @@ namespace Gambit
                     unit[i] = 0.5 * (boost::math::erf(rotated[i] / M_SQRT2) + 1.0);
             }
 
-            double operator()(const std::vector<double> &vec) const
+            double log_prior_density(const std::vector<double> &vec) const
             {
                 static double norm = 0.5 * std::log(2. * M_PI * std::pow(col.DetSqrt(), 2));
                 std::vector<double> log_vec;

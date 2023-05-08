@@ -57,7 +57,7 @@ namespace Gambit
                 //return {};
             }
             
-            double operator()(const std::vector<double>& vec) const override
+            double log_prior_density(const std::vector<double>& vec) const override
             {
                 return (*plugin)(vec);
             }

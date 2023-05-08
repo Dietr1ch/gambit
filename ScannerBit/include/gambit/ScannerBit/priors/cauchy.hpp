@@ -108,7 +108,7 @@ namespace Gambit {
                     unit[i] = std::atan(rotated[i]) / M_PI + 0.5;
             }
 
-            double operator()(const std::vector<double>& vec) const override
+            double log_prior_density(const std::vector<double>& vec) const override
             {
                 static double norm = std::log(M_PI * col.DetSqrt());
                 return -std::log1p(col.Square(vec, location)) - norm;
