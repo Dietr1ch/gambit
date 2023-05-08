@@ -31,6 +31,7 @@
 #include <fstream>
 #include <stdio.h>
 
+#include "gambit/ScannerBit/python_scanner.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -112,7 +113,8 @@ namespace Gambit
                 if (guard != nullptr)
                     delete guard;
             }
-            
+
+
             inline std::string printPyPlugin(const std::string &type, std::string plugin)
             {
                 std::stringstream out;
@@ -343,6 +345,11 @@ namespace Gambit
                     }
                 }
 
+                for (const auto &n : python_scanner_names()) {
+                    PythonScanner scanner(n);
+                    scanner.add_table_row(table);
+                }
+
                 return table.str();
             }
 
@@ -542,6 +549,11 @@ namespace Gambit
                 
                 print_pyplugin_names(vec, plug_type);
 
+                if (plug_type == "scanner") {
+                    const auto python_scanner_names_ = python_scanner_names();
+                    vec.insert(vec.end(), python_scanner_names_.begin(), python_scanner_names_.end());
+                }
+
                 return vec;
             }
 
@@ -706,11 +718,19 @@ namespace Gambit
             std::string Plugin_Loader::print_plugin(const std::string &type, const std::string &plugin) const
             {
                 std::vector<const Scanner::Plugins::Plugin_Details *> vec;
-
                 if((getPluginsMap().find(type) == getPluginsMap().end()) || (getPluginsMap().at(type).find(plugin) == getPluginsMap().at(type).end()))
-                {
+                {	
+                    if (type == "scanner" && plugin != "scanners") {
+                        PythonScanner scanner(plugin);
+                        return scanner.doc();
+                    }
+
+                    if (type == "scanner" && plugin == "scanners") {
+                        return "";  // empty string indicates do nothing
+                    }
+
                     return printPyPlugin(type, plugin);
-                    //return "";
+                    
                 }
 
                 for (auto it = getPluginsMap().at(type).at(plugin).begin(), end = getPluginsMap().at(type).at(plugin).end(); it != end; it++)
