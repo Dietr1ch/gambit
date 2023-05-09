@@ -254,11 +254,11 @@ namespace Gambit
     std::string ff_output;
 
     ff_module_diagnostic(command, ff_output);
-    ff_module_function_diagnostic(command, ff_output);
     ff_backend_diagnostic(command, ff_output);
-    ff_backend_function_diagnostic(command, ff_output);
     ff_model_diagnostic(command, ff_output);
     ff_capability_diagnostic(command, ff_output);
+    ff_module_function_diagnostic(command, ff_output);
+    ff_backend_function_diagnostic(command, ff_output);
     ff_scanner_diagnostic(command, ff_output);
     ff_test_function_diagnostic(command, ff_output);
     ff_prior_diagnostic(command, ff_output);
@@ -578,6 +578,7 @@ namespace Gambit
   void gambit_core::ff_backend_function_diagnostic(const str &command, str &ff_output)
   {
     std::stringstream out;
+    bool first_match = true;
 
     // Iterate over all backend functions to see if command matches one of them
     for (const auto &functor : backendFunctorList)
@@ -586,9 +587,18 @@ namespace Gambit
       const str &name = functor->name();
       if (command == name)
       {
-        out << "Information for backend function \"" << name << "\"." << std::endl << std::endl;
+        // Only print the following line when it is the first time we find a match, else add a delimiter
+        if (first_match)
+        {
+          out << "Information for backend function \"" << name << "\".\n\n";
+          first_match = false;
+        }
+        else
+        {
+          out << indent << "---------------\n\n";
+        }
 
-        // Basic information about the module function (all module function will have this)
+        // Basic information about the backend function
         out << indent << "backend:     "  << functor->origin() << std::endl;
         out << indent << "version:     "  << functor->version() << std::endl;
         out << indent << "capability:  "  << functor->capability() << std::endl;
