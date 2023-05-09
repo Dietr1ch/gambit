@@ -340,39 +340,17 @@ namespace Gambit
         out << indent << "capability:  "  << functor->capability() << std::endl;
         out << indent << "result type: "  << functor->type() << std::endl << std::endl;
 
-        // Check if function is restricted to certain models.
-        // This can be either directly through a dependency on the respective model parameters
-        // or indirectly through the definition of a model group
+        // List models that are explicitly allowed
         const auto& allowed_models = functor->getAllowedModels();
-        const auto& model_groups = functor->getModelGroups();
-        if (allowed_models.size() > 0 || model_groups.size() > 0)
+        if (allowed_models.size() > 0)
         {
-          std::set<str> models;
-          // Collect all models
-          for (const auto &model : allowed_models) models.insert(model);
-          for (const auto &group: model_groups)
-          {
-            for (const auto &model: group.second) models.insert(model);
-          }
-
-          out << indent << "Function is restricted to the following models:\n";
-          for (const auto &model : models)
+          out << indent << "This function is explicitly restricted to the following model(s):\n";
+          for (const auto &model : allowed_models)
             out << indent << indent << "- " << model << std::endl;
         }
         else
         {
-          out << indent << "All models are allowed for this function" << std::endl;
-        }
-
-        // Check whether there are any model groups defined. If so, list them
-        if (model_groups.size() > 0) {
-          out << "\n" << indent << "model groups:\n";
-          for (const auto &group: model_groups)
-          {
-            out << indent << indent << "\"" << group.first << "\"" <<std::endl;
-            for (const auto &model: group.second)
-              out << indent << indent << indent << "- " << model << std::endl;
-          }
+          out << indent << "This function has no explicit model restrictions" << std::endl;
         }
 
         // List dependencies (if any)
@@ -458,6 +436,19 @@ namespace Gambit
             }
           }
 
+        }
+
+        // Check whether there are any model groups defined. If so, list them
+        const auto& model_groups = functor->getModelGroups();
+        if (model_groups.size() > 0)
+        {
+          out << "\n" << indent << "model groups:\n";
+          for (const auto &group: model_groups)
+          {
+            out << indent << indent << "\"" << group.first << "\"" <<std::endl;
+            for (const auto &model: group.second)
+              out << indent << indent << indent << "- " << model << std::endl;
+          }
         }
 
         out << std::endl;
@@ -584,17 +575,17 @@ namespace Gambit
         out << indent << "capability:  "  << functor->capability() << std::endl;
         out << indent << "result type: "  << functor->type() << std::endl << std::endl;
 
-        // List models that are allowed
+        // List models that are explicitly allowed
         const auto& allowed_models = functor->getAllowedModels();
         if (allowed_models.size() > 0)
         {
-          out << indent << "Function is restricted to the following models:\n";
+          out << indent << "This function is explicitly restricted to the following model(s):\n";
           for (const auto &model : allowed_models)
             out << indent << indent << "- " << model << std::endl;
         }
         else
         {
-          out << indent << "All models are allowed for this function" << std::endl;
+          out << indent << "This function has no explicit model restrictions" << std::endl;
         }
 
         out << std::endl;
