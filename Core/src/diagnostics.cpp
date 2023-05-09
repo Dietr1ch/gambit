@@ -675,7 +675,7 @@ namespace Gambit
             out << std::endl;
           }
         }
-        out << "  Description: " << std::endl << cap.description << std::endl;
+        out << "  Description: " << std::endl << "    " << cap.description << std::endl;
         break;
       }
     }
