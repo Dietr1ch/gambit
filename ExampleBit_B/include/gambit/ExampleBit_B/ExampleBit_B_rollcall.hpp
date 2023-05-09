@@ -91,7 +91,7 @@ START_MODULE
     #define FUNCTION q_example              // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable
     ALLOW_MODEL(NormalDist)
-    ALLOW_MODELS(demo_B, nonexistent_model) // Function is only allowed to be used with models NormalDist, demo_B, nonexistent_model and their descendents
+    //ALLOW_MODELS(demo_B, nonexistent_model) // Function is only allowed to be used with models NormalDist, demo_B, nonexistent_model and their descendents
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -115,7 +115,8 @@ START_MODULE
     BACKEND_REQ(SomeInt, (model_dependent_reqs, not_libfirst10), python_variable<int>)
     BACKEND_REQ(someFunction, (not_libfirst10), void, ())
 
-    ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM, demo_B, nonexistent_model), (model_dependent_reqs) )
+    //ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM, demo_B, nonexistent_model), (model_dependent_reqs) )
+    ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM), (model_dependent_reqs) )
     BACKEND_OPTION( (LibFirst), (lib123) )
     BACKEND_OPTION( (LibFirst, 1.1), (not_libfirst10) )
     BACKEND_OPTION( (LibSecond), (not_libfirst10, lib123) )
