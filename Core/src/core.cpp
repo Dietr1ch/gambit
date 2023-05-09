@@ -87,9 +87,7 @@ namespace Gambit
               "\n                                                                           "
               "\nAvailable commands:                                                        "
               "\n   modules               List registered modules                           "
-              "\n   module-functions      List registered module functions                  "
               "\n   backends              List registered backends and their status         "
-              "\n   backend-functions     List registered backend functions                 "
               "\n   models                List registered models and output model graph     "
               "\n   capabilities          List all registered function capabilities         "
               "\n   scanners              List registered scanners                          "
@@ -98,10 +96,13 @@ namespace Gambit
               "\n                           backend, backend function, model, capability,   "
               "\n                           scanner or scanner test objective function      "
               "\n                           e.g.: gambit DarkBit                            "
+              "\n                                 gambit GA_SimYieldTable_DarkSUSY          "
               "\n                                 gambit Pythia                             "
+              "\n                                 gambit get_abund_map_AlterBBN             "
               "\n                                 gambit MSSM                               "
               "\n                                 gambit IC79WL_loglike                     "
               "\n                                 gambit MultiNest                          "
+              "\n                                 gambit EggBox                             "
               "\n                                                                           "
               "\nBasic options:                                                             "
               "\n   --version             Display GAMBIT version information                "
@@ -625,14 +626,7 @@ namespace Gambit
     }
 
     // Initial list of valid diagnostic commands
-    std::vector<str> valid_commands = initVector<str>("modules",
-                                                      "module-functions",
-                                                      "backends",
-                                                      "backend-functions",
-                                                      "models",
-                                                      "capabilities",
-                                                      "scanners",
-                                                      "test-functions");
+    std::vector<str> valid_commands = initVector<str>("modules", "backends", "models", "capabilities", "scanners", "test-functions");
 
     // Test if the user has requested one of the basic diagnostics
     if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())
@@ -656,8 +650,8 @@ namespace Gambit
       valid_commands.insert(valid_commands.end(), prior_groups.begin(), prior_groups.end());
 
       // Remove duplicates
-      sort( valid_commands.begin(), valid_commands.end() );
-      valid_commands.erase( unique( valid_commands.begin(), valid_commands.end() ), valid_commands.end() );
+      std::sort( valid_commands.begin(), valid_commands.end() );
+      valid_commands.erase( std::unique( valid_commands.begin(), valid_commands.end() ), valid_commands.end() );
 
       // If the user hasn't asked for a diagnostic at all, process the command line options for the standard run mode and get out.
       if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())
@@ -715,9 +709,7 @@ namespace Gambit
     if (mpirank == 0)
     {
       if (command == "modules") module_diagnostic();
-      if (command == "module-functions") module_function_diagnostic();
       if (command == "backends") backend_diagnostic();
-      if (command == "backend-functions") backend_function_diagnostic();
       if (command == "models") model_diagnostic();
       if (command == "capabilities") capability_diagnostic();
       if (command == "scanners") scanner_diagnostic();

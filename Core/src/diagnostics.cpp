@@ -80,13 +80,6 @@ namespace Gambit
     print_to_screen(out.str(), "module");
   }
 
-  /// Basic module function diagnostic function
-  void gambit_core::module_function_diagnostic()
-  {
-    // TODO: Implement!
-    std::cout << "You invoked \"gambit_core::module_function_diagnostic()\", but there is nothing to see here yet." << std::endl;
-  }
-
   /// Basic backend diagnostic function
   void gambit_core::backend_diagnostic()
   {
@@ -152,13 +145,6 @@ namespace Gambit
     out << endl;
     out << table.str();
     print_to_screen(out.str(), "backend");
-  }
-
-  /// Basic backend function diagnostic function
-  void gambit_core::backend_function_diagnostic()
-  {
-    // TODO: Implement!
-    std::cout << "You invoked \"gambit_core::backend_function_diagnostic()\", but there is nothing to see here yet." << std::endl;
   }
 
   /// Basic model diagnostic function

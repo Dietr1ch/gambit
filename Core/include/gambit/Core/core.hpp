@@ -100,9 +100,7 @@ namespace Gambit
     /// Basic diagnostic functions
     /// @{
     void module_diagnostic();
-    void module_function_diagnostic();
     void backend_diagnostic();
-    void backend_function_diagnostic();
     void capability_diagnostic();
     void model_diagnostic();
     void scanner_diagnostic();
