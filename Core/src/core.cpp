@@ -21,6 +21,10 @@
 ///          (markus.prim@kit.edu)
 ///  \date 2020 Jun, Dec
 ///
+///  \author Patrick Stoecker
+///          (stoecker@physik.rwth-aachen.de)
+///  \date 2023 May
+///
 ///  *********************************************
 
 #include <algorithm>

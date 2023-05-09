@@ -20,6 +20,10 @@
 ///          (markus.prim@cern.ch)
 ///  \date 2020 Dec
 ///
+///  \author Patrick Stoecker
+///          (stoecker@physik.rwth-aachen.de)
+///  \date 2023 May
+///
 ///  *********************************************
 
 #include "gambit/Core/core.hpp"
