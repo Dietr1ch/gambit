@@ -449,6 +449,12 @@ namespace Gambit
       return conditionalModels;
     }
 
+    /// Getter for map of model groups and the set of models in each group
+    const std::map<str, std::set<str>>& functor::getModelGroups()
+    {
+      return modelGroups;
+    }
+
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
     bool functor::modelAllowed(str model)
     {

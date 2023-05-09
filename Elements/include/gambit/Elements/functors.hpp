@@ -307,6 +307,9 @@ namespace Gambit
       /// Getter for listing conditional models
       virtual const std::set<str>& getConditionalModels();
 
+      /// Getter for map of model groups and the set of models in each group
+      virtual const std::map<str, std::set<str>>& getModelGroups();
+
       /// Test whether the functor is allowed to be used with all models
       bool allModelsAllowed();
 
