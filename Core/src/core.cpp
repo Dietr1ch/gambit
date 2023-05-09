@@ -102,7 +102,6 @@ namespace Gambit
               "\n                                 gambit MSSM                               "
               "\n                                 gambit IC79WL_loglike                     "
               "\n                                 gambit MultiNest                          "
-              "\n                                 gambit EggBox                             "
               "\n                                                                           "
               "\nBasic options:                                                             "
               "\n   --version             Display GAMBIT version information                "
@@ -709,21 +708,14 @@ namespace Gambit
     if (mpirank == 0)
     {
       if (command == "modules") module_diagnostic();
-      if (command == "backends") backend_diagnostic();
-      if (command == "models") model_diagnostic();
-      if (command == "capabilities") capability_diagnostic();
-      if (command == "scanners") scanner_diagnostic();
-      if (command == "test-functions") test_function_diagnostic();
-      if (command == "priors") prior_diagnostic();
-      ff_module_diagnostic(command);
-      ff_module_function_diagnostic(command);
-      ff_backend_diagnostic(command);
-      ff_backend_function_diagnostic(command);
-      ff_model_diagnostic(command);
-      ff_capability_diagnostic(command);
-      ff_scanner_diagnostic(command);
-      ff_test_function_diagnostic(command);
-      ff_prior_diagnostic(command);
+      else if (command == "backends") backend_diagnostic();
+      else if (command == "models") model_diagnostic();
+      else if (command == "capabilities") capability_diagnostic();
+      else if (command == "scanners") scanner_diagnostic();
+      else if (command == "test-functions") test_function_diagnostic();
+      else if (command == "priors") prior_diagnostic();
+      else free_form_diagnostic(command);
+
       cout << endl;
     }
 

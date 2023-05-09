@@ -247,17 +247,36 @@ namespace Gambit
     print_to_screen(output, "priors");
   }
 
-  void gambit_core::ff_prior_diagnostic(const str &command)
+  void gambit_core::free_form_diagnostic(const str &command)
+  {
+    // As free form commands can alias (e.g. a capability and it associated function are allowed to have the same name),
+    // collect all outputs of the free form diagnostics in a single string before printing to screen.
+    std::string ff_output;
+
+    ff_module_diagnostic(command, ff_output);
+    ff_module_function_diagnostic(command, ff_output);
+    ff_backend_diagnostic(command, ff_output);
+    ff_backend_function_diagnostic(command, ff_output);
+    ff_model_diagnostic(command, ff_output);
+    ff_capability_diagnostic(command, ff_output);
+    ff_scanner_diagnostic(command, ff_output);
+    ff_test_function_diagnostic(command, ff_output);
+    ff_prior_diagnostic(command, ff_output);
+
+    print_to_screen(ff_output, command);
+  }
+
+  void gambit_core::ff_prior_diagnostic(const str &command, str &ff_output)
   {
     if (command != "priors")
     {
       const std::string output = Scanner::Plugins::plugin_info().print_priors(command);
-      print_to_screen(output, command);
+      ff_output += output;
     }
   }
 
   /// Free-form module diagnostic function
-  void gambit_core::ff_module_diagnostic(const str &command)
+  void gambit_core::ff_module_diagnostic(const str &command, str &ff_output)
   {
     std::stringstream out;
     for (const auto &module : modules)
@@ -318,11 +337,11 @@ namespace Gambit
         break;
       }
     }
-    print_to_screen(out.str(), command);
+    ff_output += out.str();
   }
 
   /// Free-form module function diagnostic function
-  void gambit_core::ff_module_function_diagnostic(const str &command)
+  void gambit_core::ff_module_function_diagnostic(const str &command, str &ff_output)
   {
     std::stringstream out;
 
@@ -455,11 +474,11 @@ namespace Gambit
         break; // module functions are unique, unlike backend functions. If we found a match, stop searching.
       }
     }
-    print_to_screen(out.str(), command);
+    ff_output += out.str();
   }
 
   /// Free-form backend diagnostic function
-  void gambit_core::ff_backend_diagnostic(const str &command)
+  void gambit_core::ff_backend_diagnostic(const str &command, str &ff_output)
   {
     std::stringstream out;
     // Iterate over all backends to see if command matches one of them
@@ -552,11 +571,11 @@ namespace Gambit
         break;
       }
     }
-    print_to_screen(out.str(), command);
+    ff_output += out.str();
   }
 
   /// Free-form backend function diagnostic function
-  void gambit_core::ff_backend_function_diagnostic(const str &command)
+  void gambit_core::ff_backend_function_diagnostic(const str &command, str &ff_output)
   {
     std::stringstream out;
 
@@ -591,11 +610,11 @@ namespace Gambit
         out << std::endl;
       }
     }
-    print_to_screen(out.str(), command);
+    ff_output += out.str();
   }
 
   /// Free-form model diagnostic function
-  void gambit_core::ff_model_diagnostic(const str &command)
+  void gambit_core::ff_model_diagnostic(const str &command, str &ff_output)
   {
     std::stringstream out;
     // Iterate over all models to see if command matches one of them
@@ -627,11 +646,11 @@ namespace Gambit
         break;
       }
     }
-    print_to_screen(out.str(), command);
+    ff_output += out.str();
   }
 
   /// Free-form capability diagnostic function
-  void gambit_core::ff_capability_diagnostic(const str &command)
+  void gambit_core::ff_capability_diagnostic(const str &command, str &ff_output)
   {
     std::stringstream out;
     // Iterate over all capabilities to see if command matches one of them
@@ -670,21 +689,21 @@ namespace Gambit
         break;
       }
     }
-    print_to_screen(out.str(), command);
+    ff_output += out.str();
   }
 
   /// Free-form scanner diagnostic function
-  void gambit_core::ff_scanner_diagnostic(const str &command)
+  void gambit_core::ff_scanner_diagnostic(const str &command, str &ff_output)
   {
     const std::string output = Scanner::Plugins::plugin_info().print_plugin("scanner", command);
-    print_to_screen(output, command);
+    ff_output += output;
   }
 
   /// Free-form test function diagnostic function
-  void gambit_core::ff_test_function_diagnostic(const str &command)
+  void gambit_core::ff_test_function_diagnostic(const str &command, str &ff_output)
   {
     const std::string output = Scanner::Plugins::plugin_info().print_plugin("objective", command);
-    print_to_screen(output, command);
+    ff_output += output;
   }
 
 } // namespace Gambit
