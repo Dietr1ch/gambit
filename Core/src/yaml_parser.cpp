@@ -349,17 +349,6 @@ namespace YAML
       forbid_both_true("function", rhs.if_function, rhs.then_function);
       forbid_both_true("version", rhs.if_version, rhs.then_version);
     }
-    // If there is no explicit if-then, make sure the default 'if' condition is actually implemented (the default 'then' will be ensured in the derived class convert)
-    else
-    {
-      if (not rhs.if_capability)
-      {
-        std::stringstream errmsg;
-        errmsg << "  The rule contains neither an if-then block nor any capability entry" << std::endl
-               << "  able to be interpreted as an implicit if condition.";
-        throw std::runtime_error(errmsg.str());
-      }
-    }
 
     // Strip leading "Gambit::" namespaces and whitespace, but preserve "const ".
     rhs.type = Gambit::Utils::fix_type(rhs.type);
@@ -454,9 +443,16 @@ namespace YAML
       // Make sure that module does not appear in both if and then blocks.
       forbid_both_true("module", rhs.if_module, rhs.then_module);
     }
-    // If there is no explicit if-then, make sure the default 'then' condition is actually implemented
+    // If there is no explicit if-then, make sure the default 'if' and 'then' conditions are actually implemented
     else
     {
+      if (not rhs.if_capability)
+      {
+        std::stringstream errmsg;
+        errmsg << "  The rule contains neither an if-then block nor any capability entry" << std::endl
+               << "  able to be interpreted as an implicit if condition.";
+        throw std::runtime_error(errmsg.str());
+      }
       if (not (rhs.then_function or
                rhs.then_version or
                rhs.then_module or
@@ -546,6 +542,13 @@ namespace YAML
     // If there is no explicit if-then, make sure the default 'then' condition is actually implemented
     else
     {
+      if (not (rhs.if_capability or rhs.if_group))
+      {
+        std::stringstream errmsg;
+        errmsg << "  The rule contains neither an if-then block nor any capability entry" << std::endl
+               << "  able to be interpreted as an implicit if condition.";
+        throw std::runtime_error(errmsg.str());
+      }
       if (not (rhs.then_function or rhs.then_version or rhs.then_backend or rhs.then_capability))
       {
         std::stringstream errmsg;
