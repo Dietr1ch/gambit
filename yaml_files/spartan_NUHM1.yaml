@@ -120,7 +120,7 @@ Rules:
 
   - capability:    function_pointer
     backends:
-    - {function: externalFunction2}
+    - {group: external_funcs, function: externalFunction2}
 
 
 Logger:

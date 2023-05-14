@@ -108,25 +108,25 @@ Rules:
     function: lnL_gaussian
     options:
        # Set sleep time between evaluations (in seconds)
-       #eval_time: 0.01
+       eval_time: 0.01
 
   # Rules for satisfying dependencies related to Example_lnL_B
   # (Just lifted from spartan_NUHM1.yaml)
-  - capability:   LibFirst_1_1_init
-    dependencies:
-    - {capability: nevents, module: ExampleBit_A}
+  #- capability:   LibFirst_1_1_init
+  #  dependencies:
+  #  - {capability: nevents, module: ExampleBit_A}
 
-  - capability:    nevents_postcuts
-    type: int
-    dependencies:
-    - {capability: particle_id, module: ExampleBit_B}
-    backends:
-    - {capability: awesomeness, backend: LibFirst, version: 1.1}
-    - {capability: someFunction, backend: LibFirst, version: 1.1}
+  #- capability:    nevents_postcuts
+  #  type: int
+  #  dependencies:
+  #  - {capability: particle_id, module: ExampleBit_B}
+  #  backends:
+  #  - {capability: awesomeness, backend: LibFirst, version: 1.1}
+  #  - {capability: someFunction, backend: LibFirst, version: 1.1}
 
-  - capability:    function_pointer
-    backends:
-    - {function: externalFunction2}
+  #- capability:    function_pointer
+  #  backends:
+  #  - {group: external_funcs, function: externalFunction2}
 
 
 Logger:
