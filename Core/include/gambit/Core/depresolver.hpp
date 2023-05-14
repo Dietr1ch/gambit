@@ -197,7 +197,7 @@ namespace Gambit
         void updateCandidates(bool, const VertexID&, int, std::vector<std::pair<VertexID, bool>>&, std::vector<std::pair<VertexID, bool>>&);
 
         /// Resolution of individual module function dependencies
-        VertexID resolveDependencyFromRules(const QueueEntry&, const std::vector<VertexID>&);
+        std::vector<VertexID> resolveDependencyFromRules(const QueueEntry&, const std::vector<VertexID>&);
 
         /// Derive options from ini-entries
         Options collectIniOptions(const VertexID & vertex);
