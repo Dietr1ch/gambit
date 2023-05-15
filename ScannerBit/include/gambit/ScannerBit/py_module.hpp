@@ -160,6 +160,51 @@ namespace Gambit
                     else
                         return def_type;
                 }
+                
+                inline py::object yaml_to_dict(const YAML::Node &node)
+                {
+                    if (node.IsMap())
+                    {
+                        py::dict d;
+                        for (auto &&n : node)
+                        {
+                            d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
+                        }
+                        
+                        return d;
+                    }
+                    else if (node.IsSequence())
+                    {
+                        py::list l;
+                        
+                        for (auto &&n : node)
+                        {
+                            l.append(yaml_to_dict(n));
+                        }
+                        
+                        return l;
+                    }
+                    else if (node.IsScalar())
+                    {
+                        int ret;
+                        if (YAML::convert<int>::decode(node, ret))
+                            return py::cast(ret);
+                        else 
+                        {
+                            double ret;
+                            if (YAML::convert<double>::decode(node, ret))
+                                return py::cast(ret);
+                            else
+                            {
+                                return py::cast(node.as<std::string>());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return py::object();
+                    }
+                }
             }
             
             namespace ScannerPyPlugin
@@ -186,7 +231,7 @@ namespace Gambit
                 }
                 
                 template <typename T>
-                inline T get_inifile_value(std::string in, T defaults)
+                inline T get_inifile_value(const std::string &in, const T &defaults)
                 {
                     if (!pythonPluginData()->node[in])
                     {
@@ -194,7 +239,17 @@ namespace Gambit
                     }
 
                     return pythonPluginData()->node[in].as<T>();
-                } 
+                }
+                
+                inline YAML::Node get_inifile_node(const std::string &in)                                                      
+                {
+                    return pythonPluginData()->node[in];
+                }
+
+                inline YAML::Node get_inifile_node()                                                      
+                {
+                    return pythonPluginData()->node;
+                }
                 
                 template <typename T>
                 inline T &get_input_value(int i)
@@ -260,7 +315,7 @@ namespace Gambit
                 }
                 
                 template <typename T>
-                inline T get_inifile_value(std::string in, T defaults)
+                inline T get_inifile_value(const std::string &in, const T &defaults)
                 {
                     if (!pythonPluginData()->node[in])
                     {
@@ -268,7 +323,17 @@ namespace Gambit
                     }
 
                     return pythonPluginData()->node[in].as<T>();
-                } 
+                }
+                
+                inline YAML::Node get_inifile_node(const std::string &in)                                                      
+                {
+                    return pythonPluginData()->node[in];
+                }
+                
+                inline YAML::Node get_inifile_node()                                                      
+                {
+                    return pythonPluginData()->node;
+                }
                 
                 template <typename T>
                 inline T &get_input_value(int i)
@@ -455,6 +520,16 @@ PYBIND11_EMBEDDED_MODULE(scanner_pyplugin, m)
         return &get_prior();
     }, "", py::return_value_policy::reference);
     
+    m.def("get_inifile_node", [](py::args args) -> py::object
+    {
+        py::object ret = yaml_to_dict(get_inifile_node());
+        
+        for (auto &&arg : args)
+            ret = py::dict(ret)[py::cast(arg.cast<std::string>())];
+        
+        return ret;
+    });
+    
     m.def("get_inifile_value", SCAN_PLUGIN_GET_INIFILE_VALUE_FUNC);
     m.def("get_dimension", get_dimension);
     m.def("get_purpose", get_purpose);
@@ -466,6 +541,16 @@ PYBIND11_EMBEDDED_MODULE(objective_pyplugin, m)
     using namespace ::Gambit::Scanner::Plugins::Utils;
 
     m.import("scannerbit");
+    
+    m.def("get_inifile_node", [](py::args args) -> py::object
+    {
+        py::object ret = yaml_to_dict(get_inifile_node());
+        
+        for (auto &&arg : args)
+            ret = py::dict(ret)[py::cast(arg.cast<std::string>())];
+        
+        return ret;
+    });
     
     m.def("get_inifile_value", SCAN_PLUGIN_GET_INIFILE_VALUE_FUNC);
     m.def("get_keys", get_keys);

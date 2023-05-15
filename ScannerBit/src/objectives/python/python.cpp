@@ -65,17 +65,15 @@ namespace Gambit
             }
             else if (node.IsScalar())
             {
-                try 
+                int ret;
+                if (YAML::convert<int>::decode(node, ret))
+                    return py::cast(ret);
+                else 
                 {
-                    return py::cast(node.as<int>());
-                }
-                catch(const YAML::BadConversion&)
-                {
-                    try 
-                    {
-                        return py::cast(node.as<double>());
-                    }
-                    catch(const YAML::BadConversion&)
+                    double ret;
+                    if (YAML::convert<double>::decode(node, ret))
+                        return py::cast(ret);
+                    else
                     {
                         return py::cast(node.as<std::string>());
                     }
@@ -143,14 +141,15 @@ objective_plugin(python, version(1, 0, 0))
         }
         catch(std::exception &ex)
         {
-            //scan_err << "Problem loading objective python module \"" << fname << "\":\n" << ex.what() << scan_end;
             scan_err << "There is no plugin named \"" << fname <<"\" of type \"objective\"" << scan_end;
         }
         
         if (!py::hasattr(file, "objective_plugin"))
             scan_err << "\"objective_plugin\" has not been defined in \"" << fname << "\"." << scan_end;
         
-        pyplugin = file.attr("objective_plugin")();
+        py::kwargs options = yaml_to_dict(get_inifile_node());
+        
+        pyplugin = file.attr("objective_plugin")(**options);
         
         if (!py::hasattr(pyplugin, "plugin_main"))
             scan_err << "\"plugin_main\" has not been defined in \"" << fname << "\"." << scan_end;

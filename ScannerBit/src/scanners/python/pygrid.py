@@ -37,9 +37,7 @@ YAML options:
 
     __version__="1.0.0"
     
-    def __init__(self, **kwargs):
-        
-        print("here are the inifile entries: ", kwargs)
+    def __init__(self, **options):
         
         if with_mpi:
             comm = MPI.COMM_WORLD
@@ -53,13 +51,19 @@ YAML options:
         self.dim = splug.get_dimension()
         
         # gets inifile value corresponding to "like" key
-        purpose = splug.get_inifile_value("like", dtype=str)
+        purpose = options["like"]
+        
+        # or alternatively you can access the inifile options directly by:
+        # purpose = splug.get_inifile_value("like", dtype=str)
         
         # gets likelihood corresponding to the purpose "purpose"
         self.like = splug.get_purpose(purpose)
         
         # get grids pt number from inifile. Return a list of ints
-        N = splug.get_inifile_value("grid_pts", dtype=list, etype=int)
+        N = options["grid_pts"]
+        
+        # or alternatively you can access the inifile options directly by:
+        # N = splug.get_inifile_value("grid_pts", dtype=list, etype=int)
         
         if len(N) != self.dim:
             raise Exception("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed grid_pts ({1}).".format(self.dim, len(N)))
