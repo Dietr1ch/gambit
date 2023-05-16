@@ -747,7 +747,7 @@ namespace Gambit
             s += masterGraph[entry.toVertex]->origin() + "]";
         }
         else
-            s += "ObsLike section of yaml file.";
+            s += "ObsLike section of yaml file";
         return s;
     }
 
@@ -2068,55 +2068,81 @@ namespace Gambit
           {
             const std::set<const RuleT*>& matched = masterGraph[*vi]->getMatchedRules<const RuleT>();
             bool found = (std::find_if(matched.begin(), matched.end(), [&](const RuleT* r){ return r==&rule; } ) != matched.end());
-            if (found) unused = false;
+            if (found)
+            {
+              unused = false;
+              break;
+            }
           }
         }
         if (unused xor find_used) returnRules.insert(&rule);
       }
       return returnRules;
     }
+    template<typename RuleT>
+    std::set<const RuleT*> getUsedRules(const std::vector<RuleT>& rules, const MasterGraphType& masterGraph)
+    {
+      return getUsedOrUnusedRules(true, rules, masterGraph);
+    }
+    template<typename RuleT>
+    std::set<const RuleT*> getUnusedRules(const std::vector<RuleT>& rules, const MasterGraphType& masterGraph)
+    {
+      return getUsedOrUnusedRules(false, rules, masterGraph);
+    }
+
+
 
     /// Check for unused rules and options
     void DependencyResolver::checkForUnusedRules()
     {
       // Retrieve sets of used and unused module and backend rules
-      std::set<const ModuleRule*> usedModuleRules = getUsedOrUnusedRules<ModuleRule>(true, module_rules, masterGraph);
-      std::set<const ModuleRule*> unusedModuleRules = getUsedOrUnusedRules<ModuleRule>(false, module_rules, masterGraph);
-      std::set<const BackendRule*> usedBackendRules = getUsedOrUnusedRules<BackendRule>(true, backend_rules, masterGraph);
-      std::set<const BackendRule*> unusedBackendRules = getUsedOrUnusedRules<BackendRule>(false, backend_rules, masterGraph);
+      std::set<const ModuleRule*> usedModuleRules = getUsedRules(module_rules, masterGraph);
+      std::set<const ModuleRule*> unusedModuleRules = getUnusedRules(module_rules, masterGraph);
+      std::set<const BackendRule*> usedBackendRules = getUsedRules(backend_rules, masterGraph);
+      std::set<const BackendRule*> unusedBackendRules = getUnusedRules(backend_rules, masterGraph);
 
       // Remove any unused module rules that are also backend rules, and have been used as such.
-      auto duplicate_rule1 = std::find_if(unusedModuleRules.begin(),
-                                          unusedModuleRules.end(),
-                                          [&](const ModuleRule* moduleRule)
-                                          {
-                                            for (const auto& backendRule : usedBackendRules)
-                                            {
-                                              if (moduleRule->yaml == backendRule->yaml) return true;
-                                            }
-                                            return false;
-                                          });
-      if (duplicate_rule1 != unusedModuleRules.end()) unusedModuleRules.erase(duplicate_rule1);
+      while(true)
+      {
+        auto duplicate_rule = std::find_if(unusedModuleRules.begin(),
+                                           unusedModuleRules.end(),
+                                           [&](const ModuleRule* moduleRule)
+                                           {
+                                             for (const auto& backendRule : usedBackendRules)
+                                             {
+                                               if (moduleRule->yaml == backendRule->yaml) return true;
+                                             }
+                                             return false;
+                                           });
+        if (duplicate_rule == unusedModuleRules.end()) break;
+        unusedModuleRules.erase(duplicate_rule);
+      }
 
       // Remove any unused backend rules that are also module rules, and have been used as such.
-      auto duplicate_rule2 = std::find_if(unusedBackendRules.begin(),
-                                          unusedBackendRules.end(),
-                                          [&](const BackendRule* backendRule)
-                                          {
-                                            for (const auto& moduleRule : usedModuleRules)
-                                            {
-                                              if (moduleRule->yaml == backendRule->yaml) return true;
-                                            }
-                                            return false;
-                                          });
-      if (duplicate_rule2 != unusedBackendRules.end()) unusedBackendRules.erase(duplicate_rule2);
+      while(true)
+      {
+        auto duplicate_rule = std::find_if(unusedBackendRules.begin(),
+                                           unusedBackendRules.end(),
+                                           [&](const BackendRule* backendRule)
+                                           {
+                                             for (const auto& moduleRule : usedModuleRules)
+                                             {
+                                               if (moduleRule->yaml == backendRule->yaml) return true;
+                                             }
+                                             return false;
+                                           });
+        if (duplicate_rule == unusedBackendRules.end()) break;
+        unusedBackendRules.erase(duplicate_rule);
+      }
 
       // If any unused rules remain, trigger an error/warning.
       if(unusedModuleRules.size() > 0 or unusedBackendRules.size() > 0)
       {
         std::ostringstream msg;
         msg << "The following rules and options are not used in the current scan:" << endl;
+        if (unusedModuleRules.size() > 0) msg << endl << "Module rules:" << endl;
         for (const ModuleRule* rule : unusedModuleRules) msg << endl << rule->yaml << endl;
+        if (unusedBackendRules.size() > 0) msg << endl << "Backend rules:" << endl;
         for (const BackendRule* rule : unusedBackendRules) msg << endl << rule->yaml << endl;
         if (boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "unused_rule_is_an_error"))
           dependency_resolver_error().raise(LOCAL_INFO,msg.str());
@@ -2182,13 +2208,13 @@ namespace Gambit
       }
 
       // Used rules and options
-      for (const ModuleRule* rule : getUsedOrUnusedRules<ModuleRule>(true, module_rules, masterGraph))
+      for (const ModuleRule* rule : getUsedRules(module_rules, masterGraph))
       {
         std::stringstream key;
         key << "Rule::" << rule->yaml;
         Options(rule->yaml).toMap(metadata, key.str());
       }
-      for (const BackendRule* rule : getUsedOrUnusedRules<BackendRule>(true, backend_rules, masterGraph))
+      for (const BackendRule* rule : getUsedRules(backend_rules, masterGraph))
       {
         std::stringstream key;
         key << "Rule::" << rule->yaml;

@@ -584,8 +584,8 @@ Rules:
   #   n_s and r)
   # Option b): pass the full shape of the primordial power spectrum
   #   to CLASS (recommended when studying inflationary models)
-  #- capability: classy_primordial_input
-  #  function: set_classy_parameters_parametrised_ps   # uncomment for option a)
+  - capability: classy_primordial_input
+    function: set_classy_parameters_parametrised_ps   # uncomment for option a)
   #  function: set_classy_parameters_primordial_ps    # uncomment for option b)
 
 
