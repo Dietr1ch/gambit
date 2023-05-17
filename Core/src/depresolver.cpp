@@ -1087,7 +1087,7 @@ namespace Gambit
       if (entry.obslike != NULL)
       {
         // Iterate over all candidates
-        //# pragma omp parallel for
+        #pragma omp parallel for
         for (unsigned int i = 0; i < vertexCandidates.size(); ++i)
         {
           const VertexID& v = vertexCandidates[i];
@@ -1114,7 +1114,7 @@ namespace Gambit
         dep_rule.log_matches = false;
 
         // Iterate over all candidates
-        //# pragma omp parallel for
+        #pragma omp parallel for
         for (unsigned int i = 0; i < vertexCandidates.size(); ++i)
         {
           const VertexID& v = vertexCandidates[i];
@@ -1161,7 +1161,7 @@ namespace Gambit
       // that constrains the identity of the functor used to resolve an ObsLike entry.
       if (entry.obslike == NULL)
       {
-        //# pragma omp parallel for
+        #pragma omp parallel for
         for (unsigned int i = 0; i < allowedVertexCandidates.size(); ++i)
         {
           const VertexID& v = allowedVertexCandidates[i].first;
@@ -1212,7 +1212,7 @@ namespace Gambit
 
         if (entry.obslike == NULL)
         {
-          //# pragma omp parallel for
+          #pragma omp parallel for
           for (unsigned int i = 0; i < allowedVertexCandidates.size(); ++i)
           {
             const VertexID& v = allowedVertexCandidates[i].first;
@@ -1339,9 +1339,8 @@ namespace Gambit
 
       // Generate a list of module functors able to participate in dependency resolution.
       std::vector<VertexID> vertexCandidates;
-      graph_traits<MasterGraphType>::vertex_iterator vi, vi_end;
-      //#pragma omp parallel for
-      for (std::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      #pragma omp parallel for
+      for (auto vi = vertices(masterGraph).first; vi != vertices(masterGraph).second; ++vi)
       {
         bool allowed = true;
 
@@ -1353,14 +1352,14 @@ namespace Gambit
 
         if (allowed)
         {
-          //#pragma omp critical (vertexCandidates)
+          #pragma omp critical (vertexCandidates)
           vertexCandidates.push_back(*vi);
         }
       }
 
       // Generate a list of backend functors able to participate in dependency resolution.
       std::vector<functor*> backendFunctorCandidates;
-      //#pragma omp parallel for
+      #pragma omp parallel for
       for(functor* f: boundCore->getBackendFunctors())
       {
         bool allowed = true;
@@ -1373,7 +1372,7 @@ namespace Gambit
 
         if (allowed)
         {
-          //#pragma omp critical (vertexCandidates)
+          #pragma omp critical (vertexCandidates)
           backendFunctorCandidates.push_back(f);
         }
       }
@@ -1744,7 +1743,7 @@ namespace Gambit
 
       // Loop over all existing backend vertices, retaining only functors
       // that are available and fulfill the backend requirement.
-      //# pragma omp parallel for
+      #pragma omp parallel for
       for (unsigned int i = 0; i < backendFunctorCandidates.size(); ++i)
       {
         functor* f = backendFunctorCandidates[i];
