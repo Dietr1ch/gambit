@@ -101,7 +101,7 @@ YAML options:
 
             # run likelihood
             self.like(pt)
-            
+
             # get pt id
             id = self.like.getPtID()
             

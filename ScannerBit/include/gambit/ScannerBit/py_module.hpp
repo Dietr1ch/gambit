@@ -489,6 +489,10 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     {
         return static_cast<like_ptr &>(self)(vec);
     })
+    .def("__call__", [](s_ptr self, std::unordered_map<std::string, double> &map)
+    {
+        return static_cast<like_ptr &>(self)(map);
+    })
     .def("getPtID", [&](s_ptr self)
     {
         return self->getPtID();

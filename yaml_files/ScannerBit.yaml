@@ -50,6 +50,10 @@ Scanner:
   use_scanner: grid #twalk
 
   scanners:
+    
+    sci_dual_anneal:
+      plugin: scipy_dual_annealing
+      like: LogLike
       
     mcmc:
       plugin: GreAT
@@ -90,8 +94,11 @@ Scanner:
       grid_pts: 3 #NxN grid
 
     grid:
-      #plugin: pygrid
-      plugin: grid
+      plugin: pygrid
+      stuff:
+        stuff:
+          value: 1
+      #plugin: grid
       #version: ">=1.0"
       like: LogLike
       grid_pts: [5, 3]
@@ -111,7 +118,7 @@ Scanner:
   
   # Define built-in SB likelihoods
   objectives:
-
+      
     uniform:
       purpose: LogLike
       plugin: uniform
@@ -121,8 +128,8 @@ Scanner:
           range: [0, 4]
 
     EggBox:
-      plugin: EggBox
-      #plugin: pyeggbox
+      #plugin: EggBox
+      plugin: pyeggbox
       purpose: LogLike
       length: [5.0, 5.0]
       parameters:
