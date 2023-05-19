@@ -11,7 +11,7 @@ if scannerbit.with_mpi:
 
 class scanner_plugin:
     
-    def __init__(self):
+    def __init__(self, **options):
         
         # Get dimension of the hyper cube.
         self.dim = splug.get_dimension()
