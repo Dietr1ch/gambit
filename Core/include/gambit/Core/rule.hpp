@@ -224,33 +224,5 @@ namespace Gambit
 
     };
 
-
-    /*
-    /// Check whether quantity matches observableType
-    /// Matches capability
-    bool capabilityMatchesIniEntry(const sspair & quantity, const Observable & observable);
-
-    /// Check whether functor matches ObservableType
-    /// Matches capability, type, function and module name
-    bool moduleFuncMatchesIniEntry(functor *f, const ModuleRule &e, const Utils::type_equivalency & eq);
-
-    /// Check whether functor matches ObservableType
-    /// Matches capability, type, function and backend name
-    bool backendFuncMatchesIniEntry(functor *f, const BackendRule &e, const Utils::type_equivalency & eq);
-
-    /// Check whether functor matches rules
-    /// Matches function name and type
-    bool matchesRules( functor *f, const Rule & rule);
-
-    /// Find entries (comparison of inifile entry with quantity or functor)
-    /// @{
-    const Observable * findIniEntry(
-        sspair quantity, const std::vector<Observable> &, const str &);
-    const Observable * findIniEntry(
-        functor* f, const std::vector<Observable> &, const str &, const Utils::type_equivalency &);
-    /// @}
-    */
-
-
   }
 }
