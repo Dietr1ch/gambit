@@ -229,7 +229,7 @@ Rules:
 
   # Options for Process Catalog setup
   - if:
-      function: TH_Process_Catalog_ScalarSingletDM_Z2
+      function: TH_ProcessCatalog_ScalarSingletDM_Z2
     then:
       options:
         ProcessCatalog_MinBranching: 0 # Minimum branching fraction of included processes
@@ -267,16 +267,17 @@ Rules:
 
   # Choose whether MicrOmegas calculates decays widths for the MSSM internally using CalcHEP (internal_decays=true) or uses
   # values from the GAMBIT decay table (internal_decays=false).
-  - if:
-      function: MicrOmegas_ScalarSingletDM_Z2_3_6_9_2_init
-    then:
-      options:
-        VZdecay: 1 # 0 - no 3 body final states, 1 - virtual Z in annihilations, 2 - virtual Z in coannihilations
-        VWdecay: 1 # 0 - no 3 body final states, 1 - virtual W in annihilations, 2 - virtual W in coannihilations
+  #- if:
+  #    function: MicrOmegas_ScalarSingletDM_Z2_3_6_9_2_init
+  #  then:
+  #    options:
+  #      VZdecay: 1 # 0 - no 3 body final states, 1 - virtual Z in annihilations, 2 - virtual Z in coannihilations
+  #      VWdecay: 1 # 0 - no 3 body final states, 1 - virtual W in annihilations, 2 - virtual W in coannihilations
 
   # Use DarkBit native calculator (based on the DarkSUSY Boltzmann solver) for relic density
   - capability: RD_oh2
     function: RD_oh2_DS_general
+
   - capability: RD_oh2_DS6_ini # starting from version 6.4.0
     function: RD_oh2_DS6_ini_func
     options:
@@ -290,10 +291,10 @@ Rules:
          version: "pass8" # Other option is pass7
 
   - if:
-      function: lnL_FermiFC_gamLike
+      function: lnL_FermiGC_gamLike
     then:
       options:
-        version: "externalJ" # Other options are fixedJ, margJ, margJ_HEP and externalJ
+        version: "externalJ" # Options are fixedJ, margJ, margJ_HEP and externalJ
 
   - if:
       function: lnL_HESSGC_gamLike
@@ -367,15 +368,15 @@ Rules:
       sigmal_obserr: 9.
 
   # Nuclear SD Parameter Likelihoos
-  - capability: lnL_SD_nuclear_parameters
-    function: lnL_deltaq
-    options:
-      a3_obs: 1.2723
-      a3_obserr: 0.0023
-      a8_obs: 0.585
-      a8_obserr: 0.025
-      deltas_obs: -0.09
-      deltas_obserr: 0.03
+  #- capability: lnL_SD_nuclear_parameters
+  #  function: lnL_deltaq
+  #  options:
+  #    a3_obs: 1.2723
+  #    a3_obserr: 0.0023
+  #    a8_obs: 0.585
+  #    a8_obserr: 0.025
+  #    deltas_obs: -0.09
+  #    deltas_obserr: 0.03
 
   # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)

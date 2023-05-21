@@ -357,6 +357,13 @@ Rules:
   #    options:
   #      drop_SLHA_file: true
 
+  # Tell DarkBit to give zero annihilation yields beyond the range of table validity. 
+  - if:
+      module: DarkBit
+    then:
+      options:
+        out_of_range_zero_yield: true
+
   # Choose to use DarkSUSY 6 rather than Capt'n General for calculating the capture rate of DM in the Sun
   - capability: capture_rate_Sun
     #function: capture_rate_Sun_const_xsec_DS5
@@ -383,7 +390,7 @@ Rules:
     function: SuperIso_prediction_b2sgamma
 
   # Use SuperIso instead of FeynHiggs for B_s->mumu
-  - capability: SuperIso_prediction_B2mumu
+  - capability: prediction_B2mumu
     function: SuperIso_prediction_B2mumu
 
   # Choose to implement the relic density likelihood as an upper bound, not a detection

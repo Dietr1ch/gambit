@@ -1292,18 +1292,24 @@ namespace Gambit
       if (entry.obslike == NULL)
       {
         errmsg += "as a targeted rule:\n";
-        errmsg += "\n  - capability: "+masterGraph[entry.toVertex]->capability();
-        errmsg += "\n    function: "+masterGraph[entry.toVertex]->name();
-        errmsg += "\n    dependencies:";
-        errmsg += "\n      - capability: " +f->capability();
-        errmsg += "\n        function: " +f->name();
-        errmsg += "\n        module: " +f->origin() +"\n\nor ";
+        errmsg += "\n  - if:";
+        errmsg += "\n      capability: "+masterGraph[entry.toVertex]->capability();
+        errmsg += "\n      function: "+masterGraph[entry.toVertex]->name();
+        errmsg += "\n    then:";
+        errmsg += "\n      dependencies:";
+        errmsg += "\n        - if:";
+        errmsg += "\n            capability: " +f->capability();
+        errmsg += "\n          then:";
+        errmsg += "\n            module: " +f->origin();
+        errmsg += "\n            function: " +f->name() +"\n\nor ";
         errmsg += "as an untargeted rule:\n";
       }
-      errmsg += "\n  - capability: "+f->capability();
-      errmsg += "\n    type: "+Utils::quote_if_contains_commas(f->type());
-      errmsg += "\n    function: "+f->name();
-      errmsg += "\n    module: " +f->origin() +"\n";
+      errmsg += "\n  - if:";
+      errmsg += "\n      capability: "+f->capability();
+      errmsg += "\n      type: "+Utils::quote_if_contains_commas(f->type());
+      errmsg += "\n    then:";
+      errmsg += "\n      module: " +f->origin();
+      errmsg += "\n      function: "+f->name() + "\n";
       dependency_resolver_error().raise(LOCAL_INFO,errmsg);
 
       return std::vector<VertexID>(1, 0);
@@ -1994,17 +2000,21 @@ namespace Gambit
           errmsg += " of module function " + masterGraph[toVertex]->origin() + "::" + masterGraph[toVertex]->name()
            + "\nViable candidates are:\n" + printGenericFunctorList(allowedBackendFunctorCandidates);
           errmsg += "\nIf you don't need all the above backends, you can resolve the ambiguity simply by";
-          errmsg += "\nuninstalling the backends you don't use.";
+          errmsg += "\nuninstalling the backends that you don't want to use.";
           errmsg += "\n\nAlternatively, you can add an entry in your YAML file that selects which backend";
           errmsg += "\nthe module function " + masterGraph[toVertex]->origin() + "::" + masterGraph[toVertex]->name() + " should use. A YAML entry in the Rules section";
           errmsg += "\nthat selects e.g. the first candidate above could read\n";
-          errmsg += "\n  - capability: "+masterGraph[toVertex]->capability();
-          errmsg += "\n    function: "+masterGraph[toVertex]->name();
-          errmsg += "\n    backends:";
-          errmsg += "\n      - {capability: "+allowedBackendFunctorCandidates.at(0).first->capability()+", type: "
-                                             +Utils::quote_if_contains_commas(allowedBackendFunctorCandidates.at(0).first->type())+", backend: "
-                                             +allowedBackendFunctorCandidates.at(0).first->origin()+", version: "
-                                             +allowedBackendFunctorCandidates.at(0).first->version()+"}\n";
+          errmsg += "\n  - if";
+          errmsg += "\n      capability: "+masterGraph[toVertex]->capability();
+          errmsg += "\n      function: "+masterGraph[toVertex]->name();
+          errmsg += "\n    then:";
+          errmsg += "\n      backends:";
+          errmsg += "\n        - if:";
+          errmsg += "\n            capability: "+allowedBackendFunctorCandidates.at(0).first->capability();
+          errmsg += "\n            type: "+Utils::quote_if_contains_commas(allowedBackendFunctorCandidates.at(0).first->type());
+          errmsg += "\n          then:";
+          errmsg += "\n            backend: "+allowedBackendFunctorCandidates.at(0).first->origin();
+          errmsg += "\n            version: "+allowedBackendFunctorCandidates.at(0).first->version() + "\n";
           dependency_resolver_error().raise(LOCAL_INFO,errmsg);
         }
       }

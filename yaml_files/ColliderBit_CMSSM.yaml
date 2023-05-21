@@ -408,10 +408,10 @@ Rules:
     # function: Contur_LHC_measurements_from_file
     options:
       # Adding a contur option is equivalent to running contur with the equivalent flag.
-      # contur_options:
-      # - use-searches
-      # - theory
-      # YODA_filename: "./GAMBIT_collider_measurements_LHC_13TeV.yoda"
+      contur_options:
+        - use-searches
+        - theory
+      YODA_filename: "./GAMBIT_collider_measurements_LHC_13TeV.yoda"
 
   - capability: LHC_measurements_LogLike
     function: Contur_LHC_measurements_LogLike

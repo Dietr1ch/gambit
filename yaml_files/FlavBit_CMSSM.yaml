@@ -146,7 +146,7 @@ Rules:
     function: SuperIso_prediction_b2sgamma
 
   # Use SuperIso instead of FeynHiggs for B_s->mumu
-  - capability: SuperIso_prediction_B2mumu
+  - capability: prediction_B2mumu
     function: SuperIso_prediction_B2mumu
 
   # Choose where to get the precision spectrum from
