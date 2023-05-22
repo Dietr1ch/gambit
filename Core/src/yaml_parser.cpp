@@ -360,7 +360,9 @@ namespace YAML
     const std::string key = entry.first.as<std::string>(); 
     if (key == "options")
     {
-      rhs.options = Gambit::Options(entry.second.as<YAML::Node>());
+      YAML::Node node = entry.second.as<YAML::Node>();
+      if (node.IsNull()) throw std::runtime_error(std::string("  The options node is empty."));
+      rhs.options = node;
       rhs.then_options = true;
     }
     else if (key == "functionChain")
