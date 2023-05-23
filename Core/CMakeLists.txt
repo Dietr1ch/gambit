@@ -48,6 +48,8 @@ set(header_files include/gambit/Core/container_factory.hpp
                  include/gambit/Core/ini_functions.hpp
                  include/gambit/Core/likelihood_container.hpp
                  include/gambit/Core/modelgraph.hpp
+                 include/gambit/Core/module_rollcall.hpp
+                 include/gambit/Core/observable.hpp
                  include/gambit/Core/resolution_utilities.hpp
                  include/gambit/Core/rule.hpp
                  include/gambit/Core/yaml_description_database.hpp
