@@ -16,6 +16,40 @@ namespace py = pybind11;
 
 namespace Gambit {
 namespace Scanner {
+    
+inline py::object yaml_to_dict(const YAML::Node &node) {
+    if (node.IsMap()) {
+        py::dict d;
+        for (auto &&n : node) {
+            d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
+        }
+        
+        return d;
+    } else if (node.IsSequence()) {
+        py::list l;
+        
+        for (auto &&n : node) {
+            l.append(yaml_to_dict(n));
+        }
+        
+        return l;
+    } else if (node.IsScalar()) {
+        int ret;
+        if (YAML::convert<int>::decode(node, ret)) {
+            return py::cast(ret);
+        } else  {
+            double ret;
+            if (YAML::convert<double>::decode(node, ret)) {
+                return py::cast(ret);
+            } else {
+                return py::cast(node.as<std::string>());
+            }
+        }
+    } else {
+        return py::object();
+    }
+}
+
 namespace Plugins {
 namespace ScannerPyPlugin {
 pluginData *&pythonPluginData();
@@ -45,17 +79,18 @@ scanner_plugin(python, version(1, 0, 0)) {
         ::Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
         // get kwargs
-        py::dict init_kwargs = py::dict();  // get_inifile_value<py::object>("init", py::dict());
+        py::kwargs init_kwargs = yaml_to_dict(get_inifile_node("init"));
 
         // make instance of plugin
         std::string plugin_name = get_inifile_value<std::string>("plugin");
         Gambit::Scanner::Plugins::PythonScanner scanner(plugin_name);
         instance = scanner.plugin(**init_kwargs);
+
     }
 
     int plugin_main() {
         // get kwargs
-        py::dict run_kwargs = py::dict();  // get_inifile_value<py::object>("run", py::dict());
+        py::kwargs init_kwargs = yaml_to_dict(get_inifile_node("run"));
         // run scanner
         instance.attr("run")(**run_kwargs);
         return 0;

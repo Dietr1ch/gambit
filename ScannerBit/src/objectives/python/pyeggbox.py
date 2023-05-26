@@ -13,16 +13,25 @@ Inifile option:
 
     __version__="1.0.0"
     
-    def __init__(self):
+    def __init__(self, **options):
         
         # get_keys() returns std::vector<std::string> of keys
         dim = len(oplug.get_keys())
 
         if dim != 2:
             throw: "EggBox: Need to have two parameters."
-
-        # gets inifile value for "length" and return a list of floats
-        self.length = oplug.get_inifile_value("length", dtype="list", default=[5.0, 5.0])
+        
+        if "length" in options:
+            if type(options["length"]) is list:
+                self.length = options["length"]
+                if len(self.length) != 2:
+                    throw: "EggBox: input length list needs to have 2 values."
+            else:
+                self.length = list()
+                self.length.append(options["length"])
+                self.length.append(options["length"])
+        else:
+            self.length = [10.0, 10.0]
         
     def plugin_main(self, map):
         

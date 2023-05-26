@@ -40,6 +40,51 @@ namespace Gambit
     namespace Scanner 
     {
         
+        inline py::object yaml_to_dict(const YAML::Node &node)
+        {
+            if (node.IsMap())
+            {
+                py::dict d;
+                for (auto &&n : node)
+                {
+                    d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
+                }
+                
+                return d;
+            }
+            else if (node.IsSequence())
+            {
+                py::list l;
+                
+                for (auto &&n : node)
+                {
+                    l.append(yaml_to_dict(n));
+                }
+                
+                return l;
+            }
+            else if (node.IsScalar())
+            {
+                int ret;
+                if (YAML::convert<int>::decode(node, ret))
+                    return py::cast(ret);
+                else 
+                {
+                    double ret;
+                    if (YAML::convert<double>::decode(node, ret))
+                        return py::cast(ret);
+                    else
+                    {
+                        return py::cast(node.as<std::string>());
+                    }
+                }
+            }
+            else
+            {
+                return py::object();
+            }
+        }
+        
         namespace Plugins
         {
             
@@ -96,14 +141,15 @@ objective_plugin(python, version(1, 0, 0))
         }
         catch(std::exception &ex)
         {
-            //scan_err << "Problem loading objective python module \"" << fname << "\":\n" << ex.what() << scan_end;
             scan_err << "There is no plugin named \"" << fname <<"\" of type \"objective\"" << scan_end;
         }
         
         if (!py::hasattr(file, "objective_plugin"))
             scan_err << "\"objective_plugin\" has not been defined in \"" << fname << "\"." << scan_end;
         
-        pyplugin = file.attr("objective_plugin")();
+        py::kwargs options = yaml_to_dict(get_inifile_node());
+        
+        pyplugin = file.attr("objective_plugin")(**options);
         
         if (!py::hasattr(pyplugin, "plugin_main"))
             scan_err << "\"plugin_main\" has not been defined in \"" << fname << "\"." << scan_end;

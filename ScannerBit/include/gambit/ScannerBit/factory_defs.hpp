@@ -366,7 +366,7 @@ namespace Gambit
             double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
             {
                 int rank = (*this)->getRank();
-                (*this)->getPrior().transform(vec, map);
+                //(*this)->getPrior().transform(vec, map);
                 double ret_val = (*this)->operator()(map);
                 double modified_ret_val = (*this)->purposeModifier(ret_val);
                 unsigned long long int id = Gambit::Printers::get_point_id();

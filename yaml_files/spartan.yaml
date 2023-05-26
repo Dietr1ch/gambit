@@ -56,7 +56,7 @@ Printer:
 
 Scanner:
 
-  use_scanner: multinest
+  use_scanner: scipy_dual_annealing
 
   scanners:
 
@@ -66,8 +66,8 @@ Scanner:
       point_number: 1000
 
     grid:
-      plugin: grid
-      # pyplugin: grid
+      plugin: pygrid
+      #plugin: grid
       #version: ">=1.0"
       like: LogLike
       grid_pts: [5, 3]
@@ -120,7 +120,7 @@ Scanner:
         NormalDist::sigma: 1.
 
     scipy_dual_annealing:
-      pyplugin: scipy_dual_annealing
+      plugin: scipy_dual_annealing
       like: LogLike
       maxiter: 1000
       initial_temp: 5230.0
@@ -156,7 +156,7 @@ Logger:
 
 KeyValues:
 
-  debug: true
+  debug: false #true
 
   default_output_path: "${PWD}/runs/spartan"
 
