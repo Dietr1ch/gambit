@@ -102,7 +102,8 @@ namespace Gambit
                 }
             }
 
-            double log_prior_density(const std::vector<double>& physical) const override {
+            double log_prior_density(hyper_cube<double> physical) const override 
+            {
                 const double rtol = 1e-4;
                 const double log_zero = -1e10;
                 const double log_delta_zero = 0;
@@ -206,7 +207,8 @@ namespace Gambit
                 }
             }
 
-            double log_prior_density(const std::vector<double>& physical) const override {
+            double log_prior_density(hyper_cube<double> physical) const override 
+            {
                 const double rtol = 1e-4;
                 const double log_zero = -1e10;
                 const double log_delta_zero = 0;

@@ -118,13 +118,13 @@ namespace Gambit
                     unit[i] = 0.5 * (boost::math::erf(rotated[i] / M_SQRT2) + 1.0);
             }
 
-            double log_prior_density(const std::vector<double> &vec) const
+            double log_prior_density(hyper_cube<double> vec) const
             {
                 static double norm = 0.5 * std::log(2. * M_PI * std::pow(col.DetSqrt(), 2));
-                std::vector<double> log_vec;
-                for (const auto& v : vec)
+                std::vector<double> log_vec(vec.size());
+                for (int i = 0, end = vec.size(); i < end; ++i)
                 {
-                    log_vec.push_back(std::log(v) / std::log(base));
+                    log_vec[i] = std::log(vec[i]) / std::log(base);
                 }
                 const double log_prod = std::accumulate(log_vec.begin(), log_vec.end(), 0.);
                 return -0.5 * col.Square(log_vec, mu) - norm - log_prod;

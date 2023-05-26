@@ -35,9 +35,11 @@
 #include "gambit/ScannerBit/priors.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
 
-namespace Gambit {
+namespace Gambit 
+{
 
-    namespace Priors {
+    namespace Priors 
+    {
         /**
         * @brief  Multi-dimensional Cauchy prior
         *
@@ -108,7 +110,7 @@ namespace Gambit {
                     unit[i] = std::atan(rotated[i]) / M_PI + 0.5;
             }
 
-            double log_prior_density(const std::vector<double>& vec) const override
+            double log_prior_density(hyper_cube<double> vec) const override
             {
                 static double norm = std::log(M_PI * col.DetSqrt());
                 return -std::log1p(col.Square(vec, location)) - norm;

@@ -27,7 +27,7 @@ namespace Gambit
         class Plugin : public BasePrior
         {
         private:
-            typedef Scanner::Plugins::Plugin_Interface<double (const std::vector<double> &), void (hyper_cube<double>, std::unordered_map<std::string,double> &)> plugin_type;
+            typedef Scanner::Plugins::Plugin_Interface<double (hyper_cube<double> &), void (hyper_cube<double>, std::unordered_map<std::string,double> &)> plugin_type;
             mutable plugin_type *plugin;
                 
         public:
@@ -54,10 +54,9 @@ namespace Gambit
             void inverse_transform(const std::unordered_map<std::string, double> &, hyper_cube<double>) const override
             {
                 scan_err << "inverse transform not supported in plugin prior" << scan_end;
-                //return {};
             }
             
-            double log_prior_density(const std::vector<double>& vec) const override
+            double log_prior_density(hyper_cube<double> vec) const override
             {
                 return (*plugin)(vec);
             }

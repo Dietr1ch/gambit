@@ -60,14 +60,14 @@ namespace Gambit
             
             CompositePrior(const std::vector<std::string> &params, const Options &options);
             
-            double log_prior_density(const std::vector<double>& physical) const override {
+            double log_prior_density(hyper_cube<double> physical) const override 
+            {
                 int unit_i = 0, unit_size;
                 double log_pdf_density = 0.;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; ++it)
                 {
                     unit_size = (*it)->size();
-                    std::vector<double> slice(physical.cbegin() + unit_i, physical.cbegin() + unit_i + unit_size);
-                    log_pdf_density += (*it)->log_prior_density(slice);
+                    log_pdf_density += (*it)->log_prior_density(physical.segment(unit_i, unit_size));
                     unit_i += unit_size;
                 }
                 return log_pdf_density;

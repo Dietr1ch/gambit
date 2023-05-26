@@ -41,14 +41,15 @@ using ::Gambit::Scanner::map_vector;
 /**
 * @brief Abstract base class for priors
 */
-class BasePrior {
- private:
+class BasePrior 
+{
+private:
     unsigned int param_size;
 
- protected:
+protected:
     std::vector<std::string> param_names;
 
- public:
+public:
     virtual ~BasePrior() = default;
 
     BasePrior() : param_size(0), param_names(0) {}
@@ -65,12 +66,14 @@ class BasePrior {
     virtual void transform(hyper_cube<double> unit, std::unordered_map<std::string, double> &physical) const = 0;
 
     /** @overload in place STL containers */
-    void transform(const std::vector<double> &unit, std::unordered_map<std::string, double> &physical) const {
+    void transform(const std::vector<double> &unit, std::unordered_map<std::string, double> &physical) const 
+    {
         transform(map_vector<double>(const_cast<double *>(&unit[0]), unit.size()), physical);
     }
 
     /** @overload return STL containers */
-    std::unordered_map<std::string, double> transform(const std::vector<double> &unit) const {
+    std::unordered_map<std::string, double> transform(const std::vector<double> &unit) const 
+    {
         std::unordered_map<std::string, double> physical;
         transform(unit, physical);
         return physical;
@@ -80,19 +83,27 @@ class BasePrior {
     virtual void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const = 0;
 
     /** @overload in place STL containers */
-    void inverse_transform(const std::unordered_map<std::string, double> &physical, std::vector<double> &unit) const {
+    void inverse_transform(const std::unordered_map<std::string, double> &physical, std::vector<double> &unit) const 
+    {
         inverse_transform(physical, map_vector<double>(const_cast<double *>(&unit[0]), unit.size()));
     }
 
     /** @overload return STL containers */
-    std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const {
+    std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const 
+    {
         std::vector<double> unit(param_size);
         inverse_transform(physical, unit);
         return unit;
     }
 
     /** @brief Log of prior density */
-    virtual double log_prior_density(const std::vector<double> &) const = 0;
+    virtual double log_prior_density(hyper_cube<double>) const = 0;
+    
+    /** @overload in place STL containers */
+    double log_prior_density(const std::vector<double> &unit) const
+    {
+        return log_prior_density(map_vector<double>(const_cast<double *>(&unit[0]), unit.size()));
+    }
 
     virtual std::vector<std::string> getShownParameters() const { return param_names; }
 

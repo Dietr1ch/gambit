@@ -87,7 +87,7 @@ scanner_plugin(python, version(1, 0, 0)) {
         yaml = yaml_to_dict(get_inifile_node());
 
         // get kwargs
-        py::kwargs init_kwargs = yaml["init"];
+        py::kwargs init_kwargs = py::dict(yaml["init"]);
 
         // make instance of plugin
         std::string plugin_name = get_inifile_value<std::string>("plugin");
@@ -98,7 +98,7 @@ scanner_plugin(python, version(1, 0, 0)) {
 
     int plugin_main() {
         // get kwargs
-        py::kwargs run_kwargs = yaml["run"];
+        py::kwargs run_kwargs = py::dict(yaml["run"]);
         // run scanner
         instance.attr("run")(**run_kwargs);
         return 0;
