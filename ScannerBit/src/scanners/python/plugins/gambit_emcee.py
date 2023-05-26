@@ -15,7 +15,6 @@ from .version import version
 class Emcee(Scanner):
 
     name = "emcee"
-    optional = "emcee"
     version = version(emcee)
 
     def backend(self, filename, reset):
