@@ -1,8 +1,10 @@
 --no-binary=h5py
 
+tqdm
 dynesty
 emcee
 h5py
 ultranest
+adaptive
 zeus-mcmc
 pocomc

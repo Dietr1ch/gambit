@@ -67,6 +67,11 @@ scanner_plugin(python, version(1, 0, 0)) {
      */
     py::object instance;
 
+    /*!
+     * Yaml file options
+     */
+    py::object yaml;
+
     py::scoped_interpreter *guard = nullptr;
 
     plugin_constructor {
@@ -78,8 +83,11 @@ scanner_plugin(python, version(1, 0, 0)) {
 
         ::Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
+        // get yaml as dict
+        yaml = yaml_to_dict(get_inifile_node());
+
         // get kwargs
-        py::kwargs init_kwargs = yaml_to_dict(get_inifile_node("init"));
+        py::kwargs init_kwargs = yaml["init"];
 
         // make instance of plugin
         std::string plugin_name = get_inifile_value<std::string>("plugin");
@@ -90,7 +98,7 @@ scanner_plugin(python, version(1, 0, 0)) {
 
     int plugin_main() {
         // get kwargs
-        py::kwargs init_kwargs = yaml_to_dict(get_inifile_node("run"));
+        py::kwargs run_kwargs = yaml["run"];
         // run scanner
         instance.attr("run")(**run_kwargs);
         return 0;

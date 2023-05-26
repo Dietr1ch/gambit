@@ -68,7 +68,7 @@ class Scanner(ABC):
         Write to GAMBIT logger
         """
         splug.get_printer().get_stream().print(
-            0., str(message), self.mpi_rank, self.loglike.getPtID())
+            0., str(message), self.mpi_rank, self.loglike_hypercube.getPtID())
 
     @cached_property
     def dim(self):
