@@ -3,20 +3,20 @@ Emcee scanner
 =============
 """
 
-from importlib.metadata import version
-
 import numpy as np
+
 import emcee
 
-from base import Scanner
-
+from .scanner import Scanner
 from .copydoc import copydoc
+from .version import version
 
 
 class Emcee(Scanner):
 
     name = "emcee"
-    version = version("emcee")
+    optional = "emcee"
+    version = version(emcee)
 
     def backend(self, filename, reset):
         """
@@ -35,7 +35,8 @@ class Emcee(Scanner):
         """
         :returns: Choice of initial state for chain
         """
-        return np.vstack([self.prior_transform(np.random.rand(self.dim)) for i in range(self.nwalkers)])
+        return np.vstack([self.prior_transform(np.random.rand(self.dim))
+                         for i in range(self.nwalkers)])
 
     @copydoc(emcee.EnsembleSampler)
     def __init__(self, nwalkers=4, filename="emcee.h5", reset=False, **kwargs):
@@ -50,7 +51,13 @@ class Emcee(Scanner):
         """
         self.nwalkers = nwalkers
         self.sampler = emcee.EnsembleSampler(
-            self.nwalkers, self.dim, self.log_target_density, backend=self.backend(filename, reset), **kwargs)
+            self.nwalkers,
+            self.dim,
+            self.log_target_density,
+            backend=self.backend(
+                filename,
+                reset),
+            **kwargs)
 
     @copydoc(emcee.EnsembleSampler.run_mcmc)
     def run(self, nsteps=5000, progress=True, initial_state=None, **kwargs):

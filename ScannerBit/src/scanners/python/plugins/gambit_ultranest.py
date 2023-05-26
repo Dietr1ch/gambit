@@ -3,15 +3,13 @@ Ultranest scanners
 ==================
 """
 
-from importlib.metadata import version
-
 import pickle
 
 import ultranest
 
-from base import Scanner
-
+from .scanner import Scanner
 from .copydoc import copydoc
+from .version import version
 
 
 class ReactiveUltranest(Scanner):
@@ -20,7 +18,7 @@ class ReactiveUltranest(Scanner):
     """
 
     name = "reactive_ultranest"
-    version = version("ultranest")
+    version = version(ultranest)
 
     @copydoc(ultranest.ReactiveNestedSampler)
     def __init__(self, log_dir="ultranest_log_dir", **kwargs):
@@ -30,7 +28,11 @@ class ReactiveUltranest(Scanner):
         :param: log_dir ('reactive_ultranest_run')
         """
         self.sampler = ultranest.ReactiveNestedSampler(
-            self.parameter_names, self.loglike, transform=self.prior_transform, log_dir=log_dir, **kwargs)
+            self.parameter_names,
+            self.loglike,
+            transform=self.prior_transform,
+            log_dir=log_dir,
+            **kwargs)
 
     @copydoc(ultranest.ReactiveNestedSampler.run)
     def run(self, pkl_name="ultranest.pkl", **kwargs):

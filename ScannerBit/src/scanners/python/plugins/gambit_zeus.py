@@ -4,17 +4,18 @@ Zeus scanner
 """
 
 import numpy as np
+
 import zeus
 
-from base import Scanner
-
+from .scanner import Scanner
 from .copydoc import copydoc
+from .version import version
 
 
 class Zeus(Scanner):
 
     name = "zeus"
-    version = zeus.__version__
+    version = version(zeus)
 
     def save_callback(self, filename):
         """
@@ -28,7 +29,8 @@ class Zeus(Scanner):
         """
         :returns: Choice of initial state for chain
         """
-        return np.vstack([self.prior_transform(np.random.rand(self.dim)) for i in range(self.nwalkers)])
+        return np.vstack([self.prior_transform(np.random.rand(self.dim))
+                         for i in range(self.nwalkers)])
 
     @copydoc(zeus.EnsembleSampler)
     def __init__(self, nwalkers=8, **kwargs):
@@ -37,7 +39,12 @@ class Zeus(Scanner):
             self.nwalkers, self.dim, self.log_target_density, **kwargs)
 
     @copydoc(zeus.EnsembleSampler.run_mcmc)
-    def run(self, nsteps=100, initial_state=None, filename="zeus.h5", **kwargs):
+    def run(
+            self,
+            nsteps=100,
+            initial_state=None,
+            filename="zeus.h5",
+            **kwargs):
         """
         There is one additional arguments:
 

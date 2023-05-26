@@ -3,13 +3,11 @@ Scipy dual annealing scannner
 =============================
 """
 
-from importlib.metadata import version
-
 import scipy.optimize
 
-from base import Scanner
-
+from .scanner import Scanner
 from .copydoc import copydoc
+from .version import version
 
 
 class DualAnnealing(Scanner):
@@ -32,7 +30,8 @@ class BasinHopping(Scanner):
     @copydoc(scipy.optimize.basinhopping)
     def run(self, **kwargs):
         bounds = [(0., 1.)] * self.dim
-        res = scipy.optimize.basinhopping(self.loglike_hypercube, bounds, **kwargs)
+        res = scipy.optimize.basinhopping(
+            self.loglike_hypercube, bounds, **kwargs)
         self.log(res)
 
 
@@ -44,8 +43,10 @@ class DifferentialEvolution(Scanner):
     @copydoc(scipy.optimize.differential_evolution)
     def run(self, **kwargs):
         bounds = [(0., 1.)] * self.dim
-        res = scipy.optimize.differential_evolution(self.loglike_hypercube, bounds, **kwargs)
+        res = scipy.optimize.differential_evolution(
+            self.loglike_hypercube, bounds, **kwargs)
         self.log(res)
+
 
 class Direct(Scanner):
 

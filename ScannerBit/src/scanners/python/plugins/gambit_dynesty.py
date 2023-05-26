@@ -8,14 +8,14 @@ We don't use the Dynesty checkpointing/saving functionality, as it
 attempts to pickle the loglikelihood function etc.
 """
 
-from importlib.metadata import version
+
 import pickle
 
 import dynesty
 
-from base import Scanner
-
+from .scanner import Scanner
 from .copydoc import copydoc
+from .version import version
 
 
 class StaticDynesty(Scanner):
@@ -28,7 +28,7 @@ class StaticDynesty(Scanner):
     """
 
     name = "static_dynesty"
-    version = version("dynesty")
+    version = version(dynesty)
 
     @copydoc(dynesty.NestedSampler)
     def __init__(self, **kwargs):
@@ -52,7 +52,7 @@ class DynamicDynesty(Scanner):
     """
 
     name = "dynamic_dynesty"
-    version = version("dynesty")
+    version = version(dynesty)
 
     @copydoc(dynesty.DynamicNestedSampler)
     def __init__(self, **kwargs):

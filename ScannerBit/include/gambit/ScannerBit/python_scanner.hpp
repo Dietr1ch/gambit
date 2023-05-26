@@ -5,6 +5,9 @@
  */
 
 
+#ifndef PYTHON_SCANNER_HPP
+#define PYTHON_SCANNER_HPP
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -70,11 +73,9 @@ class PythonScanner {
         run_doc = inspect_module.attr("getdoc")(plugin.attr("run")).cast<std::string>();
         version = plugin.attr("version").cast<std::string>();
 
-        // sanity checks
-        py::module base_module = py::module::import("base");
+        // implements the abstract base class
         py::module builtins = py::module::import("builtins");
-        py::object scanner_abc = base_module.attr("Scanner");
-
+        py::object scanner_abc = plugins_module.attr("Scanner");
         implements_abc = (inspect_module.attr("isclass")(plugin).cast<bool>() &&
                           !inspect_module.attr("isabstract")(plugin).cast<bool>() &&
                           builtins.attr("issubclass")(plugin, scanner_abc).cast<bool>());
@@ -84,6 +85,17 @@ class PythonScanner {
         if (guard != nullptr) {
             delete guard;
         }
+    }
+
+    bool passes_checks() const {
+        return implements_abc;
+    }
+
+    std::string status() const {
+        if (!implements_abc) {
+            return "does not implement ABC";
+        }
+        return "implements ABC";
     }
 
     std::string doc() const {
@@ -98,10 +110,10 @@ class PythonScanner {
             << "type:     python scanner" << std::endl
             << "version:  " << version << std::endl;
 
-        if (implements_abc) {
-            doc << "status:   \x1b[32;01m ok\x1b[0m" << std::endl;
+        if (passes_checks()) {
+            doc << "status:   \x1b[32;01m" << status() << "\x1b[0m" << std::endl;
         } else {
-            doc << "status:   \x1b[31;01m not ok \x1b[0m" << std::endl;
+            doc << "status:   \x1b[32;01m" << status() << "\x1b[0m" << std::endl;
         }
 
         doc << "location: " << loc << std::endl << std::endl
@@ -120,10 +132,10 @@ class PythonScanner {
          * Append row about scanner to GAMBIT style table
          */
         table << plugin_name << version;
-        if (implements_abc) {
-            table.green() << "ok";
+        if (passes_checks()) {
+            table.green() << status();
         } else {
-            table.red() << "not ok";
+            table.red() << status();
         }
     }
 };
@@ -167,3 +179,5 @@ std::vector<std::string> python_scanner_names() {
 }  // end namespace Plugins
 }  // end namespace Scanner
 }  // end namespace Gambit
+
+#endif  // PYTHON_SCANNER_HPP

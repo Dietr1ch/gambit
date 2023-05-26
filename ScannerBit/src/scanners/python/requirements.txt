@@ -1,12 +1,4 @@
---no-binary=h5py
-
-import_mocker
 numpy
 scipy
-dynesty
-emcee
-ultranest
-zeus-mcmc
-h5py
 mpi4py
-pocomc
+import_mocker

@@ -6,6 +6,7 @@ This helps document our code, as we wrap around libraries
 that are already documented.
 """
 
+
 class copydoc:
     def __init__(self, func):
         self.doc = func.__doc__

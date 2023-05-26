@@ -5,7 +5,7 @@ Grid scannner written in Python
 
 import numpy as np
 
-from base import Scanner
+from .scanner import Scanner
 
 
 class Grid(Scanner):
@@ -14,7 +14,7 @@ class Grid(Scanner):
     """
 
     name = "python_grid"
-    version = "1.0.0"
+    version = "gambit internal"
 
     def __init__(self, grid_points=10):
 
@@ -32,6 +32,9 @@ class Grid(Scanner):
 
     def run(self):
 
-        # scan the grid of points, divided evenly across the numper of MPI processes
-        for p in np.vstack(np.meshgrid(*self.grid)).reshape(self.dim, -1).T[self.mpi_rank:self.grid_size:self.mpi_size]:
+        # scan the grid of points, divided evenly across the numper of MPI
+        # processes
+        for p in np.vstack(np.meshgrid(*
+                                       self.grid)).reshape(self.dim, -
+                                                           1).T[self.mpi_rank:self.grid_size:self.mpi_size]:
             self.loglike_hypercube(p)
