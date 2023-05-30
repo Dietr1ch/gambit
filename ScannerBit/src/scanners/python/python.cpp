@@ -83,22 +83,42 @@ scanner_plugin(python, version(1, 0, 0)) {
 
         ::Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
+        // get plugin name
+        std::string plugin_name = get_inifile_value<std::string>("plugin");
+
         // get yaml as dict
         yaml = yaml_to_dict(get_inifile_node());
 
-        // get kwargs
-        py::kwargs init_kwargs = py::dict(yaml["init"]);
+        // log a warning if both 'init' and 'run' options are missing
+        if (!yaml.contains("init") && !yaml.contains("run"))
+        {
+            scan_warning().raise(LOCAL_INFO, 
+                "Neither an 'init' nor a 'run' section was found in "
+                "the YAML options for the scanner " + plugin_name + ", "
+                "so no options from the YAML file will be forwarded "
+                "to the plugin."
+            );
+        }
+
+        // get kwargs (if present)
+        py::kwargs init_kwargs;
+        if (yaml.contains("init"))
+        {
+            init_kwargs = py::dict(yaml["init"]);
+        }
 
         // make instance of plugin
-        std::string plugin_name = get_inifile_value<std::string>("plugin");
         Gambit::Scanner::Plugins::PythonScanner scanner(plugin_name);
         instance = scanner.plugin(**init_kwargs);
-
     }
 
     int plugin_main() {
-        // get kwargs
-        py::kwargs run_kwargs = py::dict(yaml["run"]);
+        // get kwargs (if present)
+        py::kwargs run_kwargs;
+        if (yaml.contains("run"))
+        {
+            run_kwargs = py::dict(yaml["run"]);
+        }
         // run scanner
         instance.attr("run")(**run_kwargs);
         return 0;
