@@ -1,7 +1,27 @@
-/*! \brief Use a python scanner
- *
- * Make an instance of python scanner and define method to run it
- */
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  Make an instance of python scanner and define 
+///  method to run it
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2023 May
+///
+///  \author Andrew Fowlie
+///          (andrew.j.fowlie@googlemail.com)
+///  \date 2023 May
+///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)   
+///  \date 2023 May
+///
+///  *********************************************
 
 #ifdef WITH_MPI
 #include "gambit/Utils/begin_ignore_warnings_mpi.hpp"
@@ -14,51 +34,73 @@
 
 namespace py = pybind11;
 
-namespace Gambit {
-namespace Scanner {
+namespace Gambit
+{
+    namespace Scanner 
+    {
     
-inline py::object yaml_to_dict(const YAML::Node &node) {
-    if (node.IsMap()) {
-        py::dict d;
-        for (auto &&n : node) {
-            d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
-        }
-        
-        return d;
-    } else if (node.IsSequence()) {
-        py::list l;
-        
-        for (auto &&n : node) {
-            l.append(yaml_to_dict(n));
-        }
-        
-        return l;
-    } else if (node.IsScalar()) {
-        int ret;
-        if (YAML::convert<int>::decode(node, ret)) {
-            return py::cast(ret);
-        } else  {
-            double ret;
-            if (YAML::convert<double>::decode(node, ret)) {
-                return py::cast(ret);
-            } else {
-                return py::cast(node.as<std::string>());
+        inline py::object yaml_to_dict(const YAML::Node &node)
+        {
+            if (node.IsMap())
+            {
+                py::dict d;
+                for (auto &&n : node)
+                {
+                    d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
+                }
+                
+                return d;
+            }
+            else if (node.IsSequence())
+            {
+                py::list l;
+                
+                for (auto &&n : node)
+                {
+                    l.append(yaml_to_dict(n));
+                }
+                
+                return l;
+            }
+            else if (node.IsScalar())
+            {
+                int ret;
+                if (YAML::convert<int>::decode(node, ret))
+                {
+                    return py::cast(ret);
+                }
+                else
+                {
+                    double ret;
+                    if (YAML::convert<double>::decode(node, ret))
+                    {
+                        return py::cast(ret);
+                    }
+                    else
+                    {
+                        return py::cast(node.as<std::string>());
+                    }
+                }
+            } 
+            else 
+            {
+                return py::object();
             }
         }
-    } else {
-        return py::object();
-    }
-}
 
-namespace Plugins {
-namespace ScannerPyPlugin {
-pluginData *&pythonPluginData();
-}  // end namespace ScannerPyPlugin
-}  // end namespace Plugins
-}  // end namespace Scanner
+
+        namespace Plugins 
+        {
+            namespace ScannerPyPlugin 
+            {
+                pluginData *&pythonPluginData();
+            }  // end namespace ScannerPyPlugin
+        }  // end namespace Plugins
+    }  // end namespace Scanner
 }  // end namespace Gambit
 
-scanner_plugin(python, version(1, 0, 0)) {
+scanner_plugin(python, version(1, 0, 0))
+{
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
 
@@ -74,10 +116,14 @@ scanner_plugin(python, version(1, 0, 0)) {
 
     py::scoped_interpreter *guard = nullptr;
 
-    plugin_constructor {
-        try {
+    plugin_constructor
+    {
+        try 
+        {
             guard = new py::scoped_interpreter();
-        } catch(std::exception &) {
+        } 
+        catch(std::exception &) 
+        {
             guard = nullptr;
         }
 
@@ -112,7 +158,8 @@ scanner_plugin(python, version(1, 0, 0)) {
         instance = scanner.plugin(**init_kwargs);
     }
 
-    int plugin_main() {
+    int plugin_main()
+    {
         // get kwargs (if present)
         py::kwargs run_kwargs;
         if (yaml.contains("run"))
@@ -124,8 +171,10 @@ scanner_plugin(python, version(1, 0, 0)) {
         return 0;
     }
 
-    plugin_deconstructor {
-        if (guard != nullptr) {
+    plugin_deconstructor
+    {
+        if (guard != nullptr)
+        {
             delete guard;
         }
     }
