@@ -56,7 +56,8 @@ Printer:
 
 Scanner:
 
-  use_scanner: scipy_dual_annealing
+  # use_scanner: scipy_dual_annealing
+  use_scanner: grid
 
   scanners:
 
@@ -66,8 +67,8 @@ Scanner:
       point_number: 1000
 
     grid:
-      plugin: pygrid
-      #plugin: grid
+      # plugin: pygrid
+      plugin: grid
       #version: ">=1.0"
       like: LogLike
       grid_pts: [5, 3]

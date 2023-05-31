@@ -17,7 +17,11 @@ class Grid(Scanner):
     version = "gambit internal"
 
     def __init__(self, grid_points=10):
+        """
+        Parameters:
 
+        :param: grid_points (10)
+        """
         if isinstance(grid_points, int):
             grid_points = [grid_points] * self.dim
 
@@ -26,12 +30,10 @@ class Grid(Scanner):
                 f"grid dimension {len(grid_points)} does not match dim {self.dim}")
 
         # make grid
-
         self.grid = [np.linspace(0., 1., g) for g in grid_points]
         self.grid_size = np.prod(grid_points)
 
     def run(self):
-
         # scan the grid of points, divided evenly across the numper of MPI
         # processes
         for p in np.vstack(np.meshgrid(*
