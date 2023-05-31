@@ -5,15 +5,15 @@ Scipy dual annealing scannner
 
 import scipy.optimize
 
-from .scanner import Scanner
-from .copydoc import copydoc
-from .version import version
+from utils import Scanner
+from utils import copydoc
+from utils import version
 
 
 class DualAnnealing(Scanner):
 
     name = "scipy_dual_annealing"
-    version = version("scipy")
+    __version__ = version("scipy")
 
     @copydoc(scipy.optimize.dual_annealing)
     def run(self, **kwargs):
@@ -25,7 +25,7 @@ class DualAnnealing(Scanner):
 class BasinHopping(Scanner):
 
     name = "scipy_basin_hopping"
-    version = version("scipy")
+    __version__ = version("scipy")
 
     @copydoc(scipy.optimize.basinhopping)
     def run(self, **kwargs):
@@ -38,7 +38,7 @@ class BasinHopping(Scanner):
 class DifferentialEvolution(Scanner):
 
     name = "scipy_differential_evolution"
-    version = version("scipy")
+    __version__ = version("scipy")
 
     @copydoc(scipy.optimize.differential_evolution)
     def run(self, **kwargs):
@@ -51,10 +51,16 @@ class DifferentialEvolution(Scanner):
 class Direct(Scanner):
 
     name = "scipy_direct"
-    version = version("scipy")
+    __version__ = version("scipy")
 
     @copydoc(scipy.optimize.direct)
     def run(self, **kwargs):
         bounds = [(0., 1.)] * self.dim
         res = scipy.optimize.direct(self.loglike_hypercube, bounds, **kwargs)
         self.log(res)
+
+
+__plugins__={DualAnnealing.name: DualAnnealing,
+             BasinHopping.name: BasinHopping,
+             DifferentialEvolution.name: DifferentialEvolution,
+             Direct.name: Direct}

@@ -7,15 +7,15 @@ import numpy as np
 
 import emcee
 
-from .scanner import Scanner
-from .copydoc import copydoc
-from .version import version
+from utils import Scanner
+from utils import copydoc
+from utils import version
 
 
 class Emcee(Scanner):
 
     name = "emcee"
-    version = version(emcee)
+    __version__ = version(emcee)
 
     def backend(self, filename, reset):
         """
@@ -64,3 +64,6 @@ class Emcee(Scanner):
             initial_state = self.initial_state()
         self.sampler.run_mcmc(initial_state, nsteps,
                               progress=progress, **kwargs)
+
+
+__plugins__={Emcee.name: Emcee}

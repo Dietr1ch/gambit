@@ -10,7 +10,7 @@ from mpi4py import MPI
 import numpy as np
 
 import scannerbit
-import scanner_pyplugin as splug
+import scanner_plugin as splug
 
 
 class Scanner(ABC):

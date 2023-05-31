@@ -95,9 +95,6 @@ Scanner:
 
     grid:
       plugin: pygrid
-      stuff:
-        stuff:
-          value: 1
       #plugin: grid
       #version: ">=1.0"
       like: LogLike

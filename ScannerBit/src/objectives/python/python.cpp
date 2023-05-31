@@ -106,60 +106,92 @@ objective_plugin(python, version(1, 0, 0))
 {
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
-
-    py::module file;
-    py::object pyplugin;
-    py::object main_func;
-    py::scoped_interpreter *guard = nullptr;
     
-    plugin_constructor
+    /*!
+     * Instance of python scanner
+     */
+    py::object instance;
+    py::object run_func;
+
+    /*!
+     * Yaml file options
+     */
+    //py::kwargs run_options;
+    
+    //bool use_run_options = false;
+
+    py::scoped_interpreter *guard = nullptr;
+
+    plugin_constructor 
     {
-        try
+        try 
         {
             guard = new py::scoped_interpreter();
-        }
-        catch(std::exception &)
+        } 
+        catch(std::exception &) 
         {
             guard = nullptr;
         }
 
         ::Gambit::Scanner::Plugins::ObjPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
-        std::string fname = get_inifile_value<std::string>("plugin");
-        if (fname.substr(fname.size() - 3) == ".py")
-            fname = fname.substr(0, fname.size() - 3);
-        if (fname.substr(fname.size() - 4) == ".pyc")
-            fname = fname.substr(0, fname.size() - 4);
-        
-        std::string path = get_inifile_value<std::string>("dir", GAMBIT_DIR "/ScannerBit/src/objectives/python");
-        
-        py::list(py::module::import("sys").attr("path")).append(py::cast(path));
-        
-        try
-        {
-            file = py::module::import(fname.c_str());
-        }
-        catch(std::exception &ex)
-        {
-            scan_err << "There is no plugin named \"" << fname <<"\" of type \"objective\"" << scan_end;
-        }
-        
-        if (!py::hasattr(file, "objective_plugin"))
-            scan_err << "\"objective_plugin\" has not been defined in \"" << fname << "\"." << scan_end;
-        
-        py::kwargs options = yaml_to_dict(get_inifile_node());
-        
-        pyplugin = file.attr("objective_plugin")(**options);
-        
-        if (!py::hasattr(pyplugin, "plugin_main"))
-            scan_err << "\"plugin_main\" has not been defined in \"" << fname << "\"." << scan_end;
-        
-        main_func = pyplugin.attr("plugin_main");
-    }
+        // get yaml as dict
+        py::dict options = yaml_to_dict(get_inifile_node());
 
+        // get kwargs
+        py::kwargs init_kwargs;
+        if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
+            init_kwargs = py::dict(options["init"]);
+        else
+            init_kwargs = options;
+        
+        /*if (options.contains("run") && py::isinstance<py::dict>(options["run"]))
+        {
+            use_run_options = true;
+            run_options = py::dict(options["run"]);
+        }*/
+        // make instance of plugin
+        py::module file;
+        std::string pkg = get_inifile_value<std::string>("pkg", "");
+        std::string plugin_name = get_inifile_value<std::string>("plugin");
+        try 
+        {
+            if (pkg == "")
+            {
+                decltype(auto) details =  Gambit::Scanner::Plugins::plugin_info.load_python_plugin("objective", plugin_name);
+                py::list(py::module::import("sys").attr("path")).append(py::cast(details.loc));
+                file = py::module::import(details.package.c_str());
+            }
+            else
+            {
+                std::string::size_type pos = pkg.rfind("/");
+                std::string pkg_name;
+                if (pos != std::string::npos)
+                {
+                    pkg_name = pkg.substr(pos+1);
+                    while(pos != 0 && pkg[pos-1] == '/') --pos;
+                    std::string path = pkg.substr(0, pos);
+                    py::list(py::module::import("sys").attr("path")).append(py::cast(path));
+                }
+                else
+                    pkg_name = pkg;
+                
+                py::list(py::module::import("sys").attr("path")).append(py::cast(GAMBIT_DIR "/ScannerBit/src/objectives/python/plugins"));
+                file = py::module::import(pkg_name.c_str());
+            }
+            
+            instance = py::dict(file.attr("__plugins__"))[plugin_name.c_str()](**init_kwargs);
+            run_func = instance.attr("run");
+        }
+        catch (std::exception &ex)
+        {
+            scan_err << "Error loading plugin \"" << plugin_name << "\": " << ex.what() << scan_end;
+        }
+    }
+    
     double plugin_main(std::unordered_map<std::string, double> &map)
     {
-        return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(main_func, map);
+        return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map);
     }
     
     plugin_deconstructor

@@ -8,9 +8,9 @@ import numpy as np
 
 import adaptive
 
-from .scanner import Scanner
-from .copydoc import copydoc
-from .version import version
+from utils import Scanner
+from utils import copydoc
+from utils import version
 
 
 class Adaptive(Scanner):
@@ -23,7 +23,7 @@ class Adaptive(Scanner):
     """
 
     name = "adaptive_learner_nd"
-    version = version(adaptive)
+    __version__ = version(adaptive)
 
     @copydoc(adaptive.LearnerND)
     def __init__(self, **kwargs):
@@ -39,3 +39,6 @@ class Adaptive(Scanner):
         if filename is not None:
             data = self.learner.to_numpy()
             np.savetxt(filename, data)
+
+
+__plugins__={Adaptive.name: Adapive}

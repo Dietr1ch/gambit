@@ -8,15 +8,15 @@ import numpy as np
 
 import pocomc
 
-from .scanner import Scanner
-from .copydoc import copydoc
-from .version import version
+from utils import Scanner
+from utils import copydoc
+from utils import version
 
 
 class PocoMC(Scanner):
 
     name = "pocomc"
-    version = version(pocomc)
+    __version__ = version(pocomc)
 
     def initial_state(self):
         """
@@ -43,3 +43,6 @@ class PocoMC(Scanner):
         self.sampler.run(initial_state, **kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(self.sampler.results, f)
+
+
+__plugins__={PocoMC.name: PocoMC}

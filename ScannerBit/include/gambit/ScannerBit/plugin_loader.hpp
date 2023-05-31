@@ -72,6 +72,41 @@ namespace Gambit
                 Plugin_Interface_Details(Plugin_Details &details, printer_interface *printer, Priors::BasePrior *prior, const YAML::Node &node)
                         : details(details), printer(printer), prior(prior), flags(details.flags), node(node) {}
             };
+            
+            struct EXPORT_SYMBOLS PyPlugin_Details
+            {
+                std::string plugin_name;
+                std::string plugin_class;
+                std::string package;
+                std::string type;
+                std::string version;
+                std::string loc;
+                std::string class_doc;
+                std::string init_doc;
+                std::string run_doc;
+                std::string status;
+                std::string error;
+                
+                PyPlugin_Details() : plugin_name(""), plugin_class(""), type(""), version("1.0.0"), loc(""), class_doc(""), init_doc(""), run_doc(""), status("ok") {}
+                
+                std::string print() const;
+                
+                void debug() const 
+                {
+                    std::cout << "pyplugin details:" << std::endl;
+                    std::cout << "  plugin_name: " << plugin_name << std::endl;
+                    //std::cout << "  plugin_class: " << plugin_class << std::endl;
+                    std::cout << "  package: " << package << std::endl;
+                    std::cout << "  type: " << type << std::endl;
+                    std::cout << "  version: " << version << std::endl;
+                    std::cout << "  loc: " << loc << std::endl;
+                    std::cout << "  class_doc: " << class_doc << std::endl;
+                    std::cout << "  init_doc " << init_doc << std::endl;
+                    std::cout << "  run_doc: " << run_doc << std::endl;
+                    std::cout << "  status: " << status << std::endl;
+                    std::cout << "  error: " << error << std::endl;
+                }
+            };
 
             ///container class for the actual plugins detected by ScannerBit
             class EXPORT_SYMBOLS Plugin_Loader
@@ -84,8 +119,16 @@ namespace Gambit
                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> excluded_plugin_map;
                 std::vector<Plugin_Details> total_plugins;
                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> total_plugin_map;
+                std::map<std::string, std::map<std::string, PyPlugin_Details>> python_plugin_map;
                 std::vector<Plugin_Details> loadExcluded(const std::string &);
                 void process(const std::string &, const std::string &, const std::string &, std::vector<Plugin_Details>&);
+                void Load_PyPlugins(const std::string &);
+                void Load_PyPlugins()
+                {
+                    std::vector<std::string> types = {"objective", "scanner"};
+                    for (auto &&type : types)
+                        Load_PyPlugins(type);
+                }
 
             public:
                 Plugin_Loader();
@@ -103,6 +146,7 @@ namespace Gambit
                 int print_plugin_to_screen (const std::string &, const std::string &) const;
                 int print_plugin_to_screen (const std::vector<std::string> &) const;
                 Plugin_Details &find (const std::string &, std::string, const std::string &, const std::string &) const;
+                PyPlugin_Details &find_python_plugin (const std::string &, const std::string &);
             };
 
             ///Virtual container base class to store plugin values for resume function
@@ -250,6 +294,8 @@ namespace Gambit
                 ///Get plugin data for single plugin.
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
                 ~pluginInfo();
+                
+                PyPlugin_Details &load_python_plugin(const std::string &, const std::string &);
             };
 
             ///Access Functor for plugin info.  This will manage all the

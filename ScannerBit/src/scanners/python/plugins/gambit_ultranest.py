@@ -7,9 +7,9 @@ import pickle
 
 import ultranest
 
-from .scanner import Scanner
-from .copydoc import copydoc
-from .version import version
+from utils import Scanner
+from utils import copydoc
+from utils import version
 
 
 class ReactiveUltranest(Scanner):
@@ -18,7 +18,7 @@ class ReactiveUltranest(Scanner):
     """
 
     name = "reactive_ultranest"
-    version = version(ultranest)
+    __version__ = version(ultranest)
 
     @copydoc(ultranest.ReactiveNestedSampler)
     def __init__(self, log_dir="ultranest_log_dir", **kwargs):
@@ -47,3 +47,6 @@ class ReactiveUltranest(Scanner):
         self.sampler.run(**kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(self.sampler.results, f)
+
+
+__plugins__={ReactiveUltranest.name: ReactiveUltranest}

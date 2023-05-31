@@ -522,12 +522,12 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     });
 }
 
-PYBIND11_EMBEDDED_MODULE(scanner_pyplugin, m) 
+PYBIND11_EMBEDDED_MODULE(scanner_plugin, m) 
 {
     using namespace Gambit::Scanner::Plugins::ScannerPyPlugin;
     using namespace Gambit::Scanner::Plugins::Utils;
     
-    m.import("scannerbit");
+    m.attr("scannerbit") = m.import("scannerbit");
     
     m.def("get_printer", []()
     {
@@ -554,12 +554,12 @@ PYBIND11_EMBEDDED_MODULE(scanner_pyplugin, m)
     m.def("get_purpose", get_purpose);
 }
 
-PYBIND11_EMBEDDED_MODULE(objective_pyplugin, m) 
+PYBIND11_EMBEDDED_MODULE(objective_plugin, m) 
 {
     using namespace ::Gambit::Scanner::Plugins::ObjPyPlugin;
     using namespace ::Gambit::Scanner::Plugins::Utils;
 
-    m.import("scannerbit");
+    m.attr("scannerbit") = m.import("scannerbit");
     
     m.def("get_inifile_node", [](py::args args) -> py::object
     {

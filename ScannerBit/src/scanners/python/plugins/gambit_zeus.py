@@ -7,15 +7,15 @@ import numpy as np
 
 import zeus
 
-from .scanner import Scanner
-from .copydoc import copydoc
-from .version import version
+from utils import Scanner
+from utils import copydoc
+from utils import version
 
 
 class Zeus(Scanner):
 
     name = "zeus"
-    version = version(zeus)
+    __version__ = version(zeus)
 
     def save_callback(self, filename):
         """
@@ -56,3 +56,6 @@ class Zeus(Scanner):
             initial_state = self.initial_state()
         self.sampler.run_mcmc(initial_state, nsteps,
                               callbacks=self.save_callback(filename), **kwargs)
+
+
+__plugins__={Zeus.name: Zeus}

@@ -13,9 +13,9 @@ import pickle
 
 import dynesty
 
-from .scanner import Scanner
-from .copydoc import copydoc
-from .version import version
+from utils import Scanner
+from utils import copydoc
+from utils import version
 
 
 class StaticDynesty(Scanner):
@@ -28,7 +28,7 @@ class StaticDynesty(Scanner):
     """
 
     name = "static_dynesty"
-    version = version(dynesty)
+    __version__ = version(dynesty)
 
     @copydoc(dynesty.NestedSampler)
     def __init__(self, **kwargs):
@@ -52,7 +52,7 @@ class DynamicDynesty(Scanner):
     """
 
     name = "dynamic_dynesty"
-    version = version(dynesty)
+    __version__ = version(dynesty)
 
     @copydoc(dynesty.DynamicNestedSampler)
     def __init__(self, **kwargs):
@@ -64,3 +64,7 @@ class DynamicDynesty(Scanner):
         self.sampler.run_nested(**kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(self.sampler.results, f)
+
+
+__plugins__={StaticDynesty.name: StaticDynesty, 
+             DynamicDynesty.name: DynamicDynesty}

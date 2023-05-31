@@ -1,7 +1,18 @@
-/*! \brief Use a python scanner
- *
- * Make an instance of python scanner and define method to run it
- */
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  Plugin of a python scanner.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+//
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2023 June
+///
+///  *********************************************
 
 #ifdef WITH_MPI
 #include "gambit/Utils/begin_ignore_warnings_mpi.hpp"
@@ -9,7 +20,10 @@
 #include "gambit/Utils/end_ignore_warnings.hpp"
 #endif
 
-#include "gambit/ScannerBit/python_scanner.hpp"
+#include "gambit/Utils/begin_ignore_warnings_pybind11.hpp"
+#include <pybind11/embed.h>
+#include "gambit/Utils/end_ignore_warnings.hpp"
+
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 
 namespace py = pybind11;
@@ -66,46 +80,99 @@ scanner_plugin(python, version(1, 0, 0)) {
      * Instance of python scanner
      */
     py::object instance;
+    py::object run_func;
 
     /*!
      * Yaml file options
      */
-    py::object yaml;
+    py::kwargs run_options;
+    
+    bool use_run_options = false;
 
     py::scoped_interpreter *guard = nullptr;
 
-    plugin_constructor {
-        try {
+    plugin_constructor 
+    {
+        try 
+        {
             guard = new py::scoped_interpreter();
-        } catch(std::exception &) {
+        } 
+        catch(std::exception &) 
+        {
             guard = nullptr;
         }
 
         ::Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
         // get yaml as dict
-        yaml = yaml_to_dict(get_inifile_node());
+        py::dict options = yaml_to_dict(get_inifile_node());
 
         // get kwargs
-        py::kwargs init_kwargs = py::dict(yaml["init"]);
-
+        py::kwargs init_kwargs;
+        if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
+            init_kwargs = py::dict(options["init"]);
+        else
+            init_kwargs = options;
+        
+        if (options.contains("run") && py::isinstance<py::dict>(options["run"]))
+        {
+            use_run_options = true;
+            run_options = py::dict(options["run"]);
+        }
         // make instance of plugin
+        py::module file;
+        std::string pkg = get_inifile_value<std::string>("pkg", "");
         std::string plugin_name = get_inifile_value<std::string>("plugin");
-        Gambit::Scanner::Plugins::PythonScanner scanner(plugin_name);
-        instance = scanner.plugin(**init_kwargs);
-
+        try 
+        {
+            if (pkg == "")
+            {
+                decltype(auto) details =  Gambit::Scanner::Plugins::plugin_info.load_python_plugin("scanner", plugin_name);
+                py::list(py::module::import("sys").attr("path")).append(py::cast(details.loc));
+                file = py::module::import(details.package.c_str());
+            }
+            else
+            {
+                std::string::size_type pos = pkg.rfind("/");
+                std::string pkg_name;
+                if (pos != std::string::npos)
+                {
+                    pkg_name = pkg.substr(pos+1);
+                    while(pos != 0 && pkg[pos-1] == '/') --pos;
+                    std::string path = pkg.substr(0, pos);
+                    py::list(py::module::import("sys").attr("path")).append(py::cast(path));
+                }
+                else
+                    pkg_name = pkg;
+                
+                py::list(py::module::import("sys").attr("path")).append(py::cast(GAMBIT_DIR "/ScannerBit/src/scanners/python/plugins"));
+                file = py::module::import(pkg_name.c_str());
+            }
+            
+            instance = py::dict(file.attr("__plugins__"))[plugin_name.c_str()](**init_kwargs);
+            run_func = instance.attr("run");
+        }
+        catch (std::exception &ex)
+        {
+            scan_err << "Error loading plugin \"" << plugin_name << "\": " << ex.what() << scan_end;
+        }
     }
 
-    int plugin_main() {
-        // get kwargs
-        py::kwargs run_kwargs = py::dict(yaml["run"]);
+    int plugin_main() 
+    {
         // run scanner
-        instance.attr("run")(**run_kwargs);
+        if (use_run_options)
+            run_func(**run_options);
+        else
+            run_func();
+            
         return 0;
     }
 
-    plugin_deconstructor {
-        if (guard != nullptr) {
+    plugin_deconstructor 
+    {
+        if (guard != nullptr) 
+        {
             delete guard;
         }
     }
