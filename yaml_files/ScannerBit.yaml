@@ -52,7 +52,7 @@ Scanner:
   scanners:
     
     de:
-      plugin: Diver
+      plugin: diver
       like: LogLike
       NP: 1000
       path: "runs"

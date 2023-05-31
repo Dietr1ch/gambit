@@ -28,7 +28,6 @@ class DualAnnealing(Scanner):
     def run(self, **kwargs):
         bounds = [(0., 1.)] * self.dim
         res = scipy.optimize.dual_annealing(self.loglike, bounds, **kwargs)
-        self.log(res)
 
 
 class BasinHopping(Scanner):
@@ -50,7 +49,6 @@ class BasinHopping(Scanner):
         bounds = [(0., 1.)] * self.dim
         res = scipy.optimize.basinhopping(
             self.loglike_hypercube, bounds, **kwargs)
-        self.log(res)
 
 
 class DifferentialEvolution(Scanner):
@@ -72,7 +70,6 @@ class DifferentialEvolution(Scanner):
         bounds = [(0., 1.)] * self.dim
         res = scipy.optimize.differential_evolution(
             self.loglike_hypercube, bounds, **kwargs)
-        self.log(res)
 
 
 class Direct(Scanner):
@@ -94,4 +91,3 @@ class Direct(Scanner):
         print("DEBUG: kwargs: ", kwargs)
         bounds = [(0., 1.)] * self.dim
         res = scipy.optimize.direct(self.loglike_hypercube, bounds, **kwargs)
-        self.log(res)
