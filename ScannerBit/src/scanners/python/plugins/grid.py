@@ -37,14 +37,14 @@ class Grid:
 Python implimentation of a simple grid scanner.  Evaluation points along a user-defined grid.
 
 YAML options:
-    grid_pts[req'd]: The number of points along each dimension on the grid.  A vector is given with each element corresponding to each dimension.
+    grid_pts[10]: The number of points along each dimension on the grid.  A vector is given with each element corresponding to each dimension.
     like:            Use the functors thats corresponds to the specified purpose.
     parameters:      Specifies the order of parameters that corresponds to the grid points specified by the tag "grid_pts".
 """
 
     __version__="1.0.0"
     
-    def __init__(self, grid_pts=[], parameters=[], **options):
+    def __init__(self, grid_pts=10, parameters=[], **options):
         
         if with_mpi:
             comm = MPI.COMM_WORLD
@@ -72,8 +72,11 @@ YAML options:
         # or alternatively you can access the inifile options directly by:
         # grid_pts = splug.get_inifile_value("grid_pts", dtype=list, etype=int)
         
+        if isinstance(grid_pts, int):
+            grid_points = [grid_pts] * self.dim
+        
         if len(grid_pts) != self.dim:
-            raise Exception("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed grid_pts ({1}).".format(self.dim, len(grid_pts)))
+            raise RuntimeError("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed grid_pts ({1}).".format(self.dim, len(grid_pts)))
         
         self.size = np.prod(np.asarray(grid_pts))
         
@@ -89,13 +92,13 @@ YAML options:
             param_names = splug.get_prior().getShownParameters()
             
             if len(param_names) != len(parameters):
-                raise Exception("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed parameters ({1}).".format(len(param_names), len(parameters)))
+                raise RuntimeError("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed parameters ({1}).".format(len(param_names), len(parameters)))
             
             for param in param_names:
                 if param in parameters:
                     self.vecs.append(np.linspace(0.0, 1.0, grid_pts[parameters.index(param)]))
                 else:
-                    raise Exception("Grid scanner: parameter \"{0}\" is not provided.".format(param))
+                    raise RuntimeError("Grid scanner: parameter \"{0}\" is not provided.".format(param))
 
         else:
             for n in grid_pts:
@@ -118,4 +121,4 @@ YAML options:
         return 0
 
 
-__plugins__={"pygrid": Grid}
+__plugins__={"python_grid": Grid}

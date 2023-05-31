@@ -2,15 +2,24 @@
 //  *********************************************
 ///  \file
 ///
-///  Plugin of a python scanner.
+///  Make an instance of python scanner and define 
+///  method to run it
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-//
+///
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2023 June
+///  \date 2023 May
+///
+///  \author Andrew Fowlie
+///          (andrew.j.fowlie@googlemail.com)
+///  \date 2023 May
+///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)   
+///  \date 2023 May
 ///
 ///  *********************************************
 
@@ -28,51 +37,81 @@
 
 namespace py = pybind11;
 
-namespace Gambit {
-namespace Scanner {
+namespace Gambit
+{
+    namespace Scanner 
+    {
     
-inline py::object yaml_to_dict(const YAML::Node &node) {
-    if (node.IsMap()) {
-        py::dict d;
-        for (auto &&n : node) {
-            d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
-        }
-        
-        return d;
-    } else if (node.IsSequence()) {
-        py::list l;
-        
-        for (auto &&n : node) {
-            l.append(yaml_to_dict(n));
-        }
-        
-        return l;
-    } else if (node.IsScalar()) {
-        int ret;
-        if (YAML::convert<int>::decode(node, ret)) {
-            return py::cast(ret);
-        } else  {
-            double ret;
-            if (YAML::convert<double>::decode(node, ret)) {
-                return py::cast(ret);
-            } else {
-                return py::cast(node.as<std::string>());
+        inline py::object yaml_to_dict(const YAML::Node &node)
+        {
+            if (node.IsMap())
+            {
+                py::dict d;
+                for (auto &&n : node)
+                {
+                    d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
+                }
+                
+                return d;
+            }
+            else if (node.IsSequence())
+            {
+                py::list l;
+                
+                for (auto &&n : node)
+                {
+                    l.append(yaml_to_dict(n));
+                }
+                
+                return l;
+            }
+            else if (node.IsScalar())
+            {
+                bool ret;
+                if (YAML::convert<bool>::decode(node, ret))
+                {
+                    return py::cast(ret);
+                }
+                else
+                {
+                    int ret;
+                    if (YAML::convert<int>::decode(node, ret))
+                    {
+                        return py::cast(ret);
+                    }
+                    else
+                    {
+                        double ret;
+                        if (YAML::convert<double>::decode(node, ret))
+                        {
+                            return py::cast(ret);
+                        }
+                        else
+                        {
+                            return py::cast(node.as<std::string>());
+                        }
+                    }
+                }
+            } 
+            else 
+            {
+                return py::object();
             }
         }
-    } else {
-        return py::object();
-    }
-}
 
-namespace Plugins {
-namespace ScannerPyPlugin {
-pluginData *&pythonPluginData();
-}  // end namespace ScannerPyPlugin
-}  // end namespace Plugins
-}  // end namespace Scanner
+
+        namespace Plugins 
+        {
+            namespace ScannerPyPlugin 
+            {
+                pluginData *&pythonPluginData();
+            }  // end namespace ScannerPyPlugin
+        }  // end namespace Plugins
+    }  // end namespace Scanner
 }  // end namespace Gambit
 
-scanner_plugin(python, version(1, 0, 0)) {
+scanner_plugin(python, version(1, 0, 0))
+{
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
 
@@ -91,7 +130,7 @@ scanner_plugin(python, version(1, 0, 0)) {
 
     py::scoped_interpreter *guard = nullptr;
 
-    plugin_constructor 
+    plugin_constructor
     {
         try 
         {
@@ -104,8 +143,21 @@ scanner_plugin(python, version(1, 0, 0)) {
 
         ::Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
+        // get plugin name
+        std::string plugin_name = get_inifile_value<std::string>("plugin");
+
         // get yaml as dict
         py::dict options = yaml_to_dict(get_inifile_node());
+        
+        // log a warning if both 'init' and 'run' options are missing
+        if (!options.contains("init") && !options.contains("run"))
+        {
+            scan_warn << 
+                "Neither an 'init' nor a 'run' section was found in "
+                "the YAML options for the scanner " << plugin_name << ", "
+                "so no options from the YAML file will be forwarded "
+                "to the plugin." << scan_end;
+        }
 
         // get kwargs
         py::kwargs init_kwargs;
@@ -119,10 +171,10 @@ scanner_plugin(python, version(1, 0, 0)) {
             use_run_options = true;
             run_options = py::dict(options["run"]);
         }
+        
         // make instance of plugin
         py::module file;
         std::string pkg = get_inifile_value<std::string>("pkg", "");
-        std::string plugin_name = get_inifile_value<std::string>("plugin");
         try 
         {
             if (pkg == "")
