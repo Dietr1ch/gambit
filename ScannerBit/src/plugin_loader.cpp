@@ -155,13 +155,9 @@ namespace Gambit
                                         detail.package = fname;
                                         detail.type = type;
                                         detail.loc = path;
-                                        //detail.plugin_class = plug_class;
+                                        
                                         try
                                         {
-                                            //if (true)
-                                            //if (py::hasattr(file, plug_class.c_str()))// && py::isinstance<py::class_>(file.attr(plug_class.c_str())))
-                                            //{
-                                            //auto plug = file.attr(plug_class.c_str());
                                             if (py::hasattr(plug_class, "run") && py::isinstance<py::function>(plug_class.attr("run")))
                                             {
                                                 //std::cout << "has run" << std::endl;
@@ -199,11 +195,6 @@ namespace Gambit
                                             {
                                                 detail.class_doc = plug_class.attr("__doc__").cast<std::string>();
                                             }
-                                            //}
-                                            //else
-                                            //{
-                                            //    detail.status = "class does not exist";
-                                            //}
                                         }
                                         catch(std::exception &ex)
                                         {
@@ -216,13 +207,15 @@ namespace Gambit
                                     }
                                     else
                                     {
-                                        scan_warn << "PYthon plugin \"" << plug_name << "\" has multiple definitions.  Ignoring all but one." << scan_end;
+                                        scan_warn << "PYthon plugin \"" << plug_name << "\" of type \"" << type << "\" has multiple definitions.  Ignoring all but one." << scan_end;
                                     }
                                 }
                             }
                         }
                         catch (std::exception &ex)
                         {
+                            if (fname != "utils")
+                                scan_warn << "\"" << fname << "\" was not loaded: " << ex.what() << scan_end;
                             //std::cout << "failed because of: " << ex.what() << std::endl;
                         }
                         

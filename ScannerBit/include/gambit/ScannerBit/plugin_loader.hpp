@@ -76,7 +76,6 @@ namespace Gambit
             struct EXPORT_SYMBOLS PyPlugin_Details
             {
                 std::string plugin_name;
-                std::string plugin_class;
                 std::string package;
                 std::string type;
                 std::string version;
@@ -87,7 +86,7 @@ namespace Gambit
                 std::string status;
                 std::string error;
                 
-                PyPlugin_Details() : plugin_name(""), plugin_class(""), type(""), version("1.0.0"), loc(""), class_doc(""), init_doc(""), run_doc(""), status("ok") {}
+                PyPlugin_Details() : plugin_name(""), package(""), type(""), version("1.0.0"), loc(""), class_doc(""), init_doc(""), run_doc(""), status("ok") {}
                 
                 std::string print() const;
                 
@@ -95,7 +94,6 @@ namespace Gambit
                 {
                     std::cout << "pyplugin details:" << std::endl;
                     std::cout << "  plugin_name: " << plugin_name << std::endl;
-                    //std::cout << "  plugin_class: " << plugin_class << std::endl;
                     std::cout << "  package: " << package << std::endl;
                     std::cout << "  type: " << type << std::endl;
                     std::cout << "  version: " << version << std::endl;
