@@ -1431,13 +1431,7 @@ namespace Gambit
       // Store the locations of monojet interpolation data files to pass to DMsimp_fill_analysis_info_map
       std::map<str,str> Analysis_data_path;
       std::map<str,std::vector<str>> Interpolation_columns;
-<<<<<<< HEAD
-      Analysis_data_path["CMS_13TeV_MONOJET_36invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedScalarDM_MonoJets/ScalarDM_CMS36_MonoJet.txt";
-      Analysis_data_path["ATLAS_13TeV_MONOJET_139invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedScalarDM_MonoJets/ScalarDM_ATLAS139_MonoJet.txt";
-      Analysis_data_path["CMS_13TeV_MONOJET_137invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedScalarDM_MonoJets/ScalarDM_CMS137_MonoJet.txt";
-=======
       int Ndim;
->>>>>>> f89a0c151cdba73376a875bc8933c5124b078998
 
       if(ModelInUse("DMsimpVectorMedScalarDM"))
       {
@@ -1470,39 +1464,7 @@ namespace Gambit
         Analysis_data_path["ATLAS_13TeV_MONOJET_139invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedMajoranaDM_MonoJets/MajoranaDM_ATLAS139_MonoJet.txt";
         Analysis_data_path["CMS_13TeV_MONOJET_137invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedMajoranaDM_MonoJets/MajoranaDM_CMS137_MonoJet.txt";
 
-<<<<<<< HEAD
-      // Get the theory spectrum to pass on masses and parameters
-      const Spectrum& spec = *Dep::DMsimpVectorMedScalarDM_spectrum;
-
-      // Retrieve the signal yields
-      get_all_signal_yields(get_all_DMsimpVectorMedScalarDM_signal_yields, spec, analysis_data_map, result);
-
-    };
-
-    /// Results from DMsimpVectorMedMajoranaDM analyses
-    void DMsimpVectorMedMajoranaDM_results(AnalysisDataPointers& result)
-    {
-      using namespace Pipes::DMsimpVectorMedMajoranaDM_results;
-
-      // Clear previous vectors, etc.
-      result.clear();
-
-      static bool first = true;
-
-      // We need thread_local AnalysisData instances. Let's collect them in a map.
-      thread_local std::map<str,AnalysisData> analysis_data_map;
-
-      // Store the locations of monojet interpolation data files to pass to DMsimp_fill_analysis_info_map
-      std::map<str,str> Analysis_data_path;
-      std::map<str,std::vector<str>> Interpolation_columns;
-      Analysis_data_path["CMS_13TeV_MONOJET_36invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedMajoranaDM_MonoJets/MajoranaDM_CMS36_MonoJet.txt";
-      Analysis_data_path["ATLAS_13TeV_MONOJET_139invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedMajoranaDM_MonoJets/MajoranaDM_ATLAS139_MonoJet.txt";
-      Analysis_data_path["CMS_13TeV_MONOJET_137invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedMajoranaDM_MonoJets/MajoranaDM_CMS137_MonoJet.txt";
-
-      Interpolation_columns["CMS_13TeV_MONOJET_36invfb_interpolated"] = {"mDMmV_ratio","mass_MED","gAchi", "gq","xsec", "xsec_unc" ,
-=======
         Interpolation_columns["CMS_13TeV_MONOJET_36invfb_interpolated"] = {"mDMmV_ratio","mass_MED","gAchi", "gq","xsec", "xsec_unc" ,
->>>>>>> f89a0c151cdba73376a875bc8933c5124b078998
                                                                          "SR1", "SR2", "SR3", "SR4", "SR5", "SR6", "SR7", "SR8", "SR9",
                                                                          "SR10", "SR11", "SR12", "SR13", "SR14", "SR15", "SR16", "SR17",
                                                                          "SR18", "SR19", "SR20", "SR21", "SR22"};
@@ -1527,39 +1489,7 @@ namespace Gambit
         Analysis_data_path["ATLAS_13TeV_MONOJET_139invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedDiracDM_MonoJets/DiracDM_ATLAS139_MonoJet.txt";
         Analysis_data_path["CMS_13TeV_MONOJET_137invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedDiracDM_MonoJets/DiracDM_CMS137_MonoJet.txt";
 
-<<<<<<< HEAD
-      // Get the theory spectrum to pass on masses and parameters
-      const Spectrum& spec = *Dep::DMsimpVectorMedMajoranaDM_spectrum;
-
-      // Retrieve the signal yields
-      get_all_signal_yields(get_all_DMsimpVectorMedMajoranaDM_signal_yields, spec, analysis_data_map, result);
-
-    };
-
-    /// Results from DMsimpVectorMedDiracDM analyses
-    void DMsimpVectorMedDiracDM_results(AnalysisDataPointers& result)
-    {
-      using namespace Pipes::DMsimpVectorMedDiracDM_results;
-
-      // Clear previous vectors, etc.
-      result.clear();
-
-      static bool first = true;
-
-      // We need thread_local AnalysisData instances. Let's collect them in a map.
-      thread_local std::map<str,AnalysisData> analysis_data_map;
-
-      // Store the locations of monojet interpolation data files to pass to DMsimp_fill_analysis_info_map
-      std::map<str,str> Analysis_data_path;
-      std::map<str,std::vector<str>> Interpolation_columns;
-      Analysis_data_path["CMS_13TeV_MONOJET_36invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedDiracDM_MonoJets/DiracDM_CMS36_MonoJet.txt";
-      Analysis_data_path["ATLAS_13TeV_MONOJET_139invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedDiracDM_MonoJets/DiracDM_ATLAS139_MonoJet.txt";
-      Analysis_data_path["CMS_13TeV_MONOJET_137invfb_interpolated"] = GAMBIT_DIR "/ColliderBit/data/DMsimp_data/DMsimpVectorMedDiracDM_MonoJets/DiracDM_CMS137_MonoJet.txt";
-
-      Interpolation_columns["CMS_13TeV_MONOJET_36invfb_interpolated"] = {"mDMmV_ratio","mass_MED","gVchi","gAchi", "gq","xsec", "xsec_unc" ,
-=======
         Interpolation_columns["CMS_13TeV_MONOJET_36invfb_interpolated"] = {"mDMmV_ratio","mass_MED","gVchi","gAchi", "gq","xsec", "xsec_unc" ,
->>>>>>> f89a0c151cdba73376a875bc8933c5124b078998
                                                                          "SR1", "SR2", "SR3", "SR4", "SR5", "SR6", "SR7", "SR8", "SR9",
                                                                          "SR10", "SR11", "SR12", "SR13", "SR14", "SR15", "SR16", "SR17",
                                                                          "SR18", "SR19", "SR20", "SR21", "SR22"};
