@@ -23,20 +23,6 @@ class Scanner(ABC):
         Run the Python scanner
         """
 
-    @property
-    @abstractmethod
-    def name(self):
-        """
-        :returns: Name of scanner
-        """
-
-    @property
-    @abstractmethod
-    def version(self):
-        """
-        :returns: Version of scanner
-        """
-
     def _arr2map(self, arr):
         """
         :returns: Array as parameter map
