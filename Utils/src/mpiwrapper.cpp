@@ -701,7 +701,8 @@ namespace Gambit
         else
         {
            int errflag;
-           errflag = MPI_Init(&argc,&argv);
+           //errflag = MPI_Init(&argc,&argv);
+           errflag = MPI_Init(NULL, NULL);
 
            // // Test case for thread-safe MPI. Probably not going to use this though.
            // int provided; // output; level of thread support provided (may not meet the requested level)

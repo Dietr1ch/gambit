@@ -6,7 +6,8 @@ Abstract base class for a Python scanner
 from abc import ABC, abstractmethod
 from functools import cached_property
 
-from mpi4py import MPI
+#from mpi4py import MPI
+import mpi4py
 import numpy as np
 
 import scannerbit

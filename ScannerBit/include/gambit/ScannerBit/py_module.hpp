@@ -13,6 +13,7 @@
 #include "gambit/ScannerBit/factory_defs.hpp"
 #include "gambit/ScannerBit/plugin_defs.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
 
 #define __SCAN_PLUGIN_GET_INIFILE_VALUE__(GET_INIFILE_VALUE)                                            \
 {                                                                                                       \
@@ -576,5 +577,23 @@ PYBIND11_EMBEDDED_MODULE(objective_plugin, m)
     m.def("set_dimension", set_dimension);
     m.def("print_parameters", print_parameters);
 }
+
+/*namespace Gambit
+{
+
+    namespace Scanner
+    {
+
+        namespace Plugins
+        {
+            
+            PyPlugin_Loader pyplugin_info;
+            
+        }
+    }
+}*/
+
+// I put this here to make sure python is initialized before the backends do their thing.
+py::scoped_interpreter *guard = new py::scoped_interpreter;
 
 #endif

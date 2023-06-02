@@ -100,12 +100,7 @@ namespace Gambit
             
             void Plugin_Loader::Load_PyPlugins(const std::string &type)
             {
-                //std::cout << "Loading Plugins" << std::endl;
-                std::string path = std::string(GAMBIT_DIR "/ScannerBit/src/") + type + "s/python/plugins";
-                auto sys_list = py::list(py::module::import("sys").attr("path"));
-                sys_list.append(py::cast(path));
                 py::scoped_interpreter *guard;
-
                 try
                 {
                     guard = new py::scoped_interpreter();
@@ -114,118 +109,125 @@ namespace Gambit
                 {
                     guard = nullptr;
                 }
-                
-                if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
                 {
-                    char path_buffer[1024];
-                    int p_n;
-                    std::string fname;
-                    std::stringstream ss;
+                    //std::cout << "Loading Plugins" << std::endl;
+                    std::string path = std::string(GAMBIT_DIR "/ScannerBit/src/") + type + "s/python/plugins";
+                    auto sys_list = py::list(py::module::import("sys").attr("path"));
+                    sys_list.append(py::cast(path));
                     
-                    while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
+                    if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
                     {
-                        ss << std::string(path_buffer, p_n);
-                    }
-                    //std::cout << "all stuff: " << ss.str() << std::endl;
-                    while (ss >> fname)
-                    {
-                        std::string loc = path + "/" + fname;
-                        if (fname.substr(fname.size() - 3) == ".py")
-                            fname = fname.substr(0, fname.size() - 3);
-                        else if (fname.substr(fname.size() - 4) == ".pyc")
-                            fname = fname.substr(0, fname.size() - 4);
-                        //std::cout << "testing " << fname << std::endl;
-                        try
+                        char path_buffer[1024];
+                        int p_n;
+                        std::string fname;
+                        std::stringstream ss;
+                        
+                        while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
                         {
-                            auto file = py::module::import(fname.c_str());
-                            //std::cout << "passed " << fname << std::endl;
-                            if (py::hasattr(file, "__plugins__") && py::isinstance<py::dict>(file.attr("__plugins__")))
+                            ss << std::string(path_buffer, p_n);
+                        }
+                        //std::cout << "all stuff: " << ss.str() << std::endl;
+                        while (ss >> fname)
+                        {
+                            std::string loc = path + "/" + fname;
+                            if (fname.substr(fname.size() - 3) == ".py")
+                                fname = fname.substr(0, fname.size() - 3);
+                            else if (fname.substr(fname.size() - 4) == ".pyc")
+                                fname = fname.substr(0, fname.size() - 4);
+                            //std::cout << "testing " << fname << std::endl;
+                            try
                             {
-                                //std::cout << "has plugin dict" << std::endl;
-                                py::dict plugins = file.attr("__plugins__");
-                                for (auto &&plug : plugins)
+                                auto file = py::module::import(fname.c_str());
+                                //std::cout << "passed " << fname << std::endl;
+                                if (py::hasattr(file, "__plugins__") && py::isinstance<py::dict>(file.attr("__plugins__")))
                                 {
-                                    
-                                    std::string plug_name = plug.first.cast<std::string>();
-                                    py::handle plug_class = plug.second;
-                                    if (python_plugin_map[type].find(plug_name) == python_plugin_map[type].end())
+                                    //std::cout << "has plugin dict" << std::endl;
+                                    py::dict plugins = file.attr("__plugins__");
+                                    for (auto &&plug : plugins)
                                     {
-                                        PyPlugin_Details detail;
-                                        detail.plugin_name = plug_name;
-                                        detail.package = fname;
-                                        detail.type = type;
-                                        detail.loc = path;
                                         
-                                        try
+                                        std::string plug_name = plug.first.cast<std::string>();
+                                        py::handle plug_class = plug.second;
+                                        if (python_plugin_map[type].find(plug_name) == python_plugin_map[type].end())
                                         {
-                                            if (py::hasattr(plug_class, "run") && py::isinstance<py::function>(plug_class.attr("run")))
+                                            PyPlugin_Details detail;
+                                            detail.plugin_name = plug_name;
+                                            detail.package = fname;
+                                            detail.type = type;
+                                            detail.loc = path;
+                                            
+                                            try
                                             {
-                                                //std::cout << "has run" << std::endl;
-                                                auto run = plug_class.attr("run");
-                                                if (py::hasattr(run, "__doc__") && py::isinstance<py::str>(run.attr("__doc__")))
+                                                if (py::hasattr(plug_class, "run") && py::isinstance<py::function>(plug_class.attr("run")))
                                                 {
-                                                    detail.run_doc = run.attr("__doc__").cast<std::string>();
+                                                    //std::cout << "has run" << std::endl;
+                                                    auto run = plug_class.attr("run");
+                                                    if (py::hasattr(run, "__doc__") && py::isinstance<py::str>(run.attr("__doc__")))
+                                                    {
+                                                        detail.run_doc = run.attr("__doc__").cast<std::string>();
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    detail.status = "\"run\" not defined";
+                                                }
+                                                
+                                                if (py::hasattr(plug_class, "__init__") && py::isinstance<py::function>(plug_class.attr("__init__")))
+                                                {
+                                                    //std::cout << "has init" << std::endl;
+                                                    auto init = plug_class.attr("__init__");
+                                                    if (py::hasattr(init, "__doc__")&& py::isinstance<py::str>(init.attr("__doc__")))
+                                                    {
+                                                        detail.init_doc = init.attr("__doc__").cast<std::string>();
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    detail.status = "\"__init__\" not defined";
+                                                }
+                                                
+                                                if (py::hasattr(plug_class, "__version__") && py::isinstance<py::str>(plug_class.attr("__version__")))
+                                                {
+                                                    detail.version = plug_class.attr("__version__").cast<std::string>();
+                                                }
+                                                
+                                                if (py::hasattr(plug_class, "__doc__")&& py::isinstance<py::str>(plug_class.attr("__doc__")))
+                                                {
+                                                    detail.class_doc = plug_class.attr("__doc__").cast<std::string>();
                                                 }
                                             }
-                                            else
+                                            catch(std::exception &ex)
                                             {
-                                                detail.status = "\"run\" not defined";
+                                                detail.status = "plugin not loaded";
+                                                detail.error = ex.what();
                                             }
                                             
-                                            if (py::hasattr(plug_class, "__init__") && py::isinstance<py::function>(plug_class.attr("__init__")))
-                                            {
-                                                //std::cout << "has init" << std::endl;
-                                                auto init = plug_class.attr("__init__");
-                                                if (py::hasattr(init, "__doc__")&& py::isinstance<py::str>(init.attr("__doc__")))
-                                                {
-                                                    detail.init_doc = init.attr("__doc__").cast<std::string>();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                detail.status = "\"__init__\" not defined";
-                                            }
-                                            
-                                            if (py::hasattr(plug_class, "__version__") && py::isinstance<py::str>(plug_class.attr("__version__")))
-                                            {
-                                                detail.version = plug_class.attr("__version__").cast<std::string>();
-                                            }
-                                            
-                                            if (py::hasattr(plug_class, "__doc__")&& py::isinstance<py::str>(plug_class.attr("__doc__")))
-                                            {
-                                                detail.class_doc = plug_class.attr("__doc__").cast<std::string>();
-                                            }
+                                            python_plugin_map[type][plug_name] = detail;
+                                            //detail.debug();
                                         }
-                                        catch(std::exception &ex)
+                                        else
                                         {
-                                            detail.status = "plugin not loaded";
-                                            detail.error = ex.what();
+                                            scan_warn << "PYthon plugin \"" << plug_name << "\" of type \"" << type << "\" has multiple definitions.  Ignoring all but one." << scan_end;
                                         }
-                                        
-                                        python_plugin_map[type][plug_name] = detail;
-                                        //detail.debug();
-                                    }
-                                    else
-                                    {
-                                        scan_warn << "PYthon plugin \"" << plug_name << "\" of type \"" << type << "\" has multiple definitions.  Ignoring all but one." << scan_end;
                                     }
                                 }
                             }
+                            catch (std::exception &ex)
+                            {
+                                if (fname != "utils")
+                                    scan_warn << "\"" << fname << "\" was not loaded: " << ex.what() << scan_end;
+                                //std::cout << "failed because of: " << ex.what() << std::endl;
+                            }
+                            
                         }
-                        catch (std::exception &ex)
-                        {
-                            if (fname != "utils")
-                                scan_warn << "\"" << fname << "\" was not loaded: " << ex.what() << scan_end;
-                            //std::cout << "failed because of: " << ex.what() << std::endl;
-                        }
-                        
                     }
-                }
-                
-                sys_list.attr("pop")();
-
+                    
+                    sys_list.attr("pop")();
+                    }
                 if (guard != nullptr)
+                {
                     delete guard;
+                }
             }
             
             PyPlugin_Details &Plugin_Loader::find_python_plugin(const std::string &type, const std::string &plugin)
@@ -321,7 +323,7 @@ namespace Gambit
                 return table.str();
             }
 
-            Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
+            Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")//, python_plugin_map(pyplugin_info())
             {
                 std::string p_str;
                 std::ifstream lib_list(path + "plugin_libraries.list");

@@ -106,6 +106,31 @@ namespace Gambit
                 }
             };
 
+            /*class EXPORT_SYMBOLS PyPlugin_Loader
+            {
+            private:
+                std::map<std::string, std::map<std::string, PyPlugin_Details>> python_plugin_map;
+                
+            public:
+                PyPlugin_Loader()
+                {
+                    std::vector<std::string> types = {"objective", "scanner"};
+                    for (auto &&type : types)
+                    {
+                        std::cout << "doing ... " << type << std::endl;
+                        Load_PyPlugins(type);
+                        std::cout << "finished" << std::endl;
+                    }
+                }
+                
+                void Load_PyPlugins(const std::string &);
+                
+                std::map<std::string, std::map<std::string, PyPlugin_Details>> &operator()()
+                {
+                    return  python_plugin_map;
+                }
+            };*/
+            
             ///container class for the actual plugins detected by ScannerBit
             class EXPORT_SYMBOLS Plugin_Loader
             {
@@ -299,6 +324,7 @@ namespace Gambit
             ///Access Functor for plugin info.  This will manage all the
             ///plugins including stored and writing resume info.
             extern EXPORT_SYMBOLS pluginInfo plugin_info;
+            //extern EXPORT_SYMBOLS PyPlugin_Loader pyplugin_info;
 
         }
 

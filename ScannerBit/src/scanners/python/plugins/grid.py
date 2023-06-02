@@ -11,7 +11,8 @@ import numpy as np
 
 # Figure out if we can use mpi4py
 try:
-    from mpi4py import MPI
+    #from mpi4py import MPI
+    import mpi4py
     if scannerbit.with_mpi:
         with_mpi = True
     else:

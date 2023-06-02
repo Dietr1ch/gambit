@@ -663,7 +663,14 @@ namespace Gambit
     void Backends::backend_info::start_python()
     {
       // Create an instance of the interpreter.
-      python_interpreter = new pybind11::scoped_interpreter;
+      try 
+      {
+        python_interpreter = new pybind11::scoped_interpreter;
+      }
+      catch(std::exception&)
+      {
+        python_interpreter = nullptr;
+      }
       // Import the sys module, and save a wrapper to it for later.
       static pybind11::module local_sys = pybind11::module::import("sys");
       sys = &local_sys;
