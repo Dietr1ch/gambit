@@ -11,8 +11,7 @@ import numpy as np
 
 # Figure out if we can use mpi4py
 try:
-    #from mpi4py import MPI
-    import mpi4py
+    from mpi4py import MPI
     if scannerbit.with_mpi:
         with_mpi = True
     else:
@@ -95,11 +94,11 @@ YAML options:
             if len(param_names) != len(parameters):
                 raise RuntimeError("Grid scanner: The dimension of gambit ({0}) does not match the dimension of the inputed parameters ({1}).".format(len(param_names), len(parameters)))
             
-            for param in param_names:
-                if param in parameters:
-                    self.vecs.append(np.linspace(0.0, 1.0, grid_pts[parameters.index(param)]))
-                else:
-                    raise RuntimeError("Grid scanner: parameter \"{0}\" is not provided.".format(param))
+            #for param in param_names:
+                #if param in parameters:
+                    #self.vecs.append(np.linspace(0.0, 1.0, grid_pts[parameters.index(param)]))
+                #else:
+                    #raise RuntimeError("Grid scanner: parameter \"{0}\" is not provided.".format(param))
 
         else:
             for n in grid_pts:

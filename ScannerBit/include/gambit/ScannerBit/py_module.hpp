@@ -13,7 +13,6 @@
 #include "gambit/ScannerBit/factory_defs.hpp"
 #include "gambit/ScannerBit/plugin_defs.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
-#include "gambit/ScannerBit/plugin_loader.hpp"
 
 #define __SCAN_PLUGIN_GET_INIFILE_VALUE__(GET_INIFILE_VALUE)                                            \
 {                                                                                                       \
@@ -130,6 +129,31 @@ typedef std::vector<std::string> vec_str_type_;
 
 namespace Gambit
 {
+    
+    class EXPORT_SYMBOLS gambit_scoped_interpreter
+    {
+    private:
+        static size_t count;
+        
+    public:
+        gambit_scoped_interpreter();
+        
+        ~gambit_scoped_interpreter();
+    };
+    
+    size_t gambit_scoped_interpreter::count = 0;
+    
+    gambit_scoped_interpreter::gambit_scoped_interpreter()
+    {
+        if(++count == 1)
+            pybind11::initialize_interpreter();
+    }
+    
+    gambit_scoped_interpreter::~gambit_scoped_interpreter()
+    {
+        if(--count == 0)
+            pybind11::finalize_interpreter();
+    }
     
     namespace Scanner 
     {
@@ -578,22 +602,7 @@ PYBIND11_EMBEDDED_MODULE(objective_plugin, m)
     m.def("print_parameters", print_parameters);
 }
 
-/*namespace Gambit
-{
-
-    namespace Scanner
-    {
-
-        namespace Plugins
-        {
-            
-            PyPlugin_Loader pyplugin_info;
-            
-        }
-    }
-}*/
-
-// I put this here to make sure python is initialized before the backends do their thing.
-py::scoped_interpreter *guard = new py::scoped_interpreter;
+// I put this here to make sure python is initialized before the models/backends do their thing.
+Gambit::gambit_scoped_interpreter guard;
 
 #endif

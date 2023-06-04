@@ -65,12 +65,12 @@ namespace Gambit
                     if (options.hasKey("objectives") && options.hasKey("objectives", *it))
                     {
                         std::string plugin_name;
-                        if (options.hasKey("objectives", *it, "purpose") && (options.hasKey("objectives", *it, "plugin" )|| options.hasKey("objectives", *it, "pyplugin")))
+                        if (options.hasKey("objectives", *it, "purpose") && (options.hasKey("objectives", *it, "plugin" )))
                         {
                             std::vector <std::string> purposes = get_yaml_vector<std::string>(options.getNode("objectives", *it, "purpose"));
-                            plugin_name = options.hasKey("objectives", *it, "plugin") ? options.getValue<std::string>("objectives", *it, "plugin") : "python";
+                            plugin_name = options.getValue<std::string>("objectives", *it, "plugin");
                             for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
-                                    names[*it2].push_back(std::pair<std::string, std::string>(*it, plugin_name));
+                                names[*it2].push_back(std::pair<std::string, std::string>(*it, plugin_name));
                         }
                         else
                         {

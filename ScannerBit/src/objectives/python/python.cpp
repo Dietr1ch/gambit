@@ -14,6 +14,8 @@
 ///
 ///  *********************************************
 
+#include "gambit/cmake/cmake_variables.hpp"
+#ifdef HAVE_PYBIND11
 #ifdef WITH_MPI
 #include "gambit/Utils/begin_ignore_warnings_mpi.hpp"
 #include "mpi.h"
@@ -36,6 +38,17 @@ namespace py = pybind11;
 
 namespace Gambit
 {
+    
+    class gambit_scoped_interpreter
+    {
+    private:
+        static size_t count;
+        
+    public:
+        gambit_scoped_interpreter();
+        
+        ~gambit_scoped_interpreter();
+    };
     
     namespace Scanner 
     {
@@ -107,6 +120,8 @@ objective_plugin(python, version(1, 0, 0))
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
     
+    ::Gambit::gambit_scoped_interpreter guard;
+    
     /*!
      * Instance of python scanner
      */
@@ -120,19 +135,8 @@ objective_plugin(python, version(1, 0, 0))
     
     //bool use_run_options = false;
 
-    py::scoped_interpreter *guard = nullptr;
-
     plugin_constructor 
     {
-        try 
-        {
-            guard = new py::scoped_interpreter();
-        } 
-        catch(std::exception &) 
-        {
-            guard = nullptr;
-        }
-
         ::Gambit::Scanner::Plugins::ObjPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
         // get yaml as dict
@@ -158,6 +162,7 @@ objective_plugin(python, version(1, 0, 0))
         {
             if (pkg == "")
             {
+                Gambit::Scanner::Plugins::plugin_info.load_python_plugins();
                 decltype(auto) details =  Gambit::Scanner::Plugins::plugin_info.load_python_plugin("objective", plugin_name);
                 py::list(py::module::import("sys").attr("path")).append(py::cast(details.loc));
                 file = py::module::import(details.package.c_str());
@@ -196,7 +201,7 @@ objective_plugin(python, version(1, 0, 0))
     
     plugin_deconstructor
     {
-        if (guard != nullptr)
-            delete guard;
     }
 }
+
+#endif

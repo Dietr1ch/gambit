@@ -60,6 +60,12 @@ namespace Gambit
             /************** PYTHON STUFF *****************/
             /*********************************************/
             
+        #ifdef HAVE_PYBIND11
+            void pluginInfo::load_python_plugins()
+            {
+                plugins.Load_PyPlugins();
+            }
+            
             std::string PyPlugin_Details::print() const
             {
                 std::stringstream out;
@@ -96,6 +102,16 @@ namespace Gambit
                 }
                 
                 return out.str();
+            }
+            
+            void Plugin_Loader::Load_PyPlugins()
+            {
+                if (python_plugin_map.size() == 0)
+                {
+                    std::vector<std::string> types = {"objective", "scanner"};
+                    for (auto &&type : types)
+                        Load_PyPlugins(type);
+                }
             }
             
             void Plugin_Loader::Load_PyPlugins(const std::string &type)
@@ -229,7 +245,7 @@ namespace Gambit
                     delete guard;
                 }
             }
-            
+
             PyPlugin_Details &Plugin_Loader::find_python_plugin(const std::string &type, const std::string &plugin)
             {
                 std::map<std::string, std::map<std::string, PyPlugin_Details>>::iterator find;
@@ -293,11 +309,12 @@ namespace Gambit
 
                 return table.str();
             }
-            
+        #endif
+
             /*************************************************/
             /************** END PYTHON STUFF *****************/
             /*************************************************/
-            
+
             inline std::string print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
             {
                 table_formatter table(plugins->first + " PLUGINS", "VERSION", "STATUS");
@@ -350,7 +367,7 @@ namespace Gambit
                     scan_err << "Cannot open ./ScannerBit/lib/plugin_libraries.list" << scan_end;
                 }
                 
-                Load_PyPlugins();
+                //Load_PyPlugins();
             }
 
             /// Check a plugin map and return a flag indicating if a candidate plugin is already in the map or not.
@@ -492,7 +509,10 @@ namespace Gambit
             std::vector<std::string> Plugin_Loader::print_plugin_names(const std::string &plug_type) const
             {
                 std::vector<std::string> vec;
-
+            #ifdef HAVE_PYBIND11
+                plugin_info.load_python_plugins();
+            #endif
+                
                 if (plug_type != "")
                 {
                     auto plugins = total_plugin_map.find(plug_type);
@@ -507,9 +527,11 @@ namespace Gambit
                             vec.push_back(it->first);
                         }
                         
+                    #ifdef HAVE_PYBIND11
                         if (python_plugin_map.find(plug_type) != python_plugin_map.end())
                             for (auto &&elem : python_plugin_map.at(plug_type))
                                 vec.push_back(elem.first);
+                    #endif
                     }
                 }
                 else
@@ -521,9 +543,11 @@ namespace Gambit
                             vec.push_back(it2->first);
                         }
                         
+                    #ifdef HAVE_PYBIND11
                         if (python_plugin_map.find(it->first) != python_plugin_map.end())
                             for (auto &&elem : python_plugin_map.at(it->first))
                                 vec.push_back(elem.first);
+                    #endif
                     }
                 }
 
@@ -619,6 +643,10 @@ namespace Gambit
 
             std::string Plugin_Loader::print_all(const std::string &plug_type) const
             {
+            #ifdef HAVE_PYBIND11
+                plugin_info.load_python_plugins();
+            #endif
+                
                 if (plug_type != "")
                 {
                     auto plugins = total_plugin_map.find(plug_type);
@@ -628,7 +656,11 @@ namespace Gambit
                     }
                     else
                     {
+                    #ifdef HAVE_PYBIND11
                         return print_plugins(plugins, python_plugin_map);
+                    #else
+                        return print_plugins(plugins);
+                    #endif
                     }
                 }
                 else
@@ -636,7 +668,11 @@ namespace Gambit
                     std::string ret = "";
                     for (auto it = total_plugin_map.begin(), end = total_plugin_map.end(); it != end; it++)
                     {
+                    #ifdef HAVE_PYBIND11
                         ret += print_plugins(it, python_plugin_map);
+                    #else
+                        ret += print_plugins(it);
+                    #endif
                     }
                     
                     return ret;
@@ -691,7 +727,9 @@ namespace Gambit
             {
                 std::vector<const Scanner::Plugins::Plugin_Details *> vec;
                 if((getPluginsMap().find(type) == getPluginsMap().end()) || (getPluginsMap().at(type).find(plugin) == getPluginsMap().at(type).end()))
-                {	
+                {
+                #ifdef HAVE_PYBIND11
+                    plugin_info.load_python_plugins();
                     std::map<std::string, std::map<std::string, PyPlugin_Details>>::const_iterator find;
                     std::map<std::string, PyPlugin_Details>::const_iterator find2;
                     
@@ -704,7 +742,9 @@ namespace Gambit
                     {
                         return "";
                     }
-                    
+                #else
+                    return "";
+                #endif
                 }
 
                 for (auto it = getPluginsMap().at(type).at(plugin).begin(), end = getPluginsMap().at(type).at(plugin).end(); it != end; it++)
@@ -756,8 +796,11 @@ namespace Gambit
 
                 if((plugin_map.find(type) == plugin_map.end()) || (plugin_map.at(type).find(plugin) == plugin_map.at(type).end()))
                 {
-                    //scan_err << "There is no plugin named \"" << plugin <<"\" of type \"" << type << "\"" << scan_end;
+                #ifdef HAVE_PYBIND11
                     plugin = "python";
+                #else
+                    scan_err << "There is no plugin named \"" << plugin <<"\" of type \"" << type << "\"" << scan_end;
+                #endif
                 }
 
                 for (auto it = plugin_map.at(type).at(plugin).begin(), end = plugin_map.at(type).at(plugin).end(); it != end; it++)

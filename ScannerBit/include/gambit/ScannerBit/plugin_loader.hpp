@@ -73,6 +73,7 @@ namespace Gambit
                         : details(details), printer(printer), prior(prior), flags(details.flags), node(node) {}
             };
             
+        #ifdef HAVE_PYBIND11
             struct EXPORT_SYMBOLS PyPlugin_Details
             {
                 std::string plugin_name;
@@ -105,7 +106,8 @@ namespace Gambit
                     std::cout << "  error: " << error << std::endl;
                 }
             };
-
+        #endif
+            
             /*class EXPORT_SYMBOLS PyPlugin_Loader
             {
             private:
@@ -117,9 +119,7 @@ namespace Gambit
                     std::vector<std::string> types = {"objective", "scanner"};
                     for (auto &&type : types)
                     {
-                        std::cout << "doing ... " << type << std::endl;
                         Load_PyPlugins(type);
-                        std::cout << "finished" << std::endl;
                     }
                 }
                 
@@ -142,18 +142,18 @@ namespace Gambit
                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> excluded_plugin_map;
                 std::vector<Plugin_Details> total_plugins;
                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> total_plugin_map;
+            #ifdef HAVE_PYBIND11
                 std::map<std::string, std::map<std::string, PyPlugin_Details>> python_plugin_map;
+            #endif
                 std::vector<Plugin_Details> loadExcluded(const std::string &);
                 void process(const std::string &, const std::string &, const std::string &, std::vector<Plugin_Details>&);
-                void Load_PyPlugins(const std::string &);
-                void Load_PyPlugins()
-                {
-                    std::vector<std::string> types = {"objective", "scanner"};
-                    for (auto &&type : types)
-                        Load_PyPlugins(type);
-                }
-
+                
             public:
+            #ifdef HAVE_PYBIND11
+                void Load_PyPlugins(const std::string &);
+                void Load_PyPlugins();
+            #endif
+                
                 Plugin_Loader();
                 const std::vector<Plugin_Details> &getPluginsVec() const {return total_plugins;}
                 const std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> &getPluginsMap() const {return total_plugin_map;}
@@ -213,10 +213,10 @@ namespace Gambit
                 Options options;
                 std::string def_out_path;
                 int MPIrank;
-                #ifdef WITH_MPI
+            #ifdef WITH_MPI
                 GMPI::Comm* scannerComm;
                 bool MPIdata_is_init;
-                #endif
+            #endif
                 /// Flag to indicate if early shutdown is in progess (e.g. due to intercepted OS signal). When set to 'true' scanners should at minimum close off their output files, and if possible they should stop scanning and return control to GAMBIT (or whatever the host code might be).
                 bool earlyShutdownInProgress;
 
@@ -260,14 +260,19 @@ namespace Gambit
                 bool early_shutdown_in_progress() const {return earlyShutdownInProgress;}
                 bool resume_mode() const { return printer->resume_mode(); }
                 std::string temp_file_path() {return Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files/");}
+                
+            #ifdef HAVE_PYBIND11
+                void load_python_plugins();
+                PyPlugin_Details &load_python_plugin(const std::string &, const std::string &);
+            #endif
 
-                #ifdef WITH_MPI
+            #ifdef WITH_MPI
                 // tags for messages sent via scannerComm
                 static const int MIN_LOGL_MSG = 0;
                 ///Initialise any MPI functionality (currently just used to provide a communicator object to ScannerBit)
                 void initMPIdata(GMPI::Comm* newcomm);
                 GMPI::Comm& scanComm();
-                #endif
+            #endif
                 int getRank() { return MPIrank; }
 
                 ///resume function
@@ -317,8 +322,6 @@ namespace Gambit
                 ///Get plugin data for single plugin.
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
                 ~pluginInfo();
-                
-                PyPlugin_Details &load_python_plugin(const std::string &, const std::string &);
             };
 
             ///Access Functor for plugin info.  This will manage all the
