@@ -47,7 +47,7 @@ Scanner:
   # This tag specifies which plugin to use as the scanner.
   # Here the multinest scanner is choosen, but you could
   # choose any scanner defined under the scanners section
-  use_scanner: python_grid #scipy_differential_evolution #python_grid
+  use_scanner: scipy_differential_evolution #python_grid
 
   scanners:
     
@@ -175,8 +175,8 @@ Scanner:
           range: [0, 4]
 
     EggBox:
-      #plugin: EggBox
-      plugin: pyeggbox
+      plugin: EggBox
+      #plugin: pyeggbox
       purpose: LogLike
       length: [5.0, 5.0]
       parameters:
