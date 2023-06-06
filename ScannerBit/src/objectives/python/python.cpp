@@ -105,7 +105,8 @@ namespace Gambit
             {
                 
                 pluginData *&pythonPluginData();
-                double run(py::object, std::unordered_map<std::string,double> &);
+                double run(py::object &, std::unordered_map<std::string,double> &);
+                double run(py::object &, std::unordered_map<std::string,double> &, py::kwargs &);
                 
             }
             
@@ -131,9 +132,9 @@ objective_plugin(python, version(1, 0, 0))
     /*!
      * Yaml file options
      */
-    //py::kwargs run_options;
+    py::kwargs run_options;
     
-    //bool use_run_options = false;
+    bool use_run_options = false;
 
     plugin_constructor 
     {
@@ -149,11 +150,11 @@ objective_plugin(python, version(1, 0, 0))
         else
             init_kwargs = options;
         
-        /*if (options.contains("run") && py::isinstance<py::dict>(options["run"]))
+        if (options.contains("run") && py::isinstance<py::dict>(options["run"]))
         {
             use_run_options = true;
             run_options = py::dict(options["run"]);
-        }*/
+        }
         // make instance of plugin
         py::module file;
         std::string pkg = get_inifile_value<std::string>("pkg", "");
@@ -196,7 +197,10 @@ objective_plugin(python, version(1, 0, 0))
     
     double plugin_main(std::unordered_map<std::string, double> &map)
     {
-        return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map);
+        if (use_run_options)
+            return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map, run_options);
+        else
+            return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map);
     }
     
     plugin_deconstructor

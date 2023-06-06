@@ -321,9 +321,14 @@ namespace Gambit
                     return data;
                 }
                 
-                __attribute__ ((visibility ("default"))) double run(py::object func, map_doub_type_ &map)
+                __attribute__ ((visibility ("default"))) double run(py::object &func, map_doub_type_ &map)
                 {
                     return func(&map).cast<double>();
+                }
+                
+                __attribute__ ((visibility ("default"))) double run(py::object &func, map_doub_type_ &map, py::kwargs &opts)
+                {
+                    return func(&map, **opts).cast<double>();
                 }
                 
                 template <typename T>
