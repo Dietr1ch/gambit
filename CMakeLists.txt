@@ -137,7 +137,9 @@ message("${BoldYellow}   Using Python interpreter version ${PYTHON_VERSION_STRIN
 
 if(PYTHONLIBS_FOUND)
   message("${BoldYellow}   Using Python libraries version ${PYTHONLIBS_VERSION_STRING} for Python backend support.${ColourReset}")
-  if (NOT "${PYTHON_VERSION_STRING}" STREQUAL "${PYTHONLIBS_VERSION_STRING}")
+  # Remove trailing non-numeric characters from version
+  string(REGEX REPLACE "[a-zA-Z]" "" PYTHONLIBS_VERSION_STRING_CLEAN ${PYTHONLIBS_VERSION_STRING})
+  if (NOT "${PYTHON_VERSION_STRING}" STREQUAL "${PYTHONLIBS_VERSION_STRING_CLEAN}")
     message("${BoldRed}   NOTE: You are using different Python versions for the interpreter and the libraries!${ColourReset}\n"
             "   In principle this should be fine, as the interpreter is only used for building GAMBIT, and the\n"
             "   libraries are only used for providing support for Python backends at runtime.  However, if you\n"
