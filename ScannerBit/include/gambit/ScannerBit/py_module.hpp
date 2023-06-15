@@ -1,3 +1,4 @@
+#ifdef HAVE_PYBIND11
 #ifdef __GAMBIT_CPP__
 
 #include <unordered_map>
@@ -610,4 +611,5 @@ PYBIND11_EMBEDDED_MODULE(objective_plugin, m)
 // I put this here to make sure python is initialized before the models/backends do their thing.
 Gambit::gambit_scoped_interpreter guard;
 
-#endif
+#endif  // __GAMBIT_CPP__
+#endif  // HAVE_PYBIND11
