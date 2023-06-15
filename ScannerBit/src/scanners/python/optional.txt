@@ -8,3 +8,4 @@ ultranest
 adaptive
 zeus-mcmc
 pocomc
+stochopy
