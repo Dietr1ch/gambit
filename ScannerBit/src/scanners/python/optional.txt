@@ -9,3 +9,4 @@ adaptive
 zeus-mcmc
 pocomc
 stochopy
+kombine
