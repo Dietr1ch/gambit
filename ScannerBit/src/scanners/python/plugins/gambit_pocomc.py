@@ -8,9 +8,7 @@ import numpy as np
 
 import pocomc
 
-from utils import Scanner
-from utils import copydoc
-from utils import version
+from utils import Scanner, copydoc, version
 
 
 class PocoMC(Scanner):
@@ -45,4 +43,4 @@ class PocoMC(Scanner):
             pickle.dump(self.sampler.results, f)
 
 
-__plugins__={PocoMC.name: PocoMC}
+__plugins__ = PocoMC.name: PocoMC}

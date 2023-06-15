@@ -7,9 +7,7 @@ import pickle
 
 import ultranest
 
-from utils import Scanner
-from utils import copydoc
-from utils import version
+from utils import Scanner, copydoc, version
 
 
 class ReactiveUltranest(Scanner):
@@ -49,4 +47,4 @@ class ReactiveUltranest(Scanner):
             pickle.dump(self.sampler.results, f)
 
 
-__plugins__={ReactiveUltranest.name: ReactiveUltranest}
+__plugins__ = {ReactiveUltranest.name: ReactiveUltranest}

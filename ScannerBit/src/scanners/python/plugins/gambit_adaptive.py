@@ -8,9 +8,7 @@ import numpy as np
 
 import adaptive
 
-from utils import Scanner
-from utils import copydoc
-from utils import version
+from utils import Scanner, copydoc, version
 
 
 class Adaptive(Scanner):
@@ -41,4 +39,4 @@ class Adaptive(Scanner):
             np.savetxt(filename, data)
 
 
-__plugins__={Adaptive.name: Adapive}
+__plugins__ = {Adaptive.name: Adaptive}

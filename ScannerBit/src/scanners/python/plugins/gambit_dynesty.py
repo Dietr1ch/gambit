@@ -13,9 +13,7 @@ import pickle
 
 import dynesty
 
-from utils import Scanner
-from utils import copydoc
-from utils import version
+from utils import Scanner, copydoc, version
 
 
 class StaticDynesty(Scanner):
@@ -66,5 +64,5 @@ class DynamicDynesty(Scanner):
             pickle.dump(self.sampler.results, f)
 
 
-__plugins__={StaticDynesty.name: StaticDynesty, 
-             DynamicDynesty.name: DynamicDynesty}
+__plugins__ = {StaticDynesty.name: StaticDynesty,
+               DynamicDynesty.name: DynamicDynesty}

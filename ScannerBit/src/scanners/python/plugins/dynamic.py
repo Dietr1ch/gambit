@@ -5,7 +5,7 @@ Import a module dynamically
 
 import importlib
 
-from .scanner import Scanner
+from utils import Scanner
 
 
 class Dynamic(Scanner):

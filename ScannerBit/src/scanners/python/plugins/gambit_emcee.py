@@ -7,9 +7,7 @@ import numpy as np
 
 import emcee
 
-from utils import Scanner
-from utils import copydoc
-from utils import version
+from utils import Scanner, copydoc, version
 
 
 class Emcee(Scanner):
@@ -66,4 +64,4 @@ class Emcee(Scanner):
                               progress=progress, **kwargs)
 
 
-__plugins__={Emcee.name: Emcee}
+__plugins__ = {Emcee.name: Emcee}

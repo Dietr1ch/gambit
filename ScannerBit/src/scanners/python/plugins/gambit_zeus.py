@@ -7,9 +7,7 @@ import numpy as np
 
 import zeus
 
-from utils import Scanner
-from utils import copydoc
-from utils import version
+from utils import Scanner, copydoc, version
 
 
 class Zeus(Scanner):
@@ -58,4 +56,4 @@ class Zeus(Scanner):
                               callbacks=self.save_callback(filename), **kwargs)
 
 
-__plugins__={Zeus.name: Zeus}
+__plugins__ = {Zeus.name: Zeus}
