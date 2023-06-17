@@ -44,9 +44,11 @@ namespace Gambit
         /// Singleton accessor function 
         static python_interpreter& get();
   
-        /// Modules loaded at construction time
-        pybind11::module* sys, os;
+        /// sys module loaded at construction time
+        pybind11::module* sys;
     
+        /// os module loaded at construction time
+        pybind11::module* os;
   
       private:
     
