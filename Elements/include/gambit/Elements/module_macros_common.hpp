@@ -30,6 +30,8 @@
 #include <string>
 
 #include "gambit/Utils/util_macros.hpp"
+// This ensures that calls to these macros can be safely made with pybind11 types.
+#include "gambit/Utils/create_python_interpreter_guard.hpp"
 
 #include <boost/preprocessor/comparison/greater.hpp>
 #include <boost/preprocessor/control/iif.hpp>

@@ -1,8 +1,23 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  ??????
+///
+///  *********************************************
+///
+///  Authors:
+///
+///  \author ????
+///  \date ????
+///
+///  *********************************************
+
+#pragma once
+
 #ifdef HAVE_PYBIND11
-#ifdef __GAMBIT_CPP__
 
 #include <unordered_map>
-
 #include "gambit/Utils/begin_ignore_warnings_pybind11.hpp"
 #include "gambit/Utils/begin_ignore_warnings_eigen.hpp"
 #include <pybind11/embed.h>
@@ -130,31 +145,6 @@ typedef std::vector<std::string> vec_str_type_;
 
 namespace Gambit
 {
-    
-    class EXPORT_SYMBOLS gambit_scoped_interpreter
-    {
-    private:
-        static size_t count;
-        
-    public:
-        gambit_scoped_interpreter();
-        
-        ~gambit_scoped_interpreter();
-    };
-    
-    size_t gambit_scoped_interpreter::count = 0;
-    
-    gambit_scoped_interpreter::gambit_scoped_interpreter()
-    {
-        if(++count == 1)
-            pybind11::initialize_interpreter();
-    }
-    
-    gambit_scoped_interpreter::~gambit_scoped_interpreter()
-    {
-        if(--count == 0)
-            pybind11::finalize_interpreter();
-    }
     
     namespace Scanner 
     {
@@ -608,8 +598,4 @@ PYBIND11_EMBEDDED_MODULE(objective_plugin, m)
     m.def("print_parameters", print_parameters);
 }
 
-// I put this here to make sure python is initialized before the models/backends do their thing.
-Gambit::gambit_scoped_interpreter guard;
-
-#endif  // __GAMBIT_CPP__
 #endif  // HAVE_PYBIND11

@@ -20,7 +20,6 @@
 #include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Utils/static_members.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
-#include "gambit/ScannerBit/py_module.hpp"
 #include "gambit/Models/model_rollcall.hpp"
 #include "gambit/Elements/equivalency_singleton.hpp"
 #include "gambit/Backends/backend_rollcall.hpp"
@@ -33,6 +32,7 @@
 #include "gambit/Printers/printermanager.hpp"
 #include "gambit/ScannerBit/scannerbit.hpp"
 #include "gambit/ScannerBit/priors_rollcall.hpp"
+#include "gambit/ScannerBit/py_module.hpp"
 
 #endif //__gambit_main_hpp__
 
