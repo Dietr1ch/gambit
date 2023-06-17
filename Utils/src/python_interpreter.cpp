@@ -38,7 +38,7 @@ namespace Gambit
   {
 
     /// Singleton accessor function 
-    python_interpreter::python_interpreter& get()
+    static python_interpreter& python_interpreter::get()
     {
       // This is guaranteed to be threadsafe by C++11
       static python_interpreter s;
@@ -65,11 +65,8 @@ namespace Gambit
        delete iptr;
     }
 
-    /// Just some syntactic sugar 
-    void python_interpreter_guard()
-    {
-      python_interpreter::get();
-    }
+    /// Interpreter guard constructor
+    python_interpreter_guard::python_interpreter_guard() { python_interpreter::get(); }
     
   }
 

@@ -69,8 +69,13 @@ namespace Gambit
     
     };
   
-    /// Just some syntactic sugar 
-    void python_interpreter_guard();
+    /// Guard class for python interpreters 
+    class EXPORT_SYMBOLS python_interpreter_guard
+    {
+      public:
+        /// Constructor just gets interpreter object
+        python_interpreter_guard();
+    };
     
   }
 

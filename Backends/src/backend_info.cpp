@@ -556,7 +556,7 @@ namespace Gambit
       }
 
       // Fire up the Python interpreter if it hasn't been started yet.
-      Utils::python_interpreter_guard();
+      Utils::python_interpreter_guard g;
 
       // Bail now if the backend requires a version of Python that GAMBIT is not configured with.
       if (PYTHON_VERSION_MAJOR < 2 or PYTHON_VERSION_MAJOR > 3)

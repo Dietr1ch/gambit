@@ -51,7 +51,7 @@ class PythonScanner {
         py::list(py::module::import("sys").attr("path")).append(py::cast(path));
 
         // Make sure the python interpreter has been started.
-        Utils::python_interpreter_guard();
+        Utils::python_interpreter_guard g;
         
         // import plugins
         py::module plugins_module = py::module::import("plugins");
@@ -139,7 +139,7 @@ std::vector<std::string> python_scanner_names() {
     py::list(py::module::import("sys").attr("path")).append(py::cast(path));
 
     // Make sure the python interpreter has been started.
-    Utils::python_interpreter_guard();
+    Utils::python_interpreter_guard g;
 
     // fetch plugin names
     py::module plugins_module = py::module::import("plugins");

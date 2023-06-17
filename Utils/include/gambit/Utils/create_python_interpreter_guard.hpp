@@ -27,7 +27,7 @@ namespace Gambit
   namespace Utils
   {
 
-    const python_interpreter* guard = &(python_interpreter::get());
+    python_interpreter_guard g;
   
   }
     
