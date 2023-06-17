@@ -555,6 +555,9 @@ namespace Gambit
         return;
       }
 
+      // Fire up the Python interpreter if it hasn't been started yet.
+      Utils::python_interpreter_guard();
+
       // Bail now if the backend requires a version of Python that GAMBIT is not configured with.
       if (PYTHON_VERSION_MAJOR < 2 or PYTHON_VERSION_MAJOR > 3)
       {
@@ -581,9 +584,6 @@ namespace Gambit
         missingPythonVersion[be+ver] = 3;
         return;
       }
-
-      // Fire up the Python interpreter if it hasn't been started yet.
-      Utils::python_interpreter_guard();
 
       // Add the path to the backend to the Python system path
       pybind11::object sys_path = Utils::python_interpreter::get().sys->attr("path");
