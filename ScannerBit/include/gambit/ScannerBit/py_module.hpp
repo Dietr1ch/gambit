@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "gambit/cmake/cmake_variables.hpp"
+
 #ifdef HAVE_PYBIND11
 
 #include <unordered_map>
@@ -226,7 +228,7 @@ namespace Gambit
             namespace ScannerPyPlugin
             {
                 
-                __attribute__ ((visibility ("default"))) pluginData *&pythonPluginData()
+                EXPORT_SYMBOLS pluginData*& pythonPluginData()
                 {
                     static pluginData *data = nullptr;
                     
@@ -305,7 +307,7 @@ namespace Gambit
             namespace ObjPyPlugin
             {
                 
-                __attribute__ ((visibility ("default"))) pluginData *&pythonPluginData()
+                EXPORT_SYMBOLS pluginData*& pythonPluginData()
                 {
                     static pluginData *data = nullptr;
                     

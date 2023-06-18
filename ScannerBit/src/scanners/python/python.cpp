@@ -21,38 +21,38 @@
 ///          (anders.kvellestad@fys.uio.no)   
 ///  \date 2023 May
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@fys.uio.no)   
+///  \date 2023 May
+///
+///  \author Pat Scott
+///          (patrickcolinscott@gmail.com)   
+///  \date 2023 May
+///
 ///  *********************************************
 
 #include "gambit/cmake/cmake_variables.hpp"
+
 #ifdef HAVE_PYBIND11
+
 #ifdef WITH_MPI
-#include "gambit/Utils/begin_ignore_warnings_mpi.hpp"
-#include "mpi.h"
-#include "gambit/Utils/end_ignore_warnings.hpp"
+    #include "gambit/Utils/begin_ignore_warnings_mpi.hpp"
+    #include "mpi.h"
+    #include "gambit/Utils/end_ignore_warnings.hpp"
 #endif
 
 #include "gambit/Utils/begin_ignore_warnings_pybind11.hpp"
 #include <pybind11/embed.h>
 #include "gambit/Utils/end_ignore_warnings.hpp"
 
+#include "gambit/Utils/python_interpreter.hpp"
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 
 namespace py = pybind11;
 
 namespace Gambit
 {
-    
-    class gambit_scoped_interpreter
-    {
-    private:
-        static size_t count;
         
-    public:
-        gambit_scoped_interpreter();
-        
-        ~gambit_scoped_interpreter();
-    };
-    
     namespace Scanner 
     {
     
@@ -129,7 +129,7 @@ scanner_plugin(python, version(1, 0, 0))
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
 
-    ::Gambit::gambit_scoped_interpreter guard;
+    Gambit::Utils::python_interpreter_guard g;
     
     /*!
      * Instance of python scanner
@@ -146,7 +146,7 @@ scanner_plugin(python, version(1, 0, 0))
 
     plugin_constructor
     {
-        ::Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
+        Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
         // get plugin name
         std::string plugin_name = get_inifile_value<std::string>("plugin");
