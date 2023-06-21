@@ -46,6 +46,20 @@ BE_INI_FUNCTION
     dsinit();
     mylock.release_lock();
 
+    
+    // Here we would choose non-default yield tables. Unfortunately, this segfaults
+    // (presumably) due to a problem with the Fstring class
+    // Note that dsanyield_set expects strings with unspecified length as input,
+    // i.e. char*(*)
+    //
+    //Fstring<20> yield_key = "yieldtables";
+    //Fstring<20> DS_yield_tables = "Hazma";
+    //dsanyield_set(yield_key,DS_yield_tables);
+
+    // The above is just for testing. Eventually, we'd want to do this via a yaml file option:
+    // Fstring<20> DS_yield_tables = runOptions->getValueOrDef<double>("default", "DS_yieldtables");
+
+
     //// Initialize yield tables for use in cascade decays (initialize more if needed)
     // This makes sure that different processes later don't read the yield tables
     // from disk simultaneously

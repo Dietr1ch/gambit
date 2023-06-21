@@ -29,6 +29,9 @@
 ///          (stoecker@physik.rwth-aachen.de)
 ///  \date 2021 Mar
 ///
+///  \author Torsten  Bringmann
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2023 June
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -104,6 +107,16 @@ namespace Gambit
         // Here only take care of two-body final states
         if (it->nFinalStates != 2) continue;
 
+        //TB DEBUG
+        //std::cout << "CHANNEL : " << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << "\n";
+        // switch off e+e-:
+        if (it->finalStateIDs[0] == "e+_1") continue;
+        // switch off other leptons:
+        //if (it->finalStateIDs[0] == "e+_2") continue;
+        //if (it->finalStateIDs[0] == "e+_3") continue;
+        // switch off hadrons (Ap anyway invisible):
+        //if (it->finalStateIDs[0] == "pi+") continue;
+
         // Get final state masses
         double m0 = catalog.getParticleProperty(it->finalStateIDs[0]).mass;
         double m1 = catalog.getParticleProperty(it->finalStateIDs[1]).mass;
@@ -118,12 +131,23 @@ namespace Gambit
         double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
         double E1 = Ecm-E0;
 
+        // Sometimes we use "pions" to denote the cumulative yield from hadronic states
+        // In DarkSUSY, the "gluon" channel is used for this purpose -- so we map
+        // to the "gluon" case for the purpose of retrieving the spectra
+        std::string ID0 = it->finalStateIDs[0];
+        std::string ID1 = it->finalStateIDs[1];
+        if (ID0 == "pi+" && ID1 == "pi-" )
+        {
+          ID0 = "g";
+          ID1 = "g";
+        }
+
         // Check whether two-body hard process final state is in SimYield table
-        if ( table.hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], yield) )
+        if ( table.hasChannel(ID0, ID1, yield) )
         {
           Yield = Yield +
             it->genRate*(table)(
-                it->finalStateIDs[0], it->finalStateIDs[1], yield, Ecm);
+                ID0, ID1, yield, Ecm);
           added = true;
         }
         // Deal with composite final states
