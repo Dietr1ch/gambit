@@ -40,11 +40,13 @@
 ///  \date 2016 Aug
 ///
 ///  \author Tomas Gonzalo
-///          (gonzalo@physik.rwth-aachen.de)
+///          (tomas.gonzalo@kit.edu)
 ///  \date 2021 Sep
+///  \date 2023 June
 ///
 ///  *********************************************
 
+#include "gambit/Utils/numerical_constants.hpp"
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
@@ -264,6 +266,23 @@ namespace Gambit
       result.vesc = vesc;
       result.vrot = vrot;
     }
+
+    /// Module function providing local density and velocity dispersion parameters, in powers of GeV
+    void ExtractLocalMaxwellianHalo_GeV(LocalMaxwellianHalo &result)
+    {
+      using namespace Pipes::ExtractLocalMaxwellianHalo_GeV;
+      double rho0  = *Param["rho0"];
+      double v0  = *Param["v0"];
+      double vesc  = *Param["vesc"];
+      double vrot  = *Param["vrot"];
+
+      // Conversion to GeV
+      result.rho0 = rho0 * gev3cm3;
+      result.v0 = v0 / c_km;
+      result.vesc = vesc / c_km;
+      result.vrot = vrot / c_km;
+    }
+
 
     //////////////////////////////////////////////////////////////////////////
     //

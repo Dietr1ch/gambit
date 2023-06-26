@@ -51,7 +51,7 @@ input_files = [
 include_paths = [
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/generated/',
     '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/include/',
-    '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version+'/external/libphysica/include',
+    '../../../Backends/installed/libphysica/0.1.5/include',
 ]
 base_paths = ['../../../Backends/installed/'+gambit_backend_name+'/'+gambit_backend_version]
 
@@ -60,8 +60,8 @@ src_files_to    = '../../../Backends/installed/'+gambit_backend_name+'/'+gambit_
 
 load_classes = [
     'obscura::DM_Detector_Crystal',
-    # 'obscura::DM_Detector',
     'obscura::DM_Detector_Ionization_ER',
+    'obscura::DM_Detector_Ionization_Migdal',
     'obscura::Standard_Halo_Model',
     'obscura::DM_Particle_Standard',
     'obscura::DM_Particle_SI',
@@ -70,12 +70,11 @@ load_classes = [
 load_functions = [
     'obscura::Fractional_Days_since_J2000(int , int , int , double , double , double)',
     'obscura::XENON1T_S2_ER()',
-    'obscura::XENON10_S2_ER()',
-    'obscura::XENON100_S2_ER()',
-    'obscura::XENON1T_S2_ER()',
     'obscura::DarkSide50_S2_ER()',
     'obscura::SENSEI_at_MINOS()',
     'obscura::CDMS_HVeV_2020()',
+    'obscura::XENON1T_S2_Migdal()',
+    'obscura::DarkSide50_S2_Migdal()',
 ]
 
 ditch = []

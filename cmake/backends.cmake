@@ -1140,21 +1140,22 @@ endif()
 
 # Libphysica
 set(name "libphysica")
-set(ver "0.1.4")
+set(ver "0.1.5")
 set(dl "https://github.com/temken/${name}/archive/refs/tags/v${ver}.zip")
 set(md5 "none")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(libphysica_dir "${dir}")
 set(libphysica_ver "${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
-    DEPENDS "castxml"
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${libphysica_dir} ${name} ${ver}
     SOURCE_DIR ${libphysica_dir}
     BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
+    PATCH_COMMAND patch -p1 < ${patch}
+    CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${BACKEND_CXX_FLAGS} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_C_FLAGS=${BACKEND_C_FLAGS} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release
+    BUILD_COMMAND ${CMAKE_COMMAND} --build ${dir}
     INSTALL_COMMAND ""
   )
   add_extra_targets("backend" ${name} ${ver} ${libphysica_dir} ${dl} clean)
@@ -1169,6 +1170,7 @@ set(dl "https://github.com/temken/${name}/archive/refs/heads/dev.zip")
 set(md5 "none")
 set(lib "libobscura")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   set(obscura_CXX_FLAGS "${BACKEND_CXX_FLAGS}")
@@ -1183,11 +1185,10 @@ if(NOT ditched_${name}_${ver})
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
-    PATCH_COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/generated/"
+    PATCH_COMMAND patch -p1 < ${patch}
+          COMMAND  ${CMAKE_COMMAND} -E make_directory "${dir}/generated/"
           COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/generated/version.hpp"
-          COMMAND ${CMAKE_COMMAND} -E make_directory "${dir}/external/libphysica"
-          COMMAND ${CMAKE_COMMAND} -E copy_directory "${libphysica_dir}/" "${dir}/external/libphysica/"
-    CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${obscura_CXX_FLAGS} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_C_FLAGS=${obscura_C_FLAGS} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir}
+    CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${obscura_CXX_FLAGS} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_C_FLAGS=${obscura_C_FLAGS} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir} -Dlibphysica_SOURCE_DIR=${libphysica_dir}
     BUILD_COMMAND ${CMAKE_COMMAND} --build ${dir} --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} --install ${dir}
   )

@@ -58,6 +58,10 @@ namespace Gambit
             {
                 typedef ::obscura_1_0_2::obscura::DM_Detector_Ionization DM_Detector_Ionization;
             }
+            namespace obscura
+            {
+                typedef ::obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal DM_Detector_Ionization_Migdal;
+            }
         }
     }
 }
@@ -68,12 +72,12 @@ BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int, double, double,
 // BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int, double, double), ("Fractional_Days_since_J2000__BOSS_2","_Fractional_Days_since_J2000__BOSS_2"), "Fractional_Days_since_J2000")
 // BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int, double), ("Fractional_Days_since_J2000__BOSS_3","_Fractional_Days_since_J2000__BOSS_3"), "Fractional_Days_since_J2000")
 // BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int), ("Fractional_Days_since_J2000__BOSS_4","_Fractional_Days_since_J2000__BOSS_4"), "Fractional_Days_since_J2000")
-BE_FUNCTION(XENON10_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("XENON10_S2_ER__BOSS_29","_XENON10_S2_ER__BOSS_29"), "XENON10_S2_ER")
-BE_FUNCTION(XENON100_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("XENON100_S2_ER__BOSS_30","_XENON100_S2_ER__BOSS_30"), "XENON100_S2_ER")
-BE_FUNCTION(XENON1T_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("XENON1T_S2_ER__BOSS_31","_XENON1T_S2_ER__BOSS_31"), "XENON1T_S2_ER")
-BE_FUNCTION(DarkSide50_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("DarkSide50_S2_ER__BOSS_32","_DarkSide50_S2_ER__BOSS_32"), "DarkSide50_S2_ER")
-BE_FUNCTION(SENSEI_at_MINOS, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("SENSEI_at_MINOS__BOSS_33","_SENSEI_at_MINOS__BOSS_33"), "SENSEI_at_MINOS")
-BE_FUNCTION(CDMS_HVeV_2020, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("CDMS_HVeV_2020__BOSS_34","_CDMS_HVeV_2020__BOSS_34"), "CDMS_HVeV_2020")
+BE_FUNCTION(XENON1T_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("XENON1T_S2_ER__BOSS_33","_XENON1T_S2_ER__BOSS_33"), "XENON1T_S2_ER")
+BE_FUNCTION(DarkSide50_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("DarkSide50_S2_ER__BOSS_34","_DarkSide50_S2_ER__BOSS_34"), "DarkSide50_S2_ER")
+BE_FUNCTION(SENSEI_at_MINOS, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("SENSEI_at_MINOS__BOSS_35","_SENSEI_at_MINOS__BOSS_35"), "SENSEI_at_MINOS")
+BE_FUNCTION(CDMS_HVeV_2020, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("CDMS_HVeV_2020__BOSS_36","_CDMS_HVeV_2020__BOSS_36"), "CDMS_HVeV_2020")
+BE_FUNCTION(XENON1T_S2_Migdal, obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal, (), ("XENON1T_S2_Migdal__BOSS_37","_XENON1T_S2_Migdal__BOSS_37"), "XENON1T_S2_Migdal")
+BE_FUNCTION(DarkSide50_S2_Migdal, obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal, (), ("DarkSide50_S2_Migdal__BOSS_38","_DarkSide50_S2_Migdal__BOSS_38"), "DarkSide50_S2_Migdal")
 // Variables
 
 // Initialisation function (dependencies)

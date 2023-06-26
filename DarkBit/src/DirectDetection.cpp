@@ -46,7 +46,11 @@
 ///  \author Timon Emken
 ///          (timon.emken@fysik.su.se)
 ///  \date 2022 April
-
+///
+///  \author Tomas Gonzalo
+///          (tomas.gonzalo@kit.edu)
+///  \date 2023 June
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -479,47 +483,165 @@ namespace Gambit
     DD_EX(PICO_500)             // S. Fallows, talk at TAUP 2017
     DD_EX(LZ_2022)              // J. Aalbers et al., arXiv:2207.03764
     DD_EX(PandaX_4T)            // Y. Meng et al., PRL 127 (2021) 26, 261802 [arXiv:2107.13438]
-    
+
 
     // Just in case, to make sure we don't mess with other things elsewhere.
     #undef DD_EX
 
-  void calc_obscuraTest(double& result){
-    using namespace Pipes::calc_obscuraTest;
-    // This function is a template for a log likelihood, in this case for the XENON1T S2 only analysis.
+    // XENON1T S2 Electron Recoil Log-Likelihood using obscura
+    void calc_XENON1T_ER_LogLikelihood(double& result)
+    {
+      using namespace Pipes::calc_XENON1T_ER_LogLikelihood;
 
-    // 0. Units (this shouldn't be here in the end.)
-    const double GeV = 1.0;
-    const double cm			 = 5.067730214314311e13 / GeV;
-    const double meter = 100.0 * cm;
-    const double km = 1000.0 * meter;
-    const double sec	= 299792458.0 * meter;
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
 
-    // // 1. DM halo model (The units should convert everything to powers of GeV)
-    LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
-    double rho0 = LocalHaloParameters.rho0 * GeV /cm/cm/cm;
-    double v0 = LocalHaloParameters.v0 * km/sec;
-    double vesc = LocalHaloParameters.vesc * km/sec;
-    double vrot = LocalHaloParameters.vrot * km /sec;
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double gDM = *Param["gDM"];
+      double kappa = *Param["kappa"];
+      double mAp = *Param["mAp"]; // in GeV
+      // TODO: where do I get this from?
+      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
 
-    obscura_default::obscura::Standard_Halo_Model SHM(rho0, v0,  vrot, vesc);
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
 
-    // 2. DM Particle with SI interactions
-    double mDM = *Param["mDM"]; // in GeV
-    double gDM = *Param["gDM"];
-    double kappa = *Param["kappa"];
-    double mAp = *Param["mAp"]; // in GeV
-    double sigma_e = 1.0e-36*cm*cm; // in GeV^-2 
-    // The correct sigma expression is still missing.
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::XENON1T_S2_ER();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
 
-    obscura_default::obscura::DM_Particle_SI DM(mDM);
-    DM.Set_Sigma_Electron(sigma_e);
-    DM.Set_FormFactor_DM("General", mAp);
+    // DarkSide50 S2 Electron Recoil Log-Likelihood using obscura
+    void calc_DarkSide50_ER_LogLikelihood(double& result)
+    {
+      using namespace Pipes::calc_DarkSide50_ER_LogLikelihood;
 
-    // 3. Experiment
-    obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::XENON1T_S2_ER();
-    result = experiment.Log_Likelihood(DM, SHM);
-  }
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
 
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double gDM = *Param["gDM"];
+      double kappa = *Param["kappa"];
+      double mAp = *Param["mAp"]; // in GeV
+      // TODO: where do I get this from?
+      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
+
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
+
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::DarkSide50_S2_ER();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
+
+    // SENSEI at MINOS Electron Recoil Log-Likelihood using obscura
+    void calc_SENSEI_at_MINOS_LogLikelihood(double& result)
+    {
+      using namespace Pipes::calc_SENSEI_at_MINOS_LogLikelihood;
+
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double gDM = *Param["gDM"];
+      double kappa = *Param["kappa"];
+      double mAp = *Param["mAp"]; // in GeV
+      // TODO: where do I get this from?
+      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
+
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
+
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Crystal experiment = BEreq::SENSEI_at_MINOS();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
+
+    // CDMS HVeV Electron Recoil Log-Likelihood using obscura
+    void calc_CDMS_HVeV_2020_LogLikelihood(double& result)
+    {
+      using namespace Pipes::calc_CDMS_HVeV_2020_LogLikelihood;
+
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double gDM = *Param["gDM"];
+      double kappa = *Param["kappa"];
+      double mAp = *Param["mAp"]; // in GeV
+      // TODO: where do I get this from?
+      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
+
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
+
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Crystal experiment = BEreq::CDMS_HVeV_2020();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
+
+    // XENON1T Migdal Log-Likelihood using obscura
+    void calc_XENON1T_Migdal_LogLikelihood(double &result)
+    {
+      using namespace Pipes::calc_XENON1T_Migdal_LogLikelihood;
+
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double gDM = *Param["gDM"];
+      double kappa = *Param["kappa"];
+      double mAp = *Param["mAp"]; // in GeV
+      // TODO: where do I get this from?
+      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
+
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
+
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Ionization_Migdal experiment = BEreq::XENON1T_S2_Migdal();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
+
+    // DarkSide50 Migdal Log-Likelihood using obscura
+    void calc_DarkSide50_Migdal_LogLikelihood(double &result)
+    {
+      using namespace Pipes::calc_DarkSide50_Migdal_LogLikelihood;
+
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double gDM = *Param["gDM"];
+      double kappa = *Param["kappa"];
+      double mAp = *Param["mAp"]; // in GeV
+      // TODO: where do I get this from?
+      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
+
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
+
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Ionization_Migdal experiment = BEreq::DarkSide50_S2_Migdal();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
   }
 }

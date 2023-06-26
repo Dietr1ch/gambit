@@ -89,8 +89,9 @@
 /// \date 2013 - 2020
 ///
 /// \author Tomas Gonzalo
-///         (gonzalo@physik.rwth-aachen.de)
+///         (tomas.gonzalo@kit.edu)
 /// \date 2021 Sep
+/// \date 2023 June
 ///
 ///  \author Timon Emken
 ///          (timon.emken@fysik.su.se )
@@ -1151,6 +1152,14 @@ START_MODULE
   #define CAPABILITY LocalHalo
   START_CAPABILITY
     #define FUNCTION ExtractLocalMaxwellianHalo
+    START_FUNCTION(LocalMaxwellianHalo)
+    ALLOW_MODELS(Halo_gNFW, Halo_Einasto)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY LocalHalo_GeV
+  START_CAPABILITY
+    #define FUNCTION ExtractLocalMaxwellianHalo_GeV
     START_FUNCTION(LocalMaxwellianHalo)
     ALLOW_MODELS(Halo_gNFW, Halo_Einasto)
     #undef FUNCTION
@@ -2450,17 +2459,73 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-#define CAPABILITY ObscuraTestCapability
+  #define CAPABILITY XENON1T_ER_LogLikelihood
   START_CAPABILITY
-    #define FUNCTION calc_obscuraTest
+    #define FUNCTION calc_XENON1T_ER_LogLikelihood
     START_FUNCTION(double)
     NEEDS_CLASSES_FROM(obscura, default)
-    BACKEND_REQ(Fractional_Days_since_J2000, (), double, (int, int, int, double, double, double))
     BACKEND_REQ(XENON1T_S2_ER, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
-    DEPENDENCY(LocalHalo,LocalMaxwellianHalo)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
     #undef FUNCTION
-#undef CAPABILITY
+  #undef CAPABILITY
+
+  #define CAPABILITY DarkSide50_ER_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_DarkSide50_ER_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(DarkSide50_S2_ER, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY SENSEI_at_MINOS_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_SENSEI_at_MINOS_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(SENSEI_at_MINOS, (), obscura_default::obscura::DM_Detector_Crystal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY CDMS_HVeV_2020_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_CDMS_HVeV_2020_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(CDMS_HVeV_2020, (), obscura_default::obscura::DM_Detector_Crystal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY XENON1T_Migdal_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_XENON1T_Migdal_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(XENON1T_S2_Migdal, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY DarkSide50_Migdal_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_DarkSide50_Migdal_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(DarkSide50_S2_Migdal, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
 
   // Super Renormalizable Higgs Portal DM relative observables and likelihoods -----------------
 

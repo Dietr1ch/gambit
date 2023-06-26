@@ -62,7 +62,22 @@ ObsLikes:
     - purpose:    Observable
       capability: sigma_SI_p
 
-    - capability: ObscuraTestCapability
+    - capability: XENON1T_ER_LogLikelihood
+      purpose: LogLike
+
+    - capability: DarkSide50_ER_LogLikelihood
+      purpose: LogLike
+
+    - capability: SENSEI_at_MINOS_LogLikelihood
+      purpose: LogLike
+
+    - capability: CDMS_HVeV_2020_LogLikelihood
+      purpose: LogLike
+
+    - capability: XENON1T_Migdal_LogLikelihood
+      purpose: LogLike
+
+    - capability: DarkSide50_Migdal_LogLikelihood
       purpose: LogLike
 
 Rules:
@@ -73,7 +88,7 @@ Rules:
   # Use DarkBit's own calculations of the direct detection couplings
   - capability: DD_couplings
     function: DD_couplings_SubGeVDM_scalar
-    
+
   # Select WIMP-nucleon couplings for DDCalc 2.1.0 WIMP object
   - capability: DDCalc_Couplings
     function: DDCalc_Couplings_WIMP_nucleon
@@ -89,6 +104,8 @@ Logger:
     [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
+
+  debug: True
 
   dependency_resolution:
     prefer_model_specific_functions: true

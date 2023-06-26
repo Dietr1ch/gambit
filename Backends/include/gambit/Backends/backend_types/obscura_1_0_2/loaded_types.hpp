@@ -10,6 +10,7 @@
 #include "wrapper_DM_Detector_Crystal.hpp"
 #include "wrapper_DM_Detector_Ionization_ER.hpp"
 #include "wrapper_DM_Detector_Ionization.hpp"
+#include "wrapper_DM_Detector_Ionization_Migdal.hpp"
 #include "identification.hpp"
 
 // Indicate which types are provided by this backend, and what the symbols of their factories are.
@@ -23,6 +24,7 @@
   (( /*class*/(obscura)(DM_Detector_Crystal),    /*constructors*/((("Factory_DM_Detector_Crystal_0__BOSS_20","_Factory_DM_Detector_Crystal_0__BOSS_20"),())) ((("Factory_DM_Detector_Crystal_1__BOSS_21","_Factory_DM_Detector_Crystal_1__BOSS_21"),(std::string, double, std::string))) )) \
   (( /*class*/(obscura)(DM_Detector_Ionization_ER),    /*constructors*/((("Factory_DM_Detector_Ionization_ER_0__BOSS_22","_Factory_DM_Detector_Ionization_ER_0__BOSS_22"),())) ((("Factory_DM_Detector_Ionization_ER_1__BOSS_23","_Factory_DM_Detector_Ionization_ER_1__BOSS_23"),(std::string, double, std::string))) ((("Factory_DM_Detector_Ionization_ER_2__BOSS_24","_Factory_DM_Detector_Ionization_ER_2__BOSS_24"),(std::string, double, std::vector<std::string>, std::vector<double>))) ((("Factory_DM_Detector_Ionization_ER_3__BOSS_25","_Factory_DM_Detector_Ionization_ER_3__BOSS_25"),(std::string, double, std::vector<std::string>))) )) \
   (( /*class*/(obscura)(DM_Detector_Ionization),    /*constructors*/((("Factory_DM_Detector_Ionization_0__BOSS_26","_Factory_DM_Detector_Ionization_0__BOSS_26"),(std::string, double, std::string, std::string))) ((("Factory_DM_Detector_Ionization_1__BOSS_27","_Factory_DM_Detector_Ionization_1__BOSS_27"),(std::string, double, std::string, std::vector<std::string>, std::vector<double>))) ((("Factory_DM_Detector_Ionization_2__BOSS_28","_Factory_DM_Detector_Ionization_2__BOSS_28"),(std::string, double, std::string, std::vector<std::string>))) )) \
+  (( /*class*/(obscura)(DM_Detector_Ionization_Migdal),    /*constructors*/((("Factory_DM_Detector_Ionization_Migdal_0__BOSS_29","_Factory_DM_Detector_Ionization_Migdal_0__BOSS_29"),())) ((("Factory_DM_Detector_Ionization_Migdal_1__BOSS_30","_Factory_DM_Detector_Ionization_Migdal_1__BOSS_30"),(std::string, double, std::string))) ((("Factory_DM_Detector_Ionization_Migdal_2__BOSS_31","_Factory_DM_Detector_Ionization_Migdal_2__BOSS_31"),(std::string, double, std::vector<std::string>, std::vector<double>))) ((("Factory_DM_Detector_Ionization_Migdal_3__BOSS_32","_Factory_DM_Detector_Ionization_Migdal_3__BOSS_32"),(std::string, double, std::vector<std::string>))) )) \
 
 // If the default version has been loaded, set it as default.
 #if ALREADY_LOADED(CAT_3(BACKENDNAME,_,CAT(Default_,BACKENDNAME)))

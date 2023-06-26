@@ -44,6 +44,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class DM_Detector_Ionization;
     }
+    namespace obscura
+    {
+        class DM_Detector_Ionization_Migdal;
+    }
     
     
 }
