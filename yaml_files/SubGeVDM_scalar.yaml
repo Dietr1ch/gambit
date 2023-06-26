@@ -70,6 +70,24 @@ ObsLikes:
     - capability: CRESST_III_LogLikelihood
       purpose:    LogLike
 
+    - capability: XENON1T_ER_LogLikelihood
+      purpose: LogLike
+
+    - capability: DarkSide50_ER_LogLikelihood
+      purpose: LogLike
+
+    - capability: SENSEI_at_MINOS_LogLikelihood
+      purpose: LogLike
+
+    - capability: CDMS_HVeV_2020_LogLikelihood
+      purpose: LogLike
+
+    - capability: XENON1T_Migdal_LogLikelihood
+      purpose: LogLike
+
+    - capability: DarkSide50_Migdal_LogLikelihood
+      purpose: LogLike
+
     - purpose:    Observable
       capability: mwimp
 
@@ -78,6 +96,7 @@ ObsLikes:
 
     - capability: sigmav
       purpose:    Observable
+
 
 Rules:
 
@@ -96,7 +115,7 @@ Rules:
     function: RD_fraction_leq_one
     options: # Planck 2018 values
       oh2_obs: 0.120
-      
+
   # Use DarkSUSY directly , MicrOmegas or the DarkBit native calculator (based on the DarkSUSY Boltzmann solver) for the relic density?
   # Consult the DarkBit manual for the required options in each case
   - capability: RD_oh2
@@ -118,7 +137,7 @@ Rules:
   # Use DarkBit's own calculations of the direct detection couplings
   - capability: DD_couplings
     function: DD_couplings_SubGeVDM_scalar
-    
+
   # Select WIMP-nucleon couplings for DDCalc 2.1.0 WIMP object
   - capability: DDCalc_Couplings
     function: DDCalc_Couplings_WIMP_nucleon
@@ -140,6 +159,8 @@ Logger:
     [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
+
+  debug: True
 
   dependency_resolution:
     prefer_model_specific_functions: true

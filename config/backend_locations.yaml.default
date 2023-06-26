@@ -126,6 +126,9 @@ nulike:
   1.0.8:       ./Backends/installed/nulike/1.0.8/lib/libnulike.so
   1.0.9:       ./Backends/installed/nulike/1.0.9/lib/libnulike.so
 
+obscura:
+  1.0.2:       ./Backends/installed/obscura/1.0.2/lib/libobscura.so
+
 pbarlike:
   1.0:         ./Backends/installed/pbarlike/1.0/pbarlike-gambit-interface.py
 

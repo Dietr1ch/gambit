@@ -1,0 +1,12 @@
+diff -rupN a/src/Integration.cpp b/src/Integration.cpp
+--- a/src/Integration.cpp	2023-06-26 10:35:27.699493698 +0200
++++ b/src/Integration.cpp	2023-06-26 10:35:38.803479932 +0200
+@@ -59,7 +59,7 @@ void Check_Integration_Limits(double& a,
+ {
+ 	if(a > b)
+ 	{
+-		std::cerr << "Warning in libphysica::Integrate(): From the integral from a to b, a>b (a = " << a << ", b = " << b << "). Sign will get swapped." << std::endl;
++//		std::cerr << "Warning in libphysica::Integrate(): From the integral from a to b, a>b (a = " << a << ", b = " << b << "). Sign will get swapped." << std::endl;
+ 		std::swap(a, b);
+ 		sign = -1.0;
+ 	}
