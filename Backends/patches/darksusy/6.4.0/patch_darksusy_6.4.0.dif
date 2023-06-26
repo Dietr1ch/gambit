@@ -45,3 +45,22 @@ diff -rupN darksusy-6.4.0_original/src/rd/dsrdxi.f darksusy-6.4.0_patched/src/rd
  
        dsrdxi = 1.0d0
        
+diff -rupN darksusy-6.4.0_original/src/aux/dsinterpolatetable2D.f darksusy-6.4.0_patched/src/aux/dsinterpolatetable2D.f 
+--- darksusy-6.4.0_original/src/aux/dsinterpolatetable2D.f	2022-12-09 16:01:49
++++ darksusy-6.4.0_patched//src/aux/dsinterpolatetable2D.f	2023-06-25 08:17:33
+@@ -46,6 +46,7 @@
+ ***                                                                         ***
+ *** author: Torsten.Bringmann.fys.uio.no                                    ***
+ *** date 2020-05-26                                                         ***
++***  mod 2023-06-25 made threadsafe                                         ***
+ *******************************************************************************
+       real*8 function dsInterpolateTable2D(x,y,functab,Nx,Ny,Nymax,xtab,ytab,
+      &                                     tabID,how)
+@@ -64,6 +65,7 @@
+       real*8 res, resy(2), funcbest(2,2), xbest(2), ybest(2,2), xfit,yfit
+       real*8 dslogcut
+       save initialized, xlo, xhi, ylo, yhi, lastNpoints
++!$omp threadprivate(initialized, xlo, xhi, ylo, yhi, lastNpoints)
+ 
+       tabIDp = abs(tabID)
+       if (tabIDp.lt.1.or.tabIDp.gt.tabIDmax) then

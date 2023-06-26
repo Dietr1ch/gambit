@@ -107,15 +107,10 @@ namespace Gambit
         // Here only take care of two-body final states
         if (it->nFinalStates != 2) continue;
 
-        //TB DEBUG
-        //std::cout << "CHANNEL : " << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << "\n";
-        // switch off e+e-:
-        if (it->finalStateIDs[0] == "e+_1") continue;
-        // switch off other leptons:
-        //if (it->finalStateIDs[0] == "e+_2") continue;
-        //if (it->finalStateIDs[0] == "e+_3") continue;
-        // switch off hadrons (Ap anyway invisible):
-        //if (it->finalStateIDs[0] == "pi+") continue;
+        // this would switch off the photon yield:
+        //if (yield == "gamma") continue;
+        // this would switch off e+e- channel:
+        //if (it->finalStateIDs[0] == "e+_1") continue;
 
         // Get final state masses
         double m0 = catalog.getParticleProperty(it->finalStateIDs[0]).mass;
@@ -127,7 +122,7 @@ namespace Gambit
         // Ignore channels with 0 BR in v=0 limit (if "v" is a variable of genRate, i.e. not a decay).
         if (it->genRate->hasArg("v") && it->genRate->bind("v")->eval(0.) <= 0.0) continue;
         else if ( !(it->genRate->hasArgs()) && it->genRate->bind()->eval() <=0.0) continue;
-
+     
         double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
         double E1 = Ecm-E0;
 

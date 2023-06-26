@@ -49,15 +49,17 @@ BE_INI_FUNCTION
     
     // Here we would choose non-default yield tables. Unfortunately, this segfaults
     // (presumably) due to a problem with the Fstring class
-    // Note that dsanyield_set expects strings with unspecified length as input,
-    // i.e. char*(*)
+    // Note that dsanyield_set (declared in DarkSUSY_6.hpp) expects strings with
+    // unspecified length as input on the DS side, i.e. char*(*)
     //
-    //Fstring<20> yield_key = "yieldtables";
-    //Fstring<20> DS_yield_tables = "Hazma";
+    //Fstring<20>  yield_key = "yieldtables";
+    //Fstring<20>  DS_yield_tables = "Hazma";
     //dsanyield_set(yield_key,DS_yield_tables);
 
-    // The above is just for testing. Eventually, we'd want to do this via a yaml file option:
-    // Fstring<20> DS_yield_tables = runOptions->getValueOrDef<double>("default", "DS_yieldtables");
+    // Directly overwriting common block variables works, but is *not* intended DS usage!
+    // (this bypases, e.g., all the internal error handling)
+    an_how->anyieldhow = runOptions->getValueOrDef<std::string>("default", "DS_yieldtables");
+
 
 
     //// Initialize yield tables for use in cascade decays (initialize more if needed)

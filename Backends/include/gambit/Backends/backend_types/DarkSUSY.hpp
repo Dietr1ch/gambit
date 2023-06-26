@@ -39,6 +39,10 @@
 namespace Gambit
 {
  
+  struct DS_an_how
+  {
+      Fstring<10> anyieldhow, defaulthow, fallback;
+  };
   struct DS_IBINTVARS
   {
       Fdouble ibcom_x, ibcom_z, ibcom_mx, ibcom_mp1, ibcom_mp2;

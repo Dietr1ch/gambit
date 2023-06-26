@@ -170,8 +170,9 @@ Rules:
   - capability: GA_SimYieldTable
     #function: GA_SimYieldTable_DS5
     function: GA_SimYieldTable_DarkSUSY
-    options:
-      allow_yield_extrapolation: false
+    # do NOT switch this option on if you want to access sub-GeV yields !!!
+    #options:
+    #  allow_yield_extrapolation: false
 
   # Also need to choose which tables to use for positrons,
   # antideuterons, and antiprotons (or opt for empty tables)
@@ -215,6 +216,11 @@ Rules:
     options:
       out_of_range_zero_yield: true
       allow_yield_extrapolation: true # needed to access any sub-GeV yields !!
+  
+  - backend: DarkSUSY_genericWIMP
+    options:
+      DS_yieldtables: "Hazma"
+
 
 Logger:
 
