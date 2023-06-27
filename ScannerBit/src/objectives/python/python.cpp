@@ -2,15 +2,13 @@
 //  *********************************************
 ///  \file
 ///
-///  Grid sampler.
+///  ????
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-//
-///  \author Gregory Martinez
-///          (gregory.david.martinez@gmail.com)
-///  \date 2013 August
+///
+///  ????  
 ///
 ///  *********************************************
 
@@ -32,24 +30,14 @@
 #include <pybind11/embed.h>
 #include "gambit/Utils/end_ignore_warnings.hpp"
 
+#include "gambit/Utils/python_interpreter.hpp"
 #include "gambit/ScannerBit/objective_plugin.hpp"
 
 namespace py = pybind11;
 
 namespace Gambit
 {
-    
-    class gambit_scoped_interpreter
-    {
-    private:
-        static size_t count;
         
-    public:
-        gambit_scoped_interpreter();
-        
-        ~gambit_scoped_interpreter();
-    };
-    
     namespace Scanner 
     {
         
@@ -121,7 +109,7 @@ objective_plugin(python, version(1, 0, 0))
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
     
-    ::Gambit::gambit_scoped_interpreter guard;
+    Gambit::Utils::python_interpreter_guard g;
     
     /*!
      * Instance of python scanner
@@ -138,7 +126,7 @@ objective_plugin(python, version(1, 0, 0))
 
     plugin_constructor 
     {
-        ::Gambit::Scanner::Plugins::ObjPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
+        Gambit::Scanner::Plugins::ObjPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
         // get yaml as dict
         py::dict options = yaml_to_dict(get_inifile_node());
@@ -198,9 +186,9 @@ objective_plugin(python, version(1, 0, 0))
     double plugin_main(std::unordered_map<std::string, double> &map)
     {
         if (use_run_options)
-            return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map, run_options);
+            return Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map, run_options);
         else
-            return ::Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map);
+            return Gambit::Scanner::Plugins::ObjPyPlugin::run(run_func, map);
     }
     
     plugin_deconstructor

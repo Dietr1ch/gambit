@@ -13,9 +13,7 @@
 #include <iostream>
 
 #include "gambit/Utils/table_formatter.hpp"
-#include "gambit/Utils/begin_ignore_warnings_pybind11.hpp"
-#include <pybind11/embed.h>
-#include "gambit/Utils/end_ignore_warnings.hpp"
+#include "gambit/Utils/python_interpreter.hpp"
 
 
 namespace py = pybind11;
@@ -43,8 +41,6 @@ class PythonScanner {
      */
     py::object plugin;
 
-    py::scoped_interpreter *guard = nullptr;
-
     explicit PythonScanner(std::string plugin_name) : plugin_name(plugin_name) {
         /*! 
          * Retrieve and inspect a python scanner
@@ -54,12 +50,9 @@ class PythonScanner {
         std::string path = GAMBIT_DIR "/ScannerBit/src/scanners/python";
         py::list(py::module::import("sys").attr("path")).append(py::cast(path));
 
-        try {
-            guard = new py::scoped_interpreter();
-        } catch(std::exception &) {
-            guard = nullptr;
-        }
-
+        // Make sure the python interpreter has been started.
+        Utils::python_interpreter_guard g;
+        
         // import plugins
         py::module plugins_module = py::module::import("plugins");
         py::dict plugins = plugins_module.attr("plugins");
@@ -81,11 +74,7 @@ class PythonScanner {
                           builtins.attr("issubclass")(plugin, scanner_abc).cast<bool>());
     }
 
-    ~PythonScanner() {
-        if (guard != nullptr) {
-            delete guard;
-        }
-    }
+    ~PythonScanner() {}
 
     bool passes_checks() const {
         return implements_abc;
@@ -149,14 +138,8 @@ std::vector<std::string> python_scanner_names() {
     std::string path = GAMBIT_DIR "/ScannerBit/src/scanners/python";
     py::list(py::module::import("sys").attr("path")).append(py::cast(path));
 
-    // python interpreter guard
-    py::scoped_interpreter *guard;
-
-    try {
-        guard = new py::scoped_interpreter();
-    } catch(std::exception &) {
-        guard = nullptr;
-    }
+    // Make sure the python interpreter has been started.
+    Utils::python_interpreter_guard g;
 
     // fetch plugin names
     py::module plugins_module = py::module::import("plugins");
@@ -167,10 +150,6 @@ std::vector<std::string> python_scanner_names() {
 
     for (auto n : plugin_names) {
         c_plugin_names.push_back(n.cast<std::string>());
-    }
-
-    if (guard != nullptr) {
-        delete guard;
     }
 
     return c_plugin_names;
