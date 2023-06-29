@@ -308,7 +308,7 @@ namespace Gambit
        be_functor->origin(), be_functor->version());
     }
 
-    /// Getter for listing model-specific conditional dependencies
+    /// Getter for listing model-specific conditional dependencies (matches also on parents and friends)
     std::set<sspair> functor::model_conditional_dependencies (str)
     {
       utils_error().raise(LOCAL_INFO,"The model_conditional_dependencies method has not been defined in this class.");
@@ -316,10 +316,26 @@ namespace Gambit
       return empty;
     }
 
-    /// Getter for listing model-specific conditional backend requirements
+    /// Getter for listing model-specific conditional dependencies (matches on the exact model)
+    std::set<sspair> functor::model_conditional_dependencies_exact (str)
+    {
+      utils_error().raise(LOCAL_INFO,"The model_conditional_dependencies_exact method has not been defined in this class.");
+      std::set<sspair> empty;
+      return empty;
+    }
+
+    /// Getter for listing model-specific conditional backend requirements (matches also on parents and friends)
     std::set<sspair> functor::model_conditional_backend_reqs (str)
     {
       utils_error().raise(LOCAL_INFO,"The model_conditional_backend_reqs method has not been defined in this class.");
+      std::set<sspair> empty;
+      return empty;
+    }
+
+    /// Getter for listing model-specific conditional backend requirements (matches on the exact model)
+    std::set<sspair> functor::model_conditional_backend_reqs_exact (str)
+    {
+      utils_error().raise(LOCAL_INFO,"The model_conditional_backend_reqs_exact method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
@@ -1081,7 +1097,7 @@ namespace Gambit
        be_functor->origin(), be_functor->version());
     }
 
-    /// Getter for listing model-specific conditional dependencies
+    /// Getter for listing model-specific conditional dependencies (matches also on parents and friends)
     std::set<sspair> module_functor_common::model_conditional_dependencies (str model)
     {
       str parent = find_friend_or_parent_model_in_map(model,myModelConditionalDependencies);
@@ -1090,11 +1106,27 @@ namespace Gambit
       return empty;
     }
 
-    /// Getter for listing model-specific conditional backend requirements
+    /// Getter for listing model-specific conditional dependencies (matches on the exact model)
+    std::set<sspair> module_functor_common::model_conditional_dependencies_exact (str model)
+    {
+      if (myModelConditionalDependencies.count(model) != 0) return myModelConditionalDependencies[model];
+      std::set<sspair> empty;
+      return empty;
+    }
+
+    /// Getter for listing model-specific conditional backend requirements (matches also on parents and friends)
     std::set<sspair> module_functor_common::model_conditional_backend_reqs (str model)
     {
       str parent = find_friend_or_parent_model_in_map(model,myModelConditionalBackendReqs);
       if (parent != "") return myModelConditionalBackendReqs[parent];
+      std::set<sspair> empty;
+      return empty;
+    }
+
+    /// Getter for listing model-specific conditional backend requirements (matches on the exact model)
+    std::set<sspair> module_functor_common::model_conditional_backend_reqs_exact (str model)
+    {
+      if (myModelConditionalBackendReqs.count(model) != 0) return myModelConditionalBackendReqs[model];
       std::set<sspair> empty;
       return empty;
     }

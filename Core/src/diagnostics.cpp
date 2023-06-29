@@ -416,7 +416,7 @@ namespace Gambit
 
           for (const auto &cond_model : proper_cond_models)
           {
-            for (const auto &cond_dep: functor->model_conditional_dependencies(cond_model))
+            for (const auto &cond_dep: functor->model_conditional_dependencies_exact(cond_model))
             {
               // If the "(name,type)"" pair of the conditional dependency is not yet a key,
               // then create it, with an empty set.
@@ -425,7 +425,7 @@ namespace Gambit
               // Add the model to the set.
               cond_deps_map[cond_dep].insert(cond_model);
             }
-            for (const auto &cond_be_req: functor->model_conditional_backend_reqs(cond_model))
+            for (const auto &cond_be_req: functor->model_conditional_backend_reqs_exact(cond_model))
             {
               // If the "(name,type)"" pair of the conditional backend requirement is not yet a key,
               // then create it, with an empty set.

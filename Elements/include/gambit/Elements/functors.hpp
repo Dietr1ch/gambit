@@ -236,11 +236,17 @@ namespace Gambit
       /// Getter for backend-specific conditional dependencies (backend functor pointer version)
       virtual std::set<sspair> backend_conditional_dependencies (functor*);
 
-      /// Getter for listing model-specific conditional dependencies
-      virtual std::set<sspair> model_conditional_dependencies (str);
+      /// Getter for listing model-specific conditional dependencies (matches also on parents and friends)
+      virtual std::set<sspair> model_conditional_dependencies (str model);
 
-      /// Getter for listing model-specific conditional backend requirements
-      virtual std::set<sspair> model_conditional_backend_reqs (str);
+      /// Getter for listing model-specific conditional dependencies (matches on the exact model)
+      virtual std::set<sspair> model_conditional_dependencies_exact (str model);
+
+      /// Getter for listing model-specific conditional backend requirements (matches also on parents and friends)
+      virtual std::set<sspair> model_conditional_backend_reqs (str model);
+
+      /// Getter for listing model-specific conditional backend requirements (matches on the exact model)
+      virtual std::set<sspair> model_conditional_backend_reqs_exact (str model);
 
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor*);
@@ -524,11 +530,17 @@ namespace Gambit
       /// Getter for backend-specific conditional dependencies (backend functor pointer version)
       virtual std::set<sspair> backend_conditional_dependencies (functor* be_functor);
 
-      /// Getter for listing model-specific conditional dependencies
+      /// Getter for listing model-specific conditional dependencies (matches also on parents and friends)
       virtual std::set<sspair> model_conditional_dependencies (str model);
 
-      /// Getter for listing model-specific conditional backend requirements
+      /// Getter for listing model-specific conditional dependencies (matches on the exact model)
+      virtual std::set<sspair> model_conditional_dependencies_exact (str model);
+
+      /// Getter for listing model-specific conditional backend requirements (matches also on parents and friends)
       virtual std::set<sspair> model_conditional_backend_reqs (str model);
+
+      /// Getter for listing model-specific conditional backend requirements (matches on the exact model)
+      virtual std::set<sspair> model_conditional_backend_reqs_exact (str model);
 
       /// Add and activate unconditional dependencies.
       void setDependency(str, str, void(*)(functor*, module_functor_common*), str purpose= "");
