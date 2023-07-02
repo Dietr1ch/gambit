@@ -1676,7 +1676,7 @@ namespace Gambit
                 resolveRequirement(solution,vertex);
                 previous_successes.push_back(solution);
 
-                // If *req is in remaining_reqs, remove it
+                // If req is in remaining_reqs, remove it
                 if (remaining_reqs.find(req) != remaining_reqs.end())
                 {
                   remaining_reqs.erase(req);
