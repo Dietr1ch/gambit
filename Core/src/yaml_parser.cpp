@@ -248,9 +248,9 @@ namespace YAML
   }
 
   /// Throw an error if a field appears in both an if and a then block
-  void forbid_both_true(const std::string& field, bool a, bool b)
+  void forbid_both_true(const std::string& field, bool is_in_one_block, bool is_in_other_block)
   {
-    if (not (a and b)) return;
+    if (not (is_in_one_block and is_in_other_block)) return;
     throw std::runtime_error(std::string("  The field \"" + field + "\" appears in both the \"if\" and \"then\" blocks."));
   }
 
