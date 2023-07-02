@@ -230,7 +230,7 @@ namespace YAML
   }
 
   /// Throw an error if a yaml key is one of those exclusively allowed in a backend rule.
-  void check_field_is_valid_in_backend_rule(const std::string& field)
+  void throw_if_field_valid_only_in_backend_rule(const std::string& field)
   {
     if (BackendRule::permits_field(field))
     {
@@ -239,7 +239,7 @@ namespace YAML
   }
 
   /// Throw an error if a yaml key is one of those exclusively allowed in a module rule.
-  void check_field_is_valid_in_module_rule(const std::string& field)
+  void throw_if_field_valid_only_in_module_rule(const std::string& field)
   {
     if (ModuleRule::permits_field(field))
     {
@@ -388,7 +388,7 @@ namespace YAML
         rhs.then_backends = true;
       }
     }
-    else check_field_is_valid_in_backend_rule(key);
+    else throw_if_field_valid_only_in_backend_rule(key);
   }
 
   /// Convert yaml node to dependency resolver ModuleRule type
@@ -428,7 +428,7 @@ namespace YAML
         {
           throw std::runtime_error(std::string("  The field \"" + key + "\" cannot appear in an \"if\" block."));
         }
-        else check_field_is_valid_in_backend_rule(key);
+        else throw_if_field_valid_only_in_backend_rule(key);
       }
 
       // Step through each of the entries in the then node, making sure it is one of the permitted ones.
@@ -499,7 +499,7 @@ namespace YAML
           rhs.then_capability = true;
         }
       } 
-      else check_field_is_valid_in_module_rule(key);
+      else throw_if_field_valid_only_in_module_rule(key);
     }
 
     // Validate if-then blocks
@@ -519,7 +519,7 @@ namespace YAML
           rhs.group = entry.second.as<std::string>(); 
           rhs.if_group = true;
         }
-        else check_field_is_valid_in_module_rule(key);
+        else throw_if_field_valid_only_in_module_rule(key);
       }
 
       // Step through each of the entries in the then node, making sure it is one of the permitted ones.
@@ -535,7 +535,7 @@ namespace YAML
         {
           throw std::runtime_error(std::string("  The field \"" + key + "\" cannot appear in a \"then\" block."));
         }
-        else check_field_is_valid_in_module_rule(key);
+        else throw_if_field_valid_only_in_module_rule(key);
       }
 
       // Make sure that backend does not appear in both if and then blocks.
