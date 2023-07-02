@@ -1060,7 +1060,7 @@ namespace Gambit
         // Add the vertex to the active list of vertex candidates if
         //   a) vertex is not disabled in any way;
         //   b) we only want the list of backends, and the vertex comes from an ini function;
-        //   c) we only want the list of backends, and the vertex comes from a funtion that relies on classes from a disabled backend.
+        //   c) we only want the list of backends, and the vertex comes from a function that relies on classes from a disabled backend.
         // Otherwise, the vertex would have been fine except that it is disabled, so save it for printing in diagnostic messages.
         int status = masterGraph[v]->status();
         bool vertex_allowed = status > 0 or (boundCore->show_backends and (status == -3 or status == -4));
