@@ -71,6 +71,7 @@ namespace Gambit
         match1 = match2 = false;
         for (auto it2 = it1->begin(); it2 != it1->end(); it2++)
         {
+          // Here we use stringComp for s1 but not s2, as only s1 is allowed to have regex + wildcards.
           if (s2 == *it2) match1 = true;
           if (stringComp(s1, *it2)) match2 = true;
         }
