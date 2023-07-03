@@ -95,8 +95,9 @@ Scanner:
 ObsLikes:
 
     # Calculate the LHC likelihood
-    - purpose:    LogLike
-      capability: LHC_Combined_LogLike
+    #TODO uncomment when CI jobs have reinstated python backend testing, after python_scanners is merged in 
+    #- purpose:    LogLike
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
