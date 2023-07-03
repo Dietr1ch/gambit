@@ -156,8 +156,9 @@ ObsLikes:
       capability: OPAL_Neutralino_Hadronic_LLike
 
     # Other observables
-    - purpose:    Observable
-      capability: LHC_LogLike_per_analysis
+    #TODO uncomment when CI jobs have reinstated python backend testing, after python_scanners is merged in 
+    #- purpose:    Observable
+    #  capability: LHC_LogLike_per_analysis
 
     - purpose:    Observable
       capability: LHC_signals
@@ -165,8 +166,9 @@ ObsLikes:
     - purpose:    Observable
       capability: LHCEventLoopInfo
 
-    - purpose:    Observable
-      capability: LHC_measurements_LogLike_perPool
+    #TODO uncomment when CI jobs have reinstated python backend testing, after python_scanners is merged in 
+    #- purpose:    Observable
+    #  capability: LHC_measurements_LogLike_perPool
 
     - purpose:    Observable
       capability: SLHA1_violation
