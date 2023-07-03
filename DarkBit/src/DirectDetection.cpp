@@ -607,10 +607,9 @@ namespace Gambit
       double kappa = *Param["kappa"];
       double mAp = *Param["mAp"]; // in GeV
       // TODO: where do I get this from?
-      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
+      double sigma_p = 1.0e-36/gev2cm2; // in GeV^-2
 
-      obscura_default::obscura::DM_Particle_SI DM(mDM);
-      DM.Set_Sigma_Electron(sigma_e);
+      obscura_default::obscura::DM_Particle_SI DM(mDM, sigma_p);
       DM.Set_FormFactor_DM("General", mAp);
 
       // 3. Experiment
@@ -633,10 +632,9 @@ namespace Gambit
       double kappa = *Param["kappa"];
       double mAp = *Param["mAp"]; // in GeV
       // TODO: where do I get this from?
-      double sigma_e = 1.0e-36/gev2cm2; // in GeV^-2
+      double sigma_p = 1.0e-36/gev2cm2; // in GeV^-2
 
-      obscura_default::obscura::DM_Particle_SI DM(mDM);
-      DM.Set_Sigma_Electron(sigma_e);
+      obscura_default::obscura::DM_Particle_SI DM(mDM, sigma_p);
       DM.Set_FormFactor_DM("General", mAp);
 
       // 3. Experiment
