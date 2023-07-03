@@ -101,8 +101,9 @@ ObsLikes:
     - purpose:    LogLike
       capability: LHC_Higgs_LogLike
 
-    - purpose:    LogLike
-      capability: LHC_measurements_LogLike
+    #TODO uncomment when CI jobs have reinstated python backend testing, after python_scanners is merged in 
+    #- purpose:    LogLike
+    #  capability: LHC_measurements_LogLike
 
     # Calculate the LEP likelihoods
     - purpose:    LogLike
