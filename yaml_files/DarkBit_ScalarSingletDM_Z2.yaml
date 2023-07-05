@@ -284,11 +284,11 @@ Rules:
       fast: 1  # 0: standard, 1: fast (default when co-annihilations etc are involved)
 
   # Gamma-ray likelihoods (See DarkBit paper for details on version options)
-  -  if:
-       function: lnL_FermiLATdwarfs_gamLike
-     then:
-       options:
-         version: "pass8" # Other option is pass7
+  - if:
+      function: lnL_FermiLATdwarfs_gamLike
+    then:
+      options:
+        version: "pass8" # Other option is pass7
 
   - if:
       function: lnL_FermiGC_gamLike
