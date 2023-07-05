@@ -36,12 +36,12 @@ Printer:
   #  buffer_length: 1000
   #  delete_file_on_restart: true
 
-  printer: hdf5
-  options:
-    output_file: "results.hdf5"
-    group: "/spartan"
-    delete_file_on_restart: true
-    buffer_length: 1000
+  #printer: hdf5
+  #options:
+  #  output_file: "results.hdf5"
+  #  group: "/spartan"
+  #  delete_file_on_restart: true
+  #  buffer_length: 1000
     #disable_autorepair: true
 
   #printer: ascii
@@ -50,7 +50,7 @@ Printer:
   #  buffer_length: 10
   #  delete_file_on_restart: true
 
-  #printer: cout
+  printer: cout
 
   #printer: none
 
