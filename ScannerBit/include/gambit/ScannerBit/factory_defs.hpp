@@ -363,19 +363,23 @@ namespace Gambit
                 return modified_ret_val + (*this)->getPurposeOffset();
             }
 
-            double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
+            double operator()(std::unordered_map<std::string, double> &map, bool use_prior = false)//, const std::vector<double> &vec = std::vector<double>())
             {
                 int rank = (*this)->getRank();
                 //(*this)->getPrior().transform(vec, map);
-                double ret_val = (*this)->operator()(map);
+                double ret_val;
+                if (use_prior)
+                    ret_val = (*this)->operator()(map) + (*this)->getPrior().log_prior_density(map);
+                else
+                    ret_val = (*this)->operator()(map);
                 double modified_ret_val = (*this)->purposeModifier(ret_val);
                 unsigned long long int id = Gambit::Printers::get_point_id();
                 (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
                 (*this)->getPrinter().print(modified_ret_val, "Modified" + (*this)->getPurpose(), rank, id);
-                if (vec.size() > 0 && (*this)->getPrinter().get_printUnitcube())
-                {
-                  (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
-                }
+                //if (vec.size() > 0 && (*this)->getPrinter().get_printUnitcube())
+                //{
+                //  (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                //}
                 (*this)->getPrinter().print(id,   "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);
                 (*this)->getPrinter().enable(); // Make sure printer is re-enabled (might have been disabled by invalid point error)

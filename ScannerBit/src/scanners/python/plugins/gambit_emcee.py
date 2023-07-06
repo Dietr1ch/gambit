@@ -4,13 +4,12 @@ Emcee scanner
 """
 
 import numpy as np
-
 import emcee
+import scanner_plugin as splug
+from utils import copydoc, version
 
-from utils import Scanner, copydoc, version
 
-
-class Emcee(Scanner):
+class Emcee(splug.scanner):
 
     name = "emcee"
     __version__ = version(emcee)
@@ -56,12 +55,15 @@ class Emcee(Scanner):
                 reset),
             **kwargs)
 
-    @copydoc(emcee.EnsembleSampler.run_mcmc)
-    def run(self, nsteps=5000, progress=True, initial_state=None, **kwargs):
+    def run_internal(self, nsteps=5000, progress=True, initial_state=None, **kwargs):
         if initial_state is None:
             initial_state = self.initial_state()
         self.sampler.run_mcmc(initial_state, nsteps,
                               progress=progress, **kwargs)
+        
+    @copydoc(emcee.EnsembleSampler.run_mcmc)
+    def run():
+        self.run_internal(**self.run_args)
 
 
 __plugins__ = {Emcee.name: Emcee}

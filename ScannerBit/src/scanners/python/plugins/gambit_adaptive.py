@@ -5,13 +5,12 @@ Adaptive learning
 
 
 import numpy as np
-
 import adaptive
+import scanner_plugin as splug
+from utils import copydoc, version
 
-from utils import Scanner, copydoc, version
 
-
-class Adaptive(Scanner):
+class Adaptive(splug.scanner):
     """
     Dynesty nested sampler with static number of live points.
 
@@ -27,9 +26,8 @@ class Adaptive(Scanner):
     def __init__(self, **kwargs):
         bounds = [(0., 1.)] * self.dim
         self.learner = Learner1D(self.loglike_hypercube, bounds=bounds, **kwargs)
-
-    @copydoc(adaptive.Runner)
-    def run(self, filename="adaptive.npy", **kwargs):
+        
+    def run_internal(self, filename="adaptive.npy", **kwargs):
         runner = adaptive.Runner(self.learner, **kwargs)
         runner.live_info()
         runner.live_plot()
@@ -37,6 +35,10 @@ class Adaptive(Scanner):
         if filename is not None:
             data = self.learner.to_numpy()
             np.savetxt(filename, data)
+            
+    @copydoc(adaptive.Runner)
+    def run():
+        self.run_internal(**self.run_args)
 
 
 __plugins__ = {Adaptive.name: Adaptive}

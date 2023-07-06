@@ -5,13 +5,12 @@ PocoMC scanner
 
 import pickle
 import numpy as np
-
+import scanner_plugin as splug
 import pocomc
+from utils import copydoc, version
 
-from utils import Scanner, copydoc, version
 
-
-class PocoMC(Scanner):
+class PocoMC(splug.scanner):
 
     name = "pocomc"
     __version__ = version(pocomc)
@@ -34,13 +33,16 @@ class PocoMC(Scanner):
             infer_vectorization=False,
             **kwargs)
 
-    @copydoc(pocomc.Sampler.run)
-    def run(self, pkl_name="pocomc.pkl", initial_state=None, **kwargs):
+    def run_internal(self, pkl_name="pocomc.pkl", initial_state=None, **kwargs):
         if initial_state is None:
             initial_state = self.initial_state()
         self.sampler.run(initial_state, **kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(self.sampler.results, f)
+
+    @copydoc(pocomc.Sampler.run)
+    def run():
+        self.run_internal(**self.run_args)
 
 
 __plugins__ = PocoMC.name: PocoMC}

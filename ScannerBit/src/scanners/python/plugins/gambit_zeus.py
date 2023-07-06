@@ -4,13 +4,12 @@ Zeus scanner
 """
 
 import numpy as np
-
+import scanner_plugin as splug
 import zeus
+from utils import copydoc, version
 
-from utils import Scanner, copydoc, version
 
-
-class Zeus(Scanner):
+class Zeus(splug.scanner):
 
     name = "zeus"
     __version__ = version(zeus)
@@ -36,8 +35,7 @@ class Zeus(Scanner):
         self.sampler = zeus.EnsembleSampler(
             self.nwalkers, self.dim, self.log_target_density, **kwargs)
 
-    @copydoc(zeus.EnsembleSampler.run_mcmc)
-    def run(
+    def run_internal(
             self,
             nsteps=100,
             initial_state=None,
@@ -55,5 +53,9 @@ class Zeus(Scanner):
         self.sampler.run_mcmc(initial_state, nsteps,
                               callbacks=self.save_callback(filename), **kwargs)
 
+    @copydoc(zeus.EnsembleSampler.run_mcmc)
+    def run():
+        self.run_internal(**self.run_args)
+        
 
 __plugins__ = {Zeus.name: Zeus}

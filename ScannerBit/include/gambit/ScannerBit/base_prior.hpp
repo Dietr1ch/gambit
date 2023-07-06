@@ -97,13 +97,7 @@ public:
     }
 
     /** @brief Log of prior density */
-    virtual double log_prior_density(hyper_cube<double>) const = 0;
-    
-    /** @overload in place STL containers */
-    double log_prior_density(const std::vector<double> &unit) const
-    {
-        return log_prior_density(map_vector<double>(const_cast<double *>(&unit[0]), unit.size()));
-    }
+    virtual double log_prior_density(const std::unordered_map<std::string, double> &) const = 0;
 
     virtual std::vector<std::string> getShownParameters() const { return param_names; }
 

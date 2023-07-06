@@ -235,10 +235,10 @@ namespace Gambit
       }
     }
       
-    double DoubleLogFlatJoin::log_prior_density(hyper_cube<double> vec) const
+    double DoubleLogFlatJoin::log_prior_density(const std::unordered_map<std::string, double> &physical) const
     {
       double r = 0;
-      double x = vec[0]; 
+      double x = physical.at(param_names[0]); 
       double x0 = lower;
       double x1 = flat_start;
       double x2 = flat_end;

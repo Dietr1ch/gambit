@@ -4,13 +4,12 @@ Stochopy optimization
 """
 
 import numpy as np
-
+import scanner_plugin as splug
 import stochopy
+from utils import copydoc, version
 
-from utils import Scanner, copydoc, version
 
-
-class StochopyMinimize(Scanner):
+class StochopyMinimize(splug.scanner):
     """
     Stochastic minimization algorithms - DE, PSO etc.
     """
@@ -19,14 +18,14 @@ class StochopyMinimize(Scanner):
     __version__ = version("stochopy")
 
     @copydoc(stochopy.optimize.minimize)
-    def run(self, **kwargs):
+    def run(self):
         bounds = [(0., 1.)] * self.dim
         res = stochopy.optimize.minimize(
-            self.loglike_hypercube, bounds, **kwargs)
+            self.loglike_hypercube, bounds, **self.run_args)
         print(res)
 
 
-class StochopySample(Scanner):
+class StochopySample(splug.scanner):
     """
     Sampling algorithms from stochopy.
     """
@@ -35,9 +34,9 @@ class StochopySample(Scanner):
     __version__ = version("stochopy")
 
     @copydoc(stochopy.optimize.sample)
-    def run(self, **kwargs):
+    def run(self):
         bounds = [(0., 1.)] * self.dim
-        res = stochopy.optimize.sample(self.loglike, bounds, **kwargs)
+        res = stochopy.optimize.sample(self.loglike, bounds, **self.run_args)
         print(res)
 
 

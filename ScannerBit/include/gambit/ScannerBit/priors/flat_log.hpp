@@ -229,9 +229,9 @@ namespace Gambit
                 //return {u};
             }
 
-            double log_prior_density(hyper_cube<double> vec) const override 
+            double log_prior_density(const std::unordered_map<std::string, double> &physical) const override 
             {
-                return T::prior(vec[0]*scale+shift)*scale;
+                return T::prior(physical.at(param_names[0])*scale+shift)*scale;
             }
         };
 

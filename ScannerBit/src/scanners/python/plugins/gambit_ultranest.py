@@ -4,13 +4,13 @@ Ultranest scanners
 """
 
 import pickle
-
+import scanner_plugin as splug
 import ultranest
 
-from utils import Scanner, copydoc, version
+from utils import copydoc, version
 
 
-class ReactiveUltranest(Scanner):
+class ReactiveUltranest(splug.scanner):
     """
     Ultranest reactive sampler.
     """
@@ -32,8 +32,8 @@ class ReactiveUltranest(Scanner):
             log_dir=log_dir,
             **kwargs)
 
-    @copydoc(ultranest.ReactiveNestedSampler.run)
-    def run(self, pkl_name="ultranest.pkl", **kwargs):
+    
+    def run_internal(self, pkl_name="ultranest.pkl", **kwargs):
         """
         We add the argument
 
@@ -45,6 +45,10 @@ class ReactiveUltranest(Scanner):
         self.sampler.run(**kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(self.sampler.results, f)
+    
+    @copydoc(ultranest.ReactiveNestedSampler.run)
+    def run():
+        self.run_internal(**self.run_args)
 
 
 __plugins__ = {ReactiveUltranest.name: ReactiveUltranest}

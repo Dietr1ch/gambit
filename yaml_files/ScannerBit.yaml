@@ -67,6 +67,8 @@ Scanner:
       like: LogLike
       plugin: python_grid
       grid_pts: [5, 3]
+      run:
+        my_test: 1.1
 
     mcmc:
       plugin: GreAT

@@ -110,9 +110,14 @@ namespace Gambit
                     unit[i] = std::atan(rotated[i]) / M_PI + 0.5;
             }
 
-            double log_prior_density(hyper_cube<double> vec) const override
+            double log_prior_density(const std::unordered_map<std::string, double> &physical) const override
             {
                 static double norm = std::log(M_PI * col.DetSqrt());
+                std::vector<double> vec(param_names.size());
+                
+                for (int i = 0, end = param_names.size(); i < end; ++i)
+                    vec[i] = physical.at(param_names[i]);
+                
                 return -std::log1p(col.Square(vec, location)) - norm;
             }
         };

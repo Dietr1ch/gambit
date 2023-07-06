@@ -4,11 +4,10 @@ Import a module dynamically
 """
 
 import importlib
+import scanner_plugin as splug
 
-from utils import Scanner
 
-
-class Dynamic(Scanner):
+class Dynamic(splug.scanner):
 
     name = "dynamic"
     version = "dynamic - no fixed version"
@@ -25,5 +24,7 @@ class Dynamic(Scanner):
         scanner = getattr(module, import_)
         self.instance = scanner(**kwargs)
 
-    def run(self, **kwargs):
-        self.instance.run(**kwargs)
+    def run(self):
+        self.instance.run(**self.run_args)
+
+__plugins__ = {Dynamic.name: Dynamic}

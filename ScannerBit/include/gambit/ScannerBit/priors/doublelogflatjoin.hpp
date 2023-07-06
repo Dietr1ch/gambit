@@ -69,7 +69,7 @@ namespace Gambit
          void inverse_transform(const std::unordered_map<std::string, double> &, hyper_cube<double>) const override;
 
          /// Probability density function
-         double log_prior_density(hyper_cube<double>) const override;
+         double log_prior_density(const std::unordered_map<std::string, double> &) const override;
       };
   
       LOAD_PRIOR(double_log_flat_join, DoubleLogFlatJoin)

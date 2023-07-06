@@ -5,13 +5,12 @@ Kombine MCMC sampler
 
 import pickle
 import numpy as np
-
+import scanner_plugin as splug
 import kombine
+from utils import copydoc, version
 
-from utils import Scanner, copydoc, version
 
-
-class Kombine(Scanner):
+class Kombine(splug.scanner):
     """
     MCMC sampler with KDE proposals
     """
@@ -31,8 +30,7 @@ class Kombine(Scanner):
         self.nwalkers = nwalkers
         self.sampler = kombine.Sampler(self.nwalkers, self.dim, self.log_target_density)
 
-    @copydoc(kombine.Sampler.run_mcmc)
-     def run(self, nsteps=5000, pkl_name="kombine.pkl", initial_state=None, **kwargs):
+    def run_internal(self, nsteps=5000, pkl_name="kombine.pkl", initial_state=None, **kwargs):
         """
         There are two additional arguments:
 
@@ -47,5 +45,10 @@ class Kombine(Scanner):
         res = self.sampler.run_mcmc(nsteps, **kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(res, f)
+    
+    @copydoc(kombine.Sampler.run_mcmc)
+    def run():
+        self.run_internal(**self.run_args)
+        
 
 __plugins__ = {Kombine.name: Kombine}

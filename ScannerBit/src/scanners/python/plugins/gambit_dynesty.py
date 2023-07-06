@@ -10,13 +10,12 @@ attempts to pickle the loglikelihood function etc.
 
 
 import pickle
-
 import dynesty
+import scanner_plugin as splug
+from utils import copydoc, version
 
-from utils import Scanner, copydoc, version
 
-
-class StaticDynesty(Scanner):
+class StaticDynesty(splug.scanner):
     """
     Dynesty nested sampler with static number of live points.
 
@@ -33,14 +32,17 @@ class StaticDynesty(Scanner):
         self.sampler = dynesty.NestedSampler(
             self.loglike, self.prior_transform, self.dim, **kwargs)
 
-    @copydoc(dynesty.NestedSampler.run_nested)
-    def run(self, pkl_name="static_dynesty.pkl", **kwargs):
+    def run_internal(self, pkl_name="static_dynesty.pkl", **kwargs):
         self.sampler.run_nested(**kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(self.sampler.results, f)
+            
+    @copydoc(dynesty.NestedSampler.run_nested)
+    def run():
+        self.run_internal(**self.run_args)
 
 
-class DynamicDynesty(Scanner):
+class DynamicDynesty(splug.scanner):
     """
     Dynesty nested sampler with dynamic number of live points.
 
@@ -57,11 +59,14 @@ class DynamicDynesty(Scanner):
         self.sampler = dynesty.DynamicNestedSampler(
             self.loglike, self.prior_transform, self.dim, **kwargs)
 
-    @copydoc(dynesty.DynamicNestedSampler.run_nested)
-    def run(self, pkl_name="dynamic_dynesty.pkl", **kwargs):
+    def run_internal(self, pkl_name="dynamic_dynesty.pkl", **kwargs):
         self.sampler.run_nested(**kwargs)
         with open(pkl_name, "wb") as f:
             pickle.dump(self.sampler.results, f)
+     
+    @copydoc(dynesty.DynamicNestedSampler.run_nested)
+    def run():
+        self.run_internal(**self.run_args)
 
 
 __plugins__ = {StaticDynesty.name: StaticDynesty,

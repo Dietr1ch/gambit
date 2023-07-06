@@ -36,7 +36,7 @@ namespace Gambit
             {
             }
             
-            double log_prior_density(hyper_cube<double>) const override { return 1.; }
+            double log_prior_density(const std::unordered_map<std::string, double> &) const override { return 1.; }
 
             void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
             {
@@ -75,7 +75,7 @@ namespace Gambit
             {
             }
             
-            double log_prior_density(hyper_cube<double>) const override
+            double log_prior_density(const std::unordered_map<std::string, double> &) const override
             {
                 scan_err << "'None' prior has no density" << scan_end;
                 return 0.0;

@@ -137,13 +137,6 @@ scanner_plugin(python, version(1, 0, 0))
     py::object instance;
     py::object run_func;
 
-    /*!
-     * Yaml file options
-     */
-    py::kwargs run_options;
-    
-    bool use_run_options = false;
-
     plugin_constructor
     {
         Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
@@ -169,12 +162,6 @@ scanner_plugin(python, version(1, 0, 0))
             init_kwargs = py::dict(options["init"]);
         else
             init_kwargs = options;
-        
-        if (options.contains("run") && py::isinstance<py::dict>(options["run"]))
-        {
-            use_run_options = true;
-            run_options = py::dict(options["run"]);
-        }
         
         // make instance of plugin
         py::module file;
@@ -218,10 +205,7 @@ scanner_plugin(python, version(1, 0, 0))
     int plugin_main() 
     {
         // run scanner
-        if (use_run_options)
-            run_func(**run_options);
-        else
-            run_func();
+        run_func();
             
         return 0;
     }

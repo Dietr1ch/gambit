@@ -258,7 +258,7 @@ namespace Gambit
                 }
                 else
                 {
-                    scan_err << "Plugin \"" << plugin << "\" of type \"" << type << " is not found." << scan_end;
+                    scan_err << "Plugin \"" << plugin << "\" of type \"" << type << "\" is not found." << scan_end;
                     return find2->second;
                 }
             }
