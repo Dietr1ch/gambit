@@ -98,6 +98,11 @@ ObsLikes:
   - purpose:      Observable
     capability:   test_BE_Array
 
+  # Test functionChain. 1 must be last in the chain, but 2, 3 and 4 may be permuted.
+  - purpose:      Observable
+    capability:   recursive_sum
+    function:     recursive_add_3
+    functionChain: [recursive_add_2, recursive_add_4, recursive_add_1]
 
 Rules:
 
