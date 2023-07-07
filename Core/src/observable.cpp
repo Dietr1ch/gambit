@@ -31,7 +31,6 @@ namespace Gambit
       bool m = stringComp ( capability, f->capability()     ) and
                typeComp   ( type,       f->type()      , te ) and
                stringComp ( function,   f->name()           ) and
-               stringComp ( version,    f->version()        ) and
                stringComp ( module,     f->origin()         );
       if (m and log_matches) f->addMatchedObservable(this);
       return m;

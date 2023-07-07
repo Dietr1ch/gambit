@@ -123,8 +123,10 @@ ObsLikes:
 
 Rules:
 
-  - capability: normaldist_loglike
-    options:
+  - if:
+      capability: normaldist_loglike
+    then:
+      options:
         probability_of_validity: 1.0
 
 Logger:

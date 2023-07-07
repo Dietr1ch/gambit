@@ -32,7 +32,6 @@ namespace Gambit
       if (match and if_capability) match = stringComp(capability, f->capability()   ); 
       if (match and if_type)       match = typeComp  (type,       f->type(),      te); 
       if (match and if_function)   match = stringComp(function,   f->name()         ); 
-      if (match and if_version)    match = stringComp(version,    f->version()      ); 
       return match;
     }
 
@@ -43,7 +42,6 @@ namespace Gambit
       if (match and then_capability) match = stringComp(capability, f->capability()   ); 
       if (match and then_type)       match = typeComp  (type,       f->type(),      te); 
       if (match and then_function)   match = stringComp(function,   f->name()         ); 
-      if (match and then_version)    match = stringComp(version,    f->version()      ); 
       return match;
     }
 
@@ -52,6 +50,7 @@ namespace Gambit
     {
       static const std::set<str> fields =
       {
+        "version",
         "backend",
         "group"
       };
@@ -66,6 +65,7 @@ namespace Gambit
       // Check if the base class part of the antecedent was matched.
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.
+      if (match and if_version) match = stringComp(version, f->version()); 
       if (match and if_backend) match = stringComp(backend, f->origin()); 
       if (match and if_group)   match = stringComp(group, group_being_resolved); 
       return match;
@@ -79,6 +79,7 @@ namespace Gambit
       // Check if the base class part of the consequent was matched.
       match = match and Rule::consequent_matches(f, te);
       // Check if the derived class part of the consequent was matched.
+      if (match and then_version) match = stringComp(version, f->version()); 
       if (match and then_backend) match = stringComp(backend, f->origin()); 
       // Log match
       if (match and log_matches) f->addMatchedBackendRule(this);
@@ -114,7 +115,7 @@ namespace Gambit
     bool ModuleRule::antecedent_matches(functor* f, const Utils::type_equivalency& te) const
     {
       // Allow matching only if the antecedent has been properly specified.
-      bool match = if_capability or if_type or if_function or if_version or if_module;
+      bool match = if_capability or if_type or if_function or if_module;
       // Check if the base class part of the antecedent was matched.
       match = match and Rule::antecedent_matches(f, te);
       // Check if the derived class part of the antecedent was matched.
@@ -126,8 +127,8 @@ namespace Gambit
     bool ModuleRule::consequent_matches(functor* f, const Utils::type_equivalency& te) const
     {
       // Allow matching only if the consequent has been properly specified.
-      bool match = then_capability or then_type or then_function or then_version or
-                   then_module or then_options or then_dependencies or then_backends or then_functionChain;
+      bool match = then_capability or then_type or then_function or then_module or
+                   then_options or then_dependencies or then_backends or then_functionChain;
       // Check if the base class part of the consequent was matched.
       match = match and Rule::consequent_matches(f, te);
       // Check if the derived class part of the consequent was matched.

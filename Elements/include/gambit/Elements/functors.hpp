@@ -151,7 +151,7 @@ namespace Gambit
       /// Getter for the wrapped function's origin (module or backend name)
       str origin() const;
       /// Getter for the version of the wrapped function's origin (module or backend)
-      str version() const;
+      virtual str version() const;
       /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
       virtual str safe_version() const;
       /// Getter for the wrapped function current status:
@@ -363,8 +363,6 @@ namespace Gambit
       str myType;
       /// Internal storage of the name of the module or backend to which the function belongs.
       str myOrigin;
-      /// Internal storage of the version of the module or backend to which the function belongs.
-      str myVersion;
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
       /// Citation key: BibTex key of the reference.
@@ -901,6 +899,9 @@ namespace Gambit
       /// Integer LogTag, for tagging log messages
       int myLogTag;
 
+      /// Internal storage of the version of the backend to which the function belongs.
+      str myVersion;
+
       /// Internal storage of the 'safe' version of the version (for use in namespaces, variable names, etc).
       str mySafeVersion;
 
@@ -924,7 +925,10 @@ namespace Gambit
       /// Hand out a safe pointer to this backend functor's inUse flag.
       safe_ptr<bool> inUsePtr();
 
-      /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
+      /// Getter for the version of the wrapped function's backend.
+      virtual str version() const;
+
+      /// Getter for the 'safe' incarnation of the version of the wrapped function's backend.
       virtual str safe_version() const;
 
   };

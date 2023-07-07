@@ -47,9 +47,6 @@ namespace Gambit
       /// Function field targeted by the ObsLike entry.
       std::string function;
 
-      /// Version targeted by the ObsLike entry.
-      std::string version;
-
       /// Module targeted by the ObsLike entry.
       std::string module;
 
@@ -97,7 +94,6 @@ namespace Gambit
         capability(),
         type(),
         function(),
-        version(),
         module(),
         dependencies(),
         backends(),

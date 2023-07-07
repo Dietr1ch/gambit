@@ -188,7 +188,6 @@ namespace YAML
       else if (key == "capability")       rhs.capability     = entry.second.as<std::string>();
       else if (key == "type")             rhs.type           = entry.second.as<std::string>();
       else if (key == "function")         rhs.function       = entry.second.as<std::string>();
-      else if (key == "version")          rhs.version        = entry.second.as<std::string>();
       else if (key == "module")           rhs.module         = entry.second.as<std::string>();
       else if (key == "functionChain")    rhs.functionChain  = entry.second.as<std::vector<std::string>>();
       else if (key == "sub_capabilities") rhs.subcaps        = entry.second;
@@ -210,6 +209,15 @@ namespace YAML
       std::stringstream errmsg;
       errmsg << "The ObsLikes entry " << std::endl << node << std::endl
              << "is invalid, because it does not contain a \"purpose\" field." << std::endl;
+      dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
+    }
+
+    // Make sure that capability, type, module or function is set. 
+    if (rhs.capability == "" or rhs.type == "" or rhs.module == "" or rhs.function == "")
+    {
+      errmsg << "The ObsLikes entry " << std::endl << node << std::endl
+             << "is invalid, because it does not contain at least one of the" << std::endl
+             << "fields \"capability\", \"type\", \"module\" or \"function\"." << std::endl;
       dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
     }
 
@@ -288,7 +296,6 @@ namespace YAML
       if      (key == "capability"){rhs.capability = entry.second.as<std::string>(); rhs.if_capability = true;}
       else if (key == "type")      {rhs.type = entry.second.as<std::string>(); rhs.if_type = true;}
       else if (key == "function")  {rhs.function = entry.second.as<std::string>(); rhs.then_function = true;}
-      else if (key == "version")   {rhs.version = entry.second.as<std::string>(); rhs.then_version = true;}
       else if (key == "if")        rhs.has_if = true;
       else if (key == "then")      rhs.has_then = true;
       else contains_other_direct_fields = check_field_is_valid_in_derived_rule(key);
@@ -308,8 +315,7 @@ namespace YAML
       // Make sure that if an if-then clause is present, no other entries are.
       if (contains_other_direct_fields or not (rhs.capability.empty() and
                                                rhs.type.empty() and
-                                               rhs.function.empty() and
-                                               rhs.version.empty()))
+                                               rhs.function.empty())
       {
         std::stringstream errmsg;
         errmsg << "  The rule contains regular fields *and* an if-then clause. If a rule" << std::endl
@@ -328,7 +334,6 @@ namespace YAML
         if      (key == "capability") {rhs.capability = entry.second.as<std::string>(); rhs.if_capability = true;}
         else if (key == "type")       {rhs.type = entry.second.as<std::string>();       rhs.if_type = true;}
         else if (key == "function")   {rhs.function = entry.second.as<std::string>();   rhs.if_function = true;}
-        else if (key == "version")    {rhs.version = entry.second.as<std::string>();    rhs.if_version = true;}
         else check_field_is_valid_in_derived_rule(key);
       }
 
@@ -339,7 +344,6 @@ namespace YAML
         if      (key == "capability") {rhs.capability = entry.second.as<std::string>(); rhs.then_capability = true;}
         else if (key == "type")       {rhs.type = entry.second.as<std::string>();       rhs.then_type = true;}
         else if (key == "function")   {rhs.function = entry.second.as<std::string>();   rhs.then_function = true;}
-        else if (key == "version")    {rhs.version = entry.second.as<std::string>();    rhs.then_version = true;}
         else check_field_is_valid_in_derived_rule(key);
       }
 
@@ -347,7 +351,6 @@ namespace YAML
       forbid_both_true("capability", rhs.if_capability, rhs.then_capability);
       forbid_both_true("type", rhs.if_type, rhs.then_type);
       forbid_both_true("function", rhs.if_function, rhs.then_function);
-      forbid_both_true("version", rhs.if_version, rhs.then_version);
     }
 
     // Strip leading "Gambit::" namespaces and whitespace, but preserve "const ".
@@ -448,7 +451,7 @@ namespace YAML
     // If there is no explicit if-then, make sure the default 'if' and 'then' conditions are actually implemented
     else
     {
-      if (not rhs.if_capability)
+      if (not rhs.if_capability or rhs.if_capability)
       {
         std::stringstream errmsg;
         errmsg << "  The rule contains neither an if-then block nor any capability entry" << std::endl
@@ -483,7 +486,12 @@ namespace YAML
     for(auto& entry : node)
     {
       const std::string key = entry.first.as<std::string>();
-      if (key == "backend")
+      if (key == "version")
+      {
+        rhs.version = entry.second.as<std::string>(); 
+        rhs.then_version = true;
+      }
+      else if (key == "backend")
       {
         rhs.backend = entry.second.as<std::string>(); 
         rhs.then_backend = true;
@@ -509,7 +517,12 @@ namespace YAML
       for(auto& entry : node["if"])
       {
         const std::string key = entry.first.as<std::string>();
-        if (key == "backend")
+        if (key == "version")
+        {
+          rhs.version = entry.second.as<std::string>(); 
+          rhs.if_version = true;
+        }
+        else if (key == "backend")
         {
           rhs.backend = entry.second.as<std::string>(); 
           rhs.if_backend = true;
@@ -526,7 +539,12 @@ namespace YAML
       for(auto& entry : node["then"])
       {
         const std::string key = entry.first.as<std::string>();
-        if (key == "backend")
+        if (key == "version")
+        {
+          rhs.version = entry.second.as<std::string>(); 
+          rhs.then_version = true;
+        }
+        else if (key == "backend")
         {
           rhs.backend = entry.second.as<std::string>(); 
           rhs.then_backend = true;
@@ -538,13 +556,14 @@ namespace YAML
         else throw_if_field_valid_only_in_module_rule(key);
       }
 
-      // Make sure that backend does not appear in both if and then blocks.
+      // Make sure that version and backend do not appear in both if and then blocks.
+      forbid_both_true("version", rhs.if_version, rhs.then_version);
       forbid_both_true("backend", rhs.if_backend, rhs.then_backend);
     }
     // If there is no explicit if-then, make sure the default 'then' condition is actually implemented
     else
     {
-      if (not (rhs.if_capability or rhs.if_group))
+      if (not (rhs.if_capability or rhs.if_type or rhs.if_group))
       {
         std::stringstream errmsg;
         errmsg << "  The rule contains neither an if-then block nor any capability entry" << std::endl

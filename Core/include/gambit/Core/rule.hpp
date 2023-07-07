@@ -64,13 +64,6 @@ namespace Gambit
       /// Function field appears in 'then' clause.
       bool then_function;
 
-      /// Version field targeted by the rule.
-      std::string version;
-      /// Version field appears in 'if' clause.
-      bool if_version;
-      /// Version field appears in 'then' clause.
-      bool then_version;
-
       /// Indicates that rule can be broken
       bool weakrule;
       
@@ -96,9 +89,6 @@ namespace Gambit
         function(),
         if_function(false),
         then_function(false),
-        version(),
-        if_version(false),
-        then_version(false),
         weakrule(false),
         log_matches(true)
       {}
@@ -108,6 +98,13 @@ namespace Gambit
     /// Derived class rule for resolution of backend requirements.
     struct BackendRule : public Rule
     {
+
+      /// Version field targeted by the rule.
+      std::string version;
+      /// Version field appears in 'if' clause.
+      bool if_version;
+      /// Version field appears in 'then' clause.
+      bool then_version;
 
       /// Backend field targeted by the rule.
       std::string backend;
@@ -135,6 +132,9 @@ namespace Gambit
       ///Default constructor. Sets all fields empty.
       BackendRule():
         Rule(),
+        version(),
+        if_version(false),
+        then_version(false),
         backend(),
         if_backend(false),
         then_backend(false),
