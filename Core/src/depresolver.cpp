@@ -1206,47 +1206,44 @@ namespace Gambit
       }
 
       // As a last resort, try applying weak rules (both subjugate and non-subjugate).
-      if (allowedVertexCandidates.size() > 1)
+      if (allowedVertexCandidates.size() > 1 and entry.obslike == NULL)
       {
         logger() << "Applying rules declared as '!weak' in final attempt to resolve dependency." << endl;
 
-        if (entry.obslike == NULL)
+        #pragma omp parallel for
+        for (unsigned int i = 0; i < allowedVertexCandidates.size(); ++i)
         {
-          #pragma omp parallel for
-          for (unsigned int i = 0; i < allowedVertexCandidates.size(); ++i)
+          const VertexID& v = allowedVertexCandidates[i].first;
+          bool& allowed = allowedVertexCandidates[i].second;
+
+          // Filter out vertices that fail any non-subjugate (undirected) rules.
+          for (const ModuleRule& rule : module_rules)
           {
-            const VertexID& v = allowedVertexCandidates[i].first;
-            bool& allowed = allowedVertexCandidates[i].second;
-
-            // Filter out vertices that fail any non-subjugate (undirected) rules.
-            for (const ModuleRule& rule : module_rules)
-            {
-              if (rule.weakrule and allowed) allowed = rule.allows(masterGraph[v], *boundTEs, false);
-            }
-
-            // Iterate over all obslikes that matched the entry.toVertex.
-            for (const Observable* match : masterGraph[entry.toVertex]->getMatchedObservables())
-            {
-              // Allow only candidates that are allowed by all subjugate module rules of all rules that matched the entry.toVertex
-              allowed = allowed and match->dependencies_allow(masterGraph[v], *boundTEs, false);
-              // Check that the candidate is consistent with any functionChain included in the obslike entry.
-              allowed = allowed and match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs);
-            }
-
-            // Iterate over all rules that matched the entry.toVertex.
-            for (const ModuleRule* match : masterGraph[entry.toVertex]->getMatchedModuleRules())
-            {
-              // Allow only candidates that match all subjugate module rules of all rules that matched the entry.toVertex
-              if (match->weakrule and allowed) allowed = match->dependencies_allow(masterGraph[v], *boundTEs, false);
-              // Check that the candidate is consistent with any functionChain included in the rule.
-              if (match->weakrule and allowed) allowed = match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs, false);
-            }
+            if (rule.weakrule and allowed) allowed = rule.allows(masterGraph[v], *boundTEs, false);
           }
-          Utils::masked_erase(allowedVertexCandidates);
 
-          logger() << "Candidate vertices after applying weak rules:" << endl;
-          logger() << printGenericFunctorList(allowedVertexCandidates) << EOM;
+          // Iterate over all obslikes that matched the entry.toVertex.
+          for (const Observable* match : masterGraph[entry.toVertex]->getMatchedObservables())
+          {
+            // Allow only candidates that are allowed by all subjugate module rules of all rules that matched the entry.toVertex
+            allowed = allowed and match->dependencies_allow(masterGraph[v], *boundTEs, false);
+            // Check that the candidate is consistent with any functionChain included in the obslike entry.
+            allowed = allowed and match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs);
+          }
+
+          // Iterate over all rules that matched the entry.toVertex.
+          for (const ModuleRule* match : masterGraph[entry.toVertex]->getMatchedModuleRules())
+          {
+            // Allow only candidates that match all subjugate module rules of all rules that matched the entry.toVertex
+            if (match->weakrule and allowed) allowed = match->dependencies_allow(masterGraph[v], *boundTEs, false);
+            // Check that the candidate is consistent with any functionChain included in the rule.
+            if (match->weakrule and allowed) allowed = match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs, false);
+          }
         }
+        Utils::masked_erase(allowedVertexCandidates);
+
+        logger() << "Candidate vertices after applying weak rules:" << endl;
+        logger() << printGenericFunctorList(allowedVertexCandidates) << EOM;
       }
 
       // Nothing left?
@@ -1286,7 +1283,13 @@ namespace Gambit
       errmsg += "\nis still ambiguous.\n";
       errmsg += "\nThe candidate vertices are:\n";
       errmsg += printGenericFunctorList(allowedVertexCandidates) +"\n";
-      errmsg += "See logger output for details on the attempted (but failed) dependency resolution.\n";
+      if (entry.obslike != NULL) 
+      {
+        errmsg += "\nNote that because the failed resolution is for an ObsLike entry,\n";
+        errmsg += "you could accept all of the above candidates by using !match_all.\n";
+        
+      }
+      errmsg += "\nSee logger output for details on the attempted (but failed) dependency resolution.\n";
       errmsg += "\nAn entry in the ObsLike or Rules section of your YAML file that would";
       errmsg += "\ne.g. select the first of the above candidates could read ";
       if (entry.obslike == NULL)

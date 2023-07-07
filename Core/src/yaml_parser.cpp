@@ -215,6 +215,7 @@ namespace YAML
     // Make sure that capability, type, module or function is set. 
     if (rhs.capability == "" or rhs.type == "" or rhs.module == "" or rhs.function == "")
     {
+      std::stringstream errmsg;
       errmsg << "The ObsLikes entry " << std::endl << node << std::endl
              << "is invalid, because it does not contain at least one of the" << std::endl
              << "fields \"capability\", \"type\", \"module\" or \"function\"." << std::endl;
@@ -269,7 +270,7 @@ namespace YAML
     rhs.yaml = node;
 
     // Register whether rule is weak or strong
-    if (node.Tag() == "!weak" or node.Tag() == "!weakrule")
+    if (node.Tag() == "!weak")
     {
       rhs.weakrule = true;
     }
@@ -281,7 +282,7 @@ namespace YAML
       {
         std::stringstream errmsg;
         errmsg << "  The Rules entry " << node << "contains tag \"" << node.Tag() << "\"." << std::endl
-               << "  The only tags permitted in rules are \"!weak\" and \"!weakrule\".";
+               << "  The only tag permitted in rules is \"!weak\".";
         throw std::runtime_error(errmsg.str());
       }
     }
@@ -315,7 +316,7 @@ namespace YAML
       // Make sure that if an if-then clause is present, no other entries are.
       if (contains_other_direct_fields or not (rhs.capability.empty() and
                                                rhs.type.empty() and
-                                               rhs.function.empty())
+                                               rhs.function.empty()))
       {
         std::stringstream errmsg;
         errmsg << "  The rule contains regular fields *and* an if-then clause. If a rule" << std::endl
@@ -459,7 +460,6 @@ namespace YAML
         throw std::runtime_error(errmsg.str());
       }
       if (not (rhs.then_function or
-               rhs.then_version or
                rhs.then_module or
                rhs.then_options or
                rhs.then_functionChain or
