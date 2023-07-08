@@ -452,11 +452,11 @@ namespace YAML
     // If there is no explicit if-then, make sure the default 'if' and 'then' conditions are actually implemented
     else
     {
-      if (not rhs.if_capability or rhs.if_capability)
+      if (not (rhs.if_capability or rhs.if_type))
       {
         std::stringstream errmsg;
-        errmsg << "  The rule contains neither an if-then block nor any capability entry" << std::endl
-               << "  able to be interpreted as an implicit if condition.";
+        errmsg << "  The rule contains neither an if-then block nor any capability or" << std::endl
+               << "  type entry able to be interpreted as an implicit if condition.";
         throw std::runtime_error(errmsg.str());
       }
       if (not (rhs.then_function or
