@@ -46,10 +46,9 @@ jobs:
         cat buildenv.sh
         pip install --upgrade pyyaml pybind11 h5py scipy numpy pyhf configobj pandas matplotlib setuptools==58.2.0
     - name: Configure with cmake
-      # TODO: revert the ditching of pybind when the fix for the python segfaults in python_scanners is merged in. 
       run: |
         cd BUILD/ && . buildenv.sh
-        cmake .. -D WITH_ROOT=OFF -D WITH_RESTFRAMES=OFF -D WITH_HEPMC=ON -D WITH_YODA=ON -D BUILD_FS_MODELS="CMSSM;MSSM;MDM" -D WITH_MPI=OFF -Ditch=pybind
+        cmake .. -D WITH_ROOT=OFF -D WITH_RESTFRAMES=OFF -D WITH_HEPMC=ON -D WITH_YODA=ON -D BUILD_FS_MODELS="CMSSM;MSSM;MDM" -D WITH_MPI=OFF
     - name: Build scanners
       run: |
         cd BUILD/ && . buildenv.sh
