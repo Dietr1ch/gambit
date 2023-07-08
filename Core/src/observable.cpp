@@ -47,13 +47,17 @@ namespace Gambit
     /// Whether the functionChain of this observable allows a given module functor to be used to resolve the dependency of another. 
     bool Observable::function_chain_allows(functor* candidate, functor* dependee, const Utils::type_equivalency& te) const
     {
+      // If the functionChain is empty, the candidate is allowed
+      if (functionChain.empty()) return true;
       // If the candidate functor doesn't also match the capability and type of the observable, then the functionChain is not relevant.
       if (not stringComp(capability, candidate->capability()) or 
           not typeComp(type, candidate->type(), te)) return true;
+      // If the dependee matches the observable, then the candidate is allowed only if it appears at the start of the function chain.
+      if (matches(dependee, te)) return (*functionChain.begin() == candidate->name());
       // Iterate over the entries in the functionChain
       for (auto it = functionChain.begin(); it != functionChain.end() - 1; ++it)
       {
-        // Function is allowed if somewhere in the chain it is directly preceeded by the dependent function.
+        // Function is allowed if somewhere in the chain it is directly preceded by the dependent function.
         if ((*it) == dependee->name()) return (*(it+1) == candidate->name());
       }
       return true;

@@ -337,11 +337,11 @@ namespace Gambit
       logger() << LogTags::dependency_resolver << endl << "Vertices registered in masterGraph" << endl;
       logger() << "----------------------------------" << endl;
       logger() << boost::format(formatString)%
-       "MODULE (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
+       "MODULE"% "FUNCTION"% "CAPABILITY"% "TYPE"% "PURPOSE"% "STATUS"% "#DEPs"% "#BE_REQs";
       for (std::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         logger() << boost::format(formatString)%
-         ((*masterGraph[*vi]).origin() + " (" + (*masterGraph[*vi]).version() + ")") %
+         (*masterGraph[*vi]).origin()%
          (*masterGraph[*vi]).name()%
          (*masterGraph[*vi]).capability()%
          (*masterGraph[*vi]).type()%
@@ -352,7 +352,7 @@ namespace Gambit
       }
       logger() <<  "Registered Backend vertices" << endl;
       logger() <<  "---------------------------" << endl;
-      logger() << printGenericFunctorList(boundCore->getBackendFunctors());
+      logger() << printGenericFunctorList(boundCore->getBackendFunctors(), true);
       logger() << EOM;
     }
 
@@ -752,37 +752,39 @@ namespace Gambit
     }
 
     /// Generic printer of the contents of a vector of functors as vertices
-    str DependencyResolver::printGenericFunctorList(const std::vector<VertexID> & vertexIDs)
+    str DependencyResolver::printGenericFunctorList(const std::vector<VertexID> & vertexIDs, bool print_version)
     {
         std::vector<functor*> functorList;
         for (const auto& vid : vertexIDs)
         {
           functorList.push_back(masterGraph[vid]);
         }
-        return printGenericFunctorList(functorList);
+        return printGenericFunctorList(functorList, print_version);
     }
 
     /// Generic printer of the contents of a vector of functor-as-vertex, bool pairs
-    str DependencyResolver::printGenericFunctorList(const std::vector<std::pair<VertexID, bool>> & vertexIDs)
+    str DependencyResolver::printGenericFunctorList(const std::vector<std::pair<VertexID, bool>> & vertexIDs, bool print_version)
     {
         std::vector<functor*> functorList;
         for (const auto& vid : vertexIDs)
         {
           functorList.push_back(masterGraph[vid.first]);
         }
-        return printGenericFunctorList(functorList);
+        return printGenericFunctorList(functorList, print_version);
     }
 
     /// Generic printer of the contents of a vector of functors
-    str DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList)
+    str DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList, bool print_version)
     {
       const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
+      str vtstring = (print_version ? "ORIGIN (VERSION)" : "ORIGIN");
       std::ostringstream stream;
-      stream << boost::format(formatString)%"ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
+      stream << boost::format(formatString)%vtstring% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
       for (const functor* f : functorList)
       {
+        str vstring = (print_version ? " (" + f->version() + ")" : "");
         stream << boost::format(formatString)%
-         (f->origin() + " (" + f->version() + ")") %
+         (f->origin() + vstring) %
          f->name()%
          f->capability()%
          f->type()%
@@ -792,14 +794,14 @@ namespace Gambit
     }
 
     /// Generic printer of the contents of a vector of functor, bool pairs
-    str DependencyResolver::printGenericFunctorList(const std::vector<std::pair<functor*, bool>> & vertexIDs)
+    str DependencyResolver::printGenericFunctorList(const std::vector<std::pair<functor*, bool>> & vertexIDs, bool print_version)
     {
         std::vector<functor*> functorList;
         for (const auto& vid : vertexIDs)
         {
           functorList.push_back(vid.first);
         }
-        return printGenericFunctorList(functorList);
+        return printGenericFunctorList(functorList, print_version);
     }
 
     /// Add module and primary model functors in bound core to class-internal
@@ -1172,8 +1174,13 @@ namespace Gambit
           {
             // Allow only candidates that are allowed by all subjugate module rules of all rules that matched the entry.toVertex
             allowed = allowed and match->dependencies_allow(masterGraph[v], *boundTEs);
+          }
+
+          // Iterate over all obslikes in order to check if they have functionChain entries that are relevant.
+          for (const Observable& obs : obslikes)
+          {
             // Check that the candidate is consistent with any functionChain included in the obslike entry.
-            allowed = allowed and match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs);
+            allowed = allowed and obs.function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs);
           }
 
           // Iterate over all rules that matched the entry.toVertex.
@@ -1181,8 +1188,13 @@ namespace Gambit
           {
             // Allow only candidates that match all subjugate module rules of all rules that matched the entry.toVertex
             allowed = allowed and match->dependencies_allow(masterGraph[v], *boundTEs);
-            // Check that the candidate is consistent with any functionChain included in the rule.
-            allowed = allowed and match->function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs);
+          }
+
+          // Iterate over all rules in order to check if they have functionChain entries that are relevant.
+          for (const ModuleRule& rule : module_rules)
+          {
+            // Check that the candidate is consistent with any functionChain included in the obslike entry.
+            allowed = allowed and rule.function_chain_allows(masterGraph[v], masterGraph[entry.toVertex], *boundTEs);
           }
         }
         Utils::masked_erase(allowedVertexCandidates);
@@ -1907,7 +1919,7 @@ namespace Gambit
         if (disabledBackendFunctorCandidates.size() != 0)
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
-                 <<     printGenericFunctorList(disabledBackendFunctorCandidates)
+                 <<     printGenericFunctorList(disabledBackendFunctorCandidates, true)
                  << endl
                  << "Status flags:" << endl
                  << " 1: This function is available, but the backend and/or its version are " << endl
@@ -2001,7 +2013,7 @@ namespace Gambit
           if (reqs.size() == 1) errmsg += reqs.begin()->first + " (" + reqs.begin()->second + ")";
           else errmsg += "group " + group_being_resolved;
           errmsg += " of module function " + masterGraph[toVertex]->origin() + "::" + masterGraph[toVertex]->name()
-           + "\nViable candidates are:\n" + printGenericFunctorList(allowedBackendFunctorCandidates);
+           + "\nViable candidates are:\n" + printGenericFunctorList(allowedBackendFunctorCandidates, true);
           errmsg += "\nIf you don't need all the above backends, you can resolve the ambiguity simply by";
           errmsg += "\nuninstalling the backends that you don't want to use.";
           errmsg += "\n\nAlternatively, you can add an entry in your YAML file that selects which backend";

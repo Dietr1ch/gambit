@@ -162,9 +162,11 @@ namespace Gambit
     bool ModuleRule::function_chain_allows(functor* candidate, functor* dependee, const Utils::type_equivalency& te, bool ignore_if_weak) const
     {
       // Scenarios in which the functionChain is irrelevent.
-      if ((ignore_if_weak and weakrule) or
-          (not then_functionChain) or 
-          (not antecedent_matches(candidate, te))) return true;
+      if (ignore_if_weak and weakrule) return true;
+      if (not then_functionChain) return true;
+      if (not stringComp(capability, candidate->capability()) and not typeComp(type, candidate->type(), te)) return true;
+      // If the dependee matches the rule, then the candidate is allowed only if it appears at the start of the function chain.
+      if (antecedent_matches(dependee, te) and consequent_matches(dependee, te)) return (*functionChain.begin() == candidate->name());
       // Iterate over the entries in the functionChain
       for (auto it = functionChain.begin(); it != functionChain.end() - 1; ++it)
       {

@@ -179,10 +179,10 @@ namespace Gambit
         void addFunctors();
 
         /// Pretty print backend functor information
-        str printGenericFunctorList(const std::vector<functor*>&);
-        str printGenericFunctorList(const std::vector<VertexID>&);
-        str printGenericFunctorList(const std::vector<std::pair<functor *, bool>>&);
-        str printGenericFunctorList(const std::vector<std::pair<VertexID, bool>>&);
+        str printGenericFunctorList(const std::vector<functor*>&, bool print_version = false);
+        str printGenericFunctorList(const std::vector<VertexID>&, bool print_version = false);
+        str printGenericFunctorList(const std::vector<std::pair<functor *, bool>>&, bool print_version = false);
+        str printGenericFunctorList(const std::vector<std::pair<VertexID, bool>>&, bool print_version = false);
 
         /// Print quantity to be resolved
         str printQuantityToBeResolved(const QueueEntry&);
