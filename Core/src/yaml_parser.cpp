@@ -213,7 +213,7 @@ namespace YAML
     }
 
     // Make sure that capability, type, module or function is set. 
-    if (rhs.capability == "" or rhs.type == "" or rhs.module == "" or rhs.function == "")
+    if (rhs.capability == "" and rhs.type == "" and rhs.module == "" and rhs.function == "")
     {
       std::stringstream errmsg;
       errmsg << "The ObsLikes entry " << std::endl << node << std::endl
