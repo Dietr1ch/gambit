@@ -17,7 +17,7 @@ class DualAnnealing(splug.scanner):
     __version__ = version("scipy")
     
     def __init__(self, **kwargs):
-        pass
+        super().__init__()
 
     @copydoc(scipy.optimize.dual_annealing)
     def run(self):
@@ -35,7 +35,7 @@ class BasinHopping(splug.scanner):
     __version__ = version("scipy")
     
     def __init__(self, **kwargs):
-        pass
+        super().__init__()
 
     @copydoc(scipy.optimize.basinhopping)
     def run(self):
@@ -54,7 +54,7 @@ class DifferentialEvolution(splug.scanner):
     __version__ = version("scipy")
     
     def __init__(self, **kwargs):
-        pass
+        super().__init__()
 
     @copydoc(scipy.optimize.differential_evolution)
     def run(self):
@@ -73,7 +73,7 @@ class Direct(splug.scanner):
     __version__ = version("scipy")
     
     def __init__(self, **kwargs):
-        pass
+        super().__init__()
 
     @copydoc(scipy.optimize.direct)
     def run(self):
