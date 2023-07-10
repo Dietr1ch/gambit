@@ -46,16 +46,9 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: mytest
+  use_scanner: de
 
   scanners:
-    
-    mytest:
-      plugin: scipy_dual_annealing
-      like: LogLike
-      run:
-        maxiter: 1000
-        
 
     de:
       plugin: diver
