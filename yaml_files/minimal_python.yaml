@@ -15,7 +15,7 @@ Scanner:
 
   scanners:
     python:
-      plugin: reactive_ultranest  # static_dynesty, scipy_dual_annealing, etc.
+      plugin: scipy_dual_annealing # reactive_ultranest  # static_dynesty, scipy_dual_annealing, etc.
       like: LogLike
 
 ObsLikes:
