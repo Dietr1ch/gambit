@@ -370,7 +370,7 @@ namespace Gambit
                         like_prior_physical = std::shared_ptr<s_phys_pr_func>(new s_phys_pr_func(*like.get()));
                     }*/
 
-                    virtual void run() = 0;
+                    //virtual void run() = 0;
                     
                     void transform_inplace(Gambit::Scanner::hyper_cube<double> unit, std::unordered_map<std::string, double> &physical)
                     {
@@ -918,7 +918,11 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     m.def("get_purpose", get_purpose);
     
     py::class_<scanner_base, std::shared_ptr<scanner_base>>(m, "scanner")
-    .def("run", &scanner_base::run)
+    .def(py::init([]()
+        {
+            return new scanner_base();
+        }))
+    //.def("run", nullptr)
     .def("print", &scanner_base::print)
     .def("transform", &scanner_base::transform)
     .def("transform", &scanner_base::transform_inplace)
