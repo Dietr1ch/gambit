@@ -407,9 +407,12 @@ function(add_standalone executablename)
   endif()
 
   # Exclude standalones that need pybind11 if it has been excluded.
-  if ( (NOT HAVE_PYBIND11 AND (";${ARG_DEPENDENCIES};" MATCHES ";pybind11;")) )
-    message("${BoldCyan} X Excluding ${executablename} from GAMBIT configuration due to absence of pybind11.${ColourReset}")
-    set(standalone_permitted 0)
+  if (";${ARG_DEPENDENCIES};" MATCHES ";pybind11;")
+    string(REPLACE "pybind11" "" ARG_DEPENDENCIES ${ARG_DEPENDENCIES})
+    if (NOT HAVE_PYBIND11)
+      message("${BoldCyan} X Excluding ${executablename} from GAMBIT configuration due to absence of pybind11.${ColourReset}")
+      set(standalone_permitted 0)
+    endif()
   endif()
 
   # Iterate over modules, checking if the neccessary ones are present, and adding them to the target objects if so.
