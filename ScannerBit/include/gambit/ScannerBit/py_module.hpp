@@ -181,7 +181,11 @@ namespace Gambit
                 
                 inline py::object yaml_to_dict(const YAML::Node &node)
                 {
-                    if (node.IsMap())
+                    if (node.IsNull())
+                    {
+                        return py::dict();
+                    }
+                    else if (node.IsMap())
                     {
                         py::dict d;
                         for (auto &&n : node)
@@ -370,7 +374,12 @@ namespace Gambit
                         like_prior_physical = std::shared_ptr<s_phys_pr_func>(new s_phys_pr_func(*like.get()));
                     }*/
 
-                    //virtual void run() = 0;
+                    //virtual int run() = 0;
+                    int run()
+                    {
+                        scan_err << "\"run()\" method not defined in python scanner plugin." << scan_end;
+                        return 1;
+                    }
                     
                     void transform_inplace(Gambit::Scanner::hyper_cube<double> unit, std::unordered_map<std::string, double> &physical)
                     {
@@ -491,9 +500,18 @@ namespace Gambit
                     
                     py::dict &getRunOpts()
                     {
-                        static py::dict run_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["run"] ? getNode()["run"] : getNode());
+                        //static py::dict run_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["run"] ? getNode()["run"] : getNode());
+                        static py::dict run_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["run"] ? getNode()["run"] : YAML::Node());
                         
                         return run_opts;
+                    }
+                    
+                    py::dict &getInitOpts()
+                    {
+                        //static py::dict init_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["init"] ? getNode()["init"] : getNode());
+                        static py::dict init_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["init"] ? getNode()["init"] : YAML::Node());
+                        
+                        return init_opts;
                     }
                     
                     void set_run_defaults(py::kwargs opts)
@@ -922,7 +940,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         {
             return new scanner_base();
         }))
-    //.def("run", nullptr)
+    .def("run", &scanner_base::run)
     .def("print", &scanner_base::print)
     .def("transform", &scanner_base::transform)
     .def("transform", &scanner_base::transform_inplace)
@@ -936,6 +954,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def_property_readonly("loglike_physical", &scanner_base::getLikePhysical)
     .def_property_readonly("log_target_density", &scanner_base::getLikePriorPhysical)
     .def_property_readonly("loglike", &scanner_base::getLike)
+    .def_property_readonly("init_args", &scanner_base::getInitOpts)
     .def_property_readonly("run_args", &scanner_base::getRunOpts)
     .def_property_readonly("parameter_names", &scanner_base::getParameterNames)
     .def_property_readonly("mpi_rank", &scanner_base::getRank)

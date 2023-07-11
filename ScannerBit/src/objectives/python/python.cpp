@@ -126,9 +126,9 @@ objective_plugin(python, version(1, 0, 0))
 
         // get kwargs
         py::kwargs init_kwargs;
-        if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
+        /*if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
             init_kwargs = py::dict(options["init"]);
-        else
+        else*/
             init_kwargs = options;
         
         // make instance of plugin

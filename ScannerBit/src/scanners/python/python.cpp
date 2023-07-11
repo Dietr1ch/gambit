@@ -148,19 +148,19 @@ scanner_plugin(python, version(1, 0, 0))
         py::dict options = yaml_to_dict(get_inifile_node());
         
         // log a warning if both 'init' and 'run' options are missing
-        if (!options.contains("init") && !options.contains("run"))
+        /*if (!options.contains("init") && !options.contains("run"))
         {
             scan_warn << 
                 "Neither an 'init' nor a 'run' section was found in "
                 "the YAML options for the scanner " << plugin_name << ", "
                 "Some scanner need these options to run." << scan_end;
-        }
+        }*/
 
         // get kwargs
         py::kwargs init_kwargs;
-        if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
+        /*if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
             init_kwargs = py::dict(options["init"]);
-        else
+        else*/
             init_kwargs = options;
         
         // make instance of plugin
