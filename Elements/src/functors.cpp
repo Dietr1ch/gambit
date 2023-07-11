@@ -32,6 +32,10 @@
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
+///  \author Tomas Gonzalo
+///          (gonzalo@physik.rwth-aachen.de)
+///  \date 2021 Sep
+///
 ///  *********************************************
 
 #include <chrono>
@@ -98,7 +102,9 @@ namespace Gambit
     /// Acquire ID for timing 'vertex' (used in printer system)
     void functor::setTimingVertexID(int ID) { myTimingVertexID = ID; }
 
-    /// Setter for status: -4 = required backend absent (backend ini functions)
+    /// Setter for status: -6 = required external tool absent (pybind11)
+    ///                    -5 = required external tool absent (Mathematica)
+    ///                    -4 = required backend absent (backend ini functions)
     ///                    -3 = required classes absent
     ///                    -2 = function absent
     ///                    -1 = origin absent
@@ -120,10 +126,12 @@ namespace Gambit
     /// Getter for the wrapped function's origin (module or backend name)
     str functor::origin()      const { return myOrigin; }
     /// Getter for the version of the wrapped function's origin (module or backend)
-    str functor::version()     const { return myVersion; }
+    str functor::version()     const { utils_error().raise(LOCAL_INFO,"The version method is only defined for backend functors."); return ""; }
     /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
     str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
     /// Getter for the wrapped function current status:
+    ///                    -6 = required external tool absent (pybind11)
+    ///                    -5 = required external tool absent (Mathematica)
     ///                    -4 = required backend absent (backend ini functions)
     ///                    -3 = required classes absent
     ///                    -2 = function absent
@@ -136,6 +144,8 @@ namespace Gambit
     sspair functor::quantity() const { return std::make_pair(myCapability, myType); }
     /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
     str functor::purpose()     const { return myPurpose; }
+    /// Getter for citation key
+    str functor::citationKey() const { return myCitationKey; }
     /// Getter for vertex ID
     int functor::vertexID()    const { return myVertexID; }
     /// Getter for timing vertex ID
@@ -218,6 +228,13 @@ namespace Gambit
     std::set<sspair> functor::dependencies()
     {
       utils_error().raise(LOCAL_INFO,"The dependencies method has not been defined in this class.");
+      std::set<sspair> empty;
+      return empty;
+    }
+    /// Getter for listing backends that require class loading
+    std::set<sspair> functor::backendclassloading()
+    {
+      utils_error().raise(LOCAL_INFO,"The backendclassloading method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
@@ -377,6 +394,15 @@ namespace Gambit
       return safe_ptr<Options>(&myOptions);
     }
 
+    /// Notify the functor about a string in YAML that contains the sub-capability information (for use in standalones)
+    void functor::notifyOfSubCaps(const str& subcap_string)
+    {
+      YAML::Node subcap_node_simple = YAML::Load(subcap_string);
+      YAML::Node subcap_node_complex;
+      for (auto x : subcap_node_simple) subcap_node_complex[x.as<str>()] = YAML::Node();
+      notifyOfSubCaps(subcap_node_complex);
+    }
+
     /// Notify the functor about an instance of the options class that contains sub-capability information
     void functor::notifyOfSubCaps(const Options& subcaps)
     {
@@ -517,6 +543,30 @@ namespace Gambit
       std::set<str> group_combo(v.begin(), v.end());
       allowedGroupCombos.insert(group_combo);
     }
+
+    /// Add an observable to the set of those that this functor matches.
+    void functor::addMatchedObservable(const DRes::Observable* obs) { matched_observables.insert(obs); }
+    
+    /// Retrieve the set of observables that this functor matches.
+    const std::set<const DRes::Observable*>& functor::getMatchedObservables() { return matched_observables; }
+
+    /// Add a module rule to the set of those against which this functor has been tested and found to match.
+    void functor::addMatchedModuleRule(const DRes::ModuleRule* r) { matched_module_rules.insert(r); }
+    
+    /// Add a backend rule to the set of those against which this functor has been tested and found to match.
+    void functor::addMatchedBackendRule(const DRes::BackendRule* r) { matched_backend_rules.insert(r); }
+
+    /// Retrieve the set of module rules against which this functor has been tested and found to match.
+    const std::set<const DRes::ModuleRule*>& functor::getMatchedModuleRules() { return matched_module_rules; }
+
+    /// Retrieve the set of backend rules against which this functor has been tested and found to match.
+    const std::set<const DRes::BackendRule*>& functor::getMatchedBackendRules() { return matched_backend_rules; } 
+
+    // Retrieve matched rules by type.
+    template<>
+    const std::set<const DRes::ModuleRule*>& functor::getMatchedRules() { return getMatchedModuleRules(); } 
+    template<>
+    const std::set<const DRes::BackendRule*>& functor::getMatchedRules() { return getMatchedBackendRules(); } 
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
@@ -816,6 +866,17 @@ namespace Gambit
             acknowledgeInvalidation(e,*it);
             if (omp_get_level()==0) throw(e); // If not in an OpenMP parallel block, inform of invalidation and throw onwards
           }
+          catch (halt_loop_exception& e)
+          {
+            // Skip the rest of the iteration, without trying to evaluate the rest of the loop, and wrap it up.
+            breakLoop();
+            break;
+          }
+          catch (invalid_loop_iteration_exception& e)
+          {
+            // Just skip on to the next iteration, without trying to evaluate the rest of the loop.
+            break;
+          }
         }
       }
     }
@@ -917,6 +978,20 @@ namespace Gambit
 
     /// Getter for listing currently activated dependencies
     std::set<sspair> module_functor_common::dependencies() { return myDependencies; }
+    /// Getter for listing backends that require class loading
+    std::set<sspair> module_functor_common::backendclassloading()
+    {
+      std::set<sspair> backends;
+
+      for(auto backend : required_classloading_backends)
+      {
+        for(auto version : backend.second)
+        {
+          backends.insert(sspair(backend.first, version));
+        }
+      }
+      return backends;
+    }
     /// Getter for listing backend requirement groups
     std::set<str> module_functor_common::backendgroups() { return myGroups; }
     /// Getter for listing all backend requirements

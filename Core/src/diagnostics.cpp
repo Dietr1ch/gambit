@@ -65,7 +65,7 @@ namespace Gambit
         table.red() << "ditched";
         table << "n/a";
       }
-      else 
+      else
       {
         int nf = 0;
         for (const auto &functor : functorList)
@@ -89,8 +89,8 @@ namespace Gambit
     YAML::Node gambit_backends_yaml = YAML::LoadFile(GAMBIT_DIR "/config/gambit_backends.yaml");
     auto gambit_backends = gambit_backends_yaml["enabled"].as<std::map<std::string, std::vector<std::string>>>();
     auto gambit_backends_disabled = gambit_backends_yaml["disabled"].as<std::map<std::string, std::vector<std::string>>>();
-    
-    for (auto &backend : gambit_backends_disabled) 
+
+    for (auto &backend : gambit_backends_disabled)
     {
       if (gambit_backends.find(backend.first) == gambit_backends.end())
       {
@@ -102,7 +102,7 @@ namespace Gambit
         {
           gambit_backends[backend.first].emplace_back(version);
         }
-      }      
+      }
     }
 
     bool all_good = true;
@@ -121,14 +121,14 @@ namespace Gambit
         int ntypes = 0;
         int nctors = 0;
 
-        if (backend_versions.find(backend.first) == backend_versions.end()) 
+        if (backend_versions.find(backend.first) == backend_versions.end())
         {
           const str firstentry = (&version == std::addressof(*backend.second.begin()) ? backend.first : "");
           table << firstentry << version << "n/a";
           table.red() << "disabled";
           table << "n/a" << "n/a" << "n/a";
         }
-        else 
+        else
         {
           // Retrieve the status and path info.
           const str path = backendData->path(backend.first, version);          // Get the path of this backend
@@ -138,6 +138,16 @@ namespace Gambit
           for (const auto &functor : backendFunctorList)
           {
             if (functor->origin() == backend.first and functor->version() == version) nfuncs++; // If backend matches, increment the count of the functions in this version
+          }
+
+          if (backendData->classes.count(backend.first + version) != 0)
+          {
+            const std::set<str> classes = backendData->classes.at(backend.first + version); // Retrieve classes loaded by this version
+            ntypes = classes.size();                                                        // Get the number of classes loaded by this backend
+            for (const auto &class_ : classes)                                              // class is a C++ keyword, so use class_ here which allows the same readability.
+            {
+              nctors += backendData->factory_args.at(backend.first + version + class_).size(); // Add the number of factories for this class to the total
+            }
           }
 
           // Do things specific to versions that provide classes

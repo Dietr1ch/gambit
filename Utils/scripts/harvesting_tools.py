@@ -26,6 +26,7 @@
 #  \author Tomas Gonzalo
 #          (tomas.gonzalo@monash.edu)
 #    \date 2018 Oct
+#    \date 2021 Mar
 #
 # *********************************************
 import os
@@ -36,13 +37,8 @@ import getopt
 import itertools
 import shutil
 import ctypes
-
-# Python 2/3 compatibility
-# izip_longest renamed to zip_longest in Python 3
-try:
-    from itertools import izip_longest as zip_longest
-except ImportError:
-    from itertools import zip_longest
+import io
+from itertools import zip_longest
 
 default_bossed_versions = "./Backends/include/gambit/Backends/default_bossed_versions.hpp"
 equiv_config = "./config/resolution_type_equivalency_classes.yaml"
@@ -52,7 +48,7 @@ def get_default_boss_namespaces():
     """Load the default_bossed_versions.hpp header, and work out the namespace aliases."""
     result = dict()
     # Load the default_bossed_version header.
-    with (open(default_bossed_versions)) as f:
+    with (io.open(default_bossed_versions, encoding='utf-8')) as f:
         for newline in readlines_nocomments(f):
             newline = newline.strip()
             if not newline.startswith("#define"):
@@ -70,32 +66,30 @@ def get_type_equivalencies(nses):
     from collections import defaultdict
     result = defaultdict(list)
     # Load the equivalencies yaml file
-    with open(equiv_config) as f:
+    with io.open(equiv_config, encoding='utf-8') as f:
         for newline in readlines_nocomments(f):
             newline = newline.strip()
             if newline == "" or newline.startswith("#"):
                 continue
             newline = re.sub("^\[\s*|\s*\]", "", newline)
             equivalency_class = list()
-            for member in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", newline+","):
-                member = re.sub("\"", "", member[:-1].strip())
-                # Convert the leading BOSSed namespace for the default version to the explicit namespace of the actual version
-                for key in nses:
-                    ns_default = key+"_default"+"::"
-                    ns_true = key+"_"+nses[key]+"::"
-                    if member.startswith(ns_default):
-                        member = ns_true+member[len(ns_default):]
-                    member = re.sub("\s"+ns_default, " "+ns_true, member)
+            for member in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<[^>]*?<.*?>[^<]*?>.*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", newline+","):
+              member = re.sub("\"","",member[:-1].strip())
+              # Convert the leading BOSSed namespace for the default version to the explicit namespace of the actual version
+              for key in nses:
+                ns_default = key+"_default"+"::"
+                ns_true = key+"_"+nses[key]+"::"
+                if member.startswith(ns_default): member = ns_true+member[len(ns_default):]
+                member = re.sub("\s"+ns_default," "+ns_true,member)
 
-                # If the type is an alias of a native int then add int to the equivalency class
-                if re.match("int[0-9]+_t", member):
-                    if (ctypes.sizeof(ctypes.c_int) == 4 and re.search("32", member)) or (ctypes.sizeof(ctypes.c_int) == 2 and re.search("16", member)):
-                        if 'int' not in equivalency_class:
-                            equivalency_class += ['int']
-                if member not in equivalency_class:
-                    equivalency_class += [member]
-            for member in equivalency_class:
-                result[member] = equivalency_class
+              # If the type is an alias of a native int then add int to the equivalency class
+              if re.match("int[0-9]+_t", member):
+                if ( ctypes.sizeof(ctypes.c_int) == 8 and re.search("64", member) ) or ( ctypes.sizeof(ctypes.c_int) == 4 and re.search("32", member) ) or ( ctypes.sizeof(ctypes.c_int) == 2 and re.search("16", member) ) :
+                  if 'int' not in equivalency_class:
+                    equivalency_class+=['int']
+              if member not in equivalency_class:
+                equivalency_class += [member]
+            for member in equivalency_class: result[member] = equivalency_class
 
     # Debug output
     # print('Type equivalencies:')
@@ -133,8 +127,9 @@ def neatsplit(regex, string):
 def excluded(string, st):
     """Check if a string matches the start of any entry in a set"""
     for x in st:
-        if string.startswith(x):
-            return True
+        if string.startswith(x): return True
+        if string.lower().startswith(x.lower()): return True
+        if string.lower().startswith(x.lower().replace('.','_')): return True
     return False
 
 
@@ -207,6 +202,9 @@ def check_for_declaration(input_snippet, module, all_modules, local_namespace, c
 
 def check_for_namespace(input_snippet, local_namespace):
     """Parse a string to see if it has a namespace declaration"""
+# TODO: This is really limited. E.g. a forward declaration in a small, temporary namespace will get appended to local_namespace,
+# and this function has no way to notice when that namespace ends, so all subsequent types in some different namespace will be
+# screwed up.
     # Exit if the line just defines a namespace alias
     if "=" in input_snippet:
         return local_namespace
@@ -263,16 +261,26 @@ def first_simple_type_equivalent(candidate_in, equivs, nses, existing):
         if candidate.startswith(ns_default):
             candidate = ns_true+candidate[len(ns_default):]
         candidate = re.sub("\s"+ns_default, " "+ns_true, candidate)
+
     # Exists in the equivalency classes
-    if candidate in equivs:
-        candidate_suffix = ""
+
+    candidate_prefix = ""
+    candidate_suffix = ""
+
+    # Qualifiers up front, e.g const
+    if "const" in candidate[:6]:
+      candidate_prefix = "const "
+      candidate = re.sub("const ","",candidate)
+
     # Pointer or reference to something that exists in the equivalency classes
-    elif candidate[:-1] in equivs:
+    if candidate[-1] == "&" or candidate[-1] == "*":
         candidate_suffix = candidate[-1:]
         candidate = candidate[:-1]
+
     # Just not there
-    else:
-        return candidate
+    if candidate not in equivs:
+        return candidate_prefix+candidate+candidate_suffix
+
     equivalency_class = equivs[candidate]
     common_elements = set.intersection(set(equivalency_class), existing)
     if not common_elements:
@@ -286,7 +294,7 @@ def first_simple_type_equivalent(candidate_in, equivs, nses, existing):
     if len(common_elements) != 1:
         print("Error: existing types and equivalency class have more than one element in common!")
         sys.exit(1)
-    return common_elements.pop()+candidate_suffix
+    return candidate_prefix+common_elements.pop()+candidate_suffix
 
 
 def strip_ws(s, qualifiers):
@@ -355,7 +363,7 @@ def addiffunctormacro(line, module, all_modules, typedict, typeheaders, intrinsi
                 for header in typeheaders:
                     local_namespace = ""
                     found_declaration = False
-                    with open(header) as f:
+                    with io.open(header, encoding='utf-8') as f:
                         for newline in readlines_nocomments(f):
                             splitline = neatsplit('\{|\}|:|;', newline)
                             # Determine the local namespace and look for a class or struct matching the candidate type
@@ -454,7 +462,7 @@ def addifbefunctormacro(line, be_typeset, type_pack_set, equiv_classes, equiv_ns
                     args = re.sub("\)\s*,[^\)]*?,[^\)]*?\)\s*$", "", args)
                 else:
                     args = re.sub("\)\s*,[^\)]*?\)\s*$", "", args)
-                for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
+                for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<[^>]*?<.*?>[^<]*?>.*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
                     arg = arg[:-1].strip()
                     if arg != "" and not arg.startswith("\"") and not arg.startswith("("):
                         if arg == "etc":
@@ -559,8 +567,8 @@ def find_and_harvest_headers(header_set, fullheadlist, exclude_set, dir_exclude_
 
 def retrieve_rollcall_headers(verbose, install_dir, excludes, retrieve_excluded=False):
     """Search the source tree to determine which modules are present, and write a module_rollcall header if the GAMBIT Core exists.
-    
-    If the option `retrieve_excluded` is set to true, it will search for excluded modules. 
+
+    If the option `retrieve_excluded` is set to true, it will search for excluded modules.
     This feature is used for the diagnostic system.
     """
     rollcall_headers = []
@@ -640,9 +648,9 @@ def get_all_files_with_ext(verbose, starting_dir, ext_set, kind):
 
 
 def retrieve_generic_headers(verbose, starting_dir, kind, excludes, exclude_list=[], retrieve_excluded=False):
-    """Search a directory for headers that are not excluded. 
-    
-    If the option `retrieve_excluded` is set to true, it will search for excluded headers. 
+    """Search a directory for headers that are not excluded.
+
+    If the option `retrieve_excluded` is set to true, it will search for excluded headers.
     This feature is used for the diagnostic system.
     """
     headers = []
@@ -651,9 +659,8 @@ def retrieve_generic_headers(verbose, starting_dir, kind, excludes, exclude_list
             continue
         for name in files:
             exclude = False
-            for x in excludes:
-                if name.startswith(x):
-                    exclude = True
+            if excluded(name,excludes):
+                exclude = True
             if kind == "BOSSed type" and not name.startswith("loaded_types"):
                 exclude = True
 
@@ -699,6 +706,20 @@ def same(f1, f2):
                 return False
     return True
 
+# Compare a candidate file to an existing file, replacing only if they differ.
+def update_only_if_different(existing, candidate, verbose=True):
+    if not os.path.isfile(existing):
+         shutil.move(candidate,existing)
+         if verbose:
+             print( "\033[1;33m   Created "+re.sub("\\.\\/","",existing)+"\033[0m" )
+    elif same(existing, candidate):
+         os.remove(candidate)
+         if verbose:
+             print( "\033[1;33m   Existing "+re.sub("\\.\\/","",existing)+" is identical to candidate; leaving it untouched\033[0m" )
+    else:
+         shutil.move(candidate,existing)
+         if verbose:
+             print( "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m" )
 
 def update_only_if_different(existing, candidate):
     """Compare a candidate file to an existing file, replacing only if they differ."""

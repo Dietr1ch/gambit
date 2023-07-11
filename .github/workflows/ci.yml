@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ master ]
   schedule:
-    - cron:  '* * * * 1'
+    - cron:  '0 5 * * *'
 
 jobs:
   gambit_build:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [ubuntu, ubuntu-py2] #, fedora
+        arch: [ubuntu] #, ubuntu-py2, fedora
         #mpi: [ON, OFF]
     container: gambitbsm/gambit-base:${{ matrix.arch }}
     defaults:
@@ -44,24 +44,25 @@ jobs:
         echo "export PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR" >> buildenv.sh
         echo "export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH" >> buildenv.sh
         cat buildenv.sh
-        pip install pyyaml pybind11 h5py
+        pip install --upgrade pyyaml pybind11 h5py scipy numpy pyhf configobj pandas matplotlib setuptools==58.2.0
     - name: Configure with cmake
       run: |
         cd BUILD/ && . buildenv.sh
-        cmake .. -D WITH_ROOT=ON -D WITH_RESTFRAMES=ON -D WITH_HEPMC=ON -D BUILD_FS_MODELS="CMSSM;MSSM;MDM" -D WITH_MPI=OFF
+        cmake .. -D WITH_ROOT=OFF -D WITH_RESTFRAMES=OFF -D WITH_HEPMC=ON -D WITH_YODA=ON -D BUILD_FS_MODELS="CMSSM;MSSM;MDM" -D WITH_MPI=OFF
     - name: Build scanners
       run: |
         cd BUILD/ && . buildenv.sh
-        make -j$(nproc) scanners
+        make -j$(( ($(nproc)+1)/2 )) scanners
         cmake ..
     - name: Build Gambit
       run: |
         cd BUILD && . buildenv.sh
-        make -j$(nproc) gambit
+        make -j$(( ($(nproc)+1)/2 )) gambit
     - name: Build backends
       run: |
         cd BUILD && . buildenv.sh
-        make -j$(nproc) backends
+        #make -j$(( ($(nproc)+1)/2 )) backends
+        make backends
     - name: CLI test
       run: |
         . BUILD/buildenv.sh

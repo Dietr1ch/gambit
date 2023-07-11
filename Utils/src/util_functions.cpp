@@ -88,6 +88,13 @@ namespace Gambit
       return ensure_path_exists(GAMBIT_DIR "/scratch/run_time/machine_" + std::to_string(gethostid()) + master_procID + "/");
     }
 
+    /// Convert all instances of "p" in a string to "."
+    str p2dot(str s)
+    {
+      boost::replace_all(s, "p", ".");
+      return s;
+    }
+
     /// Split a string into a vector of strings using a delimiter,
     /// and remove any whitespace around the delimiters.
     std::vector<str> delimiterSplit(str s, str delim)
@@ -213,6 +220,15 @@ namespace Gambit
         return result;
     }
 
+    /// Convert a whole string to lowercase
+    std::string strtolower(const std::string& a)
+    {
+        unsigned int sz = a.size();
+        std::string b = a;
+        for (unsigned int i = 0; i < sz; ++i)
+        { b[i] = tolower(a[i]); }
+        return b;
+    }
 
     /// Ensure that a path exists (and then return the path, for chaining purposes)
     const std::string& ensure_path_exists(const std::string& path)
@@ -415,6 +431,18 @@ namespace Gambit
       return true;
     }
 
+    /// Enclose a string in quotation marks if it contains commas
+    std::string quote_if_contains_commas(str in)
+    {
+      if (in.find(',') == std::string::npos)
+      {
+        return in;
+      }
+      else
+      {
+        return "\""+in+"\"";
+      }
+    }
 
   }
 
