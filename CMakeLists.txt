@@ -33,6 +33,7 @@
 #  \author Anders Kvellestad
 #          (anders.kvellestad@fys.uio.no)
 #  \date 2021 Jul, Aug
+#  \date 2023 Jun
 #
 #************************************************
 
@@ -61,6 +62,7 @@ foreach(p
   CMP0022 # CMake 2.8.12
   CMP0025 # CMake 3.0
   CMP0042 # CMake 3.0
+  CMP0048 # Cmake 3.0
   CMP0051 # CMake 3.1
   CMP0054 # CMake 3.1
   CMP0060 # CMake 3.16.2
@@ -116,67 +118,37 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Check if pybind11 is to be ditched
 string(REGEX MATCH ";pybind;|;pybind11;|;Pybind;|;Pybind11;" DITCH_PYBIND ";${itch};")
 
-# Check for Python interpreter
+# Check for Python interpreter.
 # We also need to search for PythonLibs before letting pybind11 look for them,
 # otherwise it seems to get it wrong.  Also, we need to add versions of python
 # greater than 3.3 manually, for compatibility with CMake 2.8.12.
 # If pybind11 is ditched, do not worry about PythonLibs
-set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7 3.8 3.9)
-# If both FORCE_PYTHON2 and FORCE_PYTHON3 are set, throw error
-if (FORCE_PYTHON2 AND FORCE_PYTHON3)
-  message(FATAL_ERROR "Two different versions of python requested. Switch either FORCE_PYTHON2 or FORCE_PYTHON3 off.")
-endif()
-if (FORCE_PYTHON2)
-  message("${BoldYellow}   Python 2 requested; searching for Python 2.7${ColourReset}")
-  find_package(PythonInterp 2.7 REQUIRED)
+set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7 3.8 3.9 3.10 3.11)
+find_package(PythonInterp 3)  # We require Python 3.
+if(PYTHONINTERP_FOUND) 
   if(NOT DITCH_PYBIND)
-    find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT)
-  endif()
-elseif (FORCE_PYTHON3)
-  message("${BoldYellow}   Python 3 requested; searching for Python 3.x${ColourReset}")
-  find_package(PythonInterp 3 REQUIRED)
-  if(NOT DITCH_PYBIND)
-    find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT)
+    find_package(PythonLibs 3) # We require Python 3.
   endif()
 else()
-  find_package(PythonInterp 3)
-  if(PYTHONINTERP_FOUND AND NOT DITCH_PYBIND)
-    find_package(PythonLibs 3)
-  else()
-    message("${BoldYellow}   Python 3 not found, searching for Python 2.7${ColourReset}")
-    find_package(PythonInterp 2 REQUIRED)
-    if (PYTHON_VERSION_MINOR LESS 7)
-      message(FATAL_ERROR "\nGAMBIT requires Python 2.7.  \nIf you need to set the path to the Python interpreter manually, "
-                          "please use -D PYTHON_EXECUTABLE=path/to/preferred/python.")
-    endif()
-    if(NOT DITCH_PYBIND)
-      find_package(PythonLibs 2)
-    endif()
-  endif()
+  message(FATAL_ERROR "\nPython 3 was not found, but it is required by GAMBIT.  \nIf you need to set the path to the Python interpreter manually, "
+                      "please use -D PYTHON_EXECUTABLE=path/to/preferred/python.")
 endif()
 message("${BoldYellow}   Using Python interpreter version ${PYTHON_VERSION_STRING} for build.${ColourReset}")
 
 if(PYTHONLIBS_FOUND)
-  string(FIND "${PYTHONLIBS_VERSION_STRING}" "2.7" PY2_POSITION)
-  if(PY2_POSITION EQUAL 0)
-    set(UNSUPPORTED_PYTHON_VERSION "3")
-  else()
-    set(UNSUPPORTED_PYTHON_VERSION "2.7")
-  endif()
-  message("${BoldYellow}   Using Python libraries version ${PYTHONLIBS_VERSION_STRING} for Python backend support.${ColourReset}\n"
-          "   Backends requiring Python ${UNSUPPORTED_PYTHON_VERSION} will be ditched.")
-  if (NOT "${PYTHON_VERSION_STRING}" STREQUAL "${PYTHONLIBS_VERSION_STRING}")
+  message("${BoldYellow}   Using Python libraries version ${PYTHONLIBS_VERSION_STRING} for Python backend support.${ColourReset}")
+  # Remove trailing non-numeric characters from version
+  string(REGEX REPLACE "[a-zA-Z]" "" PYTHONLIBS_VERSION_STRING_CLEAN ${PYTHONLIBS_VERSION_STRING})
+  if (NOT "${PYTHON_VERSION_STRING}" STREQUAL "${PYTHONLIBS_VERSION_STRING_CLEAN}")
     message("${BoldRed}   NOTE: You are using different Python versions for the interpreter and the libraries!${ColourReset}\n"
             "   In principle this should be fine, as the interpreter is only used for building GAMBIT, and the\n"
             "   libraries are only used for providing support for Python backends at runtime.  However, if you\n"
-            "   have matching versions installed, you can make this message go away by trying one of the following\n"
-            "   (making sure to clean out your build directory in between any such changes):\n"
-            "   1. invoke cmake as cmake -DFORCE_PYTHON2=True .. (or similar)\n"
-            "   2. invoke cmake as cmake -DFORCE_PYTHON3=True .. (or similar)\n"
-            "   3. set the following variables when invoking cmake:\n"
+            "   have matching versions installed, you can make this message go away by manually setting the \n"
+            "   following variables when you invoke cmake:\n"
             "     PYTHON_LIBRARY\n"
             "     PYTHON_INCLUDE_DIR\n"
-            "     PYTHON_EXECUTABLE\n")
+            "     PYTHON_EXECUTABLE\n"
+            "   Make sure to clean out your build dir before reconfiguring with these variables set.")
   endif()
 endif()
 
@@ -186,18 +158,16 @@ if(NOT PYTHONLIBS_FOUND)
     message("${BoldCyan} X Excluding pybind11 from GAMBIT configuration. Ditching support for Python backends.${ColourReset}")
   else()
     message("${BoldRed}   PythonLibs NOT found, so pybind11 cannot be used. Ditching support for Python backends.${ColourReset}\n"
-            "   If you *do* have the Python libraries installed, you should first try setting/unsetting\n"
-            "   FORCE_PYTHON2 or FORCE_PYTHON3 when invoking cmake (make sure to clean out your build\n"
-            "   directory in between any such changes).  If that does not work, you can manually set the\n"
-            "   following variables when invoking cmake (also making sure to clean out your build dir):\n"
+            "   If you *do* have the Python libraries installed, you can manually set the following\n"
+            "   variables when invoking cmake (also making sure to clean out your build dir):\n"
             "     PYTHON_LIBRARY\n"
             "     PYTHON_INCLUDE_DIR\n"
             "     PYTHON_EXECUTABLE")
   set(itch "${itch};pybind11")
   endif()
 else()
-  set(MIN_pybind11_VERSION "2.5.0")
-  set(PREFERRED_pybind11_VERSION "2.5.0")
+  set(MIN_pybind11_VERSION "2.10.1")
+  set(PREFERRED_pybind11_VERSION "2.10.1")
   set(pybind11_CONTRIB_DIR "${PROJECT_SOURCE_DIR}/contrib/pybind11")
   include_directories("${PYTHON_INCLUDE_DIRS}")
   find_package(pybind11 QUIET)
@@ -288,6 +258,7 @@ if(PERMIT_CXX17_CHECK)
 endif()
 if(COMPILER_SUPPORTS_CXX17)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+  set(GAMBIT_SUPPORTS_CXX17 TRUE)
 else()
   if(PERMIT_CXX17_CHECK)
     CHECK_CXX_COMPILER_FLAG("-std=c++1z" COMPILER_SUPPORTS_CXX1z)
@@ -295,15 +266,18 @@ else()
   CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
   if(COMPILER_SUPPORTS_CXX14)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    set(GAMBIT_SUPPORTS_CXX14 TRUE)
   else()
     CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
     CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
     if(COMPILER_SUPPORTS_CXX11)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+      set(GAMBIT_SUPPORTS_CXX11 TRUE)
     else()
       CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
       if(COMPILER_SUPPORTS_CXX0X)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+        set(GAMBIT_SUPPORTS_CXX0X TRUE)
       else()
         message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
       endif()
@@ -393,8 +367,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
     else()
       execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
       if(NOT OPENMP_FOUND)
-        set(OpenMP_CXX_FLAGS "-Xclang -fopenmp")
-        set(OpenMP_C_FLAGS "-Xclang -fopenmp")
+        set(OpenMP_CXX_FLAGS "-Xclang -fopenmp -I${BREW_LIBOMP_PREFIX}/include")
+        set(OpenMP_C_FLAGS "-Xclang -fopenmp -I${BREW_LIBOMP_PREFIX}/include")
       endif()
       set(OpenMP_CXX_LIB_NAMES "omp")
       set(OpenMP_C_LIB_NAMES "omp")
@@ -405,7 +379,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
     endif()
   endif()
 endif()
-if (OPENMP_FOUND)
+if (OPENMP_FOUND OR FOUND_BREW_OPENMP)
   message("-- OpenMP found successfully")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -673,19 +647,30 @@ set(GAMBIT_ALL_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
+  # Add dependencies that need to be built before any bit
+  foreach(dep ${MODULE_DEPENDENCIES})
+    add_dependencies(${bit} ${dep})
+  endforeach()
 endforeach()
 
-# If ColliderBit is in use, make the collider_harvest step a dependency of ColliderBit
+# If ColliderBit is in use, set various dependencies
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  # Make the collider_harvest step a dependency of ColliderBit
   add_dependencies(ColliderBit collider_harvest)
   # If RestFrames is in use, make it a dependency of ColliderBit
   if(NOT EXCLUDE_RESTFRAMES)
     add_dependencies(ColliderBit restframes)
   endif()
-  # If HepMC is in use, make it a dependency of ColliderBit
-  if(NOT EXCLUDE_HEPMC)
-    add_dependencies(ColliderBit hepmc)
+  # ColliderBit depends on HepMC
+  if(EXCLUDE_HEPMC)
+    message(FATAL_ERROR "\nColliderBit needs HepMC3. Either use -DWITH_HEPMC=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
   endif()
+  add_dependencies(ColliderBit hepmc)
+  # ColliderBit depends on YODA
+  if(EXCLUDE_YODA)
+    message(FATAL_ERROR "\nColliderBit needs YODA. Either use -DWITH_YODA=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
+  endif()
+  add_dependencies(ColliderBit yoda)
 endif()
 
 # If SpecBit is in use, make flexiblesusy a dependency of SpecBit
