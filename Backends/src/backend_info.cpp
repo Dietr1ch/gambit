@@ -323,7 +323,6 @@ namespace Gambit
       }
       // and so on.
       else if (lang == "PYTHON" or lang == "Python" or
-               lang == "PYTHON2" or lang == "Python2" or
                lang == "PYTHON3" or lang == "Python3")
       {
         needsPython[be+ver] = true;
@@ -561,18 +560,10 @@ namespace Gambit
       // Bail now if the backend requires a version of Python that GAMBIT is not configured with.
       if (PYTHON_VERSION_MAJOR < 2 or PYTHON_VERSION_MAJOR > 3)
       {
-        err << "Unrecognised version of Python: " << PYTHON_VERSION_MAJOR << endl;
+        err << "GAMBIT was configured with an unsupported version of Python: " << PYTHON_VERSION_MAJOR 
+            << ". Only Python 3 is supported by GAMBIT." << endl;
         backend_error().raise(LOCAL_INFO, err.str());
         works[be+ver] = false;
-        return;
-      }
-      if (PYTHON_VERSION_MAJOR != 2 and (lang == "Python2" or lang == "PYTHON2"))
-      {
-        err << "Failed loading Python backend " << be << " " << ver << "." << endl
-            << "GAMBIT was configured with Python " << PYTHON_VERSION_MAJOR << " but this backend needs Python 2." << endl;
-        backend_warning().raise(LOCAL_INFO, err.str());
-        works[be+ver] = false;
-        missingPythonVersion[be+ver] = 2;
         return;
       }
       if (PYTHON_VERSION_MAJOR != 3 and (lang == "Python3" or lang == "PYTHON3"))
