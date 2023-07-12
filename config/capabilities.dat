@@ -273,6 +273,9 @@ demo_CAP_parameters: |
 large_print: |
   Scale test for various aspects of the printer buffer system.
 
+recursive_sum: |
+  A recursive summation example for demonstrating the functionChain keyword, which adds an integer to another integer retrieved from a dependency.
+
 #-------------------------------------
 #  SpecBit
 #-------------------------------------
