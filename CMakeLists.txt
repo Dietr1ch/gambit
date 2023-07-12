@@ -42,7 +42,7 @@
 #************************************************
 
 # Define minimum cmake version
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2.3 FATAL_ERROR)
 
 # Define minimum compiler versions
 set(MIN_GCC_VERSION 5.1)
