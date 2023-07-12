@@ -35,14 +35,10 @@
 #  \date 2021 Jul, Aug
 #  \date 2023 Jun
 #
-#  \author Sebastian Hoof
-#          (s.hoof.physics@gmail.com)
-#  \date 2023 Jul
-#
 #************************************************
 
 # Define minimum cmake version
-cmake_minimum_required(VERSION 3.2.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
 # Define minimum compiler versions
 set(MIN_GCC_VERSION 5.1)
@@ -407,7 +403,6 @@ message("-- INFO. GSL-CONFIG variable: ${GSL_CONFIG_EXECUTABLE}")
 if(NOT GSL_FOUND)
   message(FATAL_ERROR "GSL libraries not found. You can help CMake to find them by setting the environment variable GSL_ROOT_DIR.")
 endif()
-include_directories("${GSL_INCLUDE_DIRS}")
 
 # Check for Mathematica
 string(REGEX MATCH ";M;|;Ma;|;Mat;|;Math;|;Mathe;|;Mathem;|;Mathema;|;Mathemat;|;Mathemati;|;Mathematic;|;Mathematica;|;m;|;ma;|;mat;|;math;|;mathe;|;mathem;|;mathema;|;mathemat;|;mathemati;|;mathematic;|;mathematica" DITCH_MATHEMATICA ";${itch};")
