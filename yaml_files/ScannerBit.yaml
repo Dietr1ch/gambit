@@ -93,6 +93,91 @@ Scanner:
         "EggBox::param_0": 3.14
         "EggBox::param_1": [.2, .3]
 
+    # Python scanners - MCMC
+
+    kombine:
+        like: LogLike
+        plugin: zeus
+        init:
+            nwalkers: 8
+        run:
+            nsteps: 20000
+            pkl_name: "kombine.h5"
+
+    zeus:
+        like: LogLike
+        plugin: zeus
+        init:
+            nwalkers: 8
+        run:
+            nsteps: 20000
+            filename: "zeus.h5"
+
+    emcee:
+        like: LogLike
+        plugin: emcee
+        init:
+            nwalkers: 8
+        run:
+            nsteps: 20000
+            filename: "emcee.h5"
+
+    pocomc:
+        like: LogLike
+        plugin: pocomc
+        init:
+            nparticles: 1000
+        run:
+            pkl_name: "pocomc.pkl"
+
+    # Python scanners - nested sampling
+
+    ultranest:
+        like: LogLike
+        plugin: reactive_ultranest
+        init:
+            resume: True
+        run:
+            min_num_live_points: 1000
+            dlogz: 0.5
+
+    static_dynesty:
+        like: LogLike
+        plugin: static_dynesty
+        init:
+            resume: True
+        run:
+            nlive: 1000
+            dlogz: 0.5
+            pkl_name: "static_dynesty.pkl"
+
+    dynamic_dynesty:
+        like: LogLike
+        plugin: dynamic_dynesty
+        init:
+            resume: True
+        run:
+            nlive_init: 1000
+            dlogz_init: 0.5
+            n_effective: 500
+            pkl_name: "dynamic_dynesty.pkl"
+
+    # Python scanners - optimization
+
+    adaptive:
+        like: LogLike
+        plugin: adaptive
+        run:
+            filename: "adaptive.npy"
+            npoints_goal: 1000
+            duration_goal: 100000  # seconds
+
+    stochopy_minimize:
+        like: LogLike
+        plugin: stochopy_minimize
+        run:
+            method: "cmaes"
+
     scipy_basin_hopping:
       like: LogLike
       plugin: scipy_basin_hopping
