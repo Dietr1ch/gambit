@@ -5,8 +5,9 @@ PocoMC scanner
 
 import pickle
 import numpy as np
-import scanner_plugin as splug
 import pocomc
+
+import scanner_plugin as splug
 from utils import copydoc, version
 
 

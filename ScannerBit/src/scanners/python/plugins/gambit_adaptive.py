@@ -6,6 +6,7 @@ Adaptive learning
 
 import numpy as np
 import adaptive
+
 import scanner_plugin as splug
 from utils import copydoc, version
 
@@ -25,7 +26,7 @@ class Adaptive(splug.scanner):
     @copydoc(adaptive.LearnerND)
     def __init__(self, **kwargs):
         bounds = [(0., 1.)] * self.dim
-        self.learner = adaptive.Learner1D(self.loglike_hypercube, bounds=bounds, **kwargs)
+        self.learner = adaptive.LearnerND(self.loglike_hypercube, bounds=bounds, **kwargs)
         
     def run_internal(self, filename="adaptive.npy", **kwargs):
         runner = adaptive.Runner(self.learner, **kwargs)
@@ -37,7 +38,7 @@ class Adaptive(splug.scanner):
             np.savetxt(filename, data)
             
     @copydoc(adaptive.Runner)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 

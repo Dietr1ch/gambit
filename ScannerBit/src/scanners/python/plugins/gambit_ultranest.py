@@ -4,9 +4,9 @@ Ultranest scanners
 """
 
 import pickle
-import scanner_plugin as splug
 import ultranest
 
+import scanner_plugin as splug
 from utils import copydoc, version
 
 

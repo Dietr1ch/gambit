@@ -10,3 +10,5 @@ zeus-mcmc
 pocomc
 stochopy
 kombine
+nessai
+nautilus-sampler

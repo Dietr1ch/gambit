@@ -4,6 +4,7 @@ Scipy dual annealing scannner
 """
 
 import scipy.optimize
+
 import scanner_plugin as splug
 from utils import copydoc, version
 

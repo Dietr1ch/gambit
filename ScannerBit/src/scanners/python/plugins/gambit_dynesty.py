@@ -11,6 +11,7 @@ attempts to pickle the loglikelihood function etc.
 
 import pickle
 import dynesty
+
 import scanner_plugin as splug
 from utils import copydoc, version
 
@@ -65,7 +66,7 @@ class DynamicDynesty(splug.scanner):
             pickle.dump(self.sampler.results, f)
      
     @copydoc(dynesty.DynamicNestedSampler.run_nested)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 

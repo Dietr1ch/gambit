@@ -5,8 +5,9 @@ Kombine MCMC sampler
 
 import pickle
 import numpy as np
-import scanner_plugin as splug
 import kombine
+
+import scanner_plugin as splug
 from utils import copydoc, version
 
 
