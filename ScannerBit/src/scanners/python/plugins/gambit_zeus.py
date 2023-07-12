@@ -4,8 +4,9 @@ Zeus scanner
 """
 
 import numpy as np
-import scanner_plugin as splug
 import zeus
+
+import scanner_plugin as splug
 from utils import copydoc, version
 
 

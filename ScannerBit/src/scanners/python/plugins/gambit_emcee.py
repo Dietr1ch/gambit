@@ -5,6 +5,7 @@ Emcee scanner
 
 import numpy as np
 import emcee
+
 import scanner_plugin as splug
 from utils import copydoc, version
 
