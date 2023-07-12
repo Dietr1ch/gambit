@@ -169,13 +169,12 @@ endif()
 set(LHEF_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/LHEF")
 include_directories("${LHEF_INCLUDE_DIR}")
 
-#contrib/HepMC3; include only if ColliderBit is in use and WITH_HEPMC=ON.
-option(WITH_HEPMC "Compile with HepMC enabled" OFF)
-if(NOT WITH_HEPMC)
-  message("${BoldCyan} X HepMC is deactivated. Set -DWITH_HEPMC=ON to activate HepMC.${ColourReset}")
-elseif(NOT ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
-  message("${BoldCyan} X ColliderBit is not in use: excluding HepMC from GAMBIT configuration.${ColourReset}")
+#contrib/HepMC3; include only if ColliderBit is in use.
+if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  set(WITH_HEPMC ON)
+else()
   set(WITH_HEPMC OFF)
+  message("${BoldCyan} X ColliderBit is not in use: excluding HepMC from GAMBIT configuration.${ColourReset}")
 endif()
 
 set(name "hepmc")
@@ -233,13 +232,12 @@ if(NOT EXCLUDE_HEPMC)
   set(MODULE_DEPENDENCIES ${MODULE_DEPENDENCIES} ${name})
 endif()
 
-#contrib/YODA; include only if ColliderBit is in use and WITH_YODA=ON.
-option(WITH_YODA "Compile with YODA enabled" OFF)
-if(NOT WITH_YODA)
-  message("${BoldCyan} X YODA is deactivated. Set -DWITH_YODA=ON to activate YODA.${ColourReset}")
-elseif(NOT ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
-  message("${BoldCyan} X ColliderBit is not in use: excluding YODA from GAMBIT configuraton.${ColourReset}")
+#contrib/YODA; include if ColliderBit is in, don't otherwise
+if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  set(WITH_YODA ON)
+else()
   set(WITH_YODA OFF)
+  message("${BoldCyan} X ColliderBit is not in use: excluding YODA from GAMBIT configuration.${ColourReset}")
 endif()
 
 set(name "yoda")
