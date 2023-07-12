@@ -276,6 +276,10 @@ large_print: |
 recursive_sum: |
   A recursive summation example for demonstrating the functionChain keyword, which adds an integer to another integer retrieved from a dependency.
 
+starting_value: |
+  A fixed integer.
+
+
 #-------------------------------------
 #  SpecBit
 #-------------------------------------
