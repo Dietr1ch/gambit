@@ -403,6 +403,7 @@ endif()
 
 # Check for Gnu Scientific Library (GSL)
 find_package(GSL 2.1)
+message("-- INFO. GSL-CONFIG variable: ${GSL_CONFIG_EXECUTABLE}")
 if(NOT GSL_FOUND)
   message(FATAL_ERROR "GSL libraries not found. You can help CMake to find them by setting the environment variable GSL_ROOT_DIR.")
 endif()
