@@ -399,9 +399,19 @@ endif()
 
 # Check for Gnu Scientific Library (GSL)
 find_package(GSL 2.1)
-message("-- INFO. GSL-CONFIG variable: ${GSL_CONFIG_EXECUTABLE}")
 if(NOT GSL_FOUND)
   message(FATAL_ERROR "GSL libraries not found. You can help CMake to find them by setting the environment variable GSL_ROOT_DIR.")
+endif()
+# FlexibleSUSY only works with gsl-config; make sure that we add it
+if(GSL_CONFIG_EXECUTABLE STREQUAL "")
+  find_program(GSL_CONFIG_EXECUTABLE gsl-config
+    ${GSL_INCLUDE_DIRS}/../bin/
+    /usr/bin/
+    /usr/local/bin
+    )
+  if(NOT EXISTS "${GSL_CONFIG_EXECUTABLE}")
+    message(FATAL_ERROR "GSL libraries found but gsl-config not found (needed by FlexibleSUSY).")
+  endif()
 endif()
 
 # Check for Mathematica
