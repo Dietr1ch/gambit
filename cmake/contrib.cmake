@@ -171,6 +171,7 @@ include_directories("${LHEF_INCLUDE_DIR}")
 
 #contrib/HepMC3; include only if ColliderBit is in use.
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  message("ColliderBit included, so HepMC is included too")
   set(WITH_HEPMC ON)
 else()
   set(WITH_HEPMC OFF)
@@ -234,6 +235,7 @@ endif()
 
 #contrib/YODA; include if ColliderBit is in, don't otherwise
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  message("ColliderBit included, so YODA is included too")
   set(WITH_YODA ON)
 else()
   set(WITH_YODA OFF)
