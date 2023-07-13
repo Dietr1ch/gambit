@@ -2189,8 +2189,10 @@ endif()
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
   set(lgomp_REPLACEMENT "${lgomp_REPLACEMENT},  '-arch', '${CMAKE_SYSTEM_PROCESSOR}'")
   set(CLASSY_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${NO_FIXUP_CHAINS}")
-else()
-  set(lgomp_REPLACEMENT "${lgomp_REPLACEMENT},  '-march=${CMAKE_SYSTEM_PROCESSOR}'")
+elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+  set(lgomp_REPLACEMENT "${lgomp_REPLACEMENT},  '-march=native'")
+elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
+  set(lgomp_REPLACEMENT "${lgomp_REPLACEMENT},  '-xHost'")
 endif()
 
 # classy
