@@ -358,7 +358,7 @@ namespace Gambit
       {
         out << "Information for module function \"" << name << "\"." << std::endl << std::endl;
 
-        // Basic information about the module function (all module function will have this)
+        // Basic information about the module function (all module functions will have this)
         out << indent << "module:      "  << functor->origin() << std::endl;
         out << indent << "capability:  "  << functor->capability() << std::endl;
         out << indent << "result type: "  << functor->type() << std::endl << std::endl;
