@@ -376,6 +376,15 @@ namespace Gambit
           out << indent << "This function has no explicit model restrictions" << std::endl;
         }
 
+        // List (BOSSed) backends that require class loading (if any)
+        const auto& classloading_be = functor->backendclassloading();
+        if (classloading_be.size() > 0)
+        {
+          out << "\n" << indent << "needs classes from:\n";
+          for (const auto &be : classloading_be)
+            out << indent << indent << be.first << " (version " << be.second  << ")" << std::endl;
+        }
+
         // List dependencies (if any)
         const auto& dependencies = functor->dependencies();
         if (dependencies.size() > 0)
