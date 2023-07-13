@@ -31,6 +31,11 @@ if(NOT DEFINED CMAKE_MACOSX_RPATH)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  # Define OSX variables
+  set(MACOSX_SYSROOT_FLAGS "-isysroot${CMAKE_OSX_SYSROOT} ${OSX_MIN}")
+  string(STRIP ${MACOSX_SYSROOT_FLAGS} MACOSX_SYSROOT_FLAGS)
+  set(MACOSX_LINKER_FLAGS "-L${CMAKE_OSX_SYSROOT}/usr/lib ${OSX_MIN}")
+  string(STRIP ${MACOSX_LINKER_FLAGS} MACOSX_LINKER_FLAGS)
   # Tell the OSX linker not to whinge about missing symbols when just making a library.
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -undefined dynamic_lookup")
   # Strip leading whitespace in case this was first definition of CMAKE_SHARED_LINKER_FLAGS
@@ -39,12 +44,11 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if(CMAKE_OSX_DEPLOYMENT_TARGET)
     set(OSX_MIN "-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}")
   endif()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isysroot${CMAKE_OSX_SYSROOT} ${OSX_MIN}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MACOSX_SYSROOT_FLAGS}")
   string(STRIP ${CMAKE_CXX_FLAGS} CMAKE_CXX_FLAGS)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isysroot${CMAKE_OSX_SYSROOT} ${OSX_MIN}")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MACOSX_SYSROOT_FLAGS}")
   string(STRIP ${CMAKE_C_FLAGS} CMAKE_C_FLAGS)
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -isysroot${CMAKE_OSX_SYSROOT} -L${CMAKE_OSX_SYSROOT}/usr/lib ${OSX_MIN}")
-  string(STRIP ${CMAKE_SHARED_LINKER_FLAGS} CMAKE_SHARED_LINKER_FLAGS)
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${MACOSX_SYSROOT_FLAGS} ${MACOSX_LINKER_FLAGS}")
 endif()
 
 # Settings specific to using the clang compiler on MacOS
