@@ -1275,7 +1275,7 @@ namespace Gambit
       logger() << printGenericFunctorList(allowedVertexCandidates) << EOM;
 
       // Is more than one result OK?
-      if (entry.obslike != NULL and entry.obslike->match_all)
+      if (entry.obslike != NULL and entry.obslike->include_all)
       {
         std::vector<VertexID> retv;
         for (auto v : allowedVertexCandidates) retv.push_back(v.first);
@@ -1298,7 +1298,7 @@ namespace Gambit
       if (entry.obslike != NULL) 
       {
         errmsg += "\nNote that because the failed resolution is for an ObsLike entry,\n";
-        errmsg += "you could accept all of the above candidates by using !match_all.\n";
+        errmsg += "you could accept all of the above candidates by using !include_all.\n";
         
       }
       errmsg += "\nSee logger output for details on the attempted (but failed) dependency resolution.\n";
@@ -1426,7 +1426,7 @@ namespace Gambit
         if (fromVertices.size() > 1)
         {
           logger() << LogTags::dependency_resolver;
-          logger() << "Due to match_all tag, " << printQuantityToBeResolved(entry);
+          logger() << "Due to include_all tag, " << printQuantityToBeResolved(entry);
           logger() << " will be resolved by " << fromVertices.size() << " functions." << endl;
         }
 
