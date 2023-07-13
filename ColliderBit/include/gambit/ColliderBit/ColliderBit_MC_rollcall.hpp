@@ -593,5 +593,15 @@
     #endif
 
   #undef CAPABILITY
+  
+  /// BaBar single photon likelihood
+  #define CAPABILITY BaBar_single_photon_LogLike
+    #define FUNCTION BaBar_single_photon_LogLike_SubGeVDM
+    START_FUNCTION(double)
+    DEPENDENCY(dark_photon_decay_rates,DecayTable::Entry)
+    ALLOW_MODELS(SubGeVDM_fermion)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
 #undef MODULE

@@ -24,7 +24,7 @@
 #include "gambit/Models/models/SubGeVDM_fermion.hpp"
 
 #define MODEL SubGeVDM_fermion
-  void MODEL_NAMESPACE::SubGeVDM_fermion_to_AnnihilatingDM_general (const ModelParameters& /*myparams*/, ModelParameters &friendparams)
+  void MODEL_NAMESPACE::SubGeVDM_fermion_to_AnnihilatingDM_general (const ModelParameters &myparams, ModelParameters &friendparams)
   {
     USE_MODEL_PIPE(AnnihilatingDM_general) // get pipe for "interpret as friend" function
     logger()<<"Running interpret_as_friend calculations for SubGeVDM_fermion -> AnnihilatingDM_general ..."<<EOM;
@@ -39,3 +39,16 @@
   }
 #undef MODEL
 
+#define MODEL Resonant_SubGeVDM_fermion
+  void MODEL_NAMESPACE::Resonant_SubGeVDM_fermion_to_SubGeVDM_fermion (const ModelParameters &myparams, ModelParameters &friendparams)
+  {
+    USE_MODEL_PIPE(SubGeVDM_fermion) // get pipe for "interpret as friend" function
+    logger()<<"Running interpret_as_friend calculations for Resonant_SubGeVDM_fermion -> SubGeVDM_fermion ..."<<EOM;
+
+    friendparams.setValue("mDM", myparams["mDM"]);
+    friendparams.setValue("gDM", myparams["gDM"]);
+    friendparams.setValue("kappa", myparams["kappa"]);
+    friendparams.setValue("etaDM", myparams["etaDM"]);
+    friendparams.setValue("mAp", 2 * myparams["mDM"] * sqrt(myparams["epsR"] + 1));
+  }
+#undef MODEL

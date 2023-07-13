@@ -13,13 +13,15 @@ Parameters:
   StandardModel_Higgs:
      mH: 125.10 # PDG 2020 value
 
-  SubGeVDM_fermion:
-    mDM: 
+  Resonant_SubGeVDM_fermion:
+    mDM:
       prior_type: log
-      range: [0.001,1.]
+      range: [1e-1,1e0]
     gDM: 2.5
-    kappa: 5e-2
-    mAp: 1.5
+    kappa:
+      prior_type: log
+      range: [1e-4,1e-2]
+    epsR: 1.25
     etaDM: 0
 
   Halo_gNFW_rho0:
@@ -40,6 +42,7 @@ Priors:
 
 Printer:
 
+#  printer: cout
   printer: ascii
   # printer: hdf5
 
@@ -56,49 +59,90 @@ Scanner:
     square_grid:
       plugin: square_grid
       like: LogLike
-      grid_pts: 100
+      grid_pts: 20
 
 ObsLikes:
 
     # Relic density
     - capability: lnL_oh2
-      purpose:    LogLike
-      
-    - capability: Neff_after_BBN
-      purpose: Observable
+      purpose:    Observable
+
+    - capability: sigmav
+      purpose:    Observable
 
     - capability: RD_oh2
       purpose: Observable
 
-    - purpose:      LogLike
-      capability:   BBN_LogLike
-      sub_capabilities: [He4, D]
+    # Collider likelihoods
 
-    - purpose:      Observable
-      capability:   primordial_abundances
-
+    - capability: BaBar_single_photon_LogLike
+      purpose:    Observable
+      
+  # Direct detection likelihoods (nucleon)
+  
     - capability: CRESST_III_LogLikelihood
       purpose:    LogLike
 
-    - purpose:    Observable
-      capability: mwimp
+    - capability: CRESST_II_LogLikelihood
+      purpose:    LogLike
+
+    - capability: CDMSlite_LogLikelihood
+      purpose:    LogLike
+
+    - capability: DarkSide_50_LogLikelihood
+      purpose:    LogLike
 
     - purpose:    Observable
       capability: sigma_SI_p
 
-    - capability: sigmav
-      purpose:    Observable
+  # Direct detection likelihoods (electron)
+
+    - capability: XENON1T_ER_LogLikelihood
+      purpose:    LogLike
+
+    - capability: DarkSide50_ER_LogLikelihood
+      purpose:    LogLike
+
+    - capability: SENSEI_at_MINOS_LogLikelihood
+      purpose:    LogLike
+
+    - capability: CDMS_HVeV_2020_LogLikelihood
+      purpose:    LogLike
+
+    - capability: XENON1T_Migdal_LogLikelihood
+      purpose:    LogLike
+
+    - capability: DarkSide50_Migdal_LogLikelihood
+      purpose:    LogLike
+      
+    - purpose:    Observable
+      capability: sigma_e
+
 
   # Cosmo likelihoods and observables
 
     - capability: p_ann
       purpose: Observable
 
-#    - capability: f_eff
+    - capability: f_eff
+      purpose: Observable
+
+#    - purpose:      LogLike
+#      capability:   N_eff_likelihood_Planck_BAO
+
+    - capability: lnL_p_ann
+      purpose: Observable
+
+#    - capability: Neff_after_BBN
 #      purpose: Observable
 
-    - purpose:      LogLike
-      capability:   N_eff_likelihood_Planck_BAO
+#    - purpose:      LogLike
+#      capability:   BBN_LogLike
+#      sub_capabilities: [He4, D]
+
+#    - purpose:      Observable
+#      capability:   primordial_abundances
+
 
 Rules:
 
@@ -140,7 +184,7 @@ Rules:
       oh2_fractional_theory_err: 0.01
 
   - capability: RD_fraction
-    function: RD_fraction_leq_one
+    function: RD_fraction_one
     options: # Planck 2018 values
       oh2_obs: 0.120
       
@@ -225,6 +269,17 @@ Rules:
     options:
       out_of_range_zero_yield: true
 
+  - capability: DarkMatterConj_ID
+    type: std::string
+    function: DarkMatterConj_ID_SubGeVDM_fermion
+    module: DarkBit
+
+  - capability: RD_spectrum
+    type: RD_spectrum_type
+    function: RD_spectrum_from_ProcessCatalog
+    module: DarkBit
+
+
 
 Logger:
 
@@ -242,8 +297,8 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -5e5
-    model_invalid_for_lnlike_below_alt: -1e5
+    model_invalid_for_lnlike_below: -5e100
+    model_invalid_for_lnlike_below_alt: -1e100
 
   default_output_path: "runs/SubGeVDM_fermion/"
 

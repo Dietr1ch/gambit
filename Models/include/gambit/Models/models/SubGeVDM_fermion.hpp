@@ -36,4 +36,13 @@
 
 #undef MODEL
 
+#define MODEL Resonant_SubGeVDM_fermion
+  START_MODEL
+
+  DEFINEPARS(mDM,epsR,gDM,kappa,etaDM)
+
+  // Friendship with "SubGeVDM_fermion" (Mapping is defined in SubGeVDM_fermion.cpp)
+  INTERPRET_AS_X_FUNCTION(SubGeVDM_fermion,Resonant_SubGeVDM_fermion_to_SubGeVDM_fermion)
+#undef MODEL
+
 #endif

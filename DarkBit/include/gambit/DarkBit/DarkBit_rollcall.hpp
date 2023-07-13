@@ -1499,6 +1499,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY sigma_e
+      #define FUNCTION sigma_e_SubGeVDM_fermion
+      START_FUNCTION(double)
+      ALLOW_MODELS(SubGeVDM_fermion)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // Likelihoods for nuclear parameters:
   #define CAPABILITY lnL_SI_nuclear_parameters
   START_CAPABILITY
@@ -2483,6 +2490,7 @@ START_MODULE
     BACKEND_REQ(XENON1T_S2_ER, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -2494,6 +2502,7 @@ START_MODULE
     BACKEND_REQ(DarkSide50_S2_ER, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -2505,6 +2514,7 @@ START_MODULE
     BACKEND_REQ(SENSEI_at_MINOS, (), obscura_default::obscura::DM_Detector_Crystal, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -2516,6 +2526,7 @@ START_MODULE
     BACKEND_REQ(CDMS_HVeV_2020, (), obscura_default::obscura::DM_Detector_Crystal, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -2527,6 +2538,8 @@ START_MODULE
     BACKEND_REQ(XENON1T_S2_Migdal, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_SI_p, double)
+    DEPENDENCY(sigma_SI_n, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -2538,6 +2551,8 @@ START_MODULE
     BACKEND_REQ(DarkSide50_S2_Migdal, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_SI_p, double)
+    DEPENDENCY(sigma_SI_n, double)
     #undef FUNCTION
   #undef CAPABILITY
 
