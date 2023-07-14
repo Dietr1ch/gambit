@@ -59,6 +59,7 @@ macro(check_python_scanner  name required_modules)
       INSTALL_COMMAND ""
     )
     endif(modules_missing_${name})
+    set_target_properties(${name} PROPERTIES EXCLUDE_FROM_ALL 1)
 endmacro()
 
 check_python_scanner(emcee emcee)
