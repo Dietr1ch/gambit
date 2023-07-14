@@ -498,6 +498,13 @@ namespace Gambit
                         return node;
                     }
                     
+                    py::dict &getOpts()
+                    {
+                        static py::dict opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode());
+                        
+                        return opts;
+                    }
+                    
                     py::dict &getRunOpts()
                     {
                         //static py::dict run_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["run"] ? getNode()["run"] : getNode());
@@ -954,6 +961,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def_property_readonly("loglike_physical", &scanner_base::getLikePhysical)
     .def_property_readonly("log_target_density", &scanner_base::getLikePriorPhysical)
     .def_property_readonly("loglike", &scanner_base::getLike)
+    .def_property_readonly("args", &scanner_base::getOpts)
     .def_property_readonly("init_args", &scanner_base::getInitOpts)
     .def_property_readonly("run_args", &scanner_base::getRunOpts)
     .def_property_readonly("parameter_names", &scanner_base::getParameterNames)
