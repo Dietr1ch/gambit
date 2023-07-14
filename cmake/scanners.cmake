@@ -29,7 +29,7 @@
 #  \date 2018 May, Dec
 #
 #************************************************
-
+include(cmake/python_scanners.cmake)
 # Diver
 set(name "diver")
 set(ver "1.0.0")
