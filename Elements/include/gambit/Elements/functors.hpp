@@ -204,6 +204,8 @@ namespace Gambit
       /// Getter for revealing whether this is permitted to be a manager functor
       virtual bool canBeLoopManager();
 
+      /// Getter for revealing whether this functor needs a loop manager
+      virtual bool needsLoopManager();
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability();
       /// Getter for revealing the required type of the wrapped function's loop manager
@@ -523,6 +525,8 @@ namespace Gambit
 
       /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
       virtual void setLoopManagerCapType (str cap, str t);
+      /// Getter for revealing whether this functor needs a loop manager
+      virtual bool needsLoopManager();
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability();
       /// Getter for revealing the required type of the wrapped function's loop manager

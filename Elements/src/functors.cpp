@@ -200,6 +200,13 @@ namespace Gambit
       return false;
     }
 
+    /// Getter for revealing whether this functor needs a loop manager
+    bool functor::needsLoopManager()
+    {
+      utils_error().raise(LOCAL_INFO,"The needsLoopManager method has not been defined in this class.");
+      return false;
+    }
+
     /// Getter for revealing the required capability of the wrapped function's loop manager
     str functor::loopManagerCapability()
     {
@@ -1005,6 +1012,8 @@ namespace Gambit
       myLoopManagerCapability = cap;
       myLoopManagerType = t;
     }
+    /// Getter for revealing whether this functor needs a loop manager
+    bool module_functor_common::needsLoopManager() { return iRunNested; }
     /// Getter for revealing the required capability of the wrapped function's loop manager
     str module_functor_common::loopManagerCapability() { return myLoopManagerCapability; }
     /// Getter for revealing the required type of the wrapped function's loop manager

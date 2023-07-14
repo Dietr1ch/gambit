@@ -382,6 +382,15 @@ namespace Gambit
           out << "\n" << indent << "can manage loops" << std::endl;
         }
 
+        // Tell whether function needs a loop manager and if so which one
+        if (functor->needsLoopManager())
+        {
+          auto lmc = functor->loopManagerCapability();
+          auto lmt = functor->loopManagerType();
+          out << "\n" << indent << "needs loop manager:\n";
+          out << indent << indent << lmc << " [" << lmt << "]" << std::endl;
+        }
+
         // List (BOSSed) backends that require class loading (if any)
         const auto& classloading_be = functor->backendclassloading();
         if (classloading_be.size() > 0)
