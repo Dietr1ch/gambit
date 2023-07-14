@@ -165,15 +165,15 @@ namespace YAML
   /// Convert yaml node to dependency resolver Observable type
   bool convert<Observable>::decode(const Node& node, Observable& rhs)
   {
-    // Save the match_all tag if given
-    if (node.Tag() == "!match_all") rhs.match_all = true;
+    // Save the include_all tag if given
+    if (node.Tag() == "!include_all") rhs.include_all = true;
     // Stop if any other tag has been given, as that isn't part of the current ObsLike spec.
     else if (node.Tag() != "?")
     {
       std::stringstream errmsg;
       errmsg << "The ObsLikes entry " << std::endl << node << std::endl
              << "is invalid, because it contains tag \"" << node.Tag() << "\"."
-             << "The only tag permitted in ObsLikes entries is !match_all." << std::endl;
+             << "The only tag permitted in ObsLikes entries is !include_all." << std::endl;
       dependency_resolver_error().raise(LOCAL_INFO, errmsg.str());
     }
 
