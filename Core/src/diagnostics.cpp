@@ -376,6 +376,12 @@ namespace Gambit
           out << indent << "This function has no explicit model restrictions" << std::endl;
         }
 
+        // Tell whether function can act as loop manager
+        if (functor->canBeLoopManager())
+        {
+          out << "\n" << indent << "can manage loops" << std::endl;
+        }
+
         // List (BOSSed) backends that require class loading (if any)
         const auto& classloading_be = functor->backendclassloading();
         if (classloading_be.size() > 0)
