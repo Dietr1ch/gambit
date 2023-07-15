@@ -18,6 +18,9 @@ class StochopyMinimize(splug.scanner):
     name = "stochopy_minimize"
     __version__ = version("stochopy")
 
+    def __init__(self, **kwargs):
+        super().__init__()
+
     @copydoc(stochopy.optimize.minimize)
     def run(self):
         bounds = [(0., 1.)] * self.dim
@@ -33,6 +36,9 @@ class StochopySample(splug.scanner):
 
     name = "stochopy_sample"
     __version__ = version("stochopy")
+
+    def __init__(self, **kwargs):
+        super().__init__()
 
     @copydoc(stochopy.optimize.sample)
     def run(self):

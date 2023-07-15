@@ -25,8 +25,9 @@ class Adaptive(splug.scanner):
 
     @copydoc(adaptive.LearnerND)
     def __init__(self, **kwargs):
+        super().__init__()
         bounds = [(0., 1.)] * self.dim
-        self.learner = adaptive.LearnerND(self.loglike_hypercube, bounds=bounds, **kwargs)
+        self.learner = adaptive.LearnerND(self.loglike_hypercube, bounds=bounds, **self.init_args)
         
     def run_internal(self, filename="adaptive.npy", **kwargs):
         runner = adaptive.Runner(self.learner, **kwargs)

@@ -32,9 +32,13 @@ class Zeus(splug.scanner):
 
     @copydoc(zeus.EnsembleSampler)
     def __init__(self, nwalkers=8, **kwargs):
-        self.nwalkers = nwalkers
+        super().__init__()
+        self.nwalkers = 8
+        if 'nwalkers' in self.init_args:
+            self.nwalkers = self.init_args['nwalkers']
+            del self.init_args['nwalkers']
         self.sampler = zeus.EnsembleSampler(
-            self.nwalkers, self.dim, self.log_target_density, **kwargs)
+            self.nwalkers, self.dim, self.log_target_density, **self.init_args)
 
     def run_internal(
             self,
@@ -55,7 +59,7 @@ class Zeus(splug.scanner):
                               callbacks=self.save_callback(filename), **kwargs)
 
     @copydoc(zeus.EnsembleSampler.run_mcmc)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
         
 

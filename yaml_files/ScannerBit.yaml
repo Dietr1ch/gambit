@@ -21,7 +21,8 @@ Printer:
 
   # Select printer to use via string tag)
   #printer: ascii
-  printer: hdf5
+  # printer: hdf5
+  printer: cout
 
   # This options node is passed on wholesale to
   # the printer object; required options may
@@ -97,7 +98,7 @@ Scanner:
 
     kombine:
         like: LogLike
-        plugin: zeus
+        plugin: kombine
         init:
             nwalkers: 8
         run:
@@ -166,7 +167,7 @@ Scanner:
 
     adaptive:
         like: LogLike
-        plugin: adaptive
+        plugin: adaptive_learner_nd
         run:
             filename: "adaptive.npy"
             npoints_goal: 1000

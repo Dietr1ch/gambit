@@ -16,6 +16,7 @@ class Nautilus(splug.scanner):
 
     @copydoc(nautilus.Sampler)
     def __init__(self, **kwargs):
+        super().__init__()
         self.prior = nautilus.Prior()
         for key in self.parameter_names:
             self.prior.add_parameter(key)
@@ -34,7 +35,7 @@ class Nautilus(splug.scanner):
             pickle.dump(res, f)
 
     @copydoc(nautilus.Sampler.run)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 

@@ -30,6 +30,7 @@ class StaticDynesty(splug.scanner):
 
     @copydoc(dynesty.NestedSampler)
     def __init__(self, **kwargs):
+        super().__init__()
         self.sampler = dynesty.NestedSampler(
             self.loglike, self.prior_transform, self.dim, **kwargs)
 
@@ -57,6 +58,7 @@ class DynamicDynesty(splug.scanner):
 
     @copydoc(dynesty.DynamicNestedSampler)
     def __init__(self, **kwargs):
+        super().__init__()
         self.sampler = dynesty.DynamicNestedSampler(
             self.loglike, self.prior_transform, self.dim, **kwargs)
 

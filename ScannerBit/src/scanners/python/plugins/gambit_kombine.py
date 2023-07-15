@@ -28,6 +28,7 @@ class Kombine(splug.scanner):
 
     @copydoc(kombine.Sampler)
     def __init__(self, nwalkers=4, **kwargs):
+        super().__init__()
         self.nwalkers = nwalkers
         self.sampler = kombine.Sampler(self.nwalkers, self.dim, self.log_target_density)
 
@@ -48,7 +49,7 @@ class Kombine(splug.scanner):
             pickle.dump(res, f)
     
     @copydoc(kombine.Sampler.run_mcmc)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
         
 

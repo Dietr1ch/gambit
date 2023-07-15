@@ -25,6 +25,7 @@ class ReactiveUltranest(splug.scanner):
 
         :param: log_dir ('reactive_ultranest_run')
         """
+        super().__init__()
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,
             self.loglike,
@@ -47,7 +48,7 @@ class ReactiveUltranest(splug.scanner):
             pickle.dump(self.sampler.results, f)
     
     @copydoc(ultranest.ReactiveNestedSampler.run)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 

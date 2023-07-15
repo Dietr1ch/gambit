@@ -41,6 +41,7 @@ class FlowSampler(splug.scanner):
 
         :param: output ('nessai_log_dir')
         """
+        super().__init__()
         if logger:
             setup_logger(output=output)
 
@@ -51,7 +52,7 @@ class FlowSampler(splug.scanner):
         self.sampler.run(**kwargs)
 
     @copydoc(FlowSampler.run)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 
