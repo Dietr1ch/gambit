@@ -68,7 +68,7 @@ namespace Gambit
             //std::vector<double> &params;
 
         public:
-            Scanner_Plugin_Function(const std::vector<std::string> &params, const std::string &name, const Factory_Base &fac = 0)
+            Scanner_Plugin_Function(const std::vector<std::string> &params, const std::string &name, const Factory_Base &fac)
                     : Plugins::Plugin_Interface<ret (args...)>("objective", name, params, fac)
             {
             }
@@ -78,10 +78,10 @@ namespace Gambit
                 // Check for signals to abort run
                 if(signaldata().check_if_shutdown_begun())
                 {
-                    Function_Base<ret (args...)>::tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
+                    this->Function_Base<ret (args...)>::tell_scanner_early_shutdown_in_progress(); // e.g. sets 'quit' flag in Diver
                 }
 
-                if(signaldata().shutdown_begun() and not Function_Base<ret (args...)>::scanner_can_quit())
+                if(signaldata().shutdown_begun() and not this->Function_Base<ret (args...)>::scanner_can_quit())
                 {
                     signaldata().attempt_soft_shutdown();
                     //lnlike = alt_min_valid_lnlike;
