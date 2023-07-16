@@ -43,7 +43,7 @@ class PocoMC(splug.scanner):
             pickle.dump(self.sampler.results, f)
 
     @copydoc(pocomc.Sampler.run)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 

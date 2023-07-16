@@ -40,7 +40,7 @@ class StaticDynesty(splug.scanner):
             pickle.dump(self.sampler.results, f)
             
     @copydoc(dynesty.NestedSampler.run_nested)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 
