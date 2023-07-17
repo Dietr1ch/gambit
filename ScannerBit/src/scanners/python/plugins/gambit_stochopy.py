@@ -3,7 +3,6 @@ Stochopy optimization
 =====================
 """
 
-import numpy as np
 import stochopy
 
 import scanner_plugin as splug
@@ -47,5 +46,5 @@ class StochopySample(splug.scanner):
         print(res)
 
 
-__plugins__ = {StochopyMinimize.name: StochopyMinimize
+__plugins__ = {StochopyMinimize.name: StochopyMinimize,
                StochopySample.name: StochopySample}
