@@ -16,12 +16,16 @@ Parameters:
   Resonant_SubGeVDM_fermion:
     mDM:
       prior_type: log
-      range: [1e-1,1e0]
-    gDM: 2.5
+      range: [1e-3,1e0]
+    gDM:
+      prior_type: log
+      range: [1e-2, 3.545]
     kappa:
       prior_type: log
-      range: [1e-4,1e-2]
-    epsR: 1.25
+      range: [1e-6,1e-2]
+    epsR:
+      prior_type: log
+      range: [1e-3, 100]
     etaDM: 0
 
   Halo_gNFW_rho0:
@@ -127,21 +131,21 @@ ObsLikes:
     - capability: f_eff
       purpose: Observable
 
-#    - purpose:      LogLike
-#      capability:   N_eff_likelihood_Planck_BAO
+    - purpose:      LogLike
+      capability:   N_eff_likelihood_Planck_BAO
 
     - capability: lnL_p_ann
       purpose: Observable
 
-#    - capability: Neff_after_BBN
-#      purpose: Observable
+    - capability: Neff_after_BBN
+      purpose: Observable
 
-#    - purpose:      LogLike
-#      capability:   BBN_LogLike
-#      sub_capabilities: [He4, D]
+    - purpose:      LogLike
+      capability:   BBN_LogLike
+      sub_capabilities: [He4, D]
 
-#    - purpose:      Observable
-#      capability:   primordial_abundances
+    - purpose:      Observable
+      capability:   primordial_abundances
 
 
 Rules:
