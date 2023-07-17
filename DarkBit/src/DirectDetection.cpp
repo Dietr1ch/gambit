@@ -499,8 +499,6 @@ namespace Gambit
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
-      double gDM = *Param["gDM"];
-      double kappa = *Param["kappa"];
       double mAp = *Param["mAp"]; // in GeV
       double sigma_e = *Dep::sigma_e/gev2cm2; // in GeV^-2
 
@@ -524,8 +522,6 @@ namespace Gambit
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
-      double gDM = *Param["gDM"];
-      double kappa = *Param["kappa"];
       double mAp = *Param["mAp"]; // in GeV
       double sigma_e = *Dep::sigma_e/gev2cm2; // in GeV^-2
 
@@ -549,8 +545,6 @@ namespace Gambit
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
-      double gDM = *Param["gDM"];
-      double kappa = *Param["kappa"];
       double mAp = *Param["mAp"]; // in GeV
       double sigma_e = *Dep::sigma_e/gev2cm2; // in GeV^-2
 
@@ -574,8 +568,6 @@ namespace Gambit
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
-      double gDM = *Param["gDM"];
-      double kappa = *Param["kappa"];
       double mAp = *Param["mAp"]; // in GeV
       double sigma_e = *Dep::sigma_e/gev2cm2; // in GeV^-2
 
@@ -606,7 +598,7 @@ namespace Gambit
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Unfix_Coupling_Ratios();
       DM.Set_Sigma_Proton(sigma_p);
-      DM.Set_Sigma_Neutron(sigma_n);      
+      DM.Set_Sigma_Neutron(sigma_n);
       DM.Set_FormFactor_DM("General", mAp);
 
       // 3. Experiment
@@ -632,7 +624,7 @@ namespace Gambit
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Unfix_Coupling_Ratios();
       DM.Set_Sigma_Proton(sigma_p);
-      DM.Set_Sigma_Neutron(sigma_n);      
+      DM.Set_Sigma_Neutron(sigma_n);
       DM.Set_FormFactor_DM("General", mAp);
 
       // 3. Experiment
