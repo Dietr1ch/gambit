@@ -69,7 +69,7 @@ namespace Gambit
       bool log_matches;
 
       /// Whether to return multiple functor matches.
-      bool match_all;
+      bool include_all;
 
       /// True if and only if the passed functor matches all matchable non-empty fields of the observable (i.e. everything except purpose, dependencies, backend_reqs, functionChain and subcaps).
       bool matches(functor*, const Utils::type_equivalency&) const;
@@ -101,7 +101,7 @@ namespace Gambit
         subcaps(),
         printme(true),
         log_matches(true),
-        match_all(false)
+        include_all(false)
       {}
     };
 
