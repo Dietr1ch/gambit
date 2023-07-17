@@ -131,6 +131,14 @@ Scanner:
         run:
             pkl_name: "pocomc.pkl"
 
+    stochopy_sample:
+        like: LogLike
+        plugin: stochopy_sample
+        run:
+            method: "mcmc"
+            options:
+                maxiter: 1000
+
     # Python scanners - nested sampling
 
     ultranest:
@@ -162,6 +170,13 @@ Scanner:
             dlogz_init: 0.5
             n_effective: 500
             pkl_name: "dynamic_dynesty.pkl"
+
+    nessai:
+        like: LogLike
+        plugin: nessai_flow_sampler
+        init:
+            output: "nessai_log_dir"
+            logger: True
 
     # Python scanners - optimization
 
