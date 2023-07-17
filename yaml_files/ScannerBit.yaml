@@ -180,14 +180,6 @@ Scanner:
 
     # Python scanners - optimization
 
-    adaptive:
-        like: LogLike
-        plugin: adaptive_learner_nd
-        run:
-            filename: "adaptive.npy"
-            npoints_goal: 1000
-            duration_goal: 100000  # seconds
-
     stochopy_minimize:
         like: LogLike
         plugin: stochopy_minimize
