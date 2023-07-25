@@ -104,12 +104,17 @@ Rules:
   - capability: EventWeighterFunction
     function: setEventWeight_unity
 
-
-  # Generate evens (don't read LH event files)
+  # Choose where to get scattering events from
   - capability: HardScatteringEvent
+    type: Pythia_default::Pythia8::Event
     function: generateEventPythia
-    module: ColliderBit
+    # options:
+    #   drop_HepMC3_file: true
+    #   # drop_HepMC2_file: true
 
+  - capability: HardScatteringEvent
+    type: HEPUtils::Event
+    function: generateEventPythia_HEPUtils
 
   # Choose colliders to simulate and their convergence settings, and pick analyses to run with each collider.
   - capability: RunMC
@@ -174,7 +179,7 @@ Rules:
     # Choose to use the FullLikes backend when applicable
     # function: calc_LHC_LogLikes_full
     backends:
-    - {capability: lnlike_marg_poisson_lognormal_error}
+    - {group: lnlike_marg_poisson, capability: lnlike_marg_poisson_lognormal_error}
     options:
       use_covariances: true
       combine_SRs_without_covariances: false
