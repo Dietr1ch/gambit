@@ -23,7 +23,7 @@ class Kombine(splug.scanner):
         """
         :returns: Choice of initial state for chain
         """
-        return np.vstack([self.prior_transform(np.random.rand(self.dim))
+        return np.vstack([self.transform(np.random.rand(self.dim))
                          for i in range(self.nwalkers)])
 
     @copydoc(kombine.Sampler)

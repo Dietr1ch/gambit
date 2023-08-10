@@ -28,7 +28,7 @@ class ReactiveUltranest(splug.scanner):
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,
             self.loglike,
-            transform=self.prior_transform,
+            transform=self.transform,
             log_dir=log_dir,
             **kwargs)
 
