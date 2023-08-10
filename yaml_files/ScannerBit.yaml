@@ -21,7 +21,8 @@ Printer:
 
   # Select printer to use via string tag)
   #printer: ascii
-  printer: hdf5
+  # printer: hdf5
+  printer: cout
 
   # This options node is passed on wholesale to
   # the printer object; required options may
@@ -97,7 +98,7 @@ Scanner:
 
     kombine:
         like: LogLike
-        plugin: zeus
+        plugin: kombine
         init:
             nwalkers: 8
         run:
@@ -129,6 +130,14 @@ Scanner:
             nparticles: 1000
         run:
             pkl_name: "pocomc.pkl"
+
+    stochopy_sample:
+        like: LogLike
+        plugin: stochopy_sample
+        run:
+            method: "mcmc"
+            options:
+                maxiter: 1000
 
     # Python scanners - nested sampling
 
@@ -162,15 +171,14 @@ Scanner:
             n_effective: 500
             pkl_name: "dynamic_dynesty.pkl"
 
-    # Python scanners - optimization
-
-    adaptive:
+    nessai:
         like: LogLike
-        plugin: adaptive
-        run:
-            filename: "adaptive.npy"
-            npoints_goal: 1000
-            duration_goal: 100000  # seconds
+        plugin: nessai_flow_sampler
+        init:
+            output: "nessai_log_dir"
+            logger: True
+
+    # Python scanners - optimization
 
     stochopy_minimize:
         like: LogLike

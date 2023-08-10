@@ -5,7 +5,6 @@ dynesty
 emcee
 h5py
 ultranest
-adaptive
 zeus-mcmc
 pocomc
 stochopy

@@ -46,7 +46,11 @@ class Emcee(splug.scanner):
         for passing the name of a h5 file to which to save results using the emcee writer,
         and whether to reset that file.
         """
+        super().__init__()
         self.nwalkers = nwalkers
+        if 'nwalkers' in self.init_args:
+            self.nwalkers = self.init_args['nwalkers']
+            del self.init_args['nwalkers']
         self.sampler = emcee.EnsembleSampler(
             self.nwalkers,
             self.dim,
@@ -54,7 +58,7 @@ class Emcee(splug.scanner):
             backend=self.backend(
                 filename,
                 reset),
-            **kwargs)
+            **self.init_args)
 
     def run_internal(self, nsteps=5000, progress=True, initial_state=None, **kwargs):
         if initial_state is None:
@@ -63,7 +67,7 @@ class Emcee(splug.scanner):
                               progress=progress, **kwargs)
         
     @copydoc(emcee.EnsembleSampler.run_mcmc)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 

@@ -25,6 +25,7 @@ class PocoMC(splug.scanner):
 
     @copydoc(pocomc.Sampler)
     def __init__(self, n_particles=1000, vectorize_likelihood=True, **kwargs):
+        super().__init__()
         self.n_particles = n_particles
         self.sampler = pocomc.Sampler(
             self.n_particles,
@@ -42,7 +43,7 @@ class PocoMC(splug.scanner):
             pickle.dump(self.sampler.results, f)
 
     @copydoc(pocomc.Sampler.run)
-    def run():
+    def run(self):
         self.run_internal(**self.run_args)
 
 
