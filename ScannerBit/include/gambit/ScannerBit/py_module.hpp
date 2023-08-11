@@ -108,7 +108,7 @@
                 std::vector<bool> ret = GET_INIFILE_VALUE<std::vector<bool>>(val);                      \
                                                                                                         \
                 for (auto &&r : ret)                                                                    \
-                    list.append(r);                                                                     \
+                    list.append(bool(r));                                                               \
             }                                                                                           \
             else if (is_type<py::str>(args, "etype"))                                                   \
             {                                                                                           \
