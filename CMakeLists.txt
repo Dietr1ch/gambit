@@ -125,7 +125,7 @@ string(REGEX MATCH ";pybind;|;pybind11;|;Pybind;|;Pybind11;" DITCH_PYBIND ";${it
 # If pybind11 is ditched, do not worry about PythonLibs
 set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7 3.8 3.9 3.10 3.11)
 find_package(PythonInterp 3)  # We require Python 3.
-if(PYTHONINTERP_FOUND) 
+if(PYTHONINTERP_FOUND)
   if(NOT DITCH_PYBIND)
     find_package(PythonLibs 3) # We require Python 3.
   endif()
@@ -688,3 +688,9 @@ endif()
 
 # Create a list of Gambit bits to be used in the diagnostic system of Gambit.
 execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/Utils/scripts/find_all_gambit_bits.py --source-dir ${PROJECT_SOURCE_DIR} --output-file=${PROJECT_SOURCE_DIR}/config/gambit_bits.yaml)
+
+# Forbid the use of variable-length array and other non-standard C++ syntax
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic-errors")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic-errors")
+endif()

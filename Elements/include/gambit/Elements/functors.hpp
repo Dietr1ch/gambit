@@ -74,7 +74,7 @@ namespace Gambit
   namespace Models { class ModelFunctorClaw; }
 
   /// Forward declaration of Rule and Observables classes for saving pointers to ignored and matched examples
-  namespace DRes { class ModuleRule; class BackendRule; class Observable; }
+  namespace DRes { struct ModuleRule; struct BackendRule; struct Observable; }
 
   /// Type redefinition to get around icc compiler bugs.
   template <typename TYPE, typename... ARGS>
