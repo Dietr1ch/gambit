@@ -1968,7 +1968,6 @@ if(NOT ${FOUND_MKL} EQUAL -1)
     endif()
   endif()
 endif()
-
 check_ditch_status(${name} ${ver} ${dir})
 if(NOT ditched_${name}_${ver})
   ExternalProject_Add(${name}_${ver}
@@ -1984,7 +1983,7 @@ if(NOT ditched_${name}_${ver})
               COMMAND chmod u+x run_waf.sh
               COMMAND ./run_waf.sh
     BUILD_COMMAND ""
-    INSTALL_COMMAND C_INCLUDE_PATH=$(C_INCLUDE_PATH):${PYTHON_INCLUDE_DIR} ${PYTHON_EXECUTABLE} ${dir}/waf install --no_pytools -v
+    INSTALL_COMMAND C_INCLUDE_PATH=$(C_INCLUDE_PATH):${PYTHON_INCLUDE_DIR} ${PYTHON_EXECUTABLE} ${dir}/waf install --no_pytools
   )
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
