@@ -515,6 +515,8 @@ if(NOT ditched_${name}_${ver})
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
     PATCH_COMMAND patch -p1 < ${patch}
+    # Apart from the standard patch we want to replace some yield tables with higher resolution versions
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${patchdir}updated_tables/ ${dir}/data/yields_hazma/
     CONFIGURE_COMMAND ./configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${BACKEND_Fortran_FLAGS} FFLAGS=${BACKEND_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${BACKEND_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${BACKEND_CXX_FLAGS}
     BUILD_COMMAND ${MAKE_PARALLEL} ds_core ds_empty install_tables
     INSTALL_COMMAND ""

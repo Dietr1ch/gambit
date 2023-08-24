@@ -9,8 +9,8 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Torsten Bringmann
-///          (torsten.bringmann@desy.de)
-///  \date 2013 Jun -- 2016 May, 2019, 2022
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2013 Jun -- 2016 May, 2019, 2022, 2023
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)

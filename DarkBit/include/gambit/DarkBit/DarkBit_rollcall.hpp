@@ -271,9 +271,9 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
-      #ifdef DARKBIT_RD_DEBUG
-        DEPENDENCY(MSSM_spectrum, Spectrum)
-      #endif
+      //#ifdef DARKBIT_RD_DEBUG
+      //  DEPENDENCY(MSSM_spectrum, Spectrum)
+      //#endif
       BACKEND_REQ(dsrdstart,(ds6),void,(int&, double(&)[1000], double(&)[1000], int&, double(&)[1000], double(&)[1000], int&, double(&)[1000]))
       BACKEND_REQ(dsrdens, (ds6), void, (double(*)(double&), double&, double&, int&, int&, int&))
       BACKEND_OPTION((DarkSUSY_MSSM),(ds6))
