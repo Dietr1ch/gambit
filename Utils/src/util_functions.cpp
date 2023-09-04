@@ -88,6 +88,13 @@ namespace Gambit
       return ensure_path_exists(GAMBIT_DIR "/scratch/run_time/machine_" + std::to_string(gethostid()) + master_procID + "/");
     }
 
+    /// Convert all instances of "p" in a string to "."
+    str p2dot(str s)
+    {
+      boost::replace_all(s, "p", ".");
+      return s;
+    }
+
     /// Split a string into a vector of strings using a delimiter,
     /// and remove any whitespace around the delimiters.
     std::vector<str> delimiterSplit(str s, str delim)
@@ -424,7 +431,34 @@ namespace Gambit
       return true;
     }
 
+    /// Enclose a string in quotation marks if it contains commas
+    std::string quote_if_contains_commas(str in)
+    {
+      if (in.find(',') == std::string::npos)
+      {
+        return in;
+      }
+      else
+      {
+        return "\""+in+"\"";
+      }
+    }
 
+    // case-independent (ci) compare_less binary function
+    bool ci_less::operator() (const std::string & s1, const std::string & s2) const
+    {
+      return std::lexicographical_compare
+        (s1.begin (), s1.end (),   // source range
+        s2.begin (), s2.end (),    // dest range
+        nocase_compare ());        // comparison
+    }
+
+    // case-independent (ci) compare_less binary function
+    bool ci_less::nocase_compare::operator() (const unsigned char& c1, const unsigned char& c2) const
+    {
+      return tolower (c1) < tolower (c2);
+    }
+        
   }
 
 }

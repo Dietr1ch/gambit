@@ -43,8 +43,8 @@ input_files = [
 ]
 include_paths = [
     '../../../Backends/installed/rivet/'+gambit_backend_version+'/include',
-    '../../../contrib/HepMC3-3.1.1/local/include',
-    '../../../contrib/YODA-1.9.1/local/include',
+    '../../../contrib/HepMC3-3.2.5/local/include',
+    '../../../contrib/YODA-1.9.7/local/include',
     '../../../Backends/installed/fastjet/3.3.2/local/include'
 ]
 base_paths = ['../../../Backends/installed/rivet/'+gambit_backend_version]
@@ -57,7 +57,7 @@ load_classes = [
 ]
 
 load_functions = [
-    'Rivet::addAnalysisLibPath(const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >&)'
+    'Rivet::addAnalysisLibPath(const std::string&)'
 ]
 
 ditch = [
@@ -93,11 +93,13 @@ known_classes = {
       "YODA::AnalysisObject" : "YODA/AnalysisObject.h"
 }
 
+
 # ~~~~~ Declarations to be added to the frontend header file ~~~~~
 
 convenience_functions = []
 
 ini_function_in_header = False
+
 
 # ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
 
@@ -105,11 +107,25 @@ ini_function_in_header = False
 # the BOSS-generated headers in GAMBIT.
 
 pragmas_begin = [
-  '#pragma GCC diagnostic push',
-  '#pragma GCC diagnostic ignored "-Wignored-qualifiers"',
-  '#pragma GCC diagnostic ignored "-Wunused-parameter"',
+  '#include "gambit/Utils/begin_ignore_warnings_rivet_backend.hpp"', # Contains pragmas to suppress warnings from YODA and HepMC
 ]
 
 pragmas_end = [
-  '#pragma GCC diagnostic pop'
+  '#include "gambit/Utils/end_ignore_warnings.hpp"', # Restores the warning settings
 ]
+
+
+# ~~~~~ Extra code to surround BOSS-generated code included in GAMBIT ~~~~~
+
+# The listed code will be added at the top/bottom in the frontend header file 
+# and in the loaded_types.hpp header.
+
+surround_code_begin = '''
+#ifndef EXCLUDE_YODA
+#ifndef EXCLUDE_HEPMC
+'''
+
+surround_code_end = ''' 
+#endif
+#endif
+'''

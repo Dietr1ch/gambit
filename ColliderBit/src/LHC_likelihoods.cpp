@@ -453,73 +453,64 @@ namespace Gambit
     }
 
 
-    #ifdef HAVE_PYBIND11
-      /// Helper function called by calc_LHC_LogLikes to compute the loglike(s) for a given analysis.
-      template <typename T1,typename T2, typename T3>
-      void fill_analysis_loglikes_full(const AnalysisData& ana_data, 
-                                  AnalysisLogLikes& ana_loglikes,
-                                  T1 FullLikes_FileExists,
-                                  T2 FullLikes_ReadIn,
-                                  T3 FullLikes_Evaluate,
-                                  const std::string alt_loglike_key = "")
+    /// Helper function called by fill_analysis_loglikes below. It's used to get the 
+    /// loglike(s) for ATLAS analyses for which we have the ATLAS Full Likelihood information.
+    void fill_analysis_loglikes_full(const AnalysisData& ana_data, 
+                                AnalysisLogLikes& ana_loglikes,
+                                bool (*FullLikes_FileExists)(const str&),
+                                int (*FullLikes_ReadIn)(const str&, const str&),
+                                double (*FullLikes_Evaluate)(std::map<str,double>&,const str&),
+                                const std::string alt_loglike_key = "")
+    {
+      // Are we filling the standard loglike or an alternative one?
+      bool fill_alt_loglike = false;
+      if (!alt_loglike_key.empty()) fill_alt_loglike = true;
+
+      // Get number of signal regions
+      const size_t nSR = ana_data.size();
+
+      // Get the analysis name
+      const std::string ana_name = ana_data.analysis_name;
+
+      // Check if analysis is to use ATLAS Full Likelihood backend
+      // If the json hasn't been read in, read it in 
+      bool FullLikes_jsonread = (*FullLikes_FileExists)(ana_name); 
+      if (!FullLikes_jsonread)
       {
-        // Are we filling the standard loglike or an alternative one?
-        bool fill_alt_loglike = false;
-        if (!alt_loglike_key.empty()) fill_alt_loglike = true;
-
-        // Get number of signal regions
-        const size_t nSR = ana_data.size();
-
-        // Get the analysis name
-        const std::string ana_name = ana_data.analysis_name;
-
-        // Check if analysis is to use ATLAS Full Likelihood backend
-        // If the json hasn't been read in, read it in 
-        bool FullLikes_jsonread = (*FullLikes_FileExists)(ana_name); 
-        if (!FullLikes_jsonread)
+        if ((*FullLikes_ReadIn)(ana_name,ana_data.bkgjson_path) != 0)
         {
-          if ((*FullLikes_ReadIn)(ana_name,ana_data.bkgjson_path) != 0)
-          {
-            ColliderBit_error().raise(LOCAL_INFO,"Error: ATLAS FullLikes Failed to read in BKG JSON file for analysis: " + ana_name);
-          }
+          ColliderBit_error().raise(LOCAL_INFO,"Error: ATLAS FullLikes Failed to read in BKG JSON file for analysis: " + ana_name);
         }
-
-        // Delta log-likelihood variable
-        double dll = NAN;
-
-        // Work out the total (delta) log likelihood for this analysis, with correlations/full likelihoods as available/instructed
-        pybind11::dict SRsignal;
-
-        for (size_t SR = 0; SR < nSR; ++SR)
-        {
-          pybind11::str SRName = ana_data[SR].sr_label;
-          SRsignal[SRName] = ana_data[SR].n_sig_scaled;
-        }
-
-        dll = (*FullLikes_Evaluate)(SRsignal,ana_name);
-
-        // Write result to the ana_loglikes reference
-        ana_loglikes.combination_sr_label = "all";
-        ana_loglikes.combination_sr_index = -1;
-        if (fill_alt_loglike)
-        {
-          ana_loglikes.alt_combination_loglikes.at(alt_loglike_key) = dll;
-        }
-        else
-        {
-          ana_loglikes.combination_loglike = dll;
-        }
-      
       }
-      
-      /// Throw an error if this is used when it shouldn't be
-      template <>
-      void fill_analysis_loglikes_full <std::nullptr_t,std::nullptr_t,std::nullptr_t> (const AnalysisData&, AnalysisLogLikes&,std::nullptr_t,std::nullptr_t, std::nullptr_t, const std::string)
+
+      // Delta log-likelihood variable
+      double dll = NAN;
+
+      // Work out the total (delta) log likelihood for this analysis, by passing in the signal predictions
+      // in a map<str,double> to the ATLAS_FullLikes backend.
+      std::map<str,double> SRsignal;
+
+      for (size_t SR = 0; SR < nSR; ++SR)
       {
-        ColliderBit_error().raise(LOCAL_INFO,"Error: Attempted to use nullptr to access FullLikes Backend function (It should never hit this error)");
+        str SRName = ana_data[SR].sr_label;
+        SRsignal[SRName] = ana_data[SR].n_sig_scaled;
       }
-    #endif
 
+      dll = (*FullLikes_Evaluate)(SRsignal,ana_name);
+
+      // Write result to the ana_loglikes reference
+      ana_loglikes.combination_sr_label = "all";
+      ana_loglikes.combination_sr_index = -1;
+      if (fill_alt_loglike)
+      {
+        ana_loglikes.alt_combination_loglikes.at(alt_loglike_key) = dll;
+      }
+      else
+      {
+        ana_loglikes.combination_loglike = dll;
+      }
+    }
+      
     /// Helper function called by calc_LHC_LogLikes to compute the loglike(s) for a given analysis.
     void fill_analysis_loglikes(const AnalysisData& ana_data, 
                                 AnalysisLogLikes& ana_loglikes,
@@ -527,9 +518,9 @@ namespace Gambit
                                 bool has_and_use_covar,
                                 bool combine_nocovar_SRs,
                                 bool has_and_use_fulllikes,
-                                auto FullLikes_FileExists,
-                                auto FullLikes_ReadIn,
-                                auto FullLikes_Evaluate,
+                                bool (*FullLikes_FileExists)(const str&),
+                                int (*FullLikes_ReadIn)(const str&, const str&),
+                                double (*FullLikes_Evaluate)(std::map<str,double>&,const str&),
                                 const std::string alt_loglike_key = "")
     {
       // Are we filling the standard loglike or an alternative one?
@@ -549,16 +540,11 @@ namespace Gambit
       double dll = NAN;
 
       // Work out the total (delta) log likelihood for this analysis, with correlations as available/instructed
-      // Do not try to use fulllikes if pybind is not built.
-      #ifdef HAVE_PYBIND11
-        if (has_and_use_fulllikes)
-        {
-          fill_analysis_loglikes_full(ana_data,ana_loglikes,FullLikes_FileExists,FullLikes_ReadIn,FullLikes_Evaluate,alt_loglike_key);
-        }
-        else if (has_and_use_covar)  // Use SR covariance info?
-      #else
-        if (has_and_use_covar)
-      #endif
+      if (has_and_use_fulllikes)
+      {
+        fill_analysis_loglikes_full(ana_data,ana_loglikes,FullLikes_FileExists,FullLikes_ReadIn,FullLikes_Evaluate,alt_loglike_key);
+      }
+      else if (has_and_use_covar)  // Use SR covariance info?
       {
 
         // Check that we are indeed using the right function to compute the loglikes
@@ -870,9 +856,9 @@ namespace Gambit
                                   AnalysisDataPointers& ana,
                                   const Options& runOptions,
                                   bool skip_calc,
-                                  auto FullLikes_FileExists,
-                                  auto FullLikes_ReadIn,
-                                  auto FullLikes_Evaluate)
+                                  bool (*FullLikes_FileExists)(const str&),
+                                  int (*FullLikes_ReadIn)(const str&, const str&),
+                                  double (*FullLikes_Evaluate)(std::map<str,double>&,const str&))
     {
       static bool first = true;
 
@@ -1070,9 +1056,9 @@ namespace Gambit
       
       
       // Get a pointer to the FullLikes backend functions.
-      auto FileExists = &BEreq::FullLikes_FileExists;
-      auto ReadIn = &BEreq::FullLikes_ReadIn;
-      auto Evaluate = &BEreq::FullLikes_Evaluate;
+      bool (*FileExists)(const str&) = BEreq::FullLikes_FileExists.pointer();
+      int (*ReadIn)(const str&, const str&) = BEreq::FullLikes_ReadIn.pointer();
+      double (*Evaluate)(std::map<str,double>&,const str&) = BEreq::FullLikes_Evaluate.pointer();
       
       // Call the calc_LHC_LogLikes
       calc_LHC_LogLikes_common(result, use_fulllikes, ana, *runOptions, skip_calc, FileExists, ReadIn, Evaluate);
@@ -1110,7 +1096,7 @@ namespace Gambit
       std::stringstream summary_line;
       summary_line << "LHC loglikes per analysis: ";
 
-      for (const std::pair<str,AnalysisLogLikes>& pair : *Dep::LHC_LogLikes)
+      for (const std::pair<const str, AnalysisLogLikes>& pair : *Dep::LHC_LogLikes)
       {
         const str& analysis_name = pair.first;
         const AnalysisLogLikes& analysis_loglikes = pair.second;
@@ -1140,7 +1126,7 @@ namespace Gambit
       std::stringstream summary_line;
       summary_line << "LHC loglikes per SR: ";
 
-      for (const std::pair<str,AnalysisLogLikes>& pair_i : *Dep::LHC_LogLikes)
+      for (const std::pair<const str, AnalysisLogLikes>& pair_i : *Dep::LHC_LogLikes)
       {
         const str& analysis_name = pair_i.first;
         const AnalysisLogLikes& analysis_loglikes = pair_i.second;
@@ -1186,7 +1172,7 @@ namespace Gambit
     void get_LHC_LogLike_SR_labels(map_str_str& result)
     {
       using namespace Pipes::get_LHC_LogLike_per_SR;
-      for (const std::pair<str,AnalysisLogLikes>& pair_i : *Dep::LHC_LogLikes)
+      for (const std::pair<const str, AnalysisLogLikes>& pair_i : *Dep::LHC_LogLikes)
       {
         const str& analysis_name = pair_i.first;
         const AnalysisLogLikes& analysis_loglikes = pair_i.second;
@@ -1206,7 +1192,7 @@ namespace Gambit
       summary_line << "LHC loglike SR indices: ";
 
       // Loop over analyses
-      for (const std::pair<str,AnalysisLogLikes>& pair_i : *Dep::LHC_LogLikes)
+      for (const std::pair<const str, AnalysisLogLikes>& pair_i : *Dep::LHC_LogLikes)
       {
         const str& analysis_name = pair_i.first;
         const AnalysisLogLikes& analysis_loglikes = pair_i.second;
@@ -1251,7 +1237,7 @@ namespace Gambit
       }
 
       // Loop over analyses and calculate the total observed dLL
-      for (const std::pair<str,AnalysisLogLikes>& pair : *Dep::LHC_LogLikes)
+      for (const std::pair<const str, AnalysisLogLikes>& pair : *Dep::LHC_LogLikes)
       {
         const str& analysis_name = pair.first;
         const AnalysisLogLikes& analysis_loglikes = pair.second;

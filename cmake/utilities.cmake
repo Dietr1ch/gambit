@@ -36,6 +36,10 @@
 #          (christopher.chang@uqconnect.edu.au)
 #  \date 2021 Feb
 #
+#  \author Anders Kvellestad
+#          (anders.kvellestad@fys.uio.no)
+#  \date 2023 Mar
+#
 #************************************************
 
 include(CMakeParseArguments)
@@ -112,7 +116,7 @@ macro(retrieve_bits bits root excludes quiet)
       # Make the string comparison case insensitive
       string( TOLOWER "${child}" child_lower )
       string( TOLOWER "${excludes}" excludes_lower )
-      
+
       if(NOT ${child_lower} STREQUAL "scannerbit")
         foreach(x ${excludes_lower})
           string( TOLOWER "${x}" x_lower )
@@ -159,15 +163,13 @@ macro(add_external_clean package dir dl target)
   set(rmstring2 "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-build")
   string(REPLACE "." "_" safe_package ${package})
   set(reset_file "${CMAKE_BINARY_DIR}/BOSS_reset_info/reset_info.${safe_package}.boss")
-  set(patch_file "${package}-prefix/${safe_package}.dif")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring1}-BOSS ${rmstring1}-configure ${rmstring1}-build ${rmstring1}-install ${rmstring1}-done
                                      COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && (${target})) || true
                                      COMMAND [ -e ${reset_file} ] && ${PYTHON_EXECUTABLE} ${BOSS_dir}/boss.py -r ${reset_file} || true)
   add_custom_target(nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring1}-download ${rmstring1}-download-failed ${rmstring1}-mkdir ${rmstring1}-patch ${rmstring1}-update ${rmstring1}-gitclone-lastrun.txt ${dl} || true
                                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true
-                                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${rmstring2} || true
-                                    COMMAND [ -e ${patch_file} ] &&  patch -d/ -fsR -p0 < ${patch_file} && rm ${patch_file}|| true)
+                                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${rmstring2} || true)
 endmacro()
 
 # Macro to write some shell commands to clean an external chained code.  Adds clean-[package] and nuke-[package]
@@ -342,6 +344,9 @@ function(add_gambit_executable executablename LIBRARIES)
         set_target_properties(${executablename} PROPERTIES LINK_FLAGS ${MPI_Fortran_LINK_FLAGS})
     endif()
   endif()
+  if (OpenMP_omp_LIBRARY)
+    set(LIBRARIES ${LIBRARIES} ${OpenMP_omp_LIBRARY})
+  endif()
   if (LIBDL_FOUND)
     set(LIBRARIES ${LIBRARIES} ${LIBDL_LIBRARY})
   endif()
@@ -390,14 +395,24 @@ set(STANDALONE_FACILITATOR ${PROJECT_SOURCE_DIR}/Elements/scripts/standalone_fac
 
 # Function to add a standalone executable
 function(add_standalone executablename)
-  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;LIBRARIES;MODULES;DEPENDENCIES" ${ARGN})
+  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;LIBRARIES;MODULES;DEPENDENCIES;" ${ARGN})
 
   # Assume that the standalone is to be included, unless we discover otherwise.
   set(standalone_permitted 1)
 
   # Exclude standalones that need HepMC or YODA if they have been excluded.
   if ( (EXCLUDE_HEPMC AND (";${ARG_DEPENDENCIES};" MATCHES ";hepmc;")) OR (EXCLUDE_YODA AND (";${ARG_DEPENDENCIES};" MATCHES ";yoda;")) )
+    message("${BoldCyan} X Excluding ${executablename} from GAMBIT configuration due to absence of HepMC/Yoda.${ColourReset}")
     set(standalone_permitted 0)
+  endif()
+
+  # Exclude standalones that need pybind11 if it has been excluded.
+  if (";${ARG_DEPENDENCIES};" MATCHES ";pybind11;")
+    string(REPLACE "pybind11" "" ARG_DEPENDENCIES ${ARG_DEPENDENCIES})
+    if (NOT HAVE_PYBIND11)
+      message("${BoldCyan} X Excluding ${executablename} from GAMBIT configuration due to absence of pybind11.${ColourReset}")
+      set(standalone_permitted 0)
+    endif()
   endif()
 
   # Iterate over modules, checking if the neccessary ones are present, and adding them to the target objects if so.
@@ -444,6 +459,12 @@ function(add_standalone executablename)
                                ${STANDALONE_FACILITATOR}
                                ${HARVEST_TOOLS}
                                ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+
+    # All the standalones need linking to HepMC, if HepMC is not excluced.
+    # TODO: Avoid this if possible.
+    if (NOT EXCLUDE_HEPMC)
+      set(ARG_LIBRARIES ${ARG_LIBRARIES} ${HEPMC_LDFLAGS})
+    endif()
 
     # Add linking flags for ROOT, RestFrames, HepMC and/or YODA if required.
     if (USES_COLLIDERBIT)
@@ -623,6 +644,16 @@ macro(gambit_find_python_module module)
   if (NOT return_value)
     message(STATUS "Found Python module ${module}.")
     set(PY_${module}_FOUND TRUE)
+    # If module is h5py and hdf5 is present, make sure they are built with the same version
+    if(HDF5_FOUND AND module STREQUAL "h5py")
+      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import h5py; import re; print(re.search(\"HDF5[ ]+(.*)\",h5py.version.info).group(1))" OUTPUT_VARIABLE hdf5_ver RESULT_VARIABLE hdf5_res ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+      if(${hdf5_res})
+        message(FATAL_ERROR "-- Module h5py is corrupted")
+      elseif(NOT ${hdf5_ver} AND NOT ${hdf5_ver} STREQUAL ${HDF5_VERSION})
+        message("${BoldRed}   The versions of h5py (${hdf5_ver}) and hdf5 (${HDF5_VERSION}) do not match. Backends depending on h5py will be disabled${ColourReset}")
+        set(PY_${module}_FOUND FALSE)
+      endif()
+    endif()
   else()
     if(${ARGC} GREATER 1)
       if (${ARGV1} STREQUAL "REQUIRED")
@@ -640,22 +671,13 @@ set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
 set(needs_BOSSing "")
 set(needs_BOSSing_failed "")
 
-macro(BOSS_backend name backend_version ${ARGN})
+macro(BOSS_backend_full name backend_version ${ARGN})
 
   # Replace "." by "_" in the backend version number
   string(REPLACE "." "_" backend_version_safe ${backend_version})
 
-  # Check if there is a suffix
-  set(extra_args ${ARGN})
-  list(LENGTH extra_args n_extra_args)
-  if (${n_extra_args} GREATER 0)
-    set(suffix "_${ARGN}")
-  else()
-    set(suffix "")
-  endif()
-
   # Construct path to the config file expected by BOSS
-  set(config_file_path "${BOSS_dir}/configs/${name}_${backend_version_safe}${suffix}.py")
+  set(config_file_path "${BOSS_dir}/configs/${name}_${backend_version_safe}.py")
 
   # Only add BOSS step to the build process if the config file exists
   if(NOT EXISTS ${config_file_path})
@@ -673,8 +695,11 @@ macro(BOSS_backend name backend_version ${ARGN})
         set(BOSS_includes_Boost "-I${Boost_INCLUDE_DIR}")
     endif()
     set(BOSS_includes_GSL "")
-    if (NOT ${GSL_INCLUDE_DIRS} STREQUAL "")
-      set(BOSS_includes_GSL "-I${GSL_INCLUDE_DIRS}")
+    if (NOT "${GSL_INCLUDE_DIRS}" STREQUAL "")
+        set(BOSS_includes_GSL "")
+        foreach(dir ${GSL_INCLUDE_DIRS})
+          set(BOSS_includes_GSL "-I${dir} ${BOSS_includes_GSL}")
+        endforeach()
     endif()
     set(BOSS_includes_Eigen3 "")
     if (NOT ${EIGEN3_INCLUDE_DIR} STREQUAL "")
@@ -686,12 +711,17 @@ macro(BOSS_backend name backend_version ${ARGN})
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
       set(BOSS_castxml_cc "")
     endif()
+
+    # Parse command line options from optional arguments
+    set(BOSS_command_line_options "")
+    foreach(arg ${ARGN})
+      set(BOSS_command_line_options ${BOSS_command_line_options} ${arg})
+    endforeach()
+
+    add_dependencies(${name}_${ver} castxml)
     ExternalProject_Add_Step(${name}_${ver} BOSS
       # Run BOSS
-      COMMAND ${PYTHON_EXECUTABLE} ${BOSS_dir}/boss.py --no-instructions ${BOSS_castxml_cc} ${BOSS_includes_Boost} ${BOSS_includes_Eigen3} ${BOSS_includes_GSL} ${name}_${backend_version_safe}${suffix}
-      # Make a dif of the existing files in Backends/include and those generated by BOSS
-      COMMAND diff -rupN ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/${name_in_frontend}_${backend_version_safe} BOSS_output/${name_in_frontend}_${backend_version_safe}/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} > ${name}_${backend_version}-prefix/${name}_${backend_version_safe}.dif || true
-      COMMAND diff -rupN ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${name_in_frontend}_${backend_version_safe}.hpp BOSS_output/${name_in_frontend}_${backend_version_safe}/frontends/${name_in_frontend}_${backend_version_safe}.hpp >> ${name}_${backend_version}-prefix/${name}_${backend_version_safe}.dif || true
+      COMMAND ${PYTHON_EXECUTABLE} ${BOSS_dir}/boss.py --no-instructions ${BOSS_castxml_cc} ${BOSS_command_line_options} ${BOSS_includes_Boost} ${BOSS_includes_Eigen3} ${BOSS_includes_GSL} ${name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
       COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/${name_in_frontend}_${backend_version_safe} || true
       COMMAND cp -r BOSS_output/${name_in_frontend}_${backend_version_safe}/for_gambit/backend_types/${name_in_frontend}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
@@ -700,4 +730,8 @@ macro(BOSS_backend name backend_version ${ARGN})
       DEPENDERS configure
     )
   endif()
+endmacro()
+
+macro(BOSS_backend name backend_version ${ARGN})
+  BOSS_backend_full(${name} ${backend_version} ${ARGN})
 endmacro()

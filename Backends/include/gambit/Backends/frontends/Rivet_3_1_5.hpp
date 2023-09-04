@@ -12,6 +12,9 @@
 ///
 ///  *********************************************
 
+#ifndef EXCLUDE_YODA
+#ifndef EXCLUDE_HEPMC
+
 #include "gambit/Backends/backend_types/Rivet_3_1_5/identification.hpp"
 
 LOAD_LIBRARY
@@ -31,7 +34,7 @@ namespace Gambit
 }
 
 // Functions
-BE_FUNCTION(addAnalysisLibPath, void, (const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >&), "addAnalysisLibPath__BOSS_3", "addAnalysisLibPath")
+BE_FUNCTION(addAnalysisLibPath, void, (const std::string&), ("addAnalysisLibPath__BOSS_3","_addAnalysisLibPath__BOSS_3"), "addAnalysisLibPath")
 // Variables
 
 // Initialisation function (dependencies)
@@ -43,3 +46,6 @@ BE_FUNCTION(addAnalysisLibPath, void, (const ::std::basic_string<char, std::char
 
 // End
 #include "gambit/Backends/backend_undefs.hpp"
+ 
+#endif
+#endif

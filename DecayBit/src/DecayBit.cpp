@@ -149,7 +149,7 @@ namespace Gambit
     }
 
     /// Set neutral h decays computed by FeynHiggs
-    void set_FH_neutral_h_decay(DecayTable::Entry& result, int iH, const fh_Couplings& FH_input, const mass_es_pseudonyms& psn, bool invalidate, bool SM)
+    void set_FH_neutral_h_decay(DecayTable::Entry& result, int iH, const fh_Couplings_container& FH_input, const mass_es_pseudonyms& psn, bool invalidate, bool SM)
     {
       // Set the array and its offset according to whether we want the SM or BSM decays
       const fh_real* widths = SM ? FH_input.gammas_sm : FH_input.gammas;
@@ -552,9 +552,9 @@ namespace Gambit
     }
 
     /// Reference SM Higgs decays from FeynHiggs: h0_1
-    void Ref_SM_Higgs_decays_FH(DecayTable::Entry& result)
+    void Ref_SM_Higgs_decays_FeynHiggs(DecayTable::Entry& result)
     {
-      using namespace Pipes::Ref_SM_Higgs_decays_FH;
+      using namespace Pipes::Ref_SM_Higgs_decays_FeynHiggs;
       const SubSpectrum& spec = Dep::MSSM_spectrum->get_HE();
       int higgs = (SMlike_higgs_PDG_code(spec) == 25 ? 1 : 2);
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
@@ -590,10 +590,10 @@ namespace Gambit
 
     /// FeynHiggs MSSM decays: t
     /// Reference for total width: 2017 PDG
-    void FH_t_decays (DecayTable::Entry& result)
+    void FeynHiggs_t_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::FH_t_decays;
-      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings_output;
+      using namespace Pipes::FeynHiggs_t_decays;
+      fh_Couplings_container FH_input = *Pipes::FeynHiggs_t_decays::Dep::FH_Couplings_output;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       result.width_in_GeV = 1.41;
@@ -605,39 +605,39 @@ namespace Gambit
     }
 
     /// FeynHiggs MSSM decays: h0_1
-    void FH_MSSM_h0_1_decays (DecayTable::Entry& result)
+    void FeynHiggs_MSSM_h0_1_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::FH_MSSM_h0_1_decays;
+      using namespace Pipes::FeynHiggs_MSSM_h0_1_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
       set_FH_neutral_h_decay(result, 1, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: h0_2
-    void FH_h0_2_decays (DecayTable::Entry& result)
+    void FeynHiggs_h0_2_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::FH_h0_2_decays;
+      using namespace Pipes::FeynHiggs_h0_2_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
       set_FH_neutral_h_decay(result, 2, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: A0
-    void FH_A0_decays (DecayTable::Entry& result)
+    void FeynHiggs_A0_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::FH_A0_decays;
+      using namespace Pipes::FeynHiggs_A0_decays;
       bool invalidate = runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width");
       set_FH_neutral_h_decay(result, 3, *Dep::FH_Couplings_output, *(Dep::SLHA_pseudonyms), invalidate, false);
     }
 
     /// FeynHiggs MSSM decays: H+
-    void FH_H_plus_decays (DecayTable::Entry& result)
+    void FeynHiggs_H_plus_decays (DecayTable::Entry& result)
     {
-      using namespace Pipes::FH_H_plus_decays;
+      using namespace Pipes::FeynHiggs_H_plus_decays;
 
       // Get the mass pseudonyms for the gauge eigenstates
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings_output;
+      fh_Couplings_container FH_input = *Dep::FH_Couplings_output;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Set the total charged Higgs width
@@ -1739,10 +1739,6 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2body->brcharhcneut(1,2) : 0.0), 0.0, "~chi0_2", "H+");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2body->brcharhcneut(1,3) : 0.0), 0.0, "~chi0_3", "H+");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2body->brcharhcneut(1,4) : 0.0), 0.0, "~chi0_4", "H+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharwgravitino(1) : 0.0), 0.0, "~G", "W+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharhcgravitino(1) : 0.0), 0.0, "~G", "H+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharwgravitino(1) : 0.0), 0.0, "~G", "W+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharhcgravitino(1) : 0.0), 0.0, "~G", "H+");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brnupdb(1,1) : 0.0), 0.0, "~chi0_1", "u", "dbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brnupdb(1,2) : 0.0), 0.0, "~chi0_2", "u", "dbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brnupdb(1,3) : 0.0), 0.0, "~chi0_3", "u", "dbar");
@@ -1817,10 +1813,6 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2body->brcharhcneut(2,2) : 0.0), 0.0, "~chi0_2", "H+");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2body->brcharhcneut(2,3) : 0.0), 0.0, "~chi0_3", "H+");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2body->brcharhcneut(2,4) : 0.0), 0.0, "~chi0_4", "H+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharwgravitino(2) : 0.0), 0.0, "~G", "W+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharhcgravitino(2) : 0.0), 0.0, "~G", "H+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharwgravitino(2) : 0.0), 0.0, "~G", "W+");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char2bodygrav->brcharhcgravitino(2) : 0.0), 0.0, "~G", "H+");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brnupdb(2,1) : 0.0), 0.0, "~chi0_1", "u", "dbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brnupdb(2,2) : 0.0), 0.0, "~chi0_2", "u", "dbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brnupdb(2,3) : 0.0), 0.0, "~chi0_3", "u", "dbar");
@@ -2040,16 +2032,6 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsnel(1) : 0.0), 0.0, psn.isnmulbar, "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsn1(1) : 0.0), 0.0, psn.isntaul, "nubar_tau");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsn1(1) : 0.0), 0.0, psn.isntaulbar, "nu_tau");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutgamgrav(1) : 0.0), 0.0, "~G", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutzgrav(1) : 0.0), 0.0, "~G", "Z0");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthlgrav(1) : 0.0), 0.0, "~G", "h0_1");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthhgrav(1) : 0.0), 0.0, "~G", "h0_2");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthagrav(1) : 0.0), 0.0, "~G", "A0");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutgamgrav(1) : 0.0), 0.0, "~G", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutzgrav(1) : 0.0), 0.0, "~G", "Z0");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthlgrav(1) : 0.0), 0.0, "~G", "h0_1");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthhgrav(1) : 0.0), 0.0, "~G", "h0_2");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthagrav(1) : 0.0), 0.0, "~G", "A0");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brchubd(1,1) : 0.0), 0.0, "~chi+_1", "ubar", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brchubd(1,1) : 0.0), 0.0, "~chi-_1", "dbar", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brchubd(1,2) : 0.0), 0.0, "~chi+_2", "ubar", "d");
@@ -2273,18 +2255,8 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsnel(3) : 0.0), 0.0, psn.isnmulbar, "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsn1(3) : 0.0), 0.0, psn.isntaul, "nubar_tau");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsn1(3) : 0.0), 0.0, psn.isntaulbar, "nu_tau");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutgamgrav(3) : 0.0), 0.0, "~G", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutzgrav(3) : 0.0), 0.0, "~G", "Z0");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthlgrav(3) : 0.0), 0.0, "~G", "h0_1");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthhgrav(3) : 0.0), 0.0, "~G", "h0_2");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthagrav(3) : 0.0), 0.0, "~G", "A0");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neutloop->brnraddec(3,1) : 0.0), 0.0, "~chi0_1", "gamma");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neutloop->brnraddec(3,2) : 0.0), 0.0, "~chi0_2", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutgamgrav(3) : 0.0), 0.0, "~G", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutzgrav(3) : 0.0), 0.0, "~G", "Z0");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthlgrav(3) : 0.0), 0.0, "~G", "h0_1");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthhgrav(3) : 0.0), 0.0, "~G", "h0_2");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthagrav(3) : 0.0), 0.0, "~G", "A0");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brneutup(3,1) : 0.0), 0.0, "~chi0_1", "ubar", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brneutdow(3,1) : 0.0), 0.0, "~chi0_1", "dbar", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brneutch(3,1) : 0.0), 0.0, "~chi0_1", "cbar", "c");
@@ -2415,19 +2387,9 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsnel(4) : 0.0), 0.0, psn.isnmulbar, "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsn1(4) : 0.0), 0.0, psn.isntaul, "nubar_tau");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2body->brneutsn1(4) : 0.0), 0.0, psn.isntaulbar, "nu_tau");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutgamgrav(4) : 0.0), 0.0, "~G", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutzgrav(4) : 0.0), 0.0, "~G", "Z0");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthlgrav(4) : 0.0), 0.0, "~G", "h0_1");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthhgrav(4) : 0.0), 0.0, "~G", "h0_2");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthagrav(4) : 0.0), 0.0, "~G", "A0");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neutloop->brnraddec(4,1) : 0.0), 0.0, "~chi0_1", "gamma");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neutloop->brnraddec(4,2) : 0.0), 0.0, "~chi0_2", "gamma");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neutloop->brnraddec(4,3) : 0.0), 0.0, "~chi0_3", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutgamgrav(4) : 0.0), 0.0, "~G", "gamma");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneutzgrav(4) : 0.0), 0.0, "~G", "Z0");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthlgrav(4) : 0.0), 0.0, "~G", "h0_1");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthhgrav(4) : 0.0), 0.0, "~G", "h0_2");
-      // result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut2bodygrav->brneuthagrav(4) : 0.0), 0.0, "~G", "A0");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brneutup(4,1) : 0.0), 0.0, "~chi0_1", "ubar", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brneutdow(4,1) : 0.0), 0.0, "~chi0_1", "dbar", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brneutch(4,1) : 0.0), 0.0, "~chi0_1", "cbar", "c");
@@ -3118,7 +3080,8 @@ namespace Gambit
       const double mh_mNeu_2 = pow2(mh_mNeu);
 
       // Phase-space beta function
-      std::function<double(double, double)> phasespace_beta = [](double b, double c) {
+      std::function<double(double, double)> phasespace_beta = [](double b, double c)
+      {
         return sqrt(1. - 2. * (pow2(b) + pow2(c)) + pow2(pow2(b) - pow2(c)));
       };
 
@@ -3262,7 +3225,8 @@ namespace Gambit
         double g_Z_coupling = sqrt(pow2(g) + pow2(g_prime));
 
         // Propagator function
-        std::function<double(double)> propagator_D_ZZ = [&c, &d_Z, &g_Z](double x) {
+        std::function<double(double)> propagator_D_ZZ = [&c, &d_Z, &g_Z](double x)
+        {
           return 1.0 / (pow2(c - d_Z - x + 1.0) + d_Z * g_Z);
         };
         // Gaugino contribution to the integrand, (E.27) in DESY-thesis-09-016
@@ -3900,6 +3864,151 @@ namespace Gambit
       check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
     }
 
+    //////////// Dirac DM Simplified Model /////////////////////
+    void CH_DMsimpVectorMedDiracDM_Y1_decays(DecayTable::Entry& result)
+    {
+      using namespace Pipes::CH_DMsimpVectorMedDiracDM_Y1_decays;
+      // Clear previous decays
+      result = DecayTable::Entry();
+
+      str model = "DMsimpVectorMedDiracDM";
+      str in = "Y1"; // In state: CalcHEP particle name
+      std::vector<std::vector<str>> out_calchep = {{"b~", "b"}, {"c~", "c"}, {"d~", "d"}, {"s~", "s"}, {"t~", "t"}, {"u~", "u"}, {"Xd~", "Xd"}}; // Out states: CalcHEP particle names
+      std::vector<std::vector<str>> out_gambit = {{"dbar_3", "d_3"}, {"ubar_2", "u_2"}, {"dbar_1", "d_1"}, {"dbar_2", "d_2"}, {"ubar_3", "u_3"}, {"ubar_1", "u_1"}, {"Xd~", "Xd"}}; // Out states: GAMBIT particle names
+
+      for (unsigned int i=0; i<out_calchep.size(); i++)
+      {
+
+        double gamma = BEreq::CH_Decay_Width(model, in, out_calchep[i]); // Partial width
+        double newwidth = result.width_in_GeV + gamma;  // Adjust total width
+        double wscaling = ( gamma == 0. ) ? 1 : result.width_in_GeV/newwidth; // Scaling for BFs, avoid NaNs
+        result.width_in_GeV = newwidth;
+
+        for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
+        {
+          it->second.first  *= wscaling; // rescale BF
+          it->second.second *= wscaling; // rescale error on BF
+        }
+
+        // Avoid NaNs!
+        double BF = ( gamma == 0. ) ? 0. : gamma/result.width_in_GeV;
+
+        result.set_BF(BF, 0.0, out_gambit[i][0], out_gambit[i][1]);
+
+      }
+
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
+    }
+
+    //////////// Majorana DM Simplified Model /////////////////////
+    void CH_DMsimpVectorMedMajoranaDM_Y1_decays(DecayTable::Entry& result)
+    {
+      using namespace Pipes::CH_DMsimpVectorMedMajoranaDM_Y1_decays;
+      // Clear previous decays
+      result = DecayTable::Entry();
+
+      str model = "DMsimpVectorMedMajoranaDM";
+      str in = "Y1"; // In state: CalcHEP particle name
+      std::vector<std::vector<str>> out_calchep = {{"b~", "b"}, {"c~", "c"}, {"d~", "d"}, {"s~", "s"}, {"t~", "t"}, {"u~", "u"}, {"Xm", "Xm"}}; // Out states: CalcHEP particle names
+      std::vector<std::vector<str>> out_gambit = {{"dbar_3", "d_3"}, {"ubar_2", "u_2"}, {"dbar_1", "d_1"}, {"dbar_2", "d_2"}, {"ubar_3", "u_3"}, {"ubar_1", "u_1"}, {"Xm", "Xm"}}; // Out states: GAMBIT particle names
+
+      for (unsigned int i=0; i<out_calchep.size(); i++)
+      {
+
+        double gamma = BEreq::CH_Decay_Width(model, in, out_calchep[i]); // Partial width
+        double newwidth = result.width_in_GeV + gamma;  // Adjust total width
+        double wscaling = ( gamma == 0. ) ? 1 : result.width_in_GeV/newwidth; // Scaling for BFs, avoid NaNs
+        result.width_in_GeV = newwidth;
+
+        for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
+        {
+          it->second.first  *= wscaling; // rescale BF
+          it->second.second *= wscaling; // rescale error on BF
+        }
+
+        // Avoid NaNs!
+        double BF = ( gamma == 0. ) ? 0. : gamma/result.width_in_GeV;
+
+        result.set_BF(BF, 0.0, out_gambit[i][0], out_gambit[i][1]);
+
+      }
+
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
+
+    }
+
+    //////////// Scalar DM Simplified Model /////////////////////
+    void CH_DMsimpVectorMedScalarDM_Y1_decays(DecayTable::Entry& result)
+    {
+      using namespace Pipes::CH_DMsimpVectorMedScalarDM_Y1_decays;
+      // Clear previous decays
+      result = DecayTable::Entry();
+
+      str model = "DMsimpVectorMedScalarDM";
+      str in = "Y1"; // In state: CalcHEP particle name
+      std::vector<std::vector<str>> out_calchep = {{"Xc", "Xc~"}, {"b~", "b"}, {"c~", "c"}, {"d~", "d"}, {"s~", "s"}, {"t~", "t"}, {"u~", "u"}}; // Out states: CalcHEP particle names
+      std::vector<std::vector<str>> out_gambit = {{"Xc", "Xc~"}, {"dbar_3", "d_3"}, {"ubar_2", "u_2"}, {"dbar_1", "d_1"}, {"dbar_2", "d_2"}, {"ubar_3", "u_3"}, {"ubar_1", "u_1"}}; // Out states: GAMBIT particle names
+
+      for (unsigned int i=0; i<out_calchep.size(); i++)
+      {
+
+        double gamma = BEreq::CH_Decay_Width(model, in, out_calchep[i]); // Partial width
+        double newwidth = result.width_in_GeV + gamma;  // Adjust total width
+        double wscaling = ( gamma == 0. ) ? 1 : result.width_in_GeV/newwidth; // Scaling for BFs, avoid NaNs
+        result.width_in_GeV = newwidth;
+
+        for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
+        {
+          it->second.first  *= wscaling; // rescale BF
+          it->second.second *= wscaling; // rescale error on BF
+        }
+
+        // Avoid NaNs!
+        double BF = ( gamma == 0. ) ? 0. : gamma/result.width_in_GeV;
+
+        result.set_BF(BF, 0.0, out_gambit[i][0], out_gambit[i][1]);
+
+      }
+
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"));
+    }
+
+    //////////// Vector DM Simplified Model /////////////////////
+    void CH_DMsimpVectorMedVectorDM_Y1_decays(DecayTable::Entry& result)
+    {
+      using namespace Pipes::CH_DMsimpVectorMedVectorDM_Y1_decays;
+      // Clear previous decays
+      result = DecayTable::Entry();
+
+      str model = "DMsimpVectorMedVectorDM";
+      str in = "Y1"; // In state: CalcHEP particle name
+      std::vector<std::vector<str>> out_calchep = {{"d~", "d"}, {"s~", "s"}, {"b~", "b"}, {"u~", "u"}, {"c~", "c"}, {"t~", "t"}, {"~Xv", "~Xva"}}; // Out states: CalcHEP particle names
+      std::vector<std::vector<str>> out_gambit = {{"dbar_1", "d_1"}, {"dbar_2", "d_2"}, {"dbar_3", "d_3"}, {"ubar_1", "u_1"}, {"ubar_2", "u_2"}, {"ubar_3", "u_3"}, {"~Xv", "~Xva"}}; // Out states: GAMBIT particle names
+
+      for (unsigned int i=0; i<out_calchep.size(); i++)
+      {
+
+        double gamma = BEreq::CH_Decay_Width(model, in, out_calchep[i]); // Partial width
+        double newwidth = result.width_in_GeV + gamma;  // Adjust total width
+        double wscaling = ( gamma == 0. ) ? 1 : result.width_in_GeV/newwidth; // Scaling for BFs, avoid NaNs
+        result.width_in_GeV = newwidth;
+
+        for (auto it = result.channels.begin(); it != result.channels.end(); ++it)
+        {
+          it->second.first  *= wscaling; // rescale BF
+          it->second.second *= wscaling; // rescale error on BF
+        }
+
+        // Avoid NaNs!
+        double BF = ( gamma == 0. ) ? 0. : gamma/result.width_in_GeV;
+
+        result.set_BF(BF, 0.0, out_gambit[i][0], out_gambit[i][1]);
+
+      }
+
+      // Check the width. Invalidate if a suspiciously large decay width, since these are expected in this model
+      check_width(LOCAL_INFO, result.width_in_GeV, runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"),true);
+    }
 
     //////////// Everything ///////////////////
 
@@ -3937,6 +4046,11 @@ namespace Gambit
       decays("rho-") = *Dep::rho_minus_decay_rates; // Add the rho- decays.
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
 
+      // DMsimp-specific
+      if (ModelInUse("DMsimpVectorMedDiracDM") or ModelInUse("DMsimpVectorMedMajoranaDM") or ModelInUse("DMsimpVectorMedScalarDM"))
+      {
+        decays("Y1") = *Dep::Y1_decay_rates;
+      }
 
       // MSSM-specific
       if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT") or ModelInUse("MSSM63atQ_mG") or ModelInUse("MSSM63atMGUT_mG"))
@@ -3952,7 +4066,7 @@ namespace Gambit
             Dep::H_plus_decay_rates->calculator == "FeynHiggs" or
             Dep::t_decay_rates->calculator == "FeynHiggs")
         {
-          if (not Dep::MSSM_spectrum->get_HE().has(Par::dimensionless, "h mass from: SpecBit::FH_HiggsMass, SpecBit::FH_HeavyHiggsMasses"))
+          if (not Dep::MSSM_spectrum->get_HE().has(Par::dimensionless, "h mass from: SpecBit::FeynHiggs_HiggsMass, SpecBit::FeynHiggs_HeavyHiggsMasses"))
            DecayBit_error().raise(LOCAL_INFO, "You must use Higgs masses from FeynHiggs if you choose to use FeynHiggs "
                                               "to calculate h or t decays.\nPlease modify your yaml file accordingly.");
         }
@@ -4400,33 +4514,15 @@ namespace Gambit
       /**
          @brief Log-likelihood for Higgs invisible branching ratio
 
-         We use log-likelihoods extracted from e.g.,
-         <a href="http://cms-results.web.cern.ch/cms-results/public-results/
-         preliminary-results/HIG-17-023/CMS-PAS-HIG-17-023_Figure_007-b.png">
-         CMS-PAS-HIG-17-023</a>
+         We assume that the log likelihood as a function of the invisible branching fraction BF can be written in the form: - 2 log L = a * (BF - b)^2
 
-         There are scripts
-         @code
-         python ./DecayBit/data/convolve_with_theory.py <file> <frac_error> <min> <max>
-         @endcode
-         for convolving a data file with a fractional theory error, and
-         @code
-         python ./DecayBit/data/profile_theory.py <file> <frac_error> <min> <max>
-         @endcode
-         for profiling a fractional theory error.
+         We can explicitly test this assumption for CMS, where the chi2 is given in figure 12 of arXiv:2201.11585.
+         Indeed, the assumed functional form gives a perfect fit for a_CMS = 339 and b_CMS = 0.089.
 
-         There are a few data files, e.g.,
-         @code
-         ./DecayBit/data/arXiv_1306.2941_Figure_8.dat
-         ./DecayBit/data/CMS-PAS-HIG-17-023_Figure_7-b.dat
-         ./DecayBit/data/CMS-PAS-HIG-17-023_Figure_7-b_10_convolved.dat
-         ./DecayBit/data/CMS-PAS-HIG-17-023_Figure_7-b_10_profiled.dat
-         @endcode
-         The first one is the default. The third and fourth ones include a 10%
-         theory uncertainty in the branching fraction by convolving it and
-         profiling it, respectively. The data file is specified in
-         the YAML by the `BR_h_inv_chi2_data_file` option. The path is
-         relative to the GAMBIT directory, `GAMBIT_DIR`.
+         For ATLAS we extract the fit parameters from the two values stated in arXiv:2202.07953: BR < 0.145 at 95% CL and BR < 0.127 at 90% CL.
+         These values correspond to a_ATLAS = 303 and b_ATLAS = 0.032.
+
+         The combined log likelihood gives BR < 0.14 at 95% CL. The best-fit value is BR = 0.06, which is preferred over BR = 0 with a significance of 1.2 sigma.
 
          @warning This typically assumes that the Higgs is otherwise SM-like,
          i.e., no changes to production cross sections or any other decays.
@@ -4442,11 +4538,15 @@ namespace Gambit
         DecayBit_error().raise(LOCAL_INFO, "negative BF");
       }
 
-      const std::string default_name = "./DecayBit/data/arXiv_1306.2941_Figure_8.dat";
-      const std::string name = runOptions->getValueOrDef<std::string>
-        (default_name, "BR_h_inv_chi2_data_file");
-      static daFunk::Funk chi2 = get_Higgs_invWidth_chi2(GAMBIT_DIR "/" + name);
-      lnL = -0.5 * chi2->bind("BR")->eval(BF);
+      double a_CMS = 339.;
+      double b_CMS = 0.089;
+      double a_ATLAS = 303.;
+      double b_ATLAS = 0.032;
+
+      double chi2_CMS = a_CMS*pow(BF - b_CMS,2.);
+      double chi2_ATLAS = a_ATLAS*pow(BF - b_ATLAS,2.);
+      lnL = -0.5 * (chi2_CMS + chi2_ATLAS);
+
     }
 
     void lnL_Z_inv(double& lnL)

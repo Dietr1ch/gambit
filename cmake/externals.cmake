@@ -75,6 +75,7 @@ set(name "pippi")
 set(dir "${CMAKE_SOURCE_DIR}/${name}")
 ExternalProject_Add(get-${name}
   GIT_REPOSITORY https://github.com/patscott/pippi.git
+  GIT_TAG v2.2
   SOURCE_DIR ${dir}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
@@ -177,8 +178,6 @@ function(check_ditch_status name version dir)
       set (itch "${itch}" "${name}_${version};")
     elseif ((arg STREQUAL "python") AND NOT HAVE_PYBIND11)
       set (itch "${itch}" "${name}_${version};")
-    elseif ((arg STREQUAL "python2") AND (NOT PYTHON_VERSION_MAJOR EQUAL 2 OR NOT HAVE_PYBIND11))
-      set (itch "${itch}" "${name}_${version};")
     elseif ((arg STREQUAL "python3") AND (NOT PYTHON_VERSION_MAJOR EQUAL 3 OR NOT HAVE_PYBIND11))
       set (itch "${itch}" "${name}_${version};")
     elseif ((arg STREQUAL "hepmc") AND EXCLUDE_HEPMC)
@@ -192,7 +191,7 @@ function(check_ditch_status name version dir)
     elseif ((arg STREQUAL "c++14") AND NOT GAMBIT_SUPPORTS_CXX14 AND NOT GAMBIT_SUPPORTS_CXX17)
       message("${BoldRed}   ${name} (${version}) needs to be compiled with c++14/17 but GAMBIT is compiled with a lower version. ${name} will be ditched.${ColourReset}")
       set (itch "${itch}" "${name}_${version}")
-    elseif ((arg STREQUAL "rivet") AND ditched_rivet_3.1.4)
+    elseif ((arg STREQUAL "rivet") AND ditched_rivet_${Rivet_ver})
       set (itch "${itch}" "${name}_${version}")
     endif()
   endforeach()
@@ -343,6 +342,7 @@ macro(inform_of_missing_modules name ver missing_with_commas)
   )
 endmacro()
 
+# Bring in the actual backends and scanners
 if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   include(cmake/scanners.cmake)
 endif()

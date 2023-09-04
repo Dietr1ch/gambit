@@ -43,8 +43,8 @@ input_files   = [
 include_paths = [
                   '../../../Backends/installed/'+gambit_backend_name.lower()+'/'+gambit_backend_version+'/include',
                   '../../../contrib/slhaea/include',
-                  '../../../contrib/HepMC3-3.1.1/local/include',
-                  '../../../contrib/HepMC3-3.1.1/interfaces/pythia8/include'
+                  '../../../contrib/HepMC3-3.2.5/local/include',
+                  '../../../contrib/HepMC3-3.2.5/interfaces/pythia8/include'
                 ]
 base_paths    = ['../../../Backends/installed/'+gambit_backend_name.lower()+'/'+gambit_backend_version+'/']
 
@@ -84,7 +84,7 @@ load_classes = [
     'Pythia8::SusyLesHouches',
     'Pythia8::UserHooks',
     'Pythia8::Vec4',
-    # 
+    #
     'Pythia8::GAMBIT_hepmc_writer'
 ]
 
@@ -123,11 +123,13 @@ known_classes = {
   "HepMC3::GenEvent" : "HepMC3/GenEvent.h"
 }
 
+
 # ~~~~~ Declarations to be added to the frontend header file ~~~~~
 
 convenience_functions = []
 
 ini_function_in_header = True
+
 
 # ~~~~~ Pragma directives for the inclusion of BOSSed classes in GAMBIT ~~~~~
 
@@ -147,3 +149,16 @@ ini_function_in_header = True
 pragmas_begin = []
 pragmas_end = []
 
+
+# ~~~~~ Extra code to surround BOSS-generated code included in GAMBIT ~~~~~
+
+# The listed code will be added at the top/bottom in the frontend header file 
+# and in the loaded_types.hpp header.
+
+surround_code_begin = '''
+#ifndef EXCLUDE_HEPMC
+'''
+
+surround_code_end = ''' 
+#endif
+'''

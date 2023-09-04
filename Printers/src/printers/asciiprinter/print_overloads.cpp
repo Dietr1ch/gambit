@@ -136,9 +136,11 @@ namespace Gambit
     // Piggyback off existing print functions to build standard overloads
     USE_COMMON_PRINT_OVERLOAD(asciiPrinter, ModelParameters)
     USE_COMMON_PRINT_OVERLOAD(asciiPrinter, triplet<double>)
+    USE_COMMON_PRINT_OVERLOAD(asciiPrinter, map_const_str_dbl)
+    USE_COMMON_PRINT_OVERLOAD(asciiPrinter, map_const_str_map_const_str_dbl)
+    USE_COMMON_PRINT_OVERLOAD(asciiPrinter, flav_prediction)
     #ifndef SCANNER_STANDALONE
       USE_COMMON_PRINT_OVERLOAD(asciiPrinter, DM_nucleon_couplings)
-      USE_COMMON_PRINT_OVERLOAD(asciiPrinter, Flav_KstarMuMu_obs)
       USE_COMMON_PRINT_OVERLOAD(asciiPrinter, BBN_container)
     #endif
 

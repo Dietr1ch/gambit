@@ -33,6 +33,7 @@
 #  \author Anders Kvellestad
 #          (anders.kvellestad@fys.uio.no)
 #  \date 2021 Jul, Aug
+#  \date 2023 Jun
 #
 #************************************************
 
@@ -42,6 +43,8 @@ cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 # Define minimum compiler versions
 set(MIN_GCC_VERSION 5.1)
 set(MIN_ICC_VERSION 15.0.2)
+set(MIN_CLANG_VERSION 10.0.0)
+set(MIN_APPLECLANG_VERSION 13.0.0)
 
 SET(CMAKE_BUILD_TYPE_STRING "Choose the type of build, options are: None Debug Release Release_O3 RelWithDebInfo MinSizeRel.")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -59,6 +62,7 @@ foreach(p
   CMP0022 # CMake 2.8.12
   CMP0025 # CMake 3.0
   CMP0042 # CMake 3.0
+  CMP0048 # Cmake 3.0
   CMP0051 # CMake 3.1
   CMP0054 # CMake 3.1
   CMP0060 # CMake 3.16.2
@@ -89,7 +93,9 @@ include(cmake/utilities.cmake)
 
 # Enforce minimum versions for the C/C++ compiler
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS MIN_ICC_VERSION) OR
-    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS MIN_GCC_VERSION))
+    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS MIN_GCC_VERSION) OR
+    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS MIN_CLANG_VERSION) OR
+    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS MIN_APPLECLANG_VERSION))
   message(FATAL_ERROR "${BoldRed}\nGAMBIT requires at least g++ ${MIN_GCC_VERSION} or icpc ${MIN_ICC_VERSION}.  Please install a newer compiler.${ColourReset}")
 endif()
 
@@ -112,67 +118,37 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Check if pybind11 is to be ditched
 string(REGEX MATCH ";pybind;|;pybind11;|;Pybind;|;Pybind11;" DITCH_PYBIND ";${itch};")
 
-# Check for Python interpreter
+# Check for Python interpreter.
 # We also need to search for PythonLibs before letting pybind11 look for them,
 # otherwise it seems to get it wrong.  Also, we need to add versions of python
 # greater than 3.3 manually, for compatibility with CMake 2.8.12.
 # If pybind11 is ditched, do not worry about PythonLibs
-set(Python_ADDITIONAL_VERSIONS 3.6 3.7 3.8 3.9)
-# If both FORCE_PYTHON2 and FORCE_PYTHON3 are set, throw error
-if (FORCE_PYTHON2 AND FORCE_PYTHON3)
-  message(FATAL_ERROR "Two different versions of python requested. Switch either FORCE_PYTHON2 or FORCE_PYTHON3 off.")
-endif()
-if (FORCE_PYTHON2)
-  message("${BoldYellow}   Python 2 requested; searching for Python 2.7${ColourReset}")
-  find_package(PythonInterp 2.7 REQUIRED)
+set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7 3.8 3.9 3.10 3.11)
+find_package(PythonInterp 3)  # We require Python 3.
+if(PYTHONINTERP_FOUND)
   if(NOT DITCH_PYBIND)
-    find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT)
-  endif()
-elseif (FORCE_PYTHON3)
-  message("${BoldYellow}   Python 3 requested; searching for Python 3.x${ColourReset}")
-  find_package(PythonInterp 3 REQUIRED)
-  if(NOT DITCH_PYBIND)
-    find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT)
+    find_package(PythonLibs 3) # We require Python 3.
   endif()
 else()
-  find_package(PythonInterp 3)
-  if(PYTHONINTERP_FOUND AND NOT DITCH_PYBIND)
-    find_package(PythonLibs 3)
-  else()
-    message("${BoldYellow}   Python 3 not found, searching for Python 2.7${ColourReset}")
-    find_package(PythonInterp 2 REQUIRED)
-    if (PYTHON_VERSION_MINOR LESS 7)
-      message(FATAL_ERROR "\nGAMBIT requires Python 2.7.  \nIf you need to set the path to the Python interpreter manually, "
-                          "please use -D PYTHON_EXECUTABLE=path/to/preferred/python.")
-    endif()
-    if(NOT DITCH_PYBIND)
-      find_package(PythonLibs 2)
-    endif()
-  endif()
+  message(FATAL_ERROR "\nPython 3 was not found, but it is required by GAMBIT.  \nIf you need to set the path to the Python interpreter manually, "
+                      "please use -D PYTHON_EXECUTABLE=path/to/preferred/python.")
 endif()
 message("${BoldYellow}   Using Python interpreter version ${PYTHON_VERSION_STRING} for build.${ColourReset}")
 
 if(PYTHONLIBS_FOUND)
-  string(FIND "${PYTHONLIBS_VERSION_STRING}" "2.7" PY2_POSITION)
-  if(PY2_POSITION EQUAL 0)
-    set(UNSUPPORTED_PYTHON_VERSION "3")
-  else()
-    set(UNSUPPORTED_PYTHON_VERSION "2.7")
-  endif()
-  message("${BoldYellow}   Using Python libraries version ${PYTHONLIBS_VERSION_STRING} for Python backend support.${ColourReset}\n"
-          "   Backends requiring Python ${UNSUPPORTED_PYTHON_VERSION} will be ditched.")
-  if (NOT "${PYTHON_VERSION_STRING}" STREQUAL "${PYTHONLIBS_VERSION_STRING}")
+  message("${BoldYellow}   Using Python libraries version ${PYTHONLIBS_VERSION_STRING} for Python backend support.${ColourReset}")
+  # Remove trailing non-numeric characters from version
+  string(REGEX REPLACE "[a-zA-Z]" "" PYTHONLIBS_VERSION_STRING_CLEAN ${PYTHONLIBS_VERSION_STRING})
+  if (NOT "${PYTHON_VERSION_STRING}" STREQUAL "${PYTHONLIBS_VERSION_STRING_CLEAN}")
     message("${BoldRed}   NOTE: You are using different Python versions for the interpreter and the libraries!${ColourReset}\n"
             "   In principle this should be fine, as the interpreter is only used for building GAMBIT, and the\n"
             "   libraries are only used for providing support for Python backends at runtime.  However, if you\n"
-            "   have matching versions installed, you can make this message go away by trying one of the following\n"
-            "   (making sure to clean out your build directory in between any such changes):\n"
-            "   1. invoke cmake as cmake -DFORCE_PYTHON2=True .. (or similar)\n"
-            "   2. invoke cmake as cmake -DFORCE_PYTHON3=True .. (or similar)\n"
-            "   3. set the following variables when invoking cmake:\n"
+            "   have matching versions installed, you can make this message go away by manually setting the \n"
+            "   following variables when you invoke cmake:\n"
             "     PYTHON_LIBRARY\n"
             "     PYTHON_INCLUDE_DIR\n"
-            "     PYTHON_EXECUTABLE\n")
+            "     PYTHON_EXECUTABLE\n"
+            "   Make sure to clean out your build dir before reconfiguring with these variables set.")
   endif()
 endif()
 
@@ -182,18 +158,16 @@ if(NOT PYTHONLIBS_FOUND)
     message("${BoldCyan} X Excluding pybind11 from GAMBIT configuration. Ditching support for Python backends.${ColourReset}")
   else()
     message("${BoldRed}   PythonLibs NOT found, so pybind11 cannot be used. Ditching support for Python backends.${ColourReset}\n"
-            "   If you *do* have the Python libraries installed, you should first try setting/unsetting\n"
-            "   FORCE_PYTHON2 or FORCE_PYTHON3 when invoking cmake (make sure to clean out your build\n"
-            "   directory in between any such changes).  If that does not work, you can manually set the\n"
-            "   following variables when invoking cmake (also making sure to clean out your build dir):\n"
+            "   If you *do* have the Python libraries installed, you can manually set the following\n"
+            "   variables when invoking cmake (also making sure to clean out your build dir):\n"
             "     PYTHON_LIBRARY\n"
             "     PYTHON_INCLUDE_DIR\n"
             "     PYTHON_EXECUTABLE")
   set(itch "${itch};pybind11")
   endif()
 else()
-  set(MIN_pybind11_VERSION "2.5.0")
-  set(PREFERRED_pybind11_VERSION "2.5.0")
+  set(MIN_pybind11_VERSION "2.10.1")
+  set(PREFERRED_pybind11_VERSION "2.10.1")
   set(pybind11_CONTRIB_DIR "${PROJECT_SOURCE_DIR}/contrib/pybind11")
   include_directories("${PYTHON_INCLUDE_DIRS}")
   find_package(pybind11 QUIET)
@@ -262,35 +236,6 @@ endif()
 # Do OSX checks
 include(cmake/MacOSX.cmake)
 
-# Add -fPIC for 64 bit systems
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC")
-endif()
-
-# Add some Fortran compiler flags
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -ffixed-line-length-none -cpp")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source -fpp")
-endif()
-
-# Set output paths
-set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
-set(mybindir ${PROJECT_SOURCE_DIR})
-# First for the generic no-config case (e.g. with mingw)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${mybindir} )
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${mylibdir} )
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${mylibdir} )
-# Second, for multi-config builds (e.g. msvc)
-foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-  string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${mybindir} )
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${mylibdir} )
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${mylibdir} )
-endforeach()
-
 # Check if we are using 2019 intel compilers or gcc 6.1 or 6.2 together with pybind11, and forbid the use of C++17 if so.
 if(HAVE_PYBIND11)
   if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18.0.6) OR
@@ -350,6 +295,35 @@ if(NOT COMPILER_SUPPORTS_C99)
   set(itch "${itch};alterbbn")
 endif()
 
+# Add -fPIC for 64 bit systems
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC")
+endif()
+
+# Add some Fortran compiler flags
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -ffixed-line-length-none -cpp")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source -fpp")
+endif()
+
+# Set output paths
+set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
+set(mybindir ${PROJECT_SOURCE_DIR})
+# First for the generic no-config case (e.g. with mingw)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${mybindir} )
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${mylibdir} )
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${mylibdir} )
+# Second, for multi-config builds (e.g. msvc)
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+  string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${mybindir} )
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${mylibdir} )
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${mylibdir} )
+endforeach()
+
 # Check for Boost
 set(Boost_NO_BOOST_CMAKE ON)
 find_package(Boost 1.48)
@@ -381,7 +355,31 @@ endif()
 
 # Check for OpenMP
 find_package(OpenMP QUIET)
-if (OPENMP_FOUND)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+  find_program(BREW NAMES brew)
+  # This block modified from https://github.com/CLIUtils/cmake/blob/master/PatchOpenMPApple.cmake
+  if(BREW)
+    execute_process(COMMAND ${BREW} ls libomp RESULT_VARIABLE BREW_RESULT_CODE OUTPUT_QUIET ERROR_QUIET)
+    if(BREW_RESULT_CODE)
+      if(NOT OPENMP_FOUND)
+        message(FATAL_ERROR "You are using the Apple Clang compiler, and have HomeBrew installed, but have not installed OpenMP. Please run \"brew install libomp\"")
+      endif()
+    else()
+      execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+      if(NOT OPENMP_FOUND)
+        set(OpenMP_CXX_FLAGS "-Xclang -fopenmp -I${BREW_LIBOMP_PREFIX}/include")
+        set(OpenMP_C_FLAGS "-Xclang -fopenmp -I${BREW_LIBOMP_PREFIX}/include")
+      endif()
+      set(OpenMP_CXX_LIB_NAMES "omp")
+      set(OpenMP_C_LIB_NAMES "omp")
+      set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
+      include_directories("${BREW_LIBOMP_PREFIX}/include")
+      message(STATUS "Using Homebrew libomp from ${BREW_LIBOMP_PREFIX}")
+      set(FOUND_BREW_OPENMP True)
+    endif()
+  endif()
+endif()
+if (OPENMP_FOUND OR FOUND_BREW_OPENMP)
   message("-- OpenMP found successfully")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -390,29 +388,14 @@ if (OPENMP_FOUND)
   endif()
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 else()
-  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-    find_program(BREW NAMES brew)
-    # This block modified from https://github.com/CLIUtils/cmake/blob/master/PatchOpenMPApple.cmake
-    if(BREW)
-      execute_process(COMMAND ${BREW} ls libomp RESULT_VARIABLE BREW_RESULT_CODE OUTPUT_QUIET ERROR_QUIET)
-      if(BREW_RESULT_CODE)
-        message(FATAL_ERROR "You are using the Apple Clang compiler, and have HomeBrew installed, but have not installed OpenMP. Please run \"brew install libomp\"")
-      else()
-        execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
-        set(OpenMP_CXX_LIB_NAMES "omp")
-        set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
-        include_directories("${BREW_LIBOMP_PREFIX}/include")
-        message(STATUS "Using Homebrew libomp from ${BREW_LIBOMP_PREFIX}")
-      endif()
-    else()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+    if(NOT FOUND_BREW_OPENMP)
       message(FATAL_ERROR "\nOpenMP libraries not found. You are using the Apple Clang compiler. The easiest way to get OpenMP support for Apple Clang is to install it via HomeBrew. If you want to install it some other way, e.g. via MacPorts, you need to manually set -DOpenMP_CXX_FLAGS -DOpenMP_CXX_LIB_NAMES -DOpenMP_C_FLAGS -DOpenMP_C_LIB_NAMES -DOpenMP_omp_LIBRARY when invoking cmake.")
     endif()
   else()
     message(FATAL_ERROR "\nOpenMP libraries not found.  Your compiler installation seems to be broken.")
   endif()
 endif()
-
 
 # Check for Gnu Scientific Library (GSL)
 include(cmake/FindGSL.cmake)
@@ -583,12 +566,6 @@ endif()
 # Add the main gambit sources and identify which modules are to be included.
 include(cmake/gambit.cmake)
 
-# Add backends and scanners
-include(cmake/externals.cmake)
-
-# Reprocess the ditch set into a comma-separated list again
-string (REPLACE ";" "," itch_with_commas "${itch}")
-
 # Identify the different harvester scripts
 set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Elements/scripts/module_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
@@ -650,6 +627,9 @@ execute_process(RESULT_VARIABLE result COMMAND ${PYTHON_EXECUTABLE} ${update_cma
 check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")
 
+# Add backends and scanners
+include(cmake/externals.cmake)
+
 # Add GAMBIT subdirectories.
 add_subdirectory(Logs)
 add_subdirectory(Utils)
@@ -673,21 +653,24 @@ foreach(bit ${GAMBIT_BITS})
   endforeach()
 endforeach()
 
-# If ColliderBit is in use, make the collider_harvest step a dependency of ColliderBit
+# If ColliderBit is in use, set various dependencies
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  # Make the collider_harvest step a dependency of ColliderBit
   add_dependencies(ColliderBit collider_harvest)
   # If RestFrames is in use, make it a dependency of ColliderBit
   if(NOT EXCLUDE_RESTFRAMES)
     add_dependencies(ColliderBit restframes)
   endif()
-  # If HepMC is in use, make it a dependency of ColliderBit
-  if(NOT EXCLUDE_HEPMC)
-    add_dependencies(ColliderBit hepmc)
+  # ColliderBit depends on HepMC
+  if(EXCLUDE_HEPMC)
+    message(FATAL_ERROR "\nColliderBit needs HepMC3. Either use -DWITH_HEPMC=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
   endif()
-  # If YODA is in use, make it a dependency of ColliderBit
-  if(NOT EXCLUDE_YODA)
-    add_dependencies(ColliderBit yoda)
+  add_dependencies(ColliderBit hepmc)
+  # ColliderBit depends on YODA
+  if(EXCLUDE_YODA)
+    message(FATAL_ERROR "\nColliderBit needs YODA. Either use -DWITH_YODA=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
   endif()
+  add_dependencies(ColliderBit yoda)
 endif()
 
 # If SpecBit is in use, make flexiblesusy a dependency of SpecBit
@@ -705,3 +688,9 @@ endif()
 
 # Create a list of Gambit bits to be used in the diagnostic system of Gambit.
 execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/Utils/scripts/find_all_gambit_bits.py --source-dir ${PROJECT_SOURCE_DIR} --output-file=${PROJECT_SOURCE_DIR}/config/gambit_bits.yaml)
+
+# Forbid the use of variable-length array and other non-standard C++ syntax
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic-errors")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic-errors")
+endif()

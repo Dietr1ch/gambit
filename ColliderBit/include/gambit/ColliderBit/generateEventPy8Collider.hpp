@@ -38,7 +38,7 @@
 ///  \author Tomas Gonzalo
 ///          (tomas.gonzalo@monash.edu)
 ///  \date 2019 Sep, Oct
-///  \date 2002 Apr
+///  \date 2020 Apr
 ///
 ///  *********************************************
 
@@ -170,7 +170,7 @@ namespace Gambit
                                   const int iteration,
                                   void(*wrapup)(),
                                   const safe_ptr<Options>& runOptions)
- 
+
     {
 
       // If in any other special iteration, do nothing
@@ -272,8 +272,6 @@ namespace Gambit
 
 
     /// Generate a hard scattering event with a specific Pythia,
-//    #define GET_PYTHIA_EVENT_3(NAME, PYTHIA_EVENT_TYPE, HEPMC)   \
-
     #define GET_PYTHIA_EVENT(NAME, PYTHIA_EVENT_TYPE)            \
     void NAME(PYTHIA_EVENT_TYPE &result)                         \
     {                                                            \
@@ -303,25 +301,6 @@ namespace Gambit
         }                                                        \
     )
 
-//    #define GET_PYTHIA_EVENT_2(NAME, PYTHIA_EVENT_TYPE)          \
-      GET_PYTHIA_EVENT_3(NAME, PYTHIA_EVENT_TYPE, WITHOUT_HEPMC)
-
-//    #define GET_PYTHIA_EVENT(...)  VARARG(GET_PYTHIA_EVENT, __VA_ARGS__)
-
   }
-
-/*
-    IF_NOT_DEFINED(EXCLUDE_HEPMC,                                \
-      BOOST_PP_IIF(HEPMC,                                        \
-        void CAT(NAME,_HepMC)(HepMC3::GenEvent& result)          \
-        {                                                        \
-          using namespace Pipes::CAT(NAME,_HepMC);               \
-          convertEventToHepMCPy8Collider(result,                 \
-           *Dep::HardScatteringEvent, *Dep::HardScatteringSim,   \
-           Loop::wrapup);                                        \
-        }                                                        \
-      ,)                                                         \
-    )
-*/
 
 }

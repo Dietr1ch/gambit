@@ -38,13 +38,7 @@ import itertools
 import shutil
 import ctypes
 import io
-
-# Python 2/3 compatibility
-# izip_longest renamed to zip_longest in Python 3
-try:
-    from itertools import izip_longest as zip_longest
-except ImportError:
-    from itertools import zip_longest
+from itertools import zip_longest
 
 default_bossed_versions = "./Backends/include/gambit/Backends/default_bossed_versions.hpp"
 equiv_config = "./config/resolution_type_equivalency_classes.yaml"
@@ -86,7 +80,7 @@ def get_type_equivalencies(nses):
 
               # If the type is an alias of a native int then add int to the equivalency class
               if re.match("int[0-9]+_t", member):
-                if ( ctypes.sizeof(ctypes.c_int) == 4 and re.search("32", member) ) or ( ctypes.sizeof(ctypes.c_int) == 2 and re.search("16", member) ) :
+                if ( ctypes.sizeof(ctypes.c_int) == 8 and re.search("64", member) ) or ( ctypes.sizeof(ctypes.c_int) == 4 and re.search("32", member) ) or ( ctypes.sizeof(ctypes.c_int) == 2 and re.search("16", member) ) :
                   if 'int' not in equivalency_class:
                     equivalency_class+=['int']
               if member not in equivalency_class:

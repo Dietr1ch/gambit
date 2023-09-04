@@ -174,7 +174,7 @@ namespace Gambit
           int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
                                               // In the auxilliary printing system we may tell the printer to overwrite
                                               // the output of other ranks.
-          logger() << LogTags::debug << "Printing "<<myLabel<<" (vID="<<myVertexID<<", rank="<<rank<<", pID="<<pointID<<")" << EOM;
+          logger() << LogTags::debug << "Printing "<<myLabel<<" (vID="<<myVertexID<<", rank="<<rank<<", pID="<<pointID<<", type="<<myType<<")" << EOM;
           printer->print(myValue[thread_num],myLabel,myVertexID,rank,pointID);
           already_printed[thread_num] = true;
         }
@@ -248,7 +248,11 @@ namespace Gambit
       return myFunction;
     }
 
-    /// Getter for the 'safe' incarnation of the wrapped function's origin's version (module or backend)
+    /// Getter for the version of the wrapped function's backend.
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    str backend_functor_common<PTR_TYPE, TYPE, ARGS...>::version() const { return myVersion; }
+
+    /// Getter for the 'safe' incarnation of the version of the wrapped function's backend.
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
     str backend_functor_common<PTR_TYPE, TYPE, ARGS...>::safe_version() const { return mySafeVersion; }
 

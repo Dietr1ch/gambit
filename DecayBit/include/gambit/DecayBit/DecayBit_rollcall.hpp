@@ -62,9 +62,9 @@ START_MODULE
     START_FUNCTION(DecayTable::Entry)
     #undef FUNCTION
 
-    #define FUNCTION FH_t_decays
+    #define FUNCTION FeynHiggs_t_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
 
@@ -79,10 +79,10 @@ START_MODULE
     DEPENDENCY(mh, triplet<double>)
     #undef FUNCTION
 
-    #define FUNCTION Ref_SM_Higgs_decays_FH
+    #define FUNCTION Ref_SM_Higgs_decays_FeynHiggs
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(MSSM_spectrum, Spectrum)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
@@ -102,7 +102,7 @@ START_MODULE
     #define FUNCTION Ref_SM_other_Higgs_decays_FH
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(MSSM_spectrum, Spectrum)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
@@ -121,7 +121,7 @@ START_MODULE
 
     #define FUNCTION Ref_SM_A0_decays_FH
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
@@ -176,9 +176,9 @@ START_MODULE
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
 
-    #define FUNCTION FH_MSSM_h0_1_decays
+    #define FUNCTION FeynHiggs_MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
@@ -198,10 +198,10 @@ START_MODULE
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
 
-    #define FUNCTION FH_h0_2_decays
+    #define FUNCTION FeynHiggs_h0_2_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
 
@@ -219,9 +219,9 @@ START_MODULE
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
 
-    #define FUNCTION FH_A0_decays
+    #define FUNCTION FeynHiggs_A0_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
@@ -241,10 +241,10 @@ START_MODULE
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
 
-    #define FUNCTION FH_H_plus_decays
+    #define FUNCTION FeynHiggs_H_plus_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms)
-    DEPENDENCY(FH_Couplings_output, fh_Couplings)
+    DEPENDENCY(FH_Couplings_output, fh_Couplings_container)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     #undef FUNCTION
 
@@ -890,6 +890,33 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
+  #define CAPABILITY Y1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION CH_DMsimpVectorMedDiracDM_Y1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(CH_Decay_Width, (), double, (str&, str&, std::vector<str>&))
+    ALLOW_MODELS(DMsimpVectorMedDiracDM)
+    #undef FUNCTION
+
+    #define FUNCTION CH_DMsimpVectorMedMajoranaDM_Y1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(CH_Decay_Width, (), double, (str&, str&, std::vector<str>&))
+    ALLOW_MODELS(DMsimpVectorMedMajoranaDM)
+    #undef FUNCTION
+
+    #define FUNCTION CH_DMsimpVectorMedScalarDM_Y1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(CH_Decay_Width, (), double, (str&, str&, std::vector<str>&))
+    ALLOW_MODELS(DMsimpVectorMedScalarDM)
+    #undef FUNCTION
+
+    #define FUNCTION CH_DMsimpVectorMedVectorDM_Y1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(CH_Decay_Width, (), double, (str&, str&, std::vector<str>&))
+    ALLOW_MODELS(DMsimpVectorMedVectorDM)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 
   #define CAPABILITY decay_rates
@@ -920,6 +947,7 @@ START_MODULE
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
     DEPENDENCY(rho1450_decay_rates, DecayTable::Entry)
+    MODEL_CONDITIONAL_DEPENDENCY(Y1_decay_rates, DecayTable::Entry, DMsimpVectorMedDiracDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedScalarDM, DMsimpVectorMedVectorDM)
     MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, Spectrum, MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     MODEL_CONDITIONAL_DEPENDENCY(SLHA_pseudonyms, mass_es_pseudonyms, MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
     MODEL_CONDITIONAL_DEPENDENCY(h0_2_decay_rates, DecayTable::Entry, MSSM63atQ, MSSM63atMGUT, MSSM63atQ_mG, MSSM63atMGUT_mG)
@@ -1060,7 +1088,6 @@ START_MODULE
     #define FUNCTION lnL_Higgs_invWidth_SMlike
     START_FUNCTION(double)
     DEPENDENCY(inv_Higgs_BF, double)
-    ALLOW_MODELS(SingletDM, SingletDMZ3, MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
 

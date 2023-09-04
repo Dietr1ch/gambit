@@ -303,6 +303,17 @@
     DEPENDENCY(DMEFT_spectrum, Spectrum)
     ALLOW_MODELS(DMEFT)
     #undef FUNCTION
+
+    #define FUNCTION DMsimp_results
+    START_FUNCTION(AnalysisDataPointers)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedScalarDM_spectrum, Spectrum, DMsimpVectorMedScalarDM)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedMajoranaDM_spectrum, Spectrum, DMsimpVectorMedMajoranaDM)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedDiracDM_spectrum, Spectrum, DMsimpVectorMedDiracDM)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedVectorDM_spectrum, Spectrum, DMsimpVectorMedVectorDM)
+    MODEL_CONDITIONAL_DEPENDENCY(Unitarity_Bound_DMsimpVectorMedMajoranaDM, double, DMsimpVectorMedMajoranaDM)
+    MODEL_CONDITIONAL_DEPENDENCY(Unitarity_Bound_DMsimpVectorMedDiracDM, double, DMsimpVectorMedDiracDM)
+    ALLOW_MODELS(DMsimpVectorMedScalarDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedDiracDM, DMsimpVectorMedVectorDM)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY AllAnalysisNumbersUnmodified
@@ -322,6 +333,18 @@
     #undef FUNCTION
   #undef CAPABILITY
 
+  /// Di-jet likelihoods
+  #define CAPABILITY Dijet_LogLike
+    #define FUNCTION DiJet_LogLike_DMsimp
+    START_FUNCTION(double)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedScalarDM_spectrum, Spectrum, DMsimpVectorMedScalarDM)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedMajoranaDM_spectrum, Spectrum, DMsimpVectorMedMajoranaDM)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedDiracDM_spectrum, Spectrum, DMsimpVectorMedDiracDM)
+    MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedVectorDM_spectrum, Spectrum, DMsimpVectorMedVectorDM)
+    DEPENDENCY(Y1_decay_rates,DecayTable::Entry)
+    ALLOW_MODELS(DMsimpVectorMedScalarDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedDiracDM, DMsimpVectorMedVectorDM)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   /// Extract the signal predictions and uncertainties for all analyses
   #define CAPABILITY LHC_signals
@@ -343,7 +366,7 @@
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_GROUP(lnlike_marg_poisson)
-    BACKEND_REQ(FullLikes_Evaluate, (ATLAS_FullLikes), double, (PyDict&,const str&))
+    BACKEND_REQ(FullLikes_Evaluate, (ATLAS_FullLikes), double, (std::map<str,double>&,const str&))
     BACKEND_REQ(FullLikes_ReadIn, (ATLAS_FullLikes), int, (const str&,const str&))
     BACKEND_REQ(FullLikes_FileExists, (ATLAS_FullLikes), bool, (const str&))
     #undef FUNCTION

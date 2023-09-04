@@ -291,7 +291,7 @@ namespace Gambit {
             }
 
             // Jets
-            double HT = 0;
+            double HT = 0.;
             vector<const HEPUtils::Jet*> candJets;
             for (const HEPUtils::Jet* jet : event->jets()) {
                 if (jet->pT() > 25. && fabs(jet->eta()) < 2.4){
