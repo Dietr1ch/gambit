@@ -64,3 +64,24 @@ diff -rupN darksusy-6.4.0_original/src/aux/dsinterpolatetable2D.f darksusy-6.4.0
  
        tabIDp = abs(tabID)
        if (tabIDp.lt.1.or.tabIDp.gt.tabIDmax) then
+diff -rupN darksusy-6.4.0_original/src_models/common/sm/dssmgammah_Dittmaier_tab.f darksusy-6.4.0_patched/src_models/common/sm/dssmgammah_Dittmaier_tab.f 
+--- darksusy-6.4.0_original/src_models/common/sm/dssmgammah_Dittmaier_tab.f	2023-09-06 15:58:31.220048832 +0200
++++ darksusy-6.4.0_patched/src_models/common/sm/dssmgammah_Dittmaier_tab.f	2023-09-06 15:59:09.100857422 +0200
+@@ -180,12 +180,14 @@
+ 
+       dssmgammah_Dittmaier_tab=0.d0
+       if (sqrts.lt.mh(1).or.sqrts.gt.mh(52)) then
+-        if (prtlevel.gt.1) write (*,*) 'WARNING in dssmgammah_Dittmaier_tab: sqrts out of range. Returning dssmgammah_Dittmaier_tab=0.'
++        if (prtlevel.gt.1) write (*,*) 'WARNING in dssmgammah_Dittmaier_tab:'
++        write (*,*) '  sqrts out of range. Returning dssmgammah_Dittmaier_tab 0.'
+         dssmgammah_Dittmaier_tab=0.d0
+         return
+       endif
+       if (ichannel.lt.0.or.ichannel.gt.18) then
+-        if (prtlevel.gt.1) write (*,*) 'WARNING in dssmgammah_Dittmaier_tab: untabulated channel=',ichannel,'. Returning dssmgammah_Dittmaier_tab=0.'
++        if (prtlevel.gt.1) write (*,*) 'WARNING in dssmgammah_Dittmaier_tab:'
++        write (*,*) 'untabulated channel=',ichannel,'. Returning dssmgammah_Dittmaier_tab 0.'
+         dssmgammah_Dittmaier_tab=0.d0
+         return
+       endif
+
