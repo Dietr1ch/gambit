@@ -1195,8 +1195,8 @@ if(NOT ditched_${name}_${ver})
           COMMAND  ${CMAKE_COMMAND} -E make_directory "${dir}/generated/"
           COMMAND ${CMAKE_COMMAND} -E echo "" > "${dir}/generated/version.hpp"
     CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${obscura_CXX_FLAGS} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_C_FLAGS=${obscura_C_FLAGS} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCODE_COVERAGE=OFF -DCMAKE_BUILD_TYPE=Release ${dir} -Dlibphysica_SOURCE_DIR=${libphysica_dir}
-    BUILD_COMMAND ${MAKE_PARALLEL}
-    INSTALL_COMMAND ""#${MAKE_PARALLEL} install
+    BUILD_COMMAND ${MAKE_PARALLEL} libobscura
+    INSTALL_COMMAND ""
   )
   add_extra_targets("backend" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("backend" ${name} ${ver})
