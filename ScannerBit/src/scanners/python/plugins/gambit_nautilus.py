@@ -16,7 +16,7 @@ class Nautilus(splug.scanner):
 
     @copydoc(nautilus.Sampler)
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(use_mpi=False)
         self.prior = nautilus.Prior()
         for key in self.parameter_names:
             self.prior.add_parameter(key)

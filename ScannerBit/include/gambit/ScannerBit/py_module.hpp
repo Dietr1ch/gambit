@@ -254,6 +254,19 @@ namespace Gambit
                     Gambit::Scanner::like_ptr &get(){return static_cast<Gambit::Scanner::like_ptr&>(ptr);}
                 };
                 
+                class prior_physical : public std::enable_shared_from_this<prior_physical>
+                {
+                private:
+                    typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
+                    typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
+                    s_ptr ptr;
+                    
+                public:
+                    prior_physical(s_func &s) : ptr(s.shared_from_this()) {}
+                    
+                    Gambit::Scanner::like_ptr &get(){return static_cast<Gambit::Scanner::like_ptr&>(ptr);}
+                };
+                
             }
             
             namespace ScannerPyPlugin
@@ -340,6 +353,7 @@ namespace Gambit
                     typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
                     typedef Gambit::Scanner::Plugins::Utils::like_physical s_phys_func;
                     typedef Gambit::Scanner::Plugins::Utils::like_prior_physical s_phys_pr_func;
+                    typedef Gambit::Scanner::Plugins::Utils::prior_physical s_pr_func;
                     /*
                     py::dict run_opts;
                     std::shared_ptr<s_func> like;
@@ -379,6 +393,21 @@ namespace Gambit
                     {
                         scan_err << "\"run()\" method not defined in python scanner plugin." << scan_end;
                         return 1;
+                    }
+                    
+                    
+                    Gambit::Scanner::vector<double> transform_to_vec(Gambit::Scanner::hyper_cube<double> unit)
+                    {
+                        //auto &map = getLike()->getMap();
+                        static std::unordered_map<std::string, double> map;
+                        get_prior().transform(unit, map);
+                        auto params = get_prior().getShownParameters();
+                        Gambit::Scanner::vector<double> vec(params.size());
+                        
+                        for (size_t i = 0, end = params.size(); i < end; ++i)
+                            vec[i] = map[params[i]];
+                        
+                        return vec;
                     }
                     
                     void transform_inplace(Gambit::Scanner::hyper_cube<double> unit, std::unordered_map<std::string, double> &physical)
@@ -562,6 +591,13 @@ namespace Gambit
                         static std::shared_ptr<s_phys_pr_func> like_prior_physical(getLike() == nullptr ? nullptr : new s_phys_pr_func(*getLike().get()));
                         
                         return like_prior_physical;
+                    }
+                    
+                    std::shared_ptr<s_pr_func> getPriorPhysical()
+                    {
+                        static std::shared_ptr<s_pr_func> prior_physical(getLike() == nullptr ? nullptr : new s_pr_func(*getLike().get()));
+                        
+                        return prior_physical;
                     }
                 };
                 
@@ -821,6 +857,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     using Gambit::Scanner::like_ptr;
     typedef Gambit::Scanner::Plugins::Utils::like_physical s_phys_func;
     typedef Gambit::Scanner::Plugins::Utils::like_prior_physical s_phys_pr_func;
+    typedef Gambit::Scanner::Plugins::Utils::prior_physical s_pr_func;
     
     py::class_<s_phys_func, std::shared_ptr<s_phys_func>>(m, "like_physical_ptr")
     .def("__call__", [](s_phys_func &self, Gambit::Scanner::hyper_cube<double> vec)
@@ -870,6 +907,31 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     .def("__call__", [](s_phys_pr_func &self, std::unordered_map<std::string, double> &map)
     {
         return self.get()(map, true);
+    });
+    
+    py::class_<s_pr_func, std::shared_ptr<s_pr_func>>(m, "prior_physical_ptr")
+    .def("__call__", [](s_pr_func &self, Gambit::Scanner::hyper_cube<double> vec)
+    {
+        auto &like = self.get();
+        auto &map = like->getMap();
+        int i = 0;
+        for(auto &&name : like->getShownParameters())
+            map[name] = vec[++i];
+        
+        return like->getPrior().log_prior_density(map);
+    })
+    .def("__call__", [](s_phys_pr_func &self, py::dict params)
+    {
+        auto &like = self.get();
+        auto &map = like->getMap();
+        for(auto &&p: params)
+            map[p.first.cast<std::string>()] = p.second.cast<double>();
+        
+        return like->getPrior().log_prior_density(map);
+    })
+    .def("__call__", [](s_phys_pr_func &self, std::unordered_map<std::string, double> &map)
+    {
+        return self.get()->getPrior().log_prior_density(map);
     });
     
     py::class_<s_func, s_ptr>(m, "like_ptr")
@@ -943,8 +1005,20 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     m.def("get_purpose", get_purpose);
     
     py::class_<scanner_base, std::shared_ptr<scanner_base>>(m, "scanner")
-    .def(py::init([]()
+    .def(py::init([](py::kwargs opts)
         {
+        #ifdef WITH_MPI
+            if (opts.contains("use_mpi") && !opts["use_mpi"].cast<bool>())
+            {
+                int numtasks;
+                MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+                if (numtasks != 1)
+                {
+                    scan_err << "This scanner does not support MPI." << scan_end;
+                }
+            }
+        #endif
+                
             return new scanner_base();
         }))
     .def("run", &scanner_base::run)
@@ -952,6 +1026,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def("transform", &scanner_base::transform)
     .def("transform", &scanner_base::transform_inplace)
     .def("transform", &scanner_base::transform_inplace_dict)
+    .def("transform_to_vec", &scanner_base::transform_to_vec)
     .def("inverse_transform", &scanner_base::inverse_transform)
     .def("inverse_transform", &scanner_base::inverse_transform_dict)
     .def("inverse_transform", &scanner_base::inverse_transform_inplace)
@@ -960,6 +1035,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def_property_readonly("loglike_hypercube", &scanner_base::getLikeHyperCube)
     .def_property_readonly("loglike_physical", &scanner_base::getLikePhysical)
     .def_property_readonly("log_target_density", &scanner_base::getLikePriorPhysical)
+    .def_property_readonly("log_prior_density", &scanner_base::getPriorPhysical)
     .def_property_readonly("loglike", &scanner_base::getLike)
     .def_property_readonly("args", &scanner_base::getOpts)
     .def_property_readonly("init_args", &scanner_base::getInitOpts)

@@ -21,8 +21,8 @@ Printer:
 
   # Select printer to use via string tag)
   #printer: ascii
-  # printer: hdf5
-  printer: cout
+  printer: hdf5
+  # printer: cout
 
   # This options node is passed on wholesale to
   # the printer object; required options may
@@ -43,7 +43,7 @@ Scanner:
   # Here the EggBox likelihood is chosen, but you could choose the
   # EggBox and a gaussian ([EggBox, gaussian]) as defined under
   # the objectives section
-  use_objectives: EggBox #[EggBox, gaussian]
+  use_objectives:  EggBox #[EggBox, gaussian]
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
@@ -107,6 +107,7 @@ Scanner:
 
     zeus:
         like: LogLike
+        pkg: gambit_zeus
         plugin: zeus
         init:
             nwalkers: 8
@@ -117,17 +118,19 @@ Scanner:
     emcee:
         like: LogLike
         plugin: emcee
+        pkg: gambit_emcee
         init:
             nwalkers: 8
         run:
             nsteps: 20000
-            filename: "emcee.h5"
+            #filename: "emcee.h5"
 
     pocomc:
         like: LogLike
         plugin: pocomc
-        init:
-            nparticles: 1000
+        pkg: gambit_pocomc
+        #init:
+        #    nparticles: 1000
         run:
             pkl_name: "pocomc.pkl"
 
@@ -145,16 +148,17 @@ Scanner:
         like: LogLike
         plugin: reactive_ultranest
         init:
-            resume: True
+            resume: overwrite
         run:
             min_num_live_points: 1000
             dlogz: 0.5
 
     static_dynesty:
         like: LogLike
+        pkg: gambit_dynesty
         plugin: static_dynesty
-        init:
-            resume: True
+        #init:
+            #resume: True
         run:
             nlive: 1000
             dlogz: 0.5
@@ -163,8 +167,9 @@ Scanner:
     dynamic_dynesty:
         like: LogLike
         plugin: dynamic_dynesty
-        init:
-            resume: True
+        pkg: gambit_dynesty
+        #init:
+            #resume: True
         run:
             nlive_init: 1000
             dlogz_init: 0.5
@@ -182,9 +187,12 @@ Scanner:
 
     stochopy_minimize:
         like: LogLike
+        pkg: gambit_stochopy
         plugin: stochopy_minimize
         run:
             method: "cmaes"
+            options:
+                backend: "mpi"
 
     scipy_basin_hopping:
       like: LogLike

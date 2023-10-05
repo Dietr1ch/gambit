@@ -25,13 +25,14 @@ class ReactiveUltranest(splug.scanner):
 
         :param: log_dir ('reactive_ultranest_run')
         """
-        super().__init__()
+        super().__init__(use_mpi=False) # False for now.
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,
             self.loglike,
-            transform=self.transform,
+            transform=self.transform_to_vec,
             log_dir=log_dir,
-            **kwargs)
+            **self.init_args)
+            #**kwargs)
 
     
     def run_internal(self, pkl_name="ultranest.pkl", **kwargs):

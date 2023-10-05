@@ -20,6 +20,7 @@ class Dynamic(splug.scanner):
 
         Excuse the use of Python keywords in the argument names
         """
+        super().__init__(use_mpi=False)
         module = importlib.import_module(from_)
         scanner = getattr(module, import_)
         self.instance = scanner(**kwargs)

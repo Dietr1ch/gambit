@@ -32,21 +32,22 @@ class Emcee(splug.scanner):
         """
         :returns: Choice of initial state for chain
         """
-        return np.vstack([self.prior_transform(np.random.rand(self.dim))
+        return np.vstack([self.transform_to_vec(np.random.rand(self.dim))
                          for i in range(self.nwalkers)])
 
     @copydoc(emcee.EnsembleSampler)
-    def __init__(self, nwalkers=4, filename="emcee.h5", reset=False, **kwargs):
+    def __init__(self, nwalkers=1, filename="emcee.h5", reset=False, **kwargs):
         """
         There are two additional arguments:
-
+        
         :param: filename ('emcee.h5')
         :param: reset (False)
 
         for passing the name of a h5 file to which to save results using the emcee writer,
         and whether to reset that file.
         """
-        super().__init__()
+        super().__init__(use_mpi=False) # False for right now.
+        
         self.nwalkers = nwalkers
         if 'nwalkers' in self.init_args:
             self.nwalkers = self.init_args['nwalkers']

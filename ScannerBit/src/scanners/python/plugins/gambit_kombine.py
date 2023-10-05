@@ -23,12 +23,12 @@ class Kombine(splug.scanner):
         """
         :returns: Choice of initial state for chain
         """
-        return np.vstack([self.transform(np.random.rand(self.dim))
+        return np.vstack([self.transform_to_vec(np.random.rand(self.dim))
                          for i in range(self.nwalkers)])
 
     @copydoc(kombine.Sampler)
     def __init__(self, nwalkers=4, **kwargs):
-        super().__init__()
+        super().__init__(use_mpi=False)
         self.nwalkers = nwalkers
         self.sampler = kombine.Sampler(self.nwalkers, self.dim, self.log_target_density)
 

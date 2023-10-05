@@ -18,7 +18,7 @@ class StochopyMinimize(splug.scanner):
     __version__ = version("stochopy")
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(use_mpi=False) # False for right now.
 
     @copydoc(stochopy.optimize.minimize)
     def run(self):
@@ -37,12 +37,12 @@ class StochopySample(splug.scanner):
     __version__ = version("stochopy")
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(use_mpi=False) # False for right now.
 
-    @copydoc(stochopy.optimize.sample)
+    @copydoc(stochopy.sample)
     def run(self):
         bounds = [(0., 1.)] * self.dim
-        res = stochopy.optimize.sample(self.loglike, bounds, **self.run_args)
+        res = stochopy.sample(self.loglike, bounds, **self.run_args)
         print(res)
 
 
