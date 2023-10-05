@@ -157,7 +157,7 @@ objective_plugin(EggBox, version(1, 0, 0))
         double params[2];
         params[0] = map[get_keys()[0]]*length.first;
         params[1] = map[get_keys()[1]]*length.second;
-        std::cout << "params: " << params[0] << ", " << params[1] << std::endl;
+        
         return 5.0*std::log(2.0 + std::cos(params[0]*M_PI_2)*std::cos(params[1]*M_PI_2));
     }
 }
