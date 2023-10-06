@@ -9,7 +9,6 @@ import ultranest
 import scanner_plugin as splug
 from utils import copydoc, version
 
-
 class ReactiveUltranest(splug.scanner):
     """
     Ultranest reactive sampler.
@@ -17,7 +16,13 @@ class ReactiveUltranest(splug.scanner):
 
     name = "reactive_ultranest"
     __version__ = version(ultranest)
-
+    
+    def ultra_like(self, cube):
+        lnew = self.loglike(cube)
+        self.saves[tuple(cube)] = (self.mpi_rank, self.point_id)
+        
+        return lnew
+    
     @copydoc(ultranest.ReactiveNestedSampler)
     def __init__(self, log_dir="ultranest_log_dir", **kwargs):
         """
@@ -26,13 +31,13 @@ class ReactiveUltranest(splug.scanner):
         :param: log_dir ('reactive_ultranest_run')
         """
         super().__init__(use_mpi=False) # False for now.
+        self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,
-            self.loglike,
+            self.ultra_like,
             transform=self.transform_to_vec,
             log_dir=log_dir,
             **self.init_args)
-            #**kwargs)
 
     
     def run_internal(self, pkl_name="ultranest.pkl", **kwargs):
@@ -44,9 +49,21 @@ class ReactiveUltranest(splug.scanner):
         to store the results from the sampler to a pickle. This helps inspect
         results outside gambit.
         """
+        
         self.sampler.run(**kwargs)
+        result = self.sampler.results
+        wts = result["weighted_samples"]["weights"]
+        upts = result["weighted_samples"]["upoints"]
+        
+        for wt, upt in zip(wts, upts):
+            if tuple(upt) in self.saves:
+                save = self.saves[tuple(upt)]
+                self.print(wt, "Posterior", save[0], save[1])
+            else:
+                print("warning: point has no correponding id.")
+                    
         with open(pkl_name, "wb") as f:
-            pickle.dump(self.sampler.results, f)
+            pickle.dump(result, f)
     
     @copydoc(ultranest.ReactiveNestedSampler.run)
     def run(self):

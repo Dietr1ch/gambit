@@ -513,6 +513,16 @@ namespace Gambit
                         get_printer().get_stream()->print(val, name, getRank(), getLike()->getPtID());
                     }
                     
+                    void print_full(double val, const std::string &name, const unsigned int rank, const unsigned long pointID)
+                    {
+                        get_printer().get_stream()->print(val, name, rank, pointID);
+                    }
+                    
+                    unsigned long point_id() 
+                    {
+                        return getLike()->getPtID();
+                    }
+                    
                     py::list &getParameterNames()
                     {
                         static py::list names = to_list<std::string>(get_prior().getShownParameters());
@@ -1023,6 +1033,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         }))
     .def("run", &scanner_base::run)
     .def("print", &scanner_base::print)
+    .def("print", &scanner_base::print_full)
     .def("transform", &scanner_base::transform)
     .def("transform", &scanner_base::transform_inplace)
     .def("transform", &scanner_base::transform_inplace_dict)
@@ -1032,6 +1043,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def("inverse_transform", &scanner_base::inverse_transform_inplace)
     .def("inverse_transform", &scanner_base::inverse_transform_inplace_dict)
     .def("set_run_defaults", &scanner_base::set_run_defaults)
+    .def_property_readonly("point_id", &scanner_base::point_id)
     .def_property_readonly("loglike_hypercube", &scanner_base::getLikeHyperCube)
     .def_property_readonly("loglike_physical", &scanner_base::getLikePhysical)
     .def_property_readonly("log_target_density", &scanner_base::getLikePriorPhysical)
