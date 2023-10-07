@@ -18,15 +18,10 @@ class ReactiveUltranest(splug.scanner):
     name = "reactive_ultranest"
     __version__ = version(ultranest)
     
-    def ultra_transform(self, cube):
-        #print("transform = ", cube, self.mpi_rank)
-        
-        return self.transform_to_vec(cube)
-    
     def ultra_like(self, cube):
         lnew = self.loglike(cube)
         self.saves[tuple(cube)] = (self.mpi_rank, self.point_id)
-        #print("like = ", cube, self.mpi_rank)
+        
         return lnew
     
     def transfer(self):
@@ -51,7 +46,7 @@ class ReactiveUltranest(splug.scanner):
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,
             self.ultra_like,
-            transform=self.ultra_transform,
+            transform=self.transform_to_vec,
             log_dir=log_dir,
             **self.init_args)
 
