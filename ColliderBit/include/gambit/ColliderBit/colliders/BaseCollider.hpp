@@ -26,6 +26,16 @@ namespace Gambit
   namespace ColliderBit
   {
 
+    /// Struct of different jet collection settings
+    struct jet_collection_settings
+    {
+      std::string key;
+      std::string algorithm;
+      double R;
+      std::string recombination_scheme;
+      std::string strategy;
+    };
+
     /// An abstract base class for collider simulators within ColliderBit.
     class BaseCollider
     {
@@ -33,7 +43,7 @@ namespace Gambit
       public:
 
         /// Constructor
-        BaseCollider() : partonOnly(false), antiktR(0.4) {}
+        BaseCollider() : partonOnly(false), all_jet_collection_settings({{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}}), jetcollection_taus("antikt_R04") {}
         /// Destructor
         virtual ~BaseCollider() {}
         /// Reset this instance for reuse, avoiding the need for "new" or "delete".
@@ -67,8 +77,12 @@ namespace Gambit
 
         /// Flag indicating if events from this collider should be processed as parton-only or full events
         bool partonOnly;
-        ///The jet radius used for the anti-kt jet clustering.
-        double antiktR;
+
+        /// Vector of different jet collection settings
+        std::vector<jet_collection_settings> all_jet_collection_settings;
+
+        /// Key for jet collection used in adding taus
+        str jetcollection_taus;
 
     };
 

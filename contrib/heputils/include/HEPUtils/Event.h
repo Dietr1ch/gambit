@@ -397,7 +397,7 @@ namespace HEPUtils {
     /// Optional template arg can be used to cast to a specific derived CS type if wanted.
     template <typename CS=FJNS::ClusterSequence>
     const CS* clusterseq(const std::string& key="CANONICAL") {
-      return dynamic_cast<CS*>(jets(key).front().clusterseq());
+      return dynamic_cast<CS*>(jets(key).front()->clusterseq());
     }
 
     /// @}

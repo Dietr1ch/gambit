@@ -20,6 +20,7 @@
 #pragma once
 
 #include "gambit/ColliderBit/colliders/EventConversionUtils.hpp"
+#include "gambit/ColliderBit/colliders/BaseCollider.hpp"
 
 //#define COLLIDERBIT_DEBUG
 
@@ -32,10 +33,15 @@ namespace Gambit
 
     using namespace EventConversion;
 
+    /// Storage of different FastJet methods
+    FJNS::JetAlgorithm FJalgorithm_map(std::string);
+    FJNS::Strategy FJstrategy_map(std::string);
+    FJNS::RecombinationScheme FJRecomScheme_map(std::string);
+
     /// Convert a hadron-level EventT into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     template<typename EventT>
-    void convertParticleEvent(const EventT& pevt, HEPUtils::Event& result, double antiktR, double jet_pt_min)
+    void convertParticleEvent(const EventT& pevt, HEPUtils::Event& result, std::vector<jet_collection_settings> all_jet_collection_settings, str jetcollection_taus, double jet_pt_min)
     {
       result.clear();
 
@@ -193,95 +199,102 @@ namespace Gambit
       }
 
       /// Jet finding
-      /// @todo Choose jet algorithm via detector _settings?
       /// @todo We can now run several algs and store them under different jet-collection names
-      const FJNS::JetDefinition jet_def(FJNS::antikt_algorithm, antiktR);
-      /// @todo For substructure we need to keep this ClusterSequence alive... make_unique() ctor and attach to the Event? Or manage at CB level?
-      FJNS::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(jet_pt_min));
-
-      /// Do jet b-tagging, etc. and add to the Event
-      /// @todo Use ghost tagging?
-      /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
-      for (auto& pj : pjets)
+      for (jet_collection_settings jetcollection : all_jet_collection_settings)
       {
-        HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
-        /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
-        bool isB = false;
-        for (HEPUtils::Particle& pb : bpartons)
+        FJNS::JetAlgorithm jet_algorithm = FJalgorithm_map(jetcollection.algorithm);
+        FJNS::Strategy jet_strategy = FJstrategy_map(jetcollection.strategy);
+        FJNS::RecombinationScheme jet_recomscheme = FJRecomScheme_map(jetcollection.recombination_scheme);
+        const FJNS::JetDefinition jet_def(jet_algorithm, jetcollection.R, jet_strategy, jet_recomscheme);
+
+        /// @todo For substructure we need to keep this ClusterSequence alive... make_unique() ctor and attach to the Event? Or manage at CB level?
+        FJNS::ClusterSequence cseq(jetparticles, jet_def);
+        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(jet_pt_min));
+
+        /// Do jet b-tagging, etc. and add to the Event
+        /// @todo Use ghost tagging?
+        /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
+        for (auto& pj : pjets)
         {
-          if (jetMom.deltaR_eta(pb.mom()) < 0.4) ///< @todo Hard-coded radius!!!
+          HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
+          /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
+          bool isB = false;
+          for (HEPUtils::Particle& pb : bpartons)
           {
-            isB = true;
-            break;
+            if (jetMom.deltaR_eta(pb.mom()) < 0.4) ///< @todo Hard-coded radius!!!
+            {
+              isB = true;
+              break;
+            }
           }
-        }
 
-        bool isC = false;
-        for (HEPUtils::Particle& pc : cpartons)
-        {
-          if (jetMom.deltaR_eta(pc.mom()) < 0.4) ///< @todo Hard-coded radius!!!
+          bool isC = false;
+          for (HEPUtils::Particle& pc : cpartons)
           {
-            isC = true;
-            break;
+            if (jetMom.deltaR_eta(pc.mom()) < 0.4) ///< @todo Hard-coded radius!!!
+            {
+              isC = true;
+              break;
+            }
           }
-        }
 
-        bool isTau = false;
-        int signedTauPID = MCUtils::PID::TAU;
-        for (HEPUtils::Particle& ptau : tauCandidates)
-        {
-          if (jetMom.deltaR_eta(ptau.mom()) < 0.5) ///< @todo Hard-coded radius!!!
+          bool isTau = false;
+          int signedTauPID = MCUtils::PID::TAU;
+          for (HEPUtils::Particle& ptau : tauCandidates)
           {
-            isTau = true;
-            signedTauPID = ptau.pid();
-            break;
+            if (jetMom.deltaR_eta(ptau.mom()) < 0.5) ///< @todo Hard-coded radius!!!
+            {
+              isTau = true;
+              signedTauPID = ptau.pid();
+              break;
+            }
           }
-        }
 
-        bool isW = false;
-        for (HEPUtils::Particle& pW : WCandidates)
-        {
-          if (jetMom.deltaR_eta(pW.mom()) < 1.0) ///< @todo Hard-coded radius from ATLAS-CONF-2021-022, make selectable?
+          bool isW = false;
+          for (HEPUtils::Particle& pW : WCandidates)
           {
-            isW = true;
-            break;
+            if (jetMom.deltaR_eta(pW.mom()) < 1.0) ///< @todo Hard-coded radius from ATLAS-CONF-2021-022, make selectable?
+            {
+              isW = true;
+              break;
+            }
           }
-        }
 
-        bool isZ = false;
-        for (HEPUtils::Particle& pZ : ZCandidates)
-        {
-          if (jetMom.deltaR_eta(pZ.mom()) < 1.0) ///< @todo Hard-coded radius from ATLAS-CONF-2021-022, make selectable?
+          bool isZ = false;
+          for (HEPUtils::Particle& pZ : ZCandidates)
           {
-            isZ = true;
-            break;
+            if (jetMom.deltaR_eta(pZ.mom()) < 1.0) ///< @todo Hard-coded radius from ATLAS-CONF-2021-022, make selectable?
+            {
+              isZ = true;
+              break;
+            }
           }
-        }
 
 
-        bool ish = false;
-        for (HEPUtils::Particle& ph : hCandidates)
-        {
-          if (jetMom.deltaR_eta(ph.mom()) < 1.0) ///< @todo Hard-coded radius from ATLAS-CONF-2021-022, make selectable?
+          bool ish = false;
+          for (HEPUtils::Particle& ph : hCandidates)
           {
-            ish = true;
-            break;
+            if (jetMom.deltaR_eta(ph.mom()) < 1.0) ///< @todo Hard-coded radius from ATLAS-CONF-2021-022, make selectable?
+            {
+              ish = true;
+              break;
+            }
           }
-        }
 
-        // Add to the event (use jet momentum for tau)
-        if (isTau)
-        {
-          HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), signedTauPID);
-          gp->set_prompt();
-          result.add_particle(gp);
-        }
+          // Add to the event (use jet momentum for tau)
+          // Only do this for a single jet collection
+          if (isTau && (jetcollection.key == jetcollection_taus))
+          {
+            HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), signedTauPID);
+            gp->set_prompt();
+            result.add_particle(gp);
+          }
 
-        // Add jet to collection including tags and PseudoJet
-        /// @todo We need to do something smart if we want to keep the ClusterSequence alive
-        HEPUtils::Jet::TagCounts tags{ {5,int(isB)}, {4,int(isC)}, {23,int(isZ)}, {24,int(isW)}, {25,int(ish)} };
-        result.add_jet(new HEPUtils::Jet(pj, tags));
+          // Add jet to collection including tags and PseudoJet
+          /// @todo We need to do something smart if we want to keep the ClusterSequence alive
+          HEPUtils::Jet::TagCounts tags{ {5,int(isB)}, {4,int(isC)}, {23,int(isZ)}, {24,int(isW)}, {25,int(ish)} };
+          result.add_jet(new HEPUtils::Jet(pj, tags), jetcollection.key);
+        }
       }
 
       /// Calculate missing momentum
@@ -308,6 +321,7 @@ namespace Gambit
 
       #ifdef COLLIDERBIT_DEBUG
         // Print event summary
+        cout << "For jet Collection:  " << jetcollection.key << endl;
         cout << "  MET  = " << result.met() << " GeV" << endl;
         cout << "  #e   = " << result.electrons().size() << endl;
         cout << "  #mu  = " << result.muons().size() << endl;
@@ -321,7 +335,7 @@ namespace Gambit
 
     /// Convert a partonic (no hadrons) EventT into an unsmeared HEPUtils::Event
     template<typename EventT>
-    void convertPartonEvent(const EventT& pevt, HEPUtils::Event& result, double antiktR, double jet_pt_min)
+    void convertPartonEvent(const EventT& pevt, HEPUtils::Event& result, std::vector<jet_collection_settings> all_jet_collection_settings, str jetcollection_taus, double jet_pt_min)
     {
       result.clear();
 
@@ -398,40 +412,46 @@ namespace Gambit
       }
 
       /// Jet finding
-      /// @todo choose jet algorithm via _settings?
-      const FJNS::JetDefinition jet_def(FJNS::antikt_algorithm, antiktR);
-      FJNS::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(jet_pt_min));
-
-      // Add to the event, with b-tagging info"
-      for (const FJNS::PseudoJet& pj : pjets)
+      for (jet_collection_settings jetcollection : all_jet_collection_settings)
       {
-        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
-        /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
-        const bool isB = HEPUtils::any(pj.constituents(),
-                 [](const FJNS::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
-        const bool isC = HEPUtils::any(pj.constituents(),
-                 [](const FJNS::PseudoJet& c){ return c.user_index() == MCUtils::PID::CQUARK; });
-        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB, isC, false, false, false)); // This does not currently deal with boson tagging
+        FJNS::JetAlgorithm jet_algorithm = FJalgorithm_map(jetcollection.algorithm);
+        FJNS::Strategy jet_strategy = FJstrategy_map(jetcollection.strategy);
+        FJNS::RecombinationScheme jet_recomscheme = FJRecomScheme_map(jetcollection.recombination_scheme);
+        const FJNS::JetDefinition jet_def(jet_algorithm, jetcollection.R, jet_strategy, jet_recomscheme);
+        FJNS::ClusterSequence cseq(jetparticles, jet_def);
+        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(jet_pt_min));
 
-        bool isTau=false;
-        int signedTauPID = MCUtils::PID::TAU;
-        for (auto& ptau : tauCandidates)
+        // Add to the event, with b-tagging info"
+        for (const FJNS::PseudoJet& pj : pjets)
         {
-          HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
-          if (jetMom.deltaR_eta(ptau.mom()) < 0.5)
+          // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+          /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
+          const bool isB = HEPUtils::any(pj.constituents(),
+                   [](const FJNS::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
+          const bool isC = HEPUtils::any(pj.constituents(),
+                   [](const FJNS::PseudoJet& c){ return c.user_index() == MCUtils::PID::CQUARK; });
+          result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB, isC), jetcollection.key); // This does not currently deal with boson tagging
+
+          bool isTau=false;
+          int signedTauPID = MCUtils::PID::TAU;
+          for (auto& ptau : tauCandidates)
           {
-            isTau=true;
-            signedTauPID = ptau.pid();
-            break;
+            HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
+            if (jetMom.deltaR_eta(ptau.mom()) < 0.5)
+            {
+              isTau=true;
+              signedTauPID = ptau.pid();
+              break;
+            }
           }
-        }
-        // Add to the event (use jet momentum for tau)
-        if (isTau)
-        {
-          HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), signedTauPID);
-          gp->set_prompt();
-          result.add_particle(gp);
+          // Add to the event (use jet momentum for tau)
+          // Only do this for a single jet collection
+          if (isTau && (jetcollection.key == jetcollection_taus))
+          {
+            HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), signedTauPID);
+            gp->set_prompt();
+            result.add_particle(gp);
+          }
         }
       }
 

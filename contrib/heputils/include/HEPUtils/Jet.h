@@ -135,28 +135,28 @@ namespace HEPUtils {
     /// @{
 
     /// Get the tags map (const)
-    const map<int,int>& tags() const { return _tags; }
+    const std::map<int,int>& tags() const { return _tags; }
     /// Get the tags map (const)
-    map<int,int>& tags() { return _tags; }
+    std::map<int,int>& tags() { return _tags; }
 
     /// Get the number of tags for the given PDG ID
     int ntags(int pdgid) const { auto it = _tags.find(pdgid); return (it == _tags.end()) ? 0 : it->second; }
     /// Get whether there is a non-zero number of tags for the given PDG ID
-    void tagged(int pdgid) const { return (ntags(pdgid) > 0); }
+    bool tagged(int pdgid) const { return (ntags(pdgid) > 0); }
     /// Set the number of tags for the given PDG ID
-    void set_ntags(int pdgid, int ntag) const { _tags[pdgid] = ntag; }
+    void set_ntags(int pdgid, int ntag) { _tags[pdgid] = ntag; }
 
     /// Is this particle tagged as a b?
     bool btag() const { return tagged(5); }
     /// Set b-tag value
-    void set_btag(bool isb, int ntag=1) { set_ntags(5, ntag); }
+    void set_btag(bool isb) { set_ntags(5, isb); }
 
     /// Is this particle tagged as a c?
     ///
     /// @note Can be simultaneously btag()'d -- analyses should probably only use if fallback from b-tag.
     bool ctag() const { return tagged(4); }
     /// Set c-tag value
-    void set_ctag(bool isc, int ntag=1) { set_ntags(4, ntag); }
+    void set_ctag(bool isc) { set_ntags(4, isc); }
 
     /// @}
 

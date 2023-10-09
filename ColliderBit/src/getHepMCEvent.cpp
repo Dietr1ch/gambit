@@ -57,6 +57,47 @@ namespace Gambit
   namespace ColliderBit
   {
 
+    /// Storage of different FastJet methods
+    FJNS::JetAlgorithm FJalgorithm_map(str algorithm)
+    {
+      FJNS::JetAlgorithm result;
+      if (algorithm == "antikt") {result = FJNS::antikt_algorithm;}
+      else if (algorithm == "cambridge") {result = FJNS::cambridge_algorithm;}
+      else if (algorithm == "kt") {result = FJNS::kt_algorithm;}
+      else if (algorithm == "genkt") {result = FJNS::genkt_algorithm;}
+      else if (algorithm == "cambridge_for_passive") {result = FJNS::cambridge_for_passive_algorithm;}
+      else
+      {
+        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet algorithm in list available. Please add the missing option to the FJalgorithm_map function in Py8EventConversions.hpp.");
+      }
+      return result;
+    }
+
+    FJNS::Strategy FJstrategy_map(str strategy)
+    {
+      FJNS::Strategy result;
+      if (strategy == "Best") {result = FJNS::Best;}
+      else if (strategy == "NlnN") {result = FJNS::NlnN;}
+      else
+      {
+        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet strategy in list available. Please add the missing option to the FJstrategy_map function in Py8EventConversions.hpp.");
+      }
+      return result;
+    }
+
+    FJNS::RecombinationScheme FJRecomScheme_map(str reco_scheme)
+    {
+      FJNS::RecombinationScheme result;
+      if (reco_scheme == "E_scheme") {result = FJNS::E_scheme;}
+      else if (reco_scheme == "pt_scheme") {result = FJNS::pt_scheme;}
+      else if (reco_scheme == "pt2_scheme") {result = FJNS::pt2_scheme;}
+      else
+      {
+        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet recombination scheme in list available. Please add the missing option to the FJRecomScheme_map function in Py8EventConversions.hpp.");
+      }
+      return result;
+    }
+
     /// A nested function that reads in HepMC event files
     void readHepMCEvent(HepMC3::GenEvent& result, const str HepMC_filename,
                         const MCLoopInfo& RunMC, const int iteration,
@@ -197,8 +238,42 @@ namespace Gambit
 
       // Get yaml options
       const static str HepMC_filename = runOptions->getValueOrDef<str>("", "hepmc_filename");
-      const static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
       const static double jet_pt_min = runOptions->getValueOrDef<double>(10.0, "jet_pt_min");
+      std::vector<jet_collection_settings> all_jet_collection_settings = {};
+      str jetcollection_taus;
+      if (runOptions->hasKey("jet_collections"))
+      {
+        YAML::Node jetcollectionNode = runOptions->getValue<YAML::Node>("jet_collections");
+        Options jetcollectionOptions(jetcollectionNode);
+            
+        str algorithm;
+        double R;
+        str recombination_scheme;
+        str strategy;
+        std::vector<str> jetcollections = jetcollectionOptions.getNames();
+
+        for (str key : jetcollections)
+        {
+          algorithm = jetcollectionOptions.getValueOrDef<str>("antikt", "algorithm");
+          R = jetcollectionOptions.getValueOrDef<double>(0.4, "R");
+          recombination_scheme = jetcollectionOptions.getValueOrDef<str>("E_scheme", "recombination_scheme");
+          strategy = jetcollectionOptions.getValueOrDef<str>("Best", "strategy");
+
+          all_jet_collection_settings.push_back({key, algorithm, R, recombination_scheme, strategy});
+        }
+
+        jetcollection_taus = jetcollectionOptions.getValueOrDef<str>("antikt_R04", "jetcollection_taus");
+        // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
+        if (std::find(jetcollections.begin(), jetcollections.end(), jetcollection_taus) == jetcollections.end())
+        {
+          ColliderBit_error().raise(LOCAL_INFO,"Please provide the jetcollection_taus setting for jet collections if not using antikt_R04.");
+        }
+      }
+      else
+      {
+        all_jet_collection_settings = {{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}};
+        jetcollection_taus = "antikt_R04";
+      }
 
       // Get the HepMC event
       //HepMC3::GenEvent ge = *Dep::HardScatteringEvent;
@@ -212,7 +287,7 @@ namespace Gambit
       result.set_weight(ge.weight());
 
       //Translate to HEPUtils event by calling the unified HEPMC/Pythia event converter:
-      Gambit::ColliderBit::convertParticleEvent(ge.particles(), result, antiktR, jet_pt_min);
+      Gambit::ColliderBit::convertParticleEvent(ge.particles(), result, all_jet_collection_settings, jetcollection_taus, jet_pt_min);
 
     }
 
@@ -227,14 +302,48 @@ namespace Gambit
       HepMC3::GenEvent ge = *Dep::HardScatteringEvent;
 
       //Get yaml options required for conversion
-      const static double antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
       const static double jet_pt_min = runOptions->getValueOrDef<double>(10.0, "jet_pt_min");
+      std::vector<jet_collection_settings> all_jet_collection_settings = {};
+      str jetcollection_taus;
+      if (runOptions->hasKey("jet_collections"))
+      {
+        YAML::Node jetcollectionNode = runOptions->getValue<YAML::Node>("jet_collections");
+        Options jetcollectionOptions(jetcollectionNode);
+            
+        str algorithm;
+        double R;
+        str recombination_scheme;
+        str strategy;
+        std::vector<str> jetcollections = jetcollectionOptions.getNames();
+
+        for (str key : jetcollections)
+        {
+          algorithm = jetcollectionOptions.getValueOrDef<str>("antikt", "algorithm");
+          R = jetcollectionOptions.getValueOrDef<double>(0.4, "R");
+          recombination_scheme = jetcollectionOptions.getValueOrDef<str>("E_scheme", "recombination_scheme");
+          strategy = jetcollectionOptions.getValueOrDef<str>("Best", "strategy");
+
+          all_jet_collection_settings.push_back({key, algorithm, R, recombination_scheme, strategy});
+        }
+
+        jetcollection_taus = jetcollectionOptions.getValueOrDef<str>("antikt_R04", "jetcollection_taus");
+        // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
+        if (std::find(jetcollections.begin(), jetcollections.end(), jetcollection_taus) == jetcollections.end())
+        {
+          ColliderBit_error().raise(LOCAL_INFO,"Please provide the jetcollection_taus setting for jet collections if not using antikt_R04.");
+        }
+      }
+      else
+      {
+        all_jet_collection_settings = {{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}};
+        jetcollection_taus = "antikt_R04";
+      }
 
       //Set the weight
       result.set_weight(ge.weight());
 
       //Translate to HEPUtils event by calling the unified HEPMC/Pythia event converter:
-      Gambit::ColliderBit::convertParticleEvent(ge.particles(), result, antiktR, jet_pt_min);
+      Gambit::ColliderBit::convertParticleEvent(ge.particles(), result, all_jet_collection_settings, jetcollection_taus, jet_pt_min);
     }
 
   }
