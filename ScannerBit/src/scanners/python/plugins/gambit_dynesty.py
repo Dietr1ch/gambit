@@ -31,23 +31,24 @@ class StaticDynesty(splug.scanner):
 
     @copydoc(dynesty.NestedSampler)
     def __init__(self, **kwargs):
+        self.saves = {}
         super().__init__(use_mpi=False)
         self.sampler = dynesty.NestedSampler(
             self.gambit_loglike, self.transform_to_vec, self.dim, **self.init_args)
         
-    def gambit_loglike(self, cube):
-        lnew = self.loglike(cube)
-        self.saves[tuple(cube)] = (self.mpi_rank, self.point_id)
+    def gambit_loglike(self, params):
+        lnew = self.loglike_physical(params)
+        self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
         
         return lnew
 
     def run_internal(self, pkl_name="static_dynesty.pkl", **kwargs):
         self.sampler.run_nested(**kwargs)
         wts = self.sampler.results["logwt"]
-        upts = self.sampler.results["samples_u"]
-        for wt, upt in zip(wts, upts):
-            if tuple(upt) in self.saves:
-                save = self.saves[tuple(upt)]
+        pts = self.sampler.results["samples"]
+        for wt, pt in zip(wts, pts):
+            if tuple(pt) in self.saves:
+                save = self.saves[tuple(pt)]
                 self.print(np.exp(wt), "Posterior", save[0], save[1])
             else:
                 print("warning: point has no correponding id.")
@@ -79,19 +80,19 @@ class DynamicDynesty(splug.scanner):
         self.sampler = dynesty.DynamicNestedSampler(
             self.gambit_loglike, self.transform_to_vec, self.dim, **self.init_args)
         
-    def gambit_loglike(self, cube):
-        lnew = self.loglike(cube)
-        self.saves[tuple(cube)] = (self.mpi_rank, self.point_id)
+    def gambit_loglike(self, params):
+        lnew = self.loglike_physical(params)
+        self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
         
         return lnew
 
     def run_internal(self, pkl_name="dynamic_dynesty.pkl", **kwargs):
         self.sampler.run_nested(**kwargs)
         wts = self.sampler.results["logwt"]
-        upts = self.sampler.results["samples_u"]
-        for wt, upt in zip(wts, upts):
-            if tuple(upt) in self.saves:
-                save = self.saves[tuple(upt)]
+        pts = self.sampler.results["samples"]
+        for wt, pt in zip(wts, pts):
+            if tuple(pt) in self.saves:
+                save = self.saves[tuple(pt)]
                 self.print(np.exp(wt), "Posterior", save[0], save[1])
             else:
                 print("warning: point has no correponding id.")

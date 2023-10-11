@@ -6,6 +6,7 @@ Ultranest scanners
 import pickle
 import ultranest
 from mpi4py import MPI
+import numpy as np
 
 import scanner_plugin as splug
 from utils import copydoc, version
@@ -18,10 +19,11 @@ class ReactiveUltranest(splug.scanner):
     name = "reactive_ultranest"
     __version__ = version(ultranest)
     
-    def ultra_like(self, cube):
-        lnew = self.loglike(cube)
-        self.saves[tuple(cube)] = (self.mpi_rank, self.point_id)
-        
+    def ultra_like(self, params):
+        #print("params = ", params)
+        lnew = self.loglike_physical(params)
+        self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
+        #print(tuple(cube), ":", self.point_id)
         return lnew
     
     def transfer(self):
@@ -41,6 +43,7 @@ class ReactiveUltranest(splug.scanner):
 
         :param: log_dir ('reactive_ultranest_run')
         """
+        print("inits = ", self.init_args)
         super().__init__()
         self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
@@ -67,14 +70,14 @@ class ReactiveUltranest(splug.scanner):
         if self.mpi_rank == 0:
             result = self.sampler.results
             wts = result["weighted_samples"]["weights"]
-            upts = result["weighted_samples"]["upoints"]
+            pts = result["weighted_samples"]["points"]
             
-            for wt, upt in zip(wts, upts):
-                if tuple(upt) in self.saves:
-                    save = self.saves[tuple(upt)]
+            for wt, pt in zip(wts, pts):
+                if tuple(pt) in self.saves:
+                    save = self.saves[tuple(pt)]
                     self.print(wt, "Posterior", save[0], save[1])
                 else:
-                    print("warning: point has no correponding id.")
+                    print("warning: point ", tuple(pt), " has no correponding id.")
                         
             with open(pkl_name, "wb") as f:
                 pickle.dump(result, f)
