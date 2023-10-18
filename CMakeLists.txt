@@ -353,6 +353,23 @@ else()
   message(FATAL_ERROR "\nFlexibleSUSY is currently included in the GAMBIT distribution, so in fact it cannot be ditched.  Please install Eigen3.\n(Note that this will change in future GAMBIT versions, where FlexibleSUSY will be a 'true' backend.)")
 endif()
 
+# Check for Gnu Scientific Library (GSL)
+find_package(GSL 2.1)
+if(NOT GSL_FOUND)
+  message(FATAL_ERROR "GSL libraries not found. You can help CMake to find them by setting the environment variable GSL_ROOT_DIR.")
+endif()
+# FlexibleSUSY only works with gsl-config; make sure that we add it
+if("${GSL_CONFIG_EXECUTABLE}" STREQUAL "")
+  find_program(GSL_CONFIG_EXECUTABLE gsl-config
+    ${GSL_INCLUDE_DIRS}/../bin/
+    /usr/bin/
+    /usr/local/bin
+  )
+  if(NOT GSL_CONFIG_EXECUTABLE)
+    message(FATAL_ERROR "GSL libraries were found but gsl-config could not be found (needed by FlexibleSUSY).")
+  endif()
+endif()
+
 # Check for OpenMP
 find_package(OpenMP QUIET)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
@@ -395,16 +412,6 @@ else()
   else()
     message(FATAL_ERROR "\nOpenMP libraries not found.  Your compiler installation seems to be broken.")
   endif()
-endif()
-
-# Check for Gnu Scientific Library (GSL)
-include(cmake/FindGSL.cmake)
-if(GSL_FOUND)
-  if (NOT GSL_INCLUDE_DIRS STREQUAL "")
-    include_directories("${GSL_INCLUDE_DIRS}")
-  endif()
-else()
-  message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
 # Check for Mathematica
