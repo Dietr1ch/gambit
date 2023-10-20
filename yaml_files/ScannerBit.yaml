@@ -159,10 +159,9 @@ Scanner:
         like: LogLike
         pkg: gambit_dynesty
         plugin: static_dynesty
-        #init:
-            #resume: True
-        run:
+        init:
             nlive: 1000
+        run:
             dlogz: 0.5
             pkl_name: "static_dynesty.pkl"
 
@@ -170,12 +169,11 @@ Scanner:
         like: LogLike
         plugin: dynamic_dynesty
         pkg: gambit_dynesty
-        #init:
-            #resume: True
+        init:
+            nlive: 1000
         run:
-            nlive_init: 1000
             dlogz_init: 0.5
-            n_effective: 500
+            n_effective: 10000
             pkl_name: "dynamic_dynesty.pkl"
 
     nessai:
