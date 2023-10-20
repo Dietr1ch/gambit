@@ -1,3 +1,3 @@
 from .copydoc import copydoc
-from .version import version
+from .version import *
 from .mpi import *

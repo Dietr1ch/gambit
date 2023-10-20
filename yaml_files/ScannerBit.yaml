@@ -22,7 +22,7 @@ Printer:
   # Select printer to use via string tag)
   #printer: ascii
   printer: hdf5
-  # printer: cout
+  #printer: cout
 
   # This options node is passed on wholesale to
   # the printer object; required options may
@@ -35,6 +35,7 @@ Printer:
     output_file: "gambit_output.hdf5"
     group: "/test"
     delete_file_on_restart: true
+    force: true
 
 
 Scanner:
@@ -47,7 +48,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: dynamic_dynesty #de
+  use_scanner: de
 
   scanners:
 

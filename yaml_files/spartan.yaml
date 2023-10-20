@@ -50,13 +50,21 @@ Printer:
   #   buffer_length: 10
   #   delete_file_on_restart: true
 
-  printer: cout
+  printer: hdf5
+  
+  options:
+    # Name of info file (explains content of output file)
+    #info_file: "runs/spartan/samples/gambit_output2.info"
+    # Name of output file
+    output_file: "gambit_output.hdf5"
+    group: "/test"
+    delete_file_on_restart: true
 
   # printer: none
 
 Scanner:
 
-  use_scanner: grid
+  use_scanner: ultranest
 
   scanners:
 
@@ -130,14 +138,38 @@ Scanner:
       maxfun: 10000000.0
 
     ultranest:
-        like: LogLike
-        pkg: gambit_ultranest
-        plugin: reactive_ultranest
-        init:
-            resume: overwrite
-        run:
-            min_num_live_points: 1000
-            dlogz: 0.5
+      like: LogLike
+      pkg: gambit_ultranest
+      plugin: reactive_ultranest
+      init:
+        resume: overwrite
+      run:
+        min_num_live_points: 1000
+        #widen_before_initial_plateau_num_warn: 50000
+        dlogz: 0.5
+            
+    static_dynesty:
+      like: LogLike
+      pkg: gambit_dynesty
+      plugin: static_dynesty
+      #init:
+        #resume: True
+      run:
+        #nlive: 1000
+        dlogz: 0.5
+        pkl_name: "static_dynesty.pkl"
+        
+    dynamic_dynesty:
+      like: LogLike
+      plugin: dynamic_dynesty
+      pkg: gambit_dynesty
+      #init:
+        #resume: True
+      run:
+        nlive_init: 1000
+        dlogz_init: 0.5
+        n_effective: 500
+        pkl_name: "dynamic_dynesty.pkl"
 
 
 ObsLikes:

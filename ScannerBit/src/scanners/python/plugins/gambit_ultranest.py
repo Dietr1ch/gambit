@@ -9,7 +9,7 @@ from mpi4py import MPI
 import numpy as np
 
 import scanner_plugin as splug
-from utils import copydoc, version
+from utils import copydoc, version, parse
 
 class ReactiveUltranest(splug.scanner):
     """
@@ -20,10 +20,9 @@ class ReactiveUltranest(splug.scanner):
     __version__ = version(ultranest)
     
     def ultra_like(self, params):
-        #print("params = ", params)
         lnew = self.loglike_physical(params)
         self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
-        #print(tuple(cube), ":", self.point_id)
+
         return lnew
     
     def transfer(self):
@@ -43,8 +42,11 @@ class ReactiveUltranest(splug.scanner):
 
         :param: log_dir ('reactive_ultranest_run')
         """
-        print("inits = ", self.init_args)
+        
         super().__init__()
+        if self.mpi_size > 1 and parse(ultranest.__version__) < parse("3.6.3"):
+            raise Exception("UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
+            
         self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,

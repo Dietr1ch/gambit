@@ -9,7 +9,7 @@ Expected usuage e.g.,
 """
 
 import importlib.metadata
-
+from packaging.version import parse
 
 def version(mod):
 

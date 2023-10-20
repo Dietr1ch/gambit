@@ -8,14 +8,14 @@ We don't use the Dynesty checkpointing/saving functionality, as it
 attempts to pickle the loglikelihood function etc.
 """
 
-
 import pickle
 import dynesty
 import numpy as np
 
+from utils import MPIPool
 import scanner_plugin as splug
 from utils import copydoc, version
-
+from mpi4py import MPI
 
 class StaticDynesty(splug.scanner):
     """
@@ -31,35 +31,45 @@ class StaticDynesty(splug.scanner):
 
     @copydoc(dynesty.NestedSampler)
     def __init__(self, **kwargs):
-        self.saves = {}
-        super().__init__(use_mpi=False)
-        self.sampler = dynesty.NestedSampler(
-            self.gambit_loglike, self.transform_to_vec, self.dim, **self.init_args)
+        super().__init__()
         
     def gambit_loglike(self, params):
         lnew = self.loglike_physical(params)
-        self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
         
-        return lnew
+        return (lnew, np.array([self.mpi_rank, self.point_id]))
 
     def run_internal(self, pkl_name="static_dynesty.pkl", **kwargs):
-        self.sampler.run_nested(**kwargs)
-        wts = self.sampler.results["logwt"]
-        pts = self.sampler.results["samples"]
-        for wt, pt in zip(wts, pts):
-            if tuple(pt) in self.saves:
-                save = self.saves[tuple(pt)]
-                self.print(np.exp(wt), "Posterior", save[0], save[1])
-            else:
-                print("warning: point has no correponding id.")
+        if self.mpi_size == 1:
+            self.sampler = dynesty.DynamicNestedSampler(
+                self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, **self.init_args)
+            
+            self.sampler.run_nested(**kwargs)
+        
+        else:
+            with MPIPool() as pool:
                 
-        with open(pkl_name, "wb") as f:
-            pickle.dump(self.sampler.results, f)
+                if pool.is_master():
+                    self.sampler = dynesty.DynamicNestedSampler(
+                        self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, pool=pool, **self.init_args)
+                    
+                    self.sampler.run_nested(**kwargs)
+                else:
+                    pool.wait()
+
+        if self.mpi_rank == 0:
+
+            wts = self.sampler.results["logwt"]
+            blobs = self.sampler.results["blob"]
+            
+            for wt, blob in zip(wts, blobs):
+                self.print(np.exp(wt), "Posterior", blob[0], blob[1])
+            
+            with open(pkl_name, "wb") as f:
+                pickle.dump(self.sampler.results, f)
             
     @copydoc(dynesty.NestedSampler.run_nested)
     def run(self):
         self.run_internal(**self.run_args)
-
 
 class DynamicDynesty(splug.scanner):
     """
@@ -75,30 +85,44 @@ class DynamicDynesty(splug.scanner):
 
     @copydoc(dynesty.DynamicNestedSampler)
     def __init__(self, **kwargs):
-        super().__init__(use_mpi=False)
-        self.saves = {}
-        self.sampler = dynesty.DynamicNestedSampler(
-            self.gambit_loglike, self.transform_to_vec, self.dim, **self.init_args)
+        super().__init__()
+        
+    def __reduce__(self):
+        return (self.__class__, ())
         
     def gambit_loglike(self, params):
         lnew = self.loglike_physical(params)
-        self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
         
-        return lnew
+        return (lnew, np.array([self.mpi_rank, self.point_id]))
 
     def run_internal(self, pkl_name="dynamic_dynesty.pkl", **kwargs):
-        self.sampler.run_nested(**kwargs)
-        wts = self.sampler.results["logwt"]
-        pts = self.sampler.results["samples"]
-        for wt, pt in zip(wts, pts):
-            if tuple(pt) in self.saves:
-                save = self.saves[tuple(pt)]
-                self.print(np.exp(wt), "Posterior", save[0], save[1])
-            else:
-                print("warning: point has no correponding id.")
+        if self.mpi_size == 1:
+            self.sampler = dynesty.DynamicNestedSampler(
+                self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, **self.init_args)
+            
+            self.sampler.run_nested(**kwargs)
+        
+        else:
+            with MPIPool() as pool:
+                
+                if pool.is_master():
+                    self.sampler = dynesty.DynamicNestedSampler(
+                        self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, pool=pool, **self.init_args)
                     
-        with open(pkl_name, "wb") as f:
-            pickle.dump(self.sampler.results, f)
+                    self.sampler.run_nested(**kwargs)
+                else:
+                    pool.wait()
+
+        if self.mpi_rank == 0:
+
+            wts = self.sampler.results["logwt"]
+            blobs = self.sampler.results["blob"]
+            
+            for wt, blob in zip(wts, blobs):
+                self.print(np.exp(wt), "Posterior", blob[0], blob[1])
+            
+            with open(pkl_name, "wb") as f:
+                pickle.dump(self.sampler.results, f)
      
     @copydoc(dynesty.DynamicNestedSampler.run_nested)
     def run(self):
