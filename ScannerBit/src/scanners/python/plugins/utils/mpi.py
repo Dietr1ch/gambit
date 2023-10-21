@@ -34,7 +34,7 @@ import traceback
 #MPI = None
 
 # Project
-from schwimmbad import log, _VERBOSE
+#from schwimmbad import log, _VERBOSE
 from schwimmbad.pool import BasePool
 
 __all__ = ['MPIPool']
@@ -135,23 +135,23 @@ class MPIPool(BasePool):
         worker = self.comm.rank
         status = MPI.Status()
         while True:
-            log.log(_VERBOSE, "Worker {0} waiting for task".format(worker))
+            #log.log(_VERBOSE, "Worker {0} waiting for task".format(worker))
 
             task = self.comm.recv(source=self.master, tag=MPI.ANY_TAG,
                                   status=status)
 
             if task is None:
-                log.log(_VERBOSE, "Worker {0} told to quit work".format(worker))
+                #log.log(_VERBOSE, "Worker {0} told to quit work".format(worker))
                 break
 
             func, arg = task
-            log.log(_VERBOSE, "Worker {0} got task {1} with tag {2}"
-                    .format(worker, arg, status.tag))
+            #log.log(_VERBOSE, "Worker {0} got task {1} with tag {2}"
+                    #.format(worker, arg, status.tag))
 
             result = func(arg)
 
-            log.log(_VERBOSE, "Worker {0} sending answer {1} with tag {2}"
-                    .format(worker, result, status.tag))
+            #log.log(_VERBOSE, "Worker {0} sending answer {1} with tag {2}"
+                    #.format(worker, result, status.tag))
 
             self.comm.ssend(result, self.master, status.tag)
 
@@ -205,8 +205,8 @@ class MPIPool(BasePool):
             if workerset and tasklist:
                 worker = workerset.pop()
                 taskid, task = tasklist.pop()
-                log.log(_VERBOSE, "Sent task %s to worker %s with tag %s",
-                        task[1], worker, taskid)
+                #log.log(_VERBOSE, "Sent task %s to worker %s with tag %s",
+                #        task[1], worker, taskid)
                 self.comm.send(task, dest=worker, tag=taskid)
 
             if tasklist:
@@ -221,8 +221,8 @@ class MPIPool(BasePool):
                                     status=status)
             worker = status.source
             taskid = status.tag
-            log.log(_VERBOSE, "Master received from worker %s with tag %s",
-                    worker, taskid)
+            #log.log(_VERBOSE, "Master received from worker %s with tag %s",
+                    #worker, taskid)
 
             callback(result)
 

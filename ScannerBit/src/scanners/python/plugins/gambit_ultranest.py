@@ -46,7 +46,11 @@ class ReactiveUltranest(splug.scanner):
         super().__init__()
         if self.mpi_size > 1 and parse(ultranest.__version__) < parse("3.6.3"):
             raise Exception("UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
-            
+        
+        if self.mpi_rank == 0:
+            self.assign_aux_numbers("Posterior")
+            self.printer.new_stream("txt", synchronised=False)
+        
         self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,
@@ -56,7 +60,7 @@ class ReactiveUltranest(splug.scanner):
             **self.init_args)
 
     
-    def run_internal(self, pkl_name="ultranest.pkl", **kwargs):
+    def run_internal(self, pkl_name=None, **kwargs):
         """
         We add the argument
 
@@ -73,16 +77,19 @@ class ReactiveUltranest(splug.scanner):
             result = self.sampler.results
             wts = result["weighted_samples"]["weights"]
             pts = result["weighted_samples"]["points"]
-            
+            stream = self.printer.get_stream("txt")
+            stream.reset()
             for wt, pt in zip(wts, pts):
                 if tuple(pt) in self.saves:
                     save = self.saves[tuple(pt)]
-                    self.print(wt, "Posterior", save[0], save[1])
+                    stream.print(wt, "Posterior", save[0], save[1])
                 else:
                     print("warning: point ", tuple(pt), " has no correponding id.")
-                        
-            with open(pkl_name, "wb") as f:
-                pickle.dump(result, f)
+            stream.flush()
+            
+            if not pkl_name is None:
+                with open(pkl_name, "wb") as f:
+                    pickle.dump(result, f)
     
     @copydoc(ultranest.ReactiveNestedSampler.run)
     def run(self):

@@ -228,6 +228,62 @@ namespace Gambit
                     }
                 }
                 
+                inline YAML::Node dict_to_yaml(py::handle o)
+                {
+                    YAML::Node node;
+                    std::string type = pytype(o);
+                    
+                    if (type == "dict")
+                    {
+                        for (auto &&it : py::cast<py::dict>(o))
+                        {
+                            node[dict_to_yaml(it.first)] = dict_to_yaml(it.second);
+                        }
+                    }
+                    else if(type == "list")
+                    {
+                        for (auto &&it : py::cast<py::list>(o))
+                        {
+                            node.push_back(dict_to_yaml(it));
+                        }
+                        
+                    }
+                    else if(type == "tuple")
+                    {
+                        for (auto &&it : py::cast<py::tuple>(o))
+                        {
+                            node.push_back(dict_to_yaml(it));
+                        }
+                        
+                    }
+                    else if (type == "float" || type == "float64")
+                    {
+                        node = o.cast<double>();
+                    }
+                    else if (type == "int")
+                    {
+                        node = o.cast<int>();
+                    }
+                    else if (type == "str" || type == "unicode")
+                    {
+                        node = o.cast<std::string>();
+                    }
+                    else if (type == "bool")
+                    {
+                        node = o.cast<bool>();
+                    }
+                    else if (type == "NoneType")
+                    {
+                        node = YAML::Node();
+                    }
+                    else
+                    {
+                        throw std::invalid_argument("Error converting python dictionary to YAML node:  " + type + " type not recognized.");
+                    }
+                    
+                    return node;
+                }
+                
                 class like_physical : public std::enable_shared_from_this<like_physical>
                 {
                 private:
@@ -518,6 +574,11 @@ namespace Gambit
                         get_printer().get_stream()->print(val, name, rank, pointID);
                     }
                     
+                    Gambit::Scanner::printer_interface &getPrinter()
+                    {
+                        return get_printer();
+                    }
+                    
                     unsigned long point_id() 
                     {
                         return getLike()->getPtID();
@@ -740,6 +801,12 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     m.def("numtasks", [](){return 1;});
 #endif
     
+    m.def("assign_aux_numbers", [](py::args params)
+    {
+        for (auto &&param : params)
+            ::Gambit::Printers::get_aux_param_id(param.cast<std::string>());
+    });
+    
     py::class_<Gambit::Printers::BaseBasePrinter, std::unique_ptr<Gambit::Printers::BaseBasePrinter, py::nodelete>>(m, "printer")
     .def("print", [](Gambit::Printers::BaseBasePrinter &self, double in, const std::string& label,
                    const int vertexID, const unsigned int rank,
@@ -752,7 +819,15 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
                    const unsigned long pointID)
     {
         self.print(in, label, rank, pointID);
-    });
+    })
+    .def("flush", [](Gambit::Printers::BaseBasePrinter &self)
+    {
+        self.flush();
+    })
+    .def("reset", [](Gambit::Printers::BaseBasePrinter &self, bool force)
+    {
+        self.reset(force);
+    }, py::arg("force")=false);
     
     py::class_<Gambit::Priors::BasePrior, std::unique_ptr<Gambit::Priors::BasePrior, py::nodelete>>(m, "prior")
     .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube<double> unit, std::unordered_map<std::string, double> &physical)
@@ -830,6 +905,10 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     //  virtual bool reader_exists(const std::string&) = 0;
     //  virtual void delete_reader(const std::string&) = 0;
     py::class_<Gambit::Scanner::printer_interface, std::unique_ptr<Gambit::Scanner::printer_interface, py::nodelete>>(m, "printer_interface")
+    .def("new_stream", [&](Gambit::Scanner::printer_interface &self, const std::string name, py::kwargs opts)
+    {
+        self.new_stream(name, ::Gambit::Scanner::Plugins::Utils::dict_to_yaml(opts));
+    })
     .def("resume_mode", [&](Gambit::Scanner::printer_interface &self)
     {
         return self.resume_mode();
@@ -1044,6 +1123,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def("inverse_transform", &scanner_base::inverse_transform_inplace_dict)
     .def("set_run_defaults", &scanner_base::set_run_defaults)
     .def_property_readonly("point_id", &scanner_base::point_id)
+    .def_property_readonly("printer", &scanner_base::getPrinter)
     .def_property_readonly("loglike_hypercube", &scanner_base::getLikeHyperCube)
     .def_property_readonly("loglike_physical", &scanner_base::getLikePhysical)
     .def_property_readonly("log_target_density", &scanner_base::getLikePriorPhysical)
@@ -1055,7 +1135,16 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def_property_readonly("parameter_names", &scanner_base::getParameterNames)
     .def_property_readonly("mpi_rank", &scanner_base::getRank)
     .def_property_readonly("mpi_size", &scanner_base::getNumTasks)
-    .def_property_readonly("dim", &scanner_base::getDim);
+    .def_property_readonly("dim", &scanner_base::getDim)
+    .def_static("assign_aux_numbers", [](py::args params)
+    {
+        for (auto &&param : params)
+            ::Gambit::Printers::get_aux_param_id(param.cast<std::string>());
+    });
+//     .def("__reduce__", [&](scanner_base &)
+//     {
+//         return py::make_tuple(py_scanner_base, py::tuple());
+//     });
 }
 
 PYBIND11_EMBEDDED_MODULE(objective_plugin, m) 

@@ -53,25 +53,21 @@ class Emcee(splug.scanner):
         return (Emcee.make_emcee, (self.args,))
 
     @copydoc(emcee.EnsembleSampler)
-    def __init__(self, nwalkers=1, filename="emcee.h5", reset=False, **kwargs):
-        """
-        There are two additional arguments:
-        
-        :param: filename ('emcee.h5')
-        :param: reset (False)
-
-        for passing the name of a h5 file to which to save results using the emcee writer,
-        and whether to reset that file.
-        """
+    def __init__(self, nwalkers=1, **kwargs):
         super().__init__() # False for right now.
         self.hi = np.array([1.0]*self.dim)
         self.low = np.array([0.0]*self.dim)
         self.nwalkers = nwalkers
+        
+        if self.mpi_rank == 0:
+            self.assign_aux_numbers("mult")
+            self.printer.new_stream("txt", synchronised=False)
+        
         if 'nwalkers' in self.init_args:
             self.nwalkers = self.init_args['nwalkers']
             del self.init_args['nwalkers']
 
-    def run_internal(self, nsteps=5000, progress=True, initial_state=None, **kwargs):
+    def run_internal(self, nsteps=5000, progress=True, initial_state=None, pkl_name=None, **kwargs):
         if self.mpi_size == 1:
             if initial_state is None:
                 initial_state = self.initial_state()
@@ -103,13 +99,21 @@ class Emcee(splug.scanner):
                     pool.wait()
         
         if self.mpi_rank == 0:
+            stream = self.printer.get_stream("txt")
+            stream.reset()
             blobs = np.array(self.sampler.get_blobs(flat=True))
+            
             for i in range(self.mpi_size):
                 us, cs = np.unique(blobs[blobs[:, 0]==i, 1], return_counts=True)
-                print(i, us, cs)
+                
                 for u, c in zip(us, cs):
-                    self.print(c, "mult", i, u)
-
+                    stream.print(c, "mult", i, u)
+            stream.flush()
+            
+            if not pkl_name is None:
+                samples = self.sampler.get_samples()
+                with open(pkl_name, "wb") as f:
+                    pickle.dump(samples, f)
         
     @copydoc(emcee.EnsembleSampler.run_mcmc)
     def run(self):
