@@ -404,45 +404,22 @@ namespace Gambit
         
                 class scanner_base
                 {
-                private:
+                public:
                     typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
                     typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
                     typedef Gambit::Scanner::Plugins::Utils::like_physical s_phys_func;
                     typedef Gambit::Scanner::Plugins::Utils::like_prior_physical s_phys_pr_func;
                     typedef Gambit::Scanner::Plugins::Utils::prior_physical s_pr_func;
-                    /*
-                    py::dict run_opts;
-                    std::shared_ptr<s_func> like;
-                    std::shared_ptr<s_func> like_hyper_cube;
-                    std::shared_ptr<s_phys_func> like_physical;
-                    std::shared_ptr<s_phys_pr_func> like_prior_physical;
-                    */
-                template<typename T>
-                py::list to_list(const std::vector<T> &vec)
-                {
-                    py::list l;
-                    for (auto &&elem : vec)
-                        l.append(py::cast(elem));
                     
-                    return l;
-                }
-                    
-                public:
-                    /*scanner_base()
+                    template<typename T>
+                    static py::list to_list(const std::vector<T> &vec)
                     {
-                        py::dict opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(get_inifile_node());
+                        py::list l;
+                        for (auto &&elem : vec)
+                            l.append(py::cast(elem));
                         
-                        if(opts.contains("run"))
-                            run_opts = opts["run"];
-                        
-                        if(!opts.contains("like"))
-                            scan_err << "Inifile missing \"like\" entry." << scan_end;
-                        
-                        like = get_purpose(opts["like"].cast<std::string>());
-                        like_hyper_cube = like;
-                        like_physical = std::shared_ptr<s_phys_func>(new s_phys_func(*like.get()));
-                        like_prior_physical = std::shared_ptr<s_phys_pr_func>(new s_phys_pr_func(*like.get()));
-                    }*/
+                        return l;
+                    }
 
                     //virtual int run() = 0;
                     int run()
@@ -451,85 +428,9 @@ namespace Gambit
                         return 1;
                     }
                     
-                    
-                    Gambit::Scanner::vector<double> transform_to_vec(Gambit::Scanner::hyper_cube<double> unit)
-                    {
-                        //auto &map = getLike()->getMap();
-                        static std::unordered_map<std::string, double> map;
-                        get_prior().transform(unit, map);
-                        auto params = get_prior().getShownParameters();
-                        Gambit::Scanner::vector<double> vec(params.size());
-                        
-                        for (size_t i = 0, end = params.size(); i < end; ++i)
-                            vec[i] = map[params[i]];
-                        
-                        return vec;
-                    }
-                    
-                    void transform_inplace(Gambit::Scanner::hyper_cube<double> unit, std::unordered_map<std::string, double> &physical)
-                    {
-                        get_prior().transform(unit, physical);
-                    }
-                    
-                    void transform_inplace_dict(Gambit::Scanner::hyper_cube<double> unit, py::dict physical)
-                    {
-                        //auto &map = getLike()->getMap();
-                        static std::unordered_map<std::string, double> map;
-                        get_prior().transform(unit, map);
-                        for (auto &&m : map)
-                            physical[py::cast(m.first)] = py::cast(m.second);
-                    }
-                    
-                    py::dict transform(Gambit::Scanner::hyper_cube<double> unit)
-                    {
-                        py::dict physical;
-                        //auto &map = getLike()->getMap();
-                        static std::unordered_map<std::string, double> map;
-                        get_prior().transform(unit, map);
-                        
-                        for (auto &&m : map)
-                            physical[py::cast(m.first)] = py::cast(m.second);
-                        
-                        return physical;
-                    }
-                    
-                    void inverse_transform_inplace(std::unordered_map<std::string, double> &physical, Gambit::Scanner::hyper_cube<double> unit)
-                    {
-                        get_prior().inverse_transform(physical, unit);
-                    }
-                    
-                    void inverse_transform_inplace_dict(py::dict physical, Gambit::Scanner::hyper_cube<double> unit)
-                    {
-                        std::unordered_map<std::string, double> map;
-                        for (auto &&m : physical)
-                            map[m.first.cast<std::string>()] = m.second.cast<double>();
-                        
-                        get_prior().inverse_transform(map, unit);
-                    }
-                    
-                    Gambit::Scanner::vector<double> inverse_transform(std::unordered_map<std::string, double> &physical)
-                    {
-                        Gambit::Scanner::vector<double> unit(get_prior().size());
-                        get_prior().inverse_transform(physical, unit);
-                        
-                        return unit;
-                    }
-                    
-                    Gambit::Scanner::vector<double> inverse_transform_dict(py::dict physical)
-                    {
-                        Gambit::Scanner::vector<double> unit(get_prior().size());
-                        std::unordered_map<std::string, double> map;
-                        for (auto &&m : physical)
-                            map[m.first.cast<std::string>()] = m.second.cast<double>();
-                        
-                        get_prior().inverse_transform(map, unit);
-                        
-                        return unit;
-                    }
-                    
                 #ifdef WITH_MPI
-                    bool with_mpi() {return true;}
-                    int rank()
+                    static bool with_mpi() {return true;}
+                    static int rank()
                     {
                         int rank;
                         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -537,7 +438,7 @@ namespace Gambit
                         return rank;
                     }
                     
-                    int numtasks()
+                    static int numtasks()
                     {
                         int numtasks;
                         MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
@@ -545,130 +446,23 @@ namespace Gambit
                         return numtasks;
                     }
                 #else
-                    bool with_mpi() {return true;}
-                    int rank() {return 0;}
-                    int numtasks() {return 1;}
+                    static bool with_mpi() {return false;}
+                    static int rank() {return 0;}
+                    static int numtasks() {return 1;}
                 #endif
-                
-                    int getRank()
-                    {
-                        static int my_rank = rank();
-                        
-                        return my_rank;
-                    }
                     
-                    int getNumTasks()
-                    {
-                        static int tasks = numtasks();
-                        
-                        return tasks;
-                    }
-                    
-                    void print(double val, const std::string &name)
-                    {
-                        get_printer().get_stream()->print(val, name, getRank(), getLike()->getPtID());
-                    }
-                    
-                    void print_full(double val, const std::string &name, const unsigned int rank, const unsigned long pointID)
-                    {
-                        get_printer().get_stream()->print(val, name, rank, pointID);
-                    }
-                    
-                    Gambit::Scanner::printer_interface &getPrinter()
-                    {
-                        return get_printer();
-                    }
-                    
-                    unsigned long point_id() 
-                    {
-                        return getLike()->getPtID();
-                    }
-                    
-                    py::list &getParameterNames()
-                    {
-                        static py::list names = to_list<std::string>(get_prior().getShownParameters());
-                        
-                        return names;
-                    }
-                    
-                    YAML::Node &getNode()
+                    static YAML::Node &getNode()
                     {
                         static YAML::Node node = get_inifile_node();
                         
                         return node;
                     }
                     
-                    py::dict &getOpts()
-                    {
-                        static py::dict opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode());
-                        
-                        return opts;
-                    }
-                    
-                    py::dict &getRunOpts()
-                    {
-                        //static py::dict run_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["run"] ? getNode()["run"] : getNode());
-                        static py::dict run_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["run"] ? getNode()["run"] : YAML::Node());
-                        
-                        return run_opts;
-                    }
-                    
-                    py::dict &getInitOpts()
-                    {
-                        //static py::dict init_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["init"] ? getNode()["init"] : getNode());
-                        static py::dict init_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(getNode()["init"] ? getNode()["init"] : YAML::Node());
-                        
-                        return init_opts;
-                    }
-                    
-                    void set_run_defaults(py::kwargs opts)
-                    {
-                        auto &runOpts = getRunOpts();
-                        for (auto &&o : opts)
-                            if (!runOpts.contains(o.first))
-                                runOpts[o.first] = o.second;
-                    }
-                    
-                    int &getDim()
-                    {
-                        static int dim = get_dimension();
-                        
-                        return dim;
-                    }
-                    
-                    std::shared_ptr<s_func> getLike()
+                    static std::shared_ptr<s_func> getLike()
                     {
                         static std::shared_ptr<s_func> like = getNode()["like"] ? get_purpose(getNode()["like"].as<std::string>()) : nullptr;
                         
                         return like;
-                    }
-                    
-                    std::shared_ptr<s_func> getLikeHyperCube()
-                    {
-                        static std::shared_ptr<s_func> like_hyper_cube = getLike();
-                        
-                        return like_hyper_cube;
-                    }
-                    
-                    std::shared_ptr<s_phys_func> getLikePhysical()
-                    {
-                        static std::shared_ptr<s_phys_func> like_physical(getLike() == nullptr ? nullptr : new s_phys_func(*getLike().get()));
-                        
-                        return like_physical;
-                    }
-                    
-                    std::shared_ptr<s_phys_pr_func> getLikePriorPhysical()
-                    {
-                        static std::shared_ptr<s_phys_pr_func> like_prior_physical(getLike() == nullptr ? nullptr : new s_phys_pr_func(*getLike().get()));
-                        
-                        return like_prior_physical;
-                    }
-                    
-                    std::shared_ptr<s_pr_func> getPriorPhysical()
-                    {
-                        static std::shared_ptr<s_pr_func> prior_physical(getLike() == nullptr ? nullptr : new s_pr_func(*getLike().get()));
-                        
-                        return prior_physical;
                     }
                 };
                 
@@ -1023,7 +817,14 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         return self.get()->getPrior().log_prior_density(map);
     });
     
+    using namespace Gambit::Scanner::Plugins::ScannerPyPlugin;
+    using namespace Gambit::Scanner::Plugins::Utils;
+    
     py::class_<s_func, s_ptr>(m, "like_ptr")
+    .def(py::init([]()->s_ptr
+    {
+        return scanner_base::getNode()["like"] ? get_purpose(scanner_base::getNode()["like"].as<std::string>()) : nullptr;
+    }))
     .def("__call__", [](s_ptr self, Gambit::Scanner::hyper_cube<double> vec)
     {
         return static_cast<like_ptr &>(self)(vec);
@@ -1111,31 +912,161 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
             return new scanner_base();
         }))
     .def("run", &scanner_base::run)
-    .def("print", &scanner_base::print)
-    .def("print", &scanner_base::print_full)
-    .def("transform", &scanner_base::transform)
-    .def("transform", &scanner_base::transform_inplace)
-    .def("transform", &scanner_base::transform_inplace_dict)
-    .def("transform_to_vec", &scanner_base::transform_to_vec)
-    .def("inverse_transform", &scanner_base::inverse_transform)
-    .def("inverse_transform", &scanner_base::inverse_transform_dict)
-    .def("inverse_transform", &scanner_base::inverse_transform_inplace)
-    .def("inverse_transform", &scanner_base::inverse_transform_inplace_dict)
-    .def("set_run_defaults", &scanner_base::set_run_defaults)
-    .def_property_readonly("point_id", &scanner_base::point_id)
-    .def_property_readonly("printer", &scanner_base::getPrinter)
-    .def_property_readonly("loglike_hypercube", &scanner_base::getLikeHyperCube)
-    .def_property_readonly("loglike_physical", &scanner_base::getLikePhysical)
-    .def_property_readonly("log_target_density", &scanner_base::getLikePriorPhysical)
-    .def_property_readonly("log_prior_density", &scanner_base::getPriorPhysical)
-    .def_property_readonly("loglike", &scanner_base::getLike)
-    .def_property_readonly("args", &scanner_base::getOpts)
-    .def_property_readonly("init_args", &scanner_base::getInitOpts)
-    .def_property_readonly("run_args", &scanner_base::getRunOpts)
-    .def_property_readonly("parameter_names", &scanner_base::getParameterNames)
-    .def_property_readonly("mpi_rank", &scanner_base::getRank)
-    .def_property_readonly("mpi_size", &scanner_base::getNumTasks)
-    .def_property_readonly("dim", &scanner_base::getDim)
+    .def_static("print", [](double val, const std::string &name)
+    {
+        static int my_rank = scanner_base::rank();
+        
+        get_printer().get_stream()->print(val, name, my_rank, scanner_base::getLike()->getPtID());
+    })
+    .def_static("print", [](double val, const std::string &name, const unsigned int rank, const unsigned long pointID)
+    {
+        get_printer().get_stream()->print(val, name, rank, pointID);
+    })
+    .def_static("transform", [](Gambit::Scanner::hyper_cube<double> unit)
+    {
+        py::dict physical;
+        //auto &map = getLike()->getMap();
+        static std::unordered_map<std::string, double> map;
+        get_prior().transform(unit, map);
+        
+        for (auto &&m : map)
+            physical[py::cast(m.first)] = py::cast(m.second);
+        
+        return physical;
+    })
+    .def_static("transform", [](Gambit::Scanner::hyper_cube<double> unit, std::unordered_map<std::string, double> &physical)
+    {
+        get_prior().transform(unit, physical);
+    })
+    .def_static("transform", [](Gambit::Scanner::hyper_cube<double> unit, py::dict physical)
+    {
+        //auto &map = getLike()->getMap();
+        static std::unordered_map<std::string, double> map;
+        get_prior().transform(unit, map);
+        for (auto &&m : map)
+            physical[py::cast(m.first)] = py::cast(m.second);
+    })
+    .def("transform_to_vec", [](Gambit::Scanner::hyper_cube<double> unit)
+    {
+        //auto &map = getLike()->getMap();
+        static std::unordered_map<std::string, double> map;
+        get_prior().transform(unit, map);
+        auto params = get_prior().getShownParameters();
+        Gambit::Scanner::vector<double> vec(params.size());
+        
+        for (size_t i = 0, end = params.size(); i < end; ++i)
+            vec[i] = map[params[i]];
+        
+        return vec;
+    })
+    .def_static("inverse_transform", [](std::unordered_map<std::string, double> &physical)
+    {
+        Gambit::Scanner::vector<double> unit(get_prior().size());
+        get_prior().inverse_transform(physical, unit);
+        
+        return unit;
+    })
+    .def_static("inverse_transform", [](py::dict physical)
+    {
+        Gambit::Scanner::vector<double> unit(get_prior().size());
+        std::unordered_map<std::string, double> map;
+        for (auto &&m : physical)
+            map[m.first.cast<std::string>()] = m.second.cast<double>();
+        
+        get_prior().inverse_transform(map, unit);
+        
+        return unit;
+    })
+    .def_static("inverse_transform", [](std::unordered_map<std::string, double> &physical, Gambit::Scanner::hyper_cube<double> unit)
+    {
+        get_prior().inverse_transform(physical, unit);
+    })
+    .def_static("inverse_transform", [](py::dict physical, Gambit::Scanner::hyper_cube<double> unit)
+    {
+        std::unordered_map<std::string, double> map;
+        for (auto &&m : physical)
+            map[m.first.cast<std::string>()] = m.second.cast<double>();
+        
+        get_prior().inverse_transform(map, unit);
+    })
+    .def_property_readonly_static("point_id", [](py::object)
+    {
+        return scanner_base::getLike()->getPtID();
+    })
+    .def_property_readonly_static("printer", [](py::object)->Gambit::Printers::BasePrinterManager&
+    {
+        return get_printer();
+    })
+    .def_property_readonly_static("loglike_hypercube", [](py::object)
+    {
+        static std::shared_ptr<scanner_base::s_func> like_hyper_cube = scanner_base::getLike();
+                        
+        return like_hyper_cube;
+    })
+    .def_property_readonly_static("loglike_physical", [](py::object)
+    {
+        static std::shared_ptr<scanner_base::s_phys_func> like_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_func(*scanner_base::getLike().get()));
+                        
+        return like_physical;
+    })
+    .def_property_readonly_static("log_target_density", [](py::object)
+    {
+        static std::shared_ptr<scanner_base::s_phys_pr_func> like_prior_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_pr_func(*scanner_base::getLike().get()));
+                        
+        return like_prior_physical;
+    })
+    .def_property_readonly_static("log_prior_density", [](py::object)
+    {
+        static std::shared_ptr<scanner_base::s_pr_func> prior_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_pr_func(*scanner_base::getLike().get()));
+                        
+        return prior_physical;
+    })
+    .def_property_readonly_static("loglike", [](py::object)
+    {
+        return scanner_base::getLike();
+    })
+    .def_property_readonly_static("args", [](py::object)
+    {
+        static py::dict opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(scanner_base::getNode());
+        
+        return opts;
+    })
+    .def_property_readonly_static("init_args", [](py::object)
+    {
+        static py::dict init_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(scanner_base::getNode()["init"] ? scanner_base::getNode()["init"] : YAML::Node());
+                        
+        return init_opts;
+    })
+    .def_property_readonly_static("run_args", [](py::object)
+    {
+        static py::dict run_opts = ::Gambit::Scanner::Plugins::Utils::yaml_to_dict(scanner_base::getNode()["run"] ? scanner_base::getNode()["run"] : YAML::Node());
+                        
+        return run_opts;
+    })
+    .def_property_readonly_static("parameter_names", [](py::object)
+    {
+        static py::list names = scanner_base::to_list<std::string>(get_prior().getShownParameters());
+        
+        return names;
+    })
+    .def_property_readonly_static("mpi_rank", [](py::object)
+    {
+        static int my_rank = scanner_base::rank();
+                        
+        return my_rank;
+    })
+    .def_property_readonly_static("mpi_size", [](py::object)
+    {
+        static int tasks = scanner_base::numtasks();
+        
+        return tasks;
+    })
+    .def_property_readonly_static("dim", [](py::object)
+    {
+        static int dim = get_dimension();
+                        
+        return dim;
+    })
     .def_static("assign_aux_numbers", [](py::args params)
     {
         for (auto &&param : params)
@@ -1145,6 +1076,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
 //     {
 //         return py::make_tuple(py_scanner_base, py::tuple());
 //     });
+
 }
 
 PYBIND11_EMBEDDED_MODULE(objective_plugin, m) 

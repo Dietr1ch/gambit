@@ -9,18 +9,17 @@ from mpi4py import MPI
 import numpy as np
 
 import scanner_plugin as splug
-from utils import copydoc, version, parse
+from utils import copydoc, version, parse, get_filename
 
 class ReactiveUltranest(splug.scanner):
     """
     Ultranest reactive sampler.
     """
 
-    name = "reactive_ultranest"
     __version__ = version(ultranest)
     
     def ultra_like(self, params):
-        lnew = self.loglike_physical(params)
+        lnew = self.loglike_hypercube(params)
         self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
 
         return lnew
@@ -43,20 +42,21 @@ class ReactiveUltranest(splug.scanner):
         :param: log_dir ('reactive_ultranest_run')
         """
         
-        super().__init__()
+        super().__init__(use_mpi=True)
         if self.mpi_size > 1 and parse(ultranest.__version__) < parse("3.6.3"):
-            raise Exception("UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
+            print("WARNING: UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
+            #raise Exception("UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
         
         if self.mpi_rank == 0:
             self.assign_aux_numbers("Posterior")
             self.printer.new_stream("txt", synchronised=False)
-        
+
         self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
             self.parameter_names,
             self.ultra_like,
-            transform=self.transform_to_vec,
-            log_dir=log_dir,
+            resume='resume-similar' if self.printer.resume_mode() else 'overwrite',
+            log_dir=get_filename("", log_dir, **kwargs),
             **self.init_args)
 
     
@@ -96,4 +96,4 @@ class ReactiveUltranest(splug.scanner):
         self.run_internal(**self.run_args)
 
 
-__plugins__ = {ReactiveUltranest.name: ReactiveUltranest}
+__plugins__ = {"reactive_ultranest": ReactiveUltranest}

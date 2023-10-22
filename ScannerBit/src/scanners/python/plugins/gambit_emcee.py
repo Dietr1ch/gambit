@@ -4,17 +4,16 @@ Emcee scanner
 """
 
 import numpy as np
+import os
 import emcee
 
 import scanner_plugin as splug
-from utils import copydoc, version
-from utils import MPIPool
+from utils import copydoc, version, get_filename, MPIPool
 
 class Emcee(splug.scanner):
 
-    name = "emcee"
     __version__ = version(emcee)
-
+    
     def backend(self, filename, reset):
         """
         :returns: Backend with h5 file to save results
@@ -32,40 +31,48 @@ class Emcee(splug.scanner):
         """
         :returns: Choice of initial state for chain
         """
-        #return np.vstack([self.transform_to_vec(np.random.rand(self.dim))
-         #                for i in range(self.nwalkers)])
+        
         return np.vstack([np.random.rand(self.dim)
                          for i in range(self.nwalkers)])
-
-    def my_like(self, params):
-        if (params < self.hi).all() and (params > self.low).all():
-            lnew = self.loglike_hypercube(params)
+        
+    @staticmethod
+    def my_like(params):
+        
+        Emcee.my_like.upper_bound = getattr(Emcee.my_like, "upper_bound", np.array([1.0]*Emcee.dim))
+        Emcee.my_like.lower_bound = getattr(Emcee.my_like, "lower_bound", np.array([0.0]*Emcee.dim))
+        
+        if (params < Emcee.my_like.upper_bound).all() and (params > Emcee.my_like.lower_bound).all():
+            lnew = Emcee.loglike_hypercube(params)
             
-            return (lnew, self.mpi_rank, self.point_id)
+            return (lnew, Emcee.mpi_rank, Emcee.point_id)
         else:
             return  (-np.inf, -1, -1)
 
-    @staticmethod
-    def make_emcee(kwargs):
-        return Emcee(**kwargs)
-    
-    def __reduce__(self):
-        return (Emcee.make_emcee, (self.args,))
-
     @copydoc(emcee.EnsembleSampler)
-    def __init__(self, nwalkers=1, **kwargs):
-        super().__init__() # False for right now.
-        self.hi = np.array([1.0]*self.dim)
-        self.low = np.array([0.0]*self.dim)
+    def __init__(self, nwalkers=1, filename='emcee.h5', **kwargs):
+        """
+        There is an additional argument:
+        
+        :param: filename ('emcee.h5')
+
+        for passing the name of a h5 file to which to save results using the emcee writer.
+        """
+        
+        super().__init__(use_mpi=True)
+        
         self.nwalkers = nwalkers
         
         if self.mpi_rank == 0:
             self.assign_aux_numbers("mult")
             self.printer.new_stream("txt", synchronised=False)
         
-        if 'nwalkers' in self.init_args:
-            self.nwalkers = self.init_args['nwalkers']
-            del self.init_args['nwalkers']
+            if 'nwalkers' in self.init_args:
+                self.nwalkers = self.init_args['nwalkers']
+                del self.init_args['nwalkers']
+            
+            self.filename = get_filename(filename, "Emcee", **kwargs)
+            self.reset = not self.printer.resume_mode()
+        
 
     def run_internal(self, nsteps=5000, progress=True, initial_state=None, pkl_name=None, **kwargs):
         if self.mpi_size == 1:
@@ -76,6 +83,7 @@ class Emcee(splug.scanner):
             self.nwalkers,
             self.dim,
             self.my_like,
+            backend=self.backend(self.filename, self.reset),
             **self.init_args)
             
             self.sampler.run_mcmc(initial_state, nsteps,
@@ -90,6 +98,7 @@ class Emcee(splug.scanner):
                     self.nwalkers,
                     self.dim,
                     self.my_like,
+                    backend=self.backend(self.filename, self.reset),
                     pool=pool,
                     **self.init_args)
                     
@@ -120,4 +129,4 @@ class Emcee(splug.scanner):
         self.run_internal(**self.run_args)
 
 
-__plugins__ = {Emcee.name: Emcee}
+__plugins__ = {"emcee": Emcee}

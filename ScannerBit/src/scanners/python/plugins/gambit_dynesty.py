@@ -14,7 +14,7 @@ import numpy as np
 
 from utils import MPIPool
 import scanner_plugin as splug
-from utils import copydoc, version
+from utils import copydoc, version, get_filename
 from mpi4py import MPI
 
 class StaticDynesty(splug.scanner):
@@ -26,39 +26,62 @@ class StaticDynesty(splug.scanner):
     :param: pkl_name ('static_dynesty.pkl')
     """
 
-    name = "static_dynesty"
     __version__ = version(dynesty)
 
     @copydoc(dynesty.NestedSampler)
-    def __init__(self, **kwargs):
-        super().__init__()
+    def __init__(self, filename='dynesty.save', **kwargs):
+        super().__init__(use_mpi=True)
         
         if self.mpi_rank == 0:
             self.assign_aux_numbers("Posterior")
             self.printer.new_stream("txt", synchronised=False)
+            self.filename = get_filename(filename, "/StaticDynesty/", **kwargs)
         
-    def gambit_loglike(self, params):
-        lnew = self.loglike_physical(params)
+    @staticmethod
+    def gambit_loglike(params):
+        lnew = StaticDynesty.loglike_hypercube(params)
         
-        return (lnew, np.array([self.mpi_rank, self.point_id]))
+        return (lnew, np.array([StaticDynesty.mpi_rank, StaticDynesty.point_id]))
+    
+    @staticmethod
+    def gambit_transform(params):
+        return params
 
-    def run_internal(self, pkl_name="static_dynesty.pkl", **kwargs):
+    def run_internal(self, pkl_name=None, **kwargs):
         if self.mpi_size == 1:
-            self.sampler = dynesty.DynamicNestedSampler(
-                self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, **self.init_args)
-            
-            self.sampler.run_nested(**kwargs)
+            if self.printer.resume_mode():
+                self.sampler = dynesty.NestedSampler.restore(self.filename)
+                
+                self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
+            else:
+                self.sampler = dynesty.NestedSampler(
+                    self.gambit_loglike,
+                    self.gambit_transform,
+                    self.dim, 
+                    blob=True, 
+                    **self.init_args)
+                
+                self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
         
         else:
             with MPIPool() as pool:
+                if self.printer.resume_mode():
+                    self.sampler = dynesty.NestedSampler.restore(self.filename, pool=pool)
                 
-                if pool.is_master():
-                    self.sampler = dynesty.DynamicNestedSampler(
-                        self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, pool=pool, **self.init_args)
-                    
-                    self.sampler.run_nested(**kwargs)
+                    self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
                 else:
-                    pool.wait()
+                    if pool.is_master():
+                        self.sampler = dynesty.NestedSampler(
+                            self.gambit_loglike,
+                            self.gambit_transform,
+                            self.dim, 
+                            blob=True, 
+                            pool=pool, 
+                            **self.init_args)
+                        
+                        self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
+                    else:
+                        pool.wait()
 
         if self.mpi_rank == 0:
 
@@ -73,8 +96,9 @@ class StaticDynesty(splug.scanner):
                 
             stream.flush()
             
-            with open(pkl_name, "wb") as f:
-                pickle.dump(self.sampler.results, f)
+            if not pkl_name is None:
+                with open(pkl_name, "wb") as f:
+                    pickle.dump(self.sampler.results, f)
             
     @copydoc(dynesty.NestedSampler.run_nested)
     def run(self):
@@ -89,42 +113,70 @@ class DynamicDynesty(splug.scanner):
     :param: pkl_name ('dynamic_dynesty.pkl')
     """
 
-    name = "dynamic_dynesty"
     __version__ = version(dynesty)
 
     @copydoc(dynesty.DynamicNestedSampler)
-    def __init__(self, **kwargs):
-        super().__init__()
+    def __init__(self, filename='dynesty.save', **kwargs):
+        super().__init__(use_mpi=True)
         
         if self.mpi_rank == 0:
             self.assign_aux_numbers("Posterior")
             self.printer.new_stream("txt", synchronised=False)
+            self.filename = get_filename(filename, "/DynamicDynesty/", **kwargs)
         
-    def __reduce__(self):
-        return (self.__class__, ())
+    #def __reduce__(self):
+        #return (self.__class__, ())
+    
+    #def gambit_loglike(self, params):
+        #lnew = self.loglike_hypercube(params)
         
-    def gambit_loglike(self, params):
-        lnew = self.loglike_physical(params)
+        #return (lnew, np.array([self.mpi_rank, self.point_id]))
         
-        return (lnew, np.array([self.mpi_rank, self.point_id]))
+    @staticmethod
+    def gambit_loglike(params):
+        lnew = DynamicDynesty.loglike_hypercube(params)
+        
+        return (lnew, np.array([DynamicDynesty.mpi_rank, DynamicDynesty.point_id]))
+
+    @staticmethod
+    def gambit_transform(params):
+        return params
 
     def run_internal(self, pkl_name=None, **kwargs):
         if self.mpi_size == 1:
-            self.sampler = dynesty.DynamicNestedSampler(
-                self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, **self.init_args)
-            
-            self.sampler.run_nested(**kwargs)
+            if self.printer.resume_mode():
+                self.sampler = dynesty.DynamicNestedSampler.restore(self.filename)
+                
+                self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
+            else:
+                self.sampler = dynesty.DynamicNestedSampler(
+                    self.gambit_loglike,
+                    self.gambit_transform,
+                    self.dim, 
+                    blob=True, 
+                    **self.init_args)
+                
+                self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
         
         else:
             with MPIPool() as pool:
+                if self.printer.resume_mode():
+                    self.sampler = dynesty.DynamicNestedSampler.restore(self.filename, pool=pool)
                 
-                if pool.is_master():
-                    self.sampler = dynesty.DynamicNestedSampler(
-                        self.gambit_loglike, self.transform_to_vec, self.dim, blob=True, pool=pool, **self.init_args)
-                    
-                    self.sampler.run_nested(**kwargs)
+                    self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
                 else:
-                    pool.wait()
+                    if pool.is_master():
+                        self.sampler = dynesty.DynamicNestedSampler(
+                            self.gambit_loglike,
+                            self.gambit_transform,
+                            self.dim, 
+                            blob=True, 
+                            pool=pool, 
+                            **self.init_args)
+                        
+                        self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
+                    else:
+                        pool.wait()
 
         if self.mpi_rank == 0:
 
@@ -148,5 +200,5 @@ class DynamicDynesty(splug.scanner):
         self.run_internal(**self.run_args)
 
 
-__plugins__ = {StaticDynesty.name: StaticDynesty,
-               DynamicDynesty.name: DynamicDynesty}
+__plugins__ = {"static_dynesty": StaticDynesty,
+               "dynamic_dynesty": DynamicDynesty}
