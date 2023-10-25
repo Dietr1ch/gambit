@@ -48,7 +48,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: emcee #de
+  use_scanner: de
 
   scanners:
 
@@ -180,8 +180,9 @@ Scanner:
     nessai:
         like: LogLike
         plugin: nessai_flow_sampler
+        pkg: gambit_nessai
         init:
-            output: "nessai_log_dir"
+            #output: "nessai_log_dir"
             logger: True
 
     # Python scanners - optimization

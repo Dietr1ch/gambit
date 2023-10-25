@@ -53,12 +53,12 @@ class ReactiveUltranest(splug.scanner):
 
         self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
-            self.parameter_names,
+            #self.parameter_names,
+            ["unit[{0}]".format(i) for i in range(self.dim)],
             self.ultra_like,
             resume='resume-similar' if self.printer.resume_mode() else 'overwrite',
             log_dir=get_filename("", log_dir, **kwargs),
             **self.init_args)
-
     
     def run_internal(self, pkl_name=None, **kwargs):
         """

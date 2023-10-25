@@ -38,10 +38,7 @@ class Emcee(splug.scanner):
     @staticmethod
     def my_like(params):
         
-        Emcee.my_like.upper_bound = getattr(Emcee.my_like, "upper_bound", np.array([1.0]*Emcee.dim))
-        Emcee.my_like.lower_bound = getattr(Emcee.my_like, "lower_bound", np.array([0.0]*Emcee.dim))
-        
-        if (params < Emcee.my_like.upper_bound).all() and (params > Emcee.my_like.lower_bound).all():
+        if ((params < 1.0) & (params > 0.0)).all():
             lnew = Emcee.loglike_hypercube(params)
             
             return (lnew, Emcee.mpi_rank, Emcee.point_id)
