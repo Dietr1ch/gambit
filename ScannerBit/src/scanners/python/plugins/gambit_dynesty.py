@@ -119,8 +119,8 @@ class DynamicDynesty(splug.scanner):
     def __init__(self, filename='dynesty.save', **kwargs):
         super().__init__(use_mpi=True)
         
+        self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
-            self.assign_aux_numbers("Posterior")
             self.printer.new_stream("txt", synchronised=False)
             self.filename = get_filename(filename, "/DynamicDynesty/", **kwargs)
         

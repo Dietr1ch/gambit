@@ -59,8 +59,8 @@ class Emcee(splug.scanner):
         
         self.nwalkers = nwalkers
         
+        self.assign_aux_numbers("mult")
         if self.mpi_rank == 0:
-            self.assign_aux_numbers("mult")
             self.printer.new_stream("txt", synchronised=False)
         
             if 'nwalkers' in self.init_args:

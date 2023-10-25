@@ -478,34 +478,6 @@ namespace Gambit
                         
                         return like;
                     }
-                    
-                    static std::shared_ptr<scanner_base::s_hyper_func> get_loglike_hypercube()
-                    {
-                        static std::shared_ptr<scanner_base::s_hyper_func> like_hypercube(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_hyper_func(*scanner_base::getLike().get()));
-                                        
-                        return like_hypercube;
-                    }
-                    
-                    static std::shared_ptr<scanner_base::s_phys_func>  get_loglike_physical()
-                    {
-                        static std::shared_ptr<scanner_base::s_phys_func> like_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_func(*scanner_base::getLike().get()));
-                                        
-                        return like_physical;
-                    }
-                    
-                    static std::shared_ptr<scanner_base::s_phys_pr_func> get_log_target_density()
-                    {
-                        static std::shared_ptr<scanner_base::s_phys_pr_func> like_prior_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_pr_func(*scanner_base::getLike().get()));
-                                        
-                        return like_prior_physical;
-                    }
-                    
-                    static std::shared_ptr<scanner_base::s_pr_func> get_log_prior_density()
-                    {
-                        static std::shared_ptr<scanner_base::s_pr_func> prior_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_pr_func(*scanner_base::getLike().get()));
-                                        
-                        return prior_physical;
-                    }
                 };
                 
             }
@@ -775,6 +747,11 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     .def("finalise", [&](Gambit::Scanner::printer_interface &self, bool abnormal)
     {
         self.finalise(abnormal);
+    })
+    .def_static("assign_aux_numbers", [](py::args params)
+    {
+        for (auto &&param : params)
+            ::Gambit::Printers::get_aux_param_id(param.cast<std::string>());
     });
     
     typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
@@ -791,7 +768,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     pylike_hypercube_ptr
     .def(py::init([]()
     {
-        return scanner_base::get_loglike_hypercube();
+        return std::shared_ptr<scanner_base::s_hyper_func> (scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_hyper_func(*scanner_base::getLike().get()));
     }))
     .def("__reduce__", [pylike_hypercube_ptr](s_hyper_func &)
     {
@@ -819,7 +796,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     pylike_physical_ptr
     .def(py::init([]()
     {
-        return scanner_base::get_loglike_physical();
+        return std::shared_ptr<scanner_base::s_phys_func> (scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_func(*scanner_base::getLike().get()));
     }))
     .def("__reduce__", [pylike_physical_ptr](s_phys_func &)
     {
@@ -853,7 +830,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     pylike_prior_physical_ptr
     .def(py::init([]()
     {
-        return scanner_base::get_log_target_density();
+        return std::shared_ptr<scanner_base::s_phys_pr_func> (scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_pr_func(*scanner_base::getLike().get()));
     }))
     .def("__reduce__", [pylike_prior_physical_ptr](s_phys_pr_func &)
     {
@@ -887,7 +864,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     pyprior_physical_ptr
     .def(py::init([]()
     {
-        return scanner_base::get_log_prior_density();
+        return std::shared_ptr<scanner_base::s_pr_func> (scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_pr_func(*scanner_base::getLike().get()));
     }))
     .def("__reduce__", [pyprior_physical_ptr](s_pr_func &)
     {
@@ -1095,19 +1072,27 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     })
     .def_property_readonly_static("loglike_hypercube", [](py::object)
     {
-        return scanner_base::get_loglike_hypercube();
+        static std::shared_ptr<scanner_base::s_hyper_func> like_hypercube(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_hyper_func(*scanner_base::getLike().get()));
+                                        
+        return like_hypercube;
     })
     .def_property_readonly_static("loglike_physical", [](py::object)
     {
-        return scanner_base::get_loglike_physical();
+        static std::shared_ptr<scanner_base::s_phys_func> like_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_func(*scanner_base::getLike().get()));
+                                        
+        return like_physical;
     })
     .def_property_readonly_static("log_target_density", [](py::object)
     {
-        return scanner_base::get_log_target_density();
+        static std::shared_ptr<scanner_base::s_phys_pr_func> like_prior_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_phys_pr_func(*scanner_base::getLike().get()));
+                                        
+        return like_prior_physical;
     })
     .def_property_readonly_static("log_prior_density", [](py::object)
     {
-        return scanner_base::get_log_prior_density();
+        static std::shared_ptr<scanner_base::s_pr_func> prior_physical(scanner_base::getLike() == nullptr ? nullptr : new scanner_base::s_pr_func(*scanner_base::getLike().get()));
+                                        
+        return prior_physical;
     })
     .def_property_readonly_static("loglike", [](py::object)
     {

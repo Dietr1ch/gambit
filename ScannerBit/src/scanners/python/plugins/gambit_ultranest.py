@@ -47,13 +47,12 @@ class ReactiveUltranest(splug.scanner):
             print("WARNING: UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
             #raise Exception("UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
         
+        self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
-            self.assign_aux_numbers("Posterior")
             self.printer.new_stream("txt", synchronised=False)
 
         self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
-            #self.parameter_names,
             ["unit[{0}]".format(i) for i in range(self.dim)],
             self.ultra_like,
             resume='resume-similar' if self.printer.resume_mode() else 'overwrite',
