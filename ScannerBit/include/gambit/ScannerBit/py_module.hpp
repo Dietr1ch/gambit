@@ -284,57 +284,40 @@ namespace Gambit
                     return node;
                 }
                 
-                class like_hypercube : public std::enable_shared_from_this<like_hypercube>
+                template <typename T>
+                class like_ptr_base : public std::enable_shared_from_this<T>
                 {
-                private:
+                protected:
                     typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
                     typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
                     s_ptr ptr;
                     
                 public:
-                    like_hypercube(s_func &s) : ptr(s.shared_from_this()) {}
+                    like_ptr_base(s_func &s) : ptr(s.shared_from_this()) {}
                     
                     Gambit::Scanner::like_ptr &get(){return static_cast<Gambit::Scanner::like_ptr&>(ptr);}
                 };
                 
-                class like_physical : public std::enable_shared_from_this<like_physical>
+                struct like_hypercube : like_ptr_base<like_hypercube>
                 {
-                private:
-                    typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
-                    typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
-                    s_ptr ptr;
-                    
-                public:
-                    like_physical(s_func &s) : ptr(s.shared_from_this()) {}
-                    
-                    Gambit::Scanner::like_ptr &get(){return static_cast<Gambit::Scanner::like_ptr&>(ptr);}
+                    like_hypercube(s_func &s) : like_ptr_base<like_hypercube>(s) {}
                 };
                 
-                class like_prior_physical : public std::enable_shared_from_this<like_prior_physical>
+                struct like_physical : like_ptr_base<like_physical>
                 {
-                private:
-                    typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
-                    typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
-                    s_ptr ptr;
-                    
-                public:
-                    like_prior_physical(s_func &s) : ptr(s.shared_from_this()) {}
-                    
-                    Gambit::Scanner::like_ptr &get(){return static_cast<Gambit::Scanner::like_ptr&>(ptr);}
+                    like_physical(s_func &s) : like_ptr_base<like_physical>(s) {}
                 };
                 
-                class prior_physical : public std::enable_shared_from_this<prior_physical>
+                struct like_prior_physical : like_ptr_base<like_prior_physical>
                 {
-                private:
-                    typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
-                    typedef Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)> s_func;
-                    s_ptr ptr;
-                    
-                public:
-                    prior_physical(s_func &s) : ptr(s.shared_from_this()) {}
-                    
-                    Gambit::Scanner::like_ptr &get(){return static_cast<Gambit::Scanner::like_ptr&>(ptr);}
+                    like_prior_physical(s_func &s) : like_ptr_base<like_prior_physical>(s) {}
                 };
+                
+                struct prior_physical : like_ptr_base<prior_physical>
+                {
+                    prior_physical(s_func &s) : like_ptr_base<prior_physical>(s) {}
+                };
+                
                 
             }
             
@@ -1019,7 +1002,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         for (auto &&m : map)
             physical[py::cast(m.first)] = py::cast(m.second);
     })
-    .def("transform_to_vec", [](Gambit::Scanner::hyper_cube<double> unit)
+    .def_static("transform_to_vec", [](Gambit::Scanner::hyper_cube<double> unit)
     {
         //auto &map = getLike()->getMap();
         static std::unordered_map<std::string, double> map;

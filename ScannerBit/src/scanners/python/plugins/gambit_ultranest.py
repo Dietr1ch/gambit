@@ -3,13 +3,13 @@ Ultranest scanners
 ==================
 """
 
+import atexit
 import pickle
 import ultranest
-from mpi4py import MPI
 import numpy as np
 
 import scanner_plugin as splug
-from utils import copydoc, version, parse, get_filename
+from utils import copydoc, version, parse, get_filename, store_pt_data
 
 class ReactiveUltranest(splug.scanner):
     """
@@ -20,19 +20,9 @@ class ReactiveUltranest(splug.scanner):
     
     def ultra_like(self, params):
         lnew = self.loglike_hypercube(params)
-        self.saves[tuple(params)] = (self.mpi_rank, self.point_id)
-
-        return lnew
-    
-    def transfer(self):
-        comm = MPI.COMM_WORLD
+        self.ids.save(tuple(params), (self.mpi_rank, self.point_id))
         
-        if self.mpi_rank == 0:
-            for i in range(1, self.mpi_size):
-                data = comm.recv(source=i, tag=1)
-                self.saves.update(data)
-        else:
-            comm.send(self.saves, dest=0, tag=1)
+        return lnew
     
     @copydoc(ultranest.ReactiveNestedSampler)
     def __init__(self, log_dir="ultranest_log_dir", **kwargs):
@@ -50,16 +40,18 @@ class ReactiveUltranest(splug.scanner):
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
             self.printer.new_stream("txt", synchronised=False)
+            
+        self.log_dir = get_filename("", log_dir, **kwargs)
+        self.ids = store_pt_data(resume=self.printer.resume_mode(), log_dir=self.log_dir)
 
-        self.saves = {}
         self.sampler = ultranest.ReactiveNestedSampler(
             ["unit[{0}]".format(i) for i in range(self.dim)],
             self.ultra_like,
             resume='resume-similar' if self.printer.resume_mode() else 'overwrite',
-            log_dir=get_filename("", log_dir, **kwargs),
+            log_dir=self.log_dir,
             **self.init_args)
     
-    def run_internal(self, pkl_name=None, **kwargs):
+    def run_internal(self, pkl_name='ultranest.pkl', **kwargs):
         """
         We add the argument
 
@@ -70,7 +62,7 @@ class ReactiveUltranest(splug.scanner):
         """
         
         self.sampler.run(**kwargs)
-        self.transfer()
+        self.ids.load_saves()
         
         if self.mpi_rank == 0:
             result = self.sampler.results
@@ -79,15 +71,18 @@ class ReactiveUltranest(splug.scanner):
             stream = self.printer.get_stream("txt")
             stream.reset()
             for wt, pt in zip(wts, pts):
-                if tuple(pt) in self.saves:
-                    save = self.saves[tuple(pt)]
+                if tuple(pt) in self.ids.saves:
+                    save = self.ids.saves[tuple(pt)]
                     stream.print(wt, "Posterior", save[0], save[1])
                 else:
                     print("warning: point ", tuple(pt), " has no correponding id.")
             stream.flush()
             
             if not pkl_name is None:
-                with open(pkl_name, "wb") as f:
+                for i in range(self.dim):
+                    result["weighted_samples"]["points"][i] = self.transform_to_vec(pts[i])
+                result["weighted_samples"]["parameter_names"] = self.parameter_names
+                with open(self.log_dir + pkl_name, "wb") as f:
                     pickle.dump(result, f)
     
     @copydoc(ultranest.ReactiveNestedSampler.run)

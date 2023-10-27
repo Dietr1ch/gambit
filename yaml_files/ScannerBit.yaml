@@ -48,7 +48,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: de
+  use_scanner: ultranest #dynamic_dynesty #de
 
   scanners:
 
@@ -181,9 +181,9 @@ Scanner:
         like: LogLike
         plugin: nessai_flow_sampler
         pkg: gambit_nessai
-        init:
+        #init:
             #output: "nessai_log_dir"
-            logger: True
+            #logger: True
 
     # Python scanners - optimization
 

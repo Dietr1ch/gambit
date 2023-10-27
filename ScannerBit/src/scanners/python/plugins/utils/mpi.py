@@ -231,6 +231,10 @@ class MPIPool(BasePool):
             pending -= 1
 
         return resultlist
+    
+    #def join(self):
+        #self.close()
+        #self.comm.Barrier()
 
     def close(self):
         """ Tell all the workers to quit."""

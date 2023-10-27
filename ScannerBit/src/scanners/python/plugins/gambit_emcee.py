@@ -76,12 +76,11 @@ class Emcee(splug.scanner):
             if initial_state is None:
                 initial_state = self.initial_state()
                 
-            self.sampler = emcee.EnsembleSampler(
-            self.nwalkers,
-            self.dim,
-            self.my_like,
-            backend=self.backend(self.filename, self.reset),
-            **self.init_args)
+            self.sampler = emcee.EnsembleSampler(self.nwalkers,
+                                                 self.dim,
+                                                 self.my_like,
+                                                 backend=self.backend(self.filename, self.reset),
+                                                 **self.init_args)
             
             self.sampler.run_mcmc(initial_state, nsteps,
                                 progress=progress, **kwargs)
@@ -91,13 +90,12 @@ class Emcee(splug.scanner):
                     if initial_state is None:
                         initial_state = self.initial_state()
                         
-                    self.sampler = emcee.EnsembleSampler(
-                    self.nwalkers,
-                    self.dim,
-                    self.my_like,
-                    backend=self.backend(self.filename, self.reset),
-                    pool=pool,
-                    **self.init_args)
+                    self.sampler = emcee.EnsembleSampler(self.nwalkers,
+                                                         self.dim,
+                                                         self.my_like,
+                                                         backend=self.backend(self.filename, self.reset),
+                                                         pool=pool,
+                                                         **self.init_args)
                     
                     self.sampler.run_mcmc(initial_state, nsteps,
                                         progress=progress, **kwargs)
