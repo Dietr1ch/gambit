@@ -48,7 +48,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: ultranest #dynamic_dynesty #de
+  use_scanner: de
 
   scanners:
 

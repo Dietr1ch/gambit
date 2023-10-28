@@ -79,13 +79,13 @@ class MPIPool(BasePool):
     use_dill: Set `True` to use `dill` serialization. Default is `False`.
     """
 
-    def __init__(self, comm=None, use_dill=False):
+    def __init__(self, comm=None, use_dill=False, use_join=False):
         #MPI = _import_mpi(use_dill=use_dill)
         global MPI
         if comm is None:
             comm = MPI.COMM_WORLD
         self.comm = comm
-
+        self.use_join = use_join
         self.master = 0
         self.rank = self.comm.Get_rank()
 
@@ -141,6 +141,8 @@ class MPIPool(BasePool):
                                   status=status)
 
             if task is None:
+                if self.use_join:
+                    self.comm.send(None, dest=self.master, tag=134)
                 #log.log(_VERBOSE, "Worker {0} told to quit work".format(worker))
                 break
 
@@ -232,9 +234,12 @@ class MPIPool(BasePool):
 
         return resultlist
     
-    #def join(self):
-        #self.close()
-        #self.comm.Barrier()
+    def join(self):
+        if self.use_join:
+            for i in range(1, self.comm.Get_size()):
+                self.comm.recv(source=i, tag=134)
+        else:
+            raise Exception("MPIPool: the \'join\' method was used, but \'use_join=True\' was not set.")
 
     def close(self):
         """ Tell all the workers to quit."""

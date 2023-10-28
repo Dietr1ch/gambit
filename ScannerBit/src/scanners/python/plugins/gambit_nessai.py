@@ -75,7 +75,7 @@ class FlowSampler2(splug.scanner):
             self.sampler.run(**kwargs)
         else:
             initialise_pool_variables(model)
-            with MPIPool() as pool:
+            with MPIPool(use_join=True) as pool:
                 if pool.is_master():
                     self.sampler = FlowSampler(model, 
                                                pool=pool,
