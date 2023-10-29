@@ -3,20 +3,30 @@ Ultranest scanners
 ==================
 """
 
-import atexit
 import pickle
-import ultranest
 import numpy as np
-
-import scanner_plugin as splug
 from utils import copydoc, version, parse, get_filename, store_pt_data
+
+try:
+    import ultranest
+    ultranest_version = version(ultranest)
+    ultranest_ReactiveNestedSampler = ultranest.ReactiveNestedSampler
+    ultranest_ReactiveNestedSampler_run = ultranest.ReactiveNestedSampler.run
+except:
+    __error__ = 'ultranest pkg not installed'
+    ultranest_version = 'n/a'
+    ultranest_ReactiveNestedSampler = None
+    ultranest_ReactiveNestedSampler_run = None
+    
+import scanner_plugin as splug
+
 
 class ReactiveUltranest(splug.scanner):
     """
     Ultranest reactive sampler.
     """
 
-    __version__ = version(ultranest)
+    __version__ = ultranest_version
     
     def ultra_like(self, params):
         lnew = self.loglike_hypercube(params)
@@ -24,7 +34,7 @@ class ReactiveUltranest(splug.scanner):
         
         return lnew
     
-    @copydoc(ultranest.ReactiveNestedSampler)
+    @copydoc(ultranest_ReactiveNestedSampler)
     def __init__(self, log_dir="ultranest_log_dir", **kwargs):
         """
         To ensure results are saved, by default we set the argument
@@ -85,7 +95,7 @@ class ReactiveUltranest(splug.scanner):
                 with open(self.log_dir + pkl_name, "wb") as f:
                     pickle.dump(result, f)
     
-    @copydoc(ultranest.ReactiveNestedSampler.run)
+    @copydoc(ultranest_ReactiveNestedSampler_run)
     def run(self):
         self.run_internal(**self.run_args)
 

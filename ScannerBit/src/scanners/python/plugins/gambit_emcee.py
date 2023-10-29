@@ -4,15 +4,24 @@ Emcee scanner
 """
 
 import numpy as np
-import os
-import emcee
+from utils import copydoc, version, get_filename, MPIPool
+
+try:
+    import emcee
+    emcee_version = version(emcee)
+    emcee_EnsembleSampler = emcee.EnsembleSampler
+    emcee_EnsembleSampler_run_mcmc = emcee.EnsembleSampler.run_mcmc
+except:
+    __error__ = 'emcee pkg not installed'
+    emcee_version = 'n/a'
+    emcee_EnsembleSampler = None
+    emcee_EnsembleSampler_run_mcmc = None
 
 import scanner_plugin as splug
-from utils import copydoc, version, get_filename, MPIPool
 
 class Emcee(splug.scanner):
 
-    __version__ = version(emcee)
+    __version__ = emcee_version
     
     def backend(self, filename, reset):
         """
@@ -45,7 +54,7 @@ class Emcee(splug.scanner):
         else:
             return  (-np.inf, -1, -1)
 
-    @copydoc(emcee.EnsembleSampler)
+    @copydoc(emcee_EnsembleSampler)
     def __init__(self, nwalkers=1, filename='emcee.h5', **kwargs):
         """
         There is an additional argument:
@@ -119,7 +128,7 @@ class Emcee(splug.scanner):
                 with open(pkl_name, "wb") as f:
                     pickle.dump(samples, f)
         
-    @copydoc(emcee.EnsembleSampler.run_mcmc)
+    @copydoc(emcee_EnsembleSampler_run_mcmc)
     def run(self):
         self.run_internal(**self.run_args)
 

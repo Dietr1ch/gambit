@@ -9,13 +9,26 @@ attempts to pickle the loglikelihood function etc.
 """
 
 import pickle
-import dynesty
 import numpy as np
+from utils import copydoc, version, MPIPool, get_filename
 
-from utils import MPIPool
+try:
+    import dynesty
+    dynesty_version = version(dynesty)
+    dynesty_NestedSampler = dynesty.NestedSampler
+    dynesty_NestedSampler_run_nested = dynesty.NestedSampler.run_nested
+    dynesty_DynamicNestedSampler = dynesty.DynamicNestedSampler
+    dynesty_DynamicNestedSampler_run_nested = dynesty.DynamicNestedSampler.run_nested
+except:
+    __error__ = 'dynesty pkg not installed'
+    dynesty_version = 'n/a'
+    dynesty_NestedSampler = None
+    dynesty_NestedSampler_run_nested = None
+    dynesty_DynamicNestedSampler = None
+    dynesty_DynamicNestedSampler_run_nested = None
+
 import scanner_plugin as splug
-from utils import copydoc, version, get_filename
-from mpi4py import MPI
+
 
 class StaticDynesty(splug.scanner):
     """
@@ -26,9 +39,9 @@ class StaticDynesty(splug.scanner):
     :param: pkl_name ('static_dynesty.pkl')
     """
 
-    __version__ = version(dynesty)
+    __version__ = dynesty_version
 
-    @copydoc(dynesty.NestedSampler)
+    @copydoc(dynesty_NestedSampler)
     def __init__(self, filename='dynesty.save', **kwargs):
         super().__init__(use_mpi=True)
         
@@ -100,7 +113,7 @@ class StaticDynesty(splug.scanner):
                 with open(pkl_name, "wb") as f:
                     pickle.dump(self.sampler.results, f)
             
-    @copydoc(dynesty.NestedSampler.run_nested)
+    @copydoc(dynesty_NestedSampler_run_nested)
     def run(self):
         self.run_internal(**self.run_args)
 
@@ -113,9 +126,9 @@ class DynamicDynesty(splug.scanner):
     :param: pkl_name ('dynamic_dynesty.pkl')
     """
 
-    __version__ = version(dynesty)
+    __version__ = dynesty_version
 
-    @copydoc(dynesty.DynamicNestedSampler)
+    @copydoc(dynesty_DynamicNestedSampler)
     def __init__(self, filename='dynesty.save', **kwargs):
         super().__init__(use_mpi=True)
         
@@ -195,7 +208,7 @@ class DynamicDynesty(splug.scanner):
                 with open(pkl_name, "wb") as f:
                     pickle.dump(self.sampler.results, f)
      
-    @copydoc(dynesty.DynamicNestedSampler.run_nested)
+    @copydoc(dynesty_DynamicNestedSampler_run_nested)
     def run(self):
         self.run_internal(**self.run_args)
 

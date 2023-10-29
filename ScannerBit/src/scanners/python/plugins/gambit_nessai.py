@@ -2,16 +2,28 @@
 Nessai scanner
 ==============
 """
-import atexit
-import nessai
+
 import pickle
-from nessai.flowsampler import FlowSampler
-from nessai.model import Model
-from nessai.utils import setup_logger
-from nessai.utils.multiprocessing import initialise_pool_variables
 import numpy as np
+from utils import copydoc, get_filename, version, MPIPool, store_pt_data
+
+try:
+    import nessai
+    from nessai.flowsampler import FlowSampler
+    from nessai.model import Model
+    from nessai.utils import setup_logger
+    from nessai.utils.multiprocessing import initialise_pool_variables
+    nessai_version = version(nessai)
+    FlowSampler_run = FlowSampler.run
+except:
+    __error__ = 'nessai pkg not installed'
+    nessai_version = 'n/a'
+    FlowSampler = None
+    FlowSampler_run = None
+    class Model:
+        pass
+
 import scanner_plugin as splug
-from utils import copydoc, version, get_filename, MPIPool, store_pt_data
 
 
 class Gambit_Model(Model):
@@ -40,7 +52,7 @@ class GambitFlowSampler(splug.scanner):
     parameter, which may not exist in physical parameters.
     """
 
-    __version__ = version(nessai)
+    __version__ = nessai_version
 
     @copydoc(FlowSampler)
     def __init__(self, logger=True, output="nessai_log_dir", **kwargs):
@@ -104,7 +116,7 @@ class GambitFlowSampler(splug.scanner):
                     print("warning: point ", tuple(pt), " has no correponding id.")
             stream.flush()
 
-    @copydoc(FlowSampler.run)
+    @copydoc(FlowSampler_run)
     def run(self):
         self.run_internal(**self.run_args)
 

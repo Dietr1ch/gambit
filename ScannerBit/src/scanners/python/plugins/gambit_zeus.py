@@ -3,29 +3,27 @@ Zeus scanner
 ============
 """
 
-#import collections.abc
-##hyper needs the four following aliases to be done manually.
-#collections.Iterable = collections.abc.Iterable
-#collections.Mapping = collections.abc.Mapping
-#collections.MutableSet = collections.abc.MutableSet
-#collections.MutableMapping = collections.abc.MutableMapping
 import numpy as np
+from utils import copydoc, version, get_filename, MPIPool
+
 try:
     import zeus
-    zeus_version = zeus.__version__
+    zeus_version = version(zeus)
     zeus_EnsembleSampler = zeus.EnsembleSampler
     zeus_EnsembleSampler_run_mcmc = zeus.EnsembleSampler.run_mcmc
 except:
-    __error__='zeus-mcmc pkg not loaded'
-    zeus_version =''
+    __error__='zeus-mcmc pkg not installed'
+    zeus_version ='n/a'
     zeus_EnsembleSampler=None
     zeus_EnsembleSampler_run_mcmc=None
 
 import scanner_plugin as splug
-from utils import copydoc, version, get_filename, MPIPool
 
 
 class Zeus(splug.scanner):
+    """
+    An ensamble slice sampler.  Unfortunately, resume does not work on this sampler.  See https://zeus-mcmc.readthedocs.io/en/latest/index.html
+    """
 
     __version__ = zeus_version
 
@@ -67,16 +65,11 @@ class Zeus(splug.scanner):
             self.printer.new_stream("txt", synchronised=False)
             self.filename = get_filename(filename, "Emcee", **kwargs)
 
-    def run_internal(
-            self,
-            pkl_name=None,
-            nsteps=100,
-            initial_state=None,
-            **kwargs):
+    def run_internal(self, pkl_name=None, nsteps=100, initial_state=None, **kwargs):
         """
         There is one additional arguments:
 
-        :param: filename (zeus.h5')
+        :param: filename ('zeus.h5')
 
         for passing the name of a h5 file to which to save results using the zeus writer.
         """
