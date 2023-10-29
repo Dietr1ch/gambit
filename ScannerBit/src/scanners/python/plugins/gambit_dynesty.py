@@ -10,7 +10,9 @@ attempts to pickle the loglikelihood function etc.
 
 import pickle
 import numpy as np
-from utils import copydoc, version, MPIPool, get_filename
+from utils import copydoc, version, with_mpi, get_filename
+if with_mpi:
+    from utils import MPIPool
 
 try:
     import dynesty
@@ -32,23 +34,26 @@ import scanner_plugin as splug
 
 class StaticDynesty(splug.scanner):
     """
-    Dynesty nested sampler with static number of live points.
+    Dynesty nested sampler with static number of live points.  See https://dynesty.readthedocs.io/en/latest/index.html
 
-    We add an additional run parameter:
+    We add these additional parameters:
 
-    :param: pkl_name ('static_dynesty.pkl')
+        pkl_name ('static_dynesty.pkl'):  File name where results will be pickled
+        filename ('dynesty.save'):  Filename where temp data will be stored
     """
 
     __version__ = dynesty_version
 
     @copydoc(dynesty_NestedSampler)
-    def __init__(self, filename='dynesty.save', **kwargs):
+    def __init__(self, pkl_name=None, filename='dynesty.save', **kwargs):
         super().__init__(use_mpi=True)
         
+        self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
-            self.assign_aux_numbers("Posterior")
+            self.log_dir = get_filename("", "/StaticDynesty/", **kwargs)
+            self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
-            self.filename = get_filename(filename, "/StaticDynesty/", **kwargs)
+            self.filename = self.log_dir + filename
         
     @staticmethod
     def gambit_loglike(params):
@@ -60,12 +65,13 @@ class StaticDynesty(splug.scanner):
     def gambit_transform(params):
         return params
 
-    def run_internal(self, pkl_name=None, **kwargs):
+    @copydoc(dynesty_NestedSampler_run_nested)
+    def run(self):
         if self.mpi_size == 1:
             if self.printer.resume_mode():
                 self.sampler = dynesty.NestedSampler.restore(self.filename)
                 
-                self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
+                self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **self.run_args)
             else:
                 self.sampler = dynesty.NestedSampler(
                     self.gambit_loglike,
@@ -74,14 +80,14 @@ class StaticDynesty(splug.scanner):
                     blob=True, 
                     **self.init_args)
                 
-                self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
+                self.sampler.run_nested(checkpoint_file=self.filename, **self.run_args)
         
         else:
             with MPIPool() as pool:
                 if self.printer.resume_mode():
                     self.sampler = dynesty.NestedSampler.restore(self.filename, pool=pool)
                 
-                    self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
+                    self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **self.run_args)
                 else:
                     if pool.is_master():
                         self.sampler = dynesty.NestedSampler(
@@ -92,7 +98,7 @@ class StaticDynesty(splug.scanner):
                             pool=pool, 
                             **self.init_args)
                         
-                        self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
+                        self.sampler.run_nested(checkpoint_file=self.filename, **self.run_args)
                     else:
                         pool.wait()
 
@@ -105,37 +111,36 @@ class StaticDynesty(splug.scanner):
             stream.reset()
             
             for wt, blob in zip(wts, blobs):
-                steam.print(np.exp(wt), "Posterior", blob[0], blob[1])
+                stream.print(np.exp(wt), "Posterior", blob[0], blob[1])
                 
             stream.flush()
             
-            if not pkl_name is None:
-                with open(pkl_name, "wb") as f:
+            if (not self.pkl_name is None) and (self.pkl_name != ""):
+                with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(self.sampler.results, f)
-            
-    @copydoc(dynesty_NestedSampler_run_nested)
-    def run(self):
-        self.run_internal(**self.run_args)
 
 class DynamicDynesty(splug.scanner):
     """
-    Dynesty nested sampler with dynamic number of live points.
+    Dynesty nested sampler with dynamic number of live points.  See https://dynesty.readthedocs.io/en/latest/index.html
 
-    We add an additional run parameter:
+    We add these additional parameters:
 
-    :param: pkl_name ('dynamic_dynesty.pkl')
+        pkl_name ('static_dynesty.pkl'):  File name where results will be pickled
+        filename ('dynesty.save'):  Filename where temp data will be stored
     """
 
     __version__ = dynesty_version
 
     @copydoc(dynesty_DynamicNestedSampler)
-    def __init__(self, filename='dynesty.save', **kwargs):
+    def __init__(self, pkl_name=None, filename='dynesty.save', **kwargs):
         super().__init__(use_mpi=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
+            self.log_dir = get_filename("", "/DynamicDynesty/", **kwargs)
+            self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
-            self.filename = get_filename(filename, "/DynamicDynesty/", **kwargs)
+            self.filename = self.log_dir + filename
         
     #def __reduce__(self):
         #return (self.__class__, ())
@@ -155,12 +160,13 @@ class DynamicDynesty(splug.scanner):
     def gambit_transform(params):
         return params
 
-    def run_internal(self, pkl_name=None, **kwargs):
+    @copydoc(dynesty_DynamicNestedSampler_run_nested)
+    def run(self):
         if self.mpi_size == 1:
             if self.printer.resume_mode():
                 self.sampler = dynesty.DynamicNestedSampler.restore(self.filename)
                 
-                self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
+                self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **self.run_args)
             else:
                 self.sampler = dynesty.DynamicNestedSampler(
                     self.gambit_loglike,
@@ -169,14 +175,14 @@ class DynamicDynesty(splug.scanner):
                     blob=True, 
                     **self.init_args)
                 
-                self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
+                self.sampler.run_nested(checkpoint_file=self.filename, **self.run_args)
         
         else:
             with MPIPool() as pool:
                 if self.printer.resume_mode():
                     self.sampler = dynesty.DynamicNestedSampler.restore(self.filename, pool=pool)
                 
-                    self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **kwargs)
+                    self.sampler.run_nested(checkpoint_file=self.filename, resume=True, **self.run_args)
                 else:
                     if pool.is_master():
                         self.sampler = dynesty.DynamicNestedSampler(
@@ -187,7 +193,7 @@ class DynamicDynesty(splug.scanner):
                             pool=pool, 
                             **self.init_args)
                         
-                        self.sampler.run_nested(checkpoint_file=self.filename, **kwargs)
+                        self.sampler.run_nested(checkpoint_file=self.filename, **self.run_args)
                     else:
                         pool.wait()
 
@@ -204,13 +210,9 @@ class DynamicDynesty(splug.scanner):
                 
             stream.flush()
             
-            if not pkl_name is None:
-                with open(pkl_name, "wb") as f:
+            if (not self.pkl_name is None) and (self.pkl_name != ''):
+                with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(self.sampler.results, f)
-     
-    @copydoc(dynesty_DynamicNestedSampler_run_nested)
-    def run(self):
-        self.run_internal(**self.run_args)
 
 
 __plugins__ = {"static_dynesty": StaticDynesty,

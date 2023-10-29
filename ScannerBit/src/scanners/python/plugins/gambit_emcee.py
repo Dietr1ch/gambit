@@ -4,8 +4,10 @@ Emcee scanner
 """
 
 import numpy as np
-from utils import copydoc, version, get_filename, MPIPool
-
+from utils import copydoc, version, get_filename, with_mpi
+if with_mpi:
+    from utils import MPIPool
+    
 try:
     import emcee
     emcee_version = version(emcee)
@@ -20,7 +22,16 @@ except:
 import scanner_plugin as splug
 
 class Emcee(splug.scanner):
-
+    """
+    An affine invariant ensemble sampler.  See https://emcee.readthedocs.io/en/stable/
+    
+    There are additional arguments:
+        
+        nwalkers (1):  Number of walkers
+        filename ('emcee.h5'): For passing the name of a h5 file to which to save results using the emcee writer.
+        pkl_name ('emcee.pkl'):  File name where results will be pickled
+    """
+    
     __version__ = emcee_version
     
     def backend(self, filename, reset):
@@ -55,32 +66,26 @@ class Emcee(splug.scanner):
             return  (-np.inf, -1, -1)
 
     @copydoc(emcee_EnsembleSampler)
-    def __init__(self, nwalkers=1, filename='emcee.h5', **kwargs):
-        """
-        There is an additional argument:
-        
-        :param: filename ('emcee.h5')
-
-        for passing the name of a h5 file to which to save results using the emcee writer.
-        """
+    def __init__(self, nwalkers=1, pkl_name=None, filename='emcee.h5', **kwargs):
         
         super().__init__(use_mpi=True)
-        
-        self.nwalkers = nwalkers
         
         self.assign_aux_numbers("mult")
         if self.mpi_rank == 0:
             self.printer.new_stream("txt", synchronised=False)
         
+            self.nwalkers = nwalkers
             if 'nwalkers' in self.init_args:
                 self.nwalkers = self.init_args['nwalkers']
                 del self.init_args['nwalkers']
             
-            self.filename = get_filename(filename, "Emcee", **kwargs)
+            self.log_dir = get_filename("", "Emcee", **kwargs)
+            self.filename = self.log_dir + filename
             self.reset = not self.printer.resume_mode()
+            self.pkl_name = pkl_name
         
 
-    def run_internal(self, nsteps=5000, progress=True, initial_state=None, pkl_name=None, **kwargs):
+    def run_internal(self, nsteps=5000, progress=True, initial_state=None, **kwargs):
         if self.mpi_size == 1:
             if initial_state is None:
                 initial_state = self.initial_state()
@@ -123,9 +128,9 @@ class Emcee(splug.scanner):
                     stream.print(c, "mult", i, u)
             stream.flush()
             
-            if not pkl_name is None:
+            if (not self.pkl_name is None) and (self.pkl_name != ''):
                 samples = self.sampler.get_samples()
-                with open(pkl_name, "wb") as f:
+                with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(samples, f)
         
     @copydoc(emcee_EnsembleSampler_run_mcmc)

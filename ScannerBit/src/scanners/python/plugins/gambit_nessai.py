@@ -5,7 +5,9 @@ Nessai scanner
 
 import pickle
 import numpy as np
-from utils import copydoc, get_filename, version, MPIPool, store_pt_data
+from utils import copydoc, get_filename, version, with_mpi, store_pt_data
+if with_mpi:
+    from utils import MPIPool
 
 try:
     import nessai
@@ -47,20 +49,17 @@ class Gambit_Model(Model):
 
 class GambitFlowSampler(splug.scanner):
     """
-    Nessai nested sampler. This operates on the unit hypercube
-    as the nessai implementation requires bounds for each 
-    parameter, which may not exist in physical parameters.
+    Nessai nested sampler. This operates on the unit hypercube as the nessai implementation requires bounds for each parameter, which may not exist in physical parameters.  See https://nessai.readthedocs.io/en/latest/index.html
+    
+    We defined the additional parameters:
+        output ('nessai_log_dir'):  output directory name.  Defined in given default path.
+        logger (True):  Wether to use the logger
     """
 
     __version__ = nessai_version
 
     @copydoc(FlowSampler)
     def __init__(self, logger=True, output="nessai_log_dir", **kwargs):
-        """
-        To ensure results are saved, by default we set the argument
-
-        :param: output ('nessai_log_dir')
-        """
 
         super().__init__(use_mpi=True)
         
@@ -73,8 +72,6 @@ class GambitFlowSampler(splug.scanner):
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
             self.printer.new_stream("txt", synchronised=False)
-            
-        atexit.register(lambda: self.f.close())
 
     def run_internal(self, **kwargs):
         model = Gambit_Model(self)

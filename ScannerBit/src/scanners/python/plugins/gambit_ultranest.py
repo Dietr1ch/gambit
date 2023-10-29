@@ -5,7 +5,8 @@ Ultranest scanners
 
 import pickle
 import numpy as np
-from utils import copydoc, version, parse, get_filename, store_pt_data
+from packaging.version import parse
+from utils import copydoc, version, get_filename, store_pt_data
 
 try:
     import ultranest
@@ -23,7 +24,10 @@ import scanner_plugin as splug
 
 class ReactiveUltranest(splug.scanner):
     """
-    Ultranest reactive sampler.
+    Ultranest reactive sampler.  See https://johannesbuchner.github.io/UltraNest/index.html
+    
+    log_dir ('reactive_ultranest_run'):  output directory name.  Defined in given default path.
+    pkl_name ('ultranest.pkl'):  File name where results will be pickled
     """
 
     __version__ = ultranest_version
@@ -35,12 +39,7 @@ class ReactiveUltranest(splug.scanner):
         return lnew
     
     @copydoc(ultranest_ReactiveNestedSampler)
-    def __init__(self, log_dir="ultranest_log_dir", **kwargs):
-        """
-        To ensure results are saved, by default we set the argument
-
-        :param: log_dir ('reactive_ultranest_run')
-        """
+    def __init__(self, pkl_name='ultranest.pkl', log_dir="ultranest_log_dir", **kwargs):
         
         super().__init__(use_mpi=True)
         if self.mpi_size > 1 and parse(ultranest.__version__) < parse("3.6.3"):
@@ -49,6 +48,7 @@ class ReactiveUltranest(splug.scanner):
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
+            self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
             
         self.log_dir = get_filename("", log_dir, **kwargs)
@@ -61,15 +61,7 @@ class ReactiveUltranest(splug.scanner):
             log_dir=self.log_dir,
             **self.init_args)
     
-    def run_internal(self, pkl_name='ultranest.pkl', **kwargs):
-        """
-        We add the argument
-
-        :param: pkl_name ('ultranest.pkl')
-
-        to store the results from the sampler to a pickle. This helps inspect
-        results outside gambit.
-        """
+    def run_internal(self, **kwargs):
         
         self.sampler.run(**kwargs)
         self.ids.load_saves()
@@ -88,11 +80,11 @@ class ReactiveUltranest(splug.scanner):
                     print("warning: point ", tuple(pt), " has no correponding id.")
             stream.flush()
             
-            if not pkl_name is None:
+            if (not self.pkl_name is None) and (self.pkl_name != ''):
                 for i in range(self.dim):
                     result["weighted_samples"]["points"][i] = self.transform_to_vec(pts[i])
                 result["weighted_samples"]["parameter_names"] = self.parameter_names
-                with open(self.log_dir + pkl_name, "wb") as f:
+                with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(result, f)
     
     @copydoc(ultranest_ReactiveNestedSampler_run)
