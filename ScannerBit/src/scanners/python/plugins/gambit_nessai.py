@@ -33,7 +33,7 @@ class Gambit_Model(Model):
         return self.gambit.loglike_hypercube(self.pt)
 
 
-class FlowSampler2(splug.scanner):
+class GambitFlowSampler(splug.scanner):
     """
     Nessai nested sampler. This operates on the unit hypercube
     as the nessai implementation requires bounds for each 
@@ -109,4 +109,4 @@ class FlowSampler2(splug.scanner):
         self.run_internal(**self.run_args)
 
 
-__plugins__ = {"nessai_flow_sampler": FlowSampler2}
+__plugins__ = {"nessai_flow_sampler": GambitFlowSampler}

@@ -48,7 +48,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: de
+  use_scanner: zeus #de
 
   scanners:
 
@@ -112,9 +112,9 @@ Scanner:
         plugin: zeus
         init:
             nwalkers: 8
-        run:
-            nsteps: 20000
-            filename: "zeus.h5"
+        #run:
+            #nsteps: 20000
+            #filename: "zeus.h5"
 
     emcee:
         like: LogLike
