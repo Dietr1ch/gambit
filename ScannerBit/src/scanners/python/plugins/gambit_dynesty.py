@@ -34,12 +34,12 @@ import scanner_plugin as splug
 
 class StaticDynesty(splug.scanner):
     """
-    Dynesty nested sampler with static number of live points.  See https://dynesty.readthedocs.io/en/latest/index.html
+Dynesty nested sampler with static number of live points.  See https://dynesty.readthedocs.io/en/latest/index.html
 
-    We add these additional parameters:
+We add these additional parameters:
 
-        pkl_name ('static_dynesty.pkl'):  File name where results will be pickled
-        filename ('dynesty.save'):  Filename where temp data will be stored
+    pkl_name ('static_dynesty.pkl'):  File name where results will be pickled
+    filename ('dynesty.save'):  Filename where temp data will be stored
     """
 
     __version__ = dynesty_version

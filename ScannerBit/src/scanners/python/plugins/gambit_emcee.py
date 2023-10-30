@@ -23,13 +23,13 @@ import scanner_plugin as splug
 
 class Emcee(splug.scanner):
     """
-    An affine invariant ensemble sampler.  See https://emcee.readthedocs.io/en/stable/
+An affine invariant ensemble sampler.  See https://emcee.readthedocs.io/en/stable/
+
+There are additional arguments:
     
-    There are additional arguments:
-        
-        nwalkers (1):  Number of walkers
-        filename ('emcee.h5'): For passing the name of a h5 file to which to save results using the emcee writer.
-        pkl_name ('emcee.pkl'):  File name where results will be pickled
+    nwalkers (1):  Number of walkers
+    filename ('emcee.h5'): For passing the name of a h5 file to which to save results using the emcee writer.
+    pkl_name ('emcee.pkl'):  File name where results will be pickled
     """
     
     __version__ = emcee_version

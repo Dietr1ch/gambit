@@ -35,7 +35,6 @@ Printer:
     output_file: "gambit_output.hdf5"
     group: "/test"
     delete_file_on_restart: true
-    force: true
 
 
 Scanner:
@@ -48,7 +47,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: de
+  use_scanner: zeus #de
 
   scanners:
 
@@ -115,6 +114,9 @@ Scanner:
         #run:
             #nsteps: 20000
             #filename: "zeus.h5"
+        SaveProgressCallback:
+            filename: zeus.h5
+            ncheck: 100
 
     emcee:
         like: LogLike

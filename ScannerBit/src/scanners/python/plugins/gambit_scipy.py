@@ -25,7 +25,7 @@ import scanner_plugin as splug
 
 class DualAnnealing(splug.scanner):
     """
-    Dual annealing optimizer from scipy.
+Dual annealing optimizer from scipy.
     """
 
     __version__ = scipy_version
@@ -42,7 +42,7 @@ class DualAnnealing(splug.scanner):
 
 class BasinHopping(splug.scanner):
     """
-    Basin-hopping optimizer from scipy.
+Basin-hopping optimizer from scipy.
     """
 
     __version__ = scipy_version
@@ -60,7 +60,7 @@ class BasinHopping(splug.scanner):
 
 class DifferentialEvolution(splug.scanner):
     """
-    Differential evolution optimizer from scipy.
+Differential evolution optimizer from scipy.
     """
 
     __version__ = scipy_version
@@ -78,7 +78,7 @@ class DifferentialEvolution(splug.scanner):
 
 class Direct(splug.scanner):
     """
-    The DIRECT optimizer from scipy.
+The DIRECT optimizer from scipy.
     """
 
     __version__ = scipy_version

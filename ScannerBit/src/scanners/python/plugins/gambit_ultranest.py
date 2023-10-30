@@ -24,10 +24,10 @@ import scanner_plugin as splug
 
 class ReactiveUltranest(splug.scanner):
     """
-    Ultranest reactive sampler.  See https://johannesbuchner.github.io/UltraNest/index.html
-    
-    log_dir ('reactive_ultranest_run'):  output directory name.  Defined in given default path.
-    pkl_name ('ultranest.pkl'):  File name where results will be pickled
+Ultranest reactive sampler.  See https://johannesbuchner.github.io/UltraNest/index.html
+
+log_dir ('reactive_ultranest_run'):  output directory name.  Defined in given default path.
+pkl_name ('ultranest.pkl'):  File name where results will be pickled
     """
 
     __version__ = ultranest_version

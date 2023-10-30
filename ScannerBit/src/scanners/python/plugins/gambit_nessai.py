@@ -49,11 +49,11 @@ class Gambit_Model(Model):
 
 class GambitFlowSampler(splug.scanner):
     """
-    Nessai nested sampler. This operates on the unit hypercube as the nessai implementation requires bounds for each parameter, which may not exist in physical parameters.  See https://nessai.readthedocs.io/en/latest/index.html
-    
-    We defined the additional parameters:
-        output ('nessai_log_dir'):  output directory name.  Defined in given default path.
-        logger (True):  Wether to use the logger
+Nessai nested sampler. This operates on the unit hypercube as the nessai implementation requires bounds for each parameter, which may not exist in physical parameters.  See https://nessai.readthedocs.io/en/latest/index.html
+
+We defined the additional parameters:
+    output ('nessai_log_dir'):  output directory name.  Defined in given default path.
+    logger (True):  Wether to use the logger
     """
 
     __version__ = nessai_version
