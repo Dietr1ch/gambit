@@ -35,6 +35,10 @@
 ///          (t.procter.1@research.gla.ac.uk)
 /// \date 2021 November
 ///
+///  \author Taylor R. Gray
+///          (gray@chalmers.se)
+///  \date 2023 Oct
+///
 ///  *********************************************
 
 #pragma once
@@ -314,6 +318,13 @@
     MODEL_CONDITIONAL_DEPENDENCY(Unitarity_Bound_DMsimpVectorMedDiracDM, double, DMsimpVectorMedDiracDM)
     ALLOW_MODELS(DMsimpVectorMedScalarDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedDiracDM, DMsimpVectorMedVectorDM)
     #undef FUNCTION
+
+    #define FUNCTION SubGeVBeamDump_MB_results
+    START_FUNCTION(AnalysisDataPointers)
+    DEPENDENCY(SubGeVBeamDump_MB_spectrum, Spectrum)
+    ALLOW_MODELS(SubGeVBeamDump_MB)
+    #undef FUNCTION
+
   #undef CAPABILITY
 
   #define CAPABILITY AllAnalysisNumbersUnmodified
@@ -593,7 +604,7 @@
     #endif
 
   #undef CAPABILITY
-  
+
   /// BaBar single photon likelihood
   #define CAPABILITY BaBar_single_photon_LogLike
     #define FUNCTION BaBar_single_photon_LogLike_SubGeVDM
