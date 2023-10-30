@@ -128,7 +128,7 @@ There are additional arguments:
                     stream.print(c, "mult", i, u)
             stream.flush()
             
-            if (not self.pkl_name is None) and (self.pkl_name != ''):
+            if self.pkl_name:
                 samples = self.sampler.get_samples()
                 with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(samples, f)

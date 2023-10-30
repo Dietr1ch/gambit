@@ -115,7 +115,7 @@ We add these additional parameters:
                 
             stream.flush()
             
-            if (not self.pkl_name is None) and (self.pkl_name != ""):
+            if self.pkl_name:
                 with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(self.sampler.results, f)
 

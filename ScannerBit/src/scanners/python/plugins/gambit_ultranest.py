@@ -80,7 +80,7 @@ pkl_name ('ultranest.pkl'):  File name where results will be pickled
                     print("warning: point ", tuple(pt), " has no correponding id.")
             stream.flush()
             
-            if (not self.pkl_name is None) and (self.pkl_name != ''):
+            if self.pkl_name:
                 for i in range(self.dim):
                     result["weighted_samples"]["points"][i] = self.transform_to_vec(pts[i])
                 result["weighted_samples"]["parameter_names"] = self.parameter_names

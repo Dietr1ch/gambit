@@ -53,7 +53,7 @@ AVAILABLE CALLBACKS
 
     __version__ = zeus_version
 
-    def callbacks(self, kwargs):
+    def callbacks(self, kwargs, chainmaster=None):
         """
         :returns: Callback that saves results
         """
@@ -75,7 +75,7 @@ AVAILABLE CALLBACKS
             ret.append(zeus.callbacks.SplitRCallback(**kwargs['SplitRCallback']))
             
         if 'ParallelSplitRCallback' in kwargs:
-            ret.append(zeus.callbacks.ParallelSplitRCallback(**kwargs['ParallelSplitRCallback']))
+            ret.append(zeus.callbacks.ParallelSplitRCallback(chainmaster=chainmaseter, **kwargs['ParallelSplitRCallback']))
             
         if 'MinIterCallback' in kwargs:
             ret.append(zeus.callbacks.MinIterCallback(**kwargs['MinIterCallback']))
@@ -148,7 +148,7 @@ AVAILABLE CALLBACKS
                                                         **self.init_args)
                     self.sampler.run_mcmc(start,
                                           nsteps,
-                                          callbacks=self.callbacks(self.args), 
+                                          callbacks=self.callbacks(self.args, chainmaster=cm), 
                                           **kwargs)
             else:
                 with MPIPool() as pool:
@@ -179,7 +179,7 @@ AVAILABLE CALLBACKS
                     stream.print(c, "mult", i, u)
             stream.flush()
                 
-            if (not self.pkl_name is None) and (self.pkl_name != ""):
+            if self.pkl_name:
                 samples = self.sampler.get_samples()
                 with open(self.log_dir + self.pkl_name + "_" + str(self.mpi_rank), "wb") as f:
                     pickle.dump(samples, f)
