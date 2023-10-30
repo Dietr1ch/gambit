@@ -97,108 +97,107 @@ Scanner:
     # Python scanners - MCMC
 
     kombine:
-        like: LogLike
-        plugin: kombine
-        init:
-            nwalkers: 8
-        run:
-            nsteps: 20000
-            pkl_name: "kombine.h5"
+      like: LogLike
+      plugin: kombine
+      init:
+        nwalkers: 8
+      run:
+        nsteps: 20000
+        pkl_name: "kombine.h5"
 
     zeus:
-        like: LogLike
-        pkg: gambit_zeus
-        plugin: zeus
-        init:
-            nwalkers: 8
-        #run:
-            #nsteps: 20000
-            #filename: "zeus.h5"
-        SaveProgressCallback:
-            filename: zeus.h5
-            ncheck: 100
+      like: LogLike
+      pkg: gambit_zeus
+      plugin: zeus
+      init:
+        nwalkers: 8
+      #run:
+        #nsteps: 20000
+        #filename: "zeus.h5"
+      SaveProgressCallback:
+        filename: zeus.h5
+        ncheck: 100
 
     emcee:
-        like: LogLike
-        plugin: emcee
-        pkg: gambit_emcee
-        init:
-            nwalkers: 8
-        run:
-            nsteps: 20000
-            #filename: "emcee.h5"
+      like: LogLike
+      plugin: emcee
+      pkg: gambit_emcee
+      init:
+        nwalkers: 8
+      run:
+        nsteps: 20000
+        #filename: "emcee.h5"
 
     pocomc:
-        like: LogLike
-        plugin: pocomc
-        pkg: gambit_pocomc
-        #init:
-        #    nparticles: 1000
-        run:
-            pkl_name: "pocomc.pkl"
+      like: LogLike
+      plugin: pocomc
+      pkg: gambit_pocomc
+      #init:
+      #    nparticles: 1000
+      run:
+        pkl_name: "pocomc.pkl"
 
     stochopy_sample:
-        like: LogLike
-        plugin: stochopy_sample
-        run:
-            method: "mcmc"
-            options:
-                maxiter: 1000
+      like: LogLike
+      plugin: stochopy_sample
+      run:
+        method: "mcmc"
+        options:
+          maxiter: 1000
 
     # Python scanners - nested sampling
 
     ultranest:
-        like: LogLike
-        pkg: gambit_ultranest
-        plugin: reactive_ultranest
-        #init:
-        run:
-            min_num_live_points: 1000
-            dlogz: 0.5
+      like: LogLike
+      pkg: gambit_ultranest
+      plugin: reactive_ultranest
+      #init:
+      run:
+        min_num_live_points: 1000
+        dlogz: 0.5
 
     static_dynesty:
-        like: LogLike
-        pkg: gambit_dynesty
-        plugin: static_dynesty
-        pkl_name: "static_dynesty.pkl"
-        
-        init:
-            nlive: 1000
-        run:
-            dlogz: 0.5
-            checkpoint_every: 60
+      like: LogLike
+      pkg: gambit_dynesty
+      plugin: static_dynesty
+      pkl_name: "static_dynesty.pkl"
+      init:
+        nlive: 1000
+      run:
+        dlogz: 0.5
+        checkpoint_every: 60
 
     dynamic_dynesty:
-        like: LogLike
-        plugin: dynamic_dynesty
-        pkg: gambit_dynesty
-        pkl_name: "dynamic_dynesty.pkl"
+      like: LogLike
+      plugin: dynamic_dynesty
+      pkg: gambit_dynesty
+      pkl_name: "dynamic_dynesty.pkl"
         
-        init:
-            nlive: 1000
-        run:
-            dlogz_init: 0.5
-            n_effective: 10000
-            checkpoint_every: 60
+      init:
+        nlive: 1000
+      run:
+        dlogz_init: 0.5
+        n_effective: 10000
+        checkpoint_every: 60
 
     nessai:
-        like: LogLike
-        plugin: nessai_flow_sampler
-        pkg: gambit_nessai
-        #init:
-            #output: "nessai_log_dir"
-            #logger: True
+      like: LogLike
+      plugin: nessai_flow_sampler
+      pkg: gambit_nessai
+      #init:
+        #output: "nessai_log_dir"
+        #logger: True
 
     # Python scanners - optimization
 
     stochopy_minimize:
-        like: LogLike
-        pkg: gambit_stochopy
-        plugin: stochopy_minimize
-        run:
-            method: "cmaes"
-            options:
-                backend: "mpi"
+      like: LogLike
+      pkg: gambit_stochopy
+      plugin: stochopy_minimize
+      run:
+        method: "cmaes"
+        options:
+          backend: "mpi"
 
     scipy_basin_hopping:
       like: LogLike
