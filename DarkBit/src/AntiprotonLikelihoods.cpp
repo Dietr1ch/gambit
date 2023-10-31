@@ -12,6 +12,9 @@
 ///          (sowmiya.balan@kit.edu)
 ///  \date 2022 June
 ///
+///  \author Torsten Bringmann
+///         (torsten.bringmann@fys.uio.no)
+///  \date Oct 2023
 ///
 ///  *********************************************
 
@@ -30,9 +33,7 @@ namespace Gambit
     void lnL_pbarAMS02 (map_str_dbl& result)
     {
       using namespace Pipes::lnL_pbarAMS02;
-      LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
-      double rho0 = LocalHaloParameters.rho0;
-      double rho0_eff = (*Dep::RD_fraction)*rho0/0.43;
+      double suppression = *Dep::ID_suppression_local;
       std::string DM_ID = Dep::WIMP_properties->name;
       std::string DMbar_ID = Dep::WIMP_properties->conjugate;
       double DM_mass = Dep::WIMP_properties->mass;
@@ -47,7 +48,7 @@ namespace Gambit
         fs = it->finalStateIDs;
         finalStates = fs[0] + " " + fs[1];
         rate = it->genRate->bind("v")->eval(0.);
-        rate = rate * rho0_eff * rho0_eff;
+        rate = rate * suppression;
         input.insert({finalStates, rate});
         sv += rate;
       }
