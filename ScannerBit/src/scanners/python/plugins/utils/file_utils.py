@@ -6,9 +6,9 @@ if with_mpi:
     from mpi4py import MPI
 
 def get_filename(filename, path, default_output_path=".", **kwargs):
-    defpath = default_output_path + "/" + path + "/"
-    if not os.path.exists(os.path.abspath(defpath.strip())):
-        os.makedirs(os.path.abspath(defpath.strip()))
+    defpath = os.path.abspath((default_output_path + "/" + path + "/").strip())
+    if not os.path.exists(defpath):
+        os.makedirs(defpath)
         
     return defpath + filename
 
