@@ -125,7 +125,7 @@ string(REGEX MATCH ";pybind;|;pybind11;|;Pybind;|;Pybind11;" DITCH_PYBIND ";${it
 # If pybind11 is ditched, do not worry about PythonLibs
 set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7 3.8 3.9 3.10 3.11)
 find_package(PythonInterp 3)  # We require Python 3.
-if(PYTHONINTERP_FOUND) 
+if(PYTHONINTERP_FOUND)
   if(NOT DITCH_PYBIND)
     find_package(PythonLibs 3) # We require Python 3.
   endif()
@@ -354,6 +354,23 @@ else()
   message(FATAL_ERROR "\nFlexibleSUSY is currently included in the GAMBIT distribution, so in fact it cannot be ditched.  Please install Eigen3.\n(Note that this will change in future GAMBIT versions, where FlexibleSUSY will be a 'true' backend.)")
 endif()
 
+# Check for Gnu Scientific Library (GSL)
+find_package(GSL 2.1)
+if(NOT GSL_FOUND)
+  message(FATAL_ERROR "GSL libraries not found. You can help CMake to find them by setting the environment variable GSL_ROOT_DIR.")
+endif()
+# FlexibleSUSY only works with gsl-config; make sure that we add it
+if("${GSL_CONFIG_EXECUTABLE}" STREQUAL "")
+  find_program(GSL_CONFIG_EXECUTABLE gsl-config
+    ${GSL_INCLUDE_DIRS}/../bin/
+    /usr/bin/
+    /usr/local/bin
+  )
+  if(NOT GSL_CONFIG_EXECUTABLE)
+    message(FATAL_ERROR "GSL libraries were found but gsl-config could not be found (needed by FlexibleSUSY).")
+  endif()
+endif()
+
 # Check for OpenMP
 find_package(OpenMP QUIET)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
@@ -396,16 +413,6 @@ else()
   else()
     message(FATAL_ERROR "\nOpenMP libraries not found.  Your compiler installation seems to be broken.")
   endif()
-endif()
-
-# Check for Gnu Scientific Library (GSL)
-include(cmake/FindGSL.cmake)
-if(GSL_FOUND)
-  if (NOT GSL_INCLUDE_DIRS STREQUAL "")
-    include_directories("${GSL_INCLUDE_DIRS}")
-  endif()
-else()
-  message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
 # Check for Mathematica
@@ -689,3 +696,9 @@ endif()
 
 # Create a list of Gambit bits to be used in the diagnostic system of Gambit.
 execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/Utils/scripts/find_all_gambit_bits.py --source-dir ${PROJECT_SOURCE_DIR} --output-file=${PROJECT_SOURCE_DIR}/config/gambit_bits.yaml)
+
+# Forbid the use of variable-length array and other non-standard C++ syntax
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic-errors")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic-errors")
+endif()
