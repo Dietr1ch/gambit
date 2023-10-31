@@ -2127,13 +2127,22 @@ namespace Gambit
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
       double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
+      
+      double me = 0.000511; // mass of electron
+      double mmu = 0.1057; // mass of muon
+      double ee = 0.31343; // elementary charge
 
-      // TODO: TG: What is pow(2)? I changed it to pow(mDM, 2), check if correct
-      //double BR_scalarDM  = pow(gDM,2)*(pow(mAp,2)-4*pow(2))/(8*M_PI*pow(mAp,2))*sqrt(pow(mAp,2)/4-pow(mDM,2)); // Branching ratio for scalar DM
-      double BR_scalarDM  = pow(gDM,2)*(pow(mAp,2)-4*pow(mDM,2))/(8*M_PI*pow(mAp,2))*sqrt(pow(mAp,2)/4-pow(mDM,2)); // Branching ratio for scalar DM
+      double width_ff = 0.0;
+      if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
+      if (mAp > 2*mmu) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(mmu,2))*sqrt(pow(mAp,2)/4-pow(mmu,2)) / (24*pi*pow(mAp,2));}
+
+      double width_XXscalar = pow(gDM,2)*(pow(mAp,2)-4*pow(mDM,2))/(8*pi*pow(mAp,2))*sqrt(pow(mAp,2)/4-pow(mDM,2));
+
+      //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
+      double BR_scalarDM  = width_XXscalar / (width_XXscalar + width_ff); // Branching ratio for scalar DM
       double signalcounts = signal * pow(kappa/kappa_simulated,4) * pow(gDM/gDM_simulated,2) * BR_scalarDM;
 
-      // TODO: TG: Is this intended to loop over signal regions? Why is it the same for all signal regions?
+      // TODO: TG: Is this intended to loop over signal regions? Why is it the same for all signal regions? ; Taylor: I think there is only one in this case..
       for (size_t sr_i = 0; sr_i < analysis_info.n_signal_regions; ++sr_i)
       {
         signal_yields[sr_i] = signalcounts;
