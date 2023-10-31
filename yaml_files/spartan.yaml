@@ -64,7 +64,7 @@ Printer:
 
 Scanner:
 
-  use_scanner: ultranest
+  use_scanner: de
 
   scanners:
 
@@ -137,39 +137,69 @@ Scanner:
       accept: -5.0
       maxfun: 10000000.0
 
-    ultranest:
-      like: LogLike
-      pkg: gambit_ultranest
-      plugin: reactive_ultranest
-      init:
-        resume: overwrite
-      run:
-        min_num_live_points: 1000
-        #widen_before_initial_plateau_num_warn: 50000
-        dlogz: 0.5
-            
+
     static_dynesty:
       like: LogLike
       pkg: gambit_dynesty
       plugin: static_dynesty
-      #init:
-        #resume: True
+      pkl_name: "static_dynesty.pkl"
+      init:
+        nlive: 1000
       run:
-        #nlive: 1000
         dlogz: 0.5
-        pkl_name: "static_dynesty.pkl"
+        checkpoint_every: 60
         
     dynamic_dynesty:
       like: LogLike
       plugin: dynamic_dynesty
       pkg: gambit_dynesty
-      #init:
-        #resume: True
+      pkl_name: "dynamic_dynesty.pkl"
+      init:
+        nlive: 1000
       run:
-        nlive_init: 1000
         dlogz_init: 0.5
-        n_effective: 500
-        pkl_name: "dynamic_dynesty.pkl"
+        n_effective: 10000
+        checkpoint_every: 60
+
+    nessai:
+      like: LogLike
+      plugin: nessai_flow_sampler
+      pkg: gambit_nessai
+      #init:
+        #output: "nessai_log_dir"
+        #logger: True
+
+    zeus:
+      like: LogLike
+      pkg: gambit_zeus
+      plugin: zeus
+      init:
+        nwalkers: 8
+      #run:
+        #nsteps: 20000
+        #filename: "zeus.h5"
+      SaveProgressCallback:
+        filename: zeus.h5
+        ncheck: 100
+
+    emcee:
+      like: LogLike
+      plugin: emcee
+      pkg: gambit_emcee
+      init:
+        nwalkers: 8
+      run:
+        nsteps: 20000
+        #filename: "emcee.h5"
+
+    ultranest:
+      like: LogLike
+      pkg: gambit_ultranest
+      plugin: reactive_ultranest
+      #init:
+      run:
+        min_num_live_points: 1000
+        dlogz: 0.5
 
 
 ObsLikes:
