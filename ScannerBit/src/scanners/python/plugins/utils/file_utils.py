@@ -7,8 +7,10 @@ if with_mpi:
 
 def get_filename(filename, path, default_output_path=".", **kwargs):
     defpath = os.path.abspath((default_output_path + "/" + path + "/").strip())
-    if not os.path.exists(defpath):
+    try:
         os.makedirs(defpath)
+    except FileExistsError:
+        pass        
         
     return defpath + filename
 
