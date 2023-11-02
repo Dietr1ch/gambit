@@ -468,17 +468,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  /// Local (Galactic)  fraction of the relic density constituted by the DM candidate under investigation
-  #define CAPABILITY RD_fraction_local
-  START_CAPABILITY
-    #define FUNCTION RD_fraction_local_func
-      START_FUNCTION(double)
-      DEPENDENCY(RD_fraction, double)
-      DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  /// Suppression of indirect rates due to cosmologically underabundant DM
+  /// Suppression of indirect rates due to (cosmologically) underabundant DM
   #define CAPABILITY ID_suppression
   START_CAPABILITY
     #define FUNCTION ID_suppression_aDM
@@ -491,23 +481,6 @@ START_MODULE
     #define FUNCTION ID_suppression_symDM
       START_FUNCTION(double)
       DEPENDENCY(RD_fraction, double)
-      DEPENDENCY(DM_process, std::string)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  /// Suppression of indirect rates due to locally (Galactically) underabundant DM
-  #define CAPABILITY ID_suppression_local
-  START_CAPABILITY
-    #define FUNCTION ID_suppression_aDM_local
-      START_FUNCTION(double)
-      DEPENDENCY(RD_oh2_aDM, ddpair)
-      DEPENDENCY(RD_fraction_local, double)
-      DEPENDENCY(DM_process, std::string)
-      ALLOW_MODELS(SubGeVDM_scalar,SubGeVDM_fermion)
-    #undef FUNCTION
-    #define FUNCTION ID_suppression_symDM_local
-      START_FUNCTION(double)
-      DEPENDENCY(RD_fraction_local, double)
       DEPENDENCY(DM_process, std::string)
     #undef FUNCTION
   #undef CAPABILITY
@@ -1088,7 +1061,8 @@ START_MODULE
     START_FUNCTION(map_str_dbl)
     DEPENDENCY(WIMP_properties, WIMPprops)
     DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
-    DEPENDENCY(ID_suppression_local, double)
+    DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
+    DEPENDENCY(ID_suppression, double)
     BACKEND_REQ(drn_pbar_logLikes,(),map_str_dbl,(double&,  map_str_dbl&, double& ))
     #undef FUNCTION
   #undef CAPABILITY

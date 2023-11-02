@@ -755,7 +755,7 @@ namespace Gambit
       DS_ADM_COM *etaDS  = BEreq::adm_com.pointer(); // common block variable in DS
       double RDfactorfh = 275257140.31638151 ; // TB FIXME RDfactor*fh(nf)
       double oh2adm = 0;
-      if (myRDspec.isSelfConj) 
+      if (myRDspec.isSelfConj)
       {
         if (eta != 0) DarkBit_error().raise(LOCAL_INFO, "The DM asymmetry cannot be non-zero if DM is self-conjugate!");
       }
@@ -1388,16 +1388,6 @@ namespace Gambit
       logger() << LogTags::debug << "Fraction of dark matter that the scanned model accounts for: " << result << EOM;
     }
 
-    void RD_fraction_local_func(double &result)
-    {
-      using namespace Pipes::RD_fraction_local_func;
-
-      double Cosmo_DM_fraction = *Dep::RD_fraction;
-      LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
-      double rho0 = LocalHaloParameters.rho0;
-      
-      result =Cosmo_DM_fraction*rho0/0.43;
-    }
 
 
 
@@ -1436,55 +1426,6 @@ namespace Gambit
       using namespace Pipes::ID_suppression_aDM;
 
       double DM_fraction = *Dep::RD_fraction;
-      ddpair aDM_pair = *Dep::RD_oh2_aDM;
-      double x = aDM_pair.second/DM_fraction; // fsym/fDM
-      std::string proc = *Dep::DM_process;
-
-
-      if (proc == "annihilation")
-      {
-        result = x*(2-x);
-      }
-      else if (proc == "decay") // this assumes CP symmetry for decay
-      {
-        result = DM_fraction;
-      }
-      else
-      {
-        DarkBit_error().raise(LOCAL_INFO, "Process type " + proc + " (in ID_suppression_aDM) unknown.");
-      }
-
-      logger() << LogTags::debug << "Asymmetric DM with (total) fraction " << DM_fraction << ". Suppression of indirect rates by a factor of " << result << EOM;
-    }
-
-    void ID_suppression_symDM_local(double &result)
-    {
-      using namespace Pipes::ID_suppression_symDM_local;
-      
-      double DM_fraction = *Dep::RD_fraction_local;
-      std::string proc = *Dep::DM_process;
-
-      if (proc == "annihilation")
-      {
-        result = DM_fraction*DM_fraction;
-      }
-      else if (proc == "decay")
-      {
-        result = DM_fraction;
-      }
-      else
-      {
-        DarkBit_error().raise(LOCAL_INFO, "Process type " + proc + " (in ID_suppression_symDM) unknown.");
-      }
-
-      logger() << LogTags::debug << "Symmetric DM with fraction " << DM_fraction << ". Suppression of indirect rates by a factor of " << result << EOM;
-    }
-
-    void ID_suppression_aDM_local(double &result)
-    {
-      using namespace Pipes::ID_suppression_aDM_local;
-
-      double DM_fraction = *Dep::RD_fraction_local;
       ddpair aDM_pair = *Dep::RD_oh2_aDM;
       double x = aDM_pair.second/DM_fraction; // fsym/fDM
       std::string proc = *Dep::DM_process;
