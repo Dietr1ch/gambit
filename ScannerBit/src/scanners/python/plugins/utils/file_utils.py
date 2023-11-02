@@ -5,14 +5,12 @@ from .mpi import with_mpi
 if with_mpi:
     from mpi4py import MPI
 
-def get_filename(filename, path, default_output_path=".", **kwargs):
+def get_directory(path, default_output_path=".", **kwargs):
     defpath = os.path.abspath((default_output_path + "/" + path + "/").strip())
-    try:
+    if not os.path.exists(defpath):
         os.makedirs(defpath)
-    except FileExistsError:
-        pass        
         
-    return defpath + filename
+    return defpath
 
 class store_pt_data:
     

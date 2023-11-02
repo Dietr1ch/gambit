@@ -5,9 +5,9 @@ Nessai scanner
 
 import pickle
 import numpy as np
-from utils import copydoc, get_filename, version, with_mpi, store_pt_data
+from utils import copydoc, get_directory, version, with_mpi, store_pt_data
 if with_mpi:
-    from utils import MPIPool
+    from utils import MPIPool, MPI
 
 try:
     import nessai
@@ -53,17 +53,28 @@ Nessai nested sampler. This operates on the unit hypercube as the nessai impleme
 
 We defined the additional parameters:
     output ('nessai_log_dir'):  output directory name.  Defined in given default path.
-    logger (True):  Wether to use the logger
+    logger (True):  Whether to use the logger
+    pkl_name ('nessai.pkl'):  File name where results will be pickled
     """
 
     __version__ = nessai_version
 
     @copydoc(FlowSampler)
-    def __init__(self, logger=True, output="nessai_log_dir", **kwargs):
+    def __init__(self, logger=True, pkl_name='nessai.pkl', output="nessai_log_dir", **kwargs):
 
         super().__init__(use_mpi=True)
         
-        self.output_dir = get_filename("", output, **kwargs)
+        if self.mpi_size == 1:
+            self.output_dir = get_directory(output, **kwargs)
+        else:
+            comm = MPI.COMM_WORLD
+            if self.mpi_rank == 0:
+                self.output_dir = get_directory(output, **kwargs)
+                for i in range(1, self.mpi_size):
+                    comm.send(self.output_dir, dest=i, tag=1)
+            else:
+                self.output_dir = comm.recv(source=0, tag=1)
+                
         self.ids = store_pt_data(resume=self.printer.resume_mode(), log_dir=self.output_dir)
         
         if logger:
@@ -72,6 +83,7 @@ We defined the additional parameters:
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
             self.printer.new_stream("txt", synchronised=False)
+            self.pkl_name = pkl_name
 
     def run_internal(self, **kwargs):
         model = Gambit_Model(self)
@@ -99,19 +111,28 @@ We defined the additional parameters:
         self.ids.load_saves()
                 
         if self.mpi_rank == 0:
-            results = self.sampler.nested_samples
             stream = self.printer.get_stream("txt")
             stream.reset()
-            pt = np.zeros(len(model.names))
-            for result in results:
-                for i in range(len(model.names)):
-                    pt[i] = result[model.names[i]]
+            
+            results = self.sampler.nested_samples
+            samples_u = np.array([[result[p] for p in model.names] for result in results])
+
+            for pt in samples_u:
                 if tuple(pt) in self.ids.saves:
                     save = self.ids.saves[tuple(pt)]
                     stream.print(1.0, "Posterior", save[0], save[1])
                 else:
                     print("warning: point ", tuple(pt), " has no correponding id.")
             stream.flush()
+            
+            if self.pkl_name:
+                results = {
+                    "samples_u": samples_u,
+                    "samples": np.array([self.transform_to_vec(pt) for pt in samples_u]),
+                    "parameter_names": self.parameter_names
+                }
+                with open(self.output_dir + self.pkl_name, "wb") as f:
+                    pickle.dump(results, f)
 
     @copydoc(FlowSampler_run)
     def run(self):

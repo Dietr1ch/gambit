@@ -4,7 +4,8 @@ Emcee scanner
 """
 
 import numpy as np
-from utils import copydoc, version, get_filename, with_mpi
+import pickle
+from utils import copydoc, version, get_directory, with_mpi
 if with_mpi:
     from utils import MPIPool
     
@@ -55,22 +56,22 @@ There are additional arguments:
         return np.vstack([np.random.rand(self.dim)
                          for i in range(self.nwalkers)])
         
-    @staticmethod
-    def my_like(params):
+    @classmethod
+    def my_like(cls, params):
         
         if ((params < 1.0) & (params > 0.0)).all():
-            lnew = Emcee.loglike_hypercube(params)
+            lnew = cls.loglike_hypercube(params)
             
-            return (lnew, Emcee.mpi_rank, Emcee.point_id)
+            return (lnew, cls.mpi_rank, cls.point_id)
         else:
             return  (-np.inf, -1, -1)
 
     @copydoc(emcee_EnsembleSampler)
-    def __init__(self, nwalkers=1, pkl_name=None, filename='emcee.h5', **kwargs):
+    def __init__(self, nwalkers=1, pkl_name='emcee.pkl', filename='emcee.h5', **kwargs):
         
         super().__init__(use_mpi=True)
         
-        self.assign_aux_numbers("mult")
+        self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
             self.printer.new_stream("txt", synchronised=False)
         
@@ -79,7 +80,7 @@ There are additional arguments:
                 self.nwalkers = self.init_args['nwalkers']
                 del self.init_args['nwalkers']
             
-            self.log_dir = get_filename("", "Emcee", **kwargs)
+            self.log_dir = get_directory("Emcee", **kwargs)
             self.filename = self.log_dir + filename
             self.reset = not self.printer.resume_mode()
             self.pkl_name = pkl_name
@@ -125,13 +126,17 @@ There are additional arguments:
                 us, cs = np.unique(blobs[blobs[:, 0]==i, 1], return_counts=True)
                 
                 for u, c in zip(us, cs):
-                    stream.print(c, "mult", i, u)
+                    stream.print(c, "Posterior", i, u)
             stream.flush()
             
             if self.pkl_name:
-                samples = self.sampler.get_samples()
+                results = {
+                    "samples_u": self.sampler.get_chain(flat=True),
+                    "samples": np.array([self.transform_to_vec(p) for p in self.sampler.get_chain(flat=True)]),
+                    "parameter_names": self.parameter_names
+                }
                 with open(self.log_dir + self.pkl_name, "wb") as f:
-                    pickle.dump(samples, f)
+                    pickle.dump(results, f)
         
     @copydoc(emcee_EnsembleSampler_run_mcmc)
     def run(self):

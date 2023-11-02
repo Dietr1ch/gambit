@@ -6,7 +6,7 @@ Ultranest scanners
 import pickle
 import numpy as np
 from packaging.version import parse
-from utils import copydoc, version, get_filename, store_pt_data
+from utils import copydoc, version, get_directory, store_pt_data
 
 try:
     import ultranest
@@ -51,7 +51,7 @@ pkl_name ('ultranest.pkl'):  File name where results will be pickled
             self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
             
-        self.log_dir = get_filename("", log_dir, **kwargs)
+        self.log_dir = get_directory(log_dir, **kwargs)
         self.ids = store_pt_data(resume=self.printer.resume_mode(), log_dir=self.log_dir)
 
         self.sampler = ultranest.ReactiveNestedSampler(

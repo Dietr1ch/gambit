@@ -10,7 +10,8 @@ attempts to pickle the loglikelihood function etc.
 
 import pickle
 import numpy as np
-from utils import copydoc, version, with_mpi, get_filename
+import copy
+from utils import copydoc, version, with_mpi, get_directory
 if with_mpi:
     from utils import MPIPool
 
@@ -45,21 +46,21 @@ We add these additional parameters:
     __version__ = dynesty_version
 
     @copydoc(dynesty_NestedSampler)
-    def __init__(self, pkl_name=None, filename='dynesty.save', **kwargs):
+    def __init__(self, pkl_name='static_dynesty.pkl', filename='dynesty.save', **kwargs):
         super().__init__(use_mpi=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
-            self.log_dir = get_filename("", "/StaticDynesty/", **kwargs)
+            self.log_dir = get_directory("StaticDynesty", **kwargs)
             self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
             self.filename = self.log_dir + filename
         
-    @staticmethod
-    def gambit_loglike(params):
-        lnew = StaticDynesty.loglike_hypercube(params)
+    @classmethod
+    def gambit_loglike(cls, params):
+        lnew = cls.loglike_hypercube(params)
         
-        return (lnew, np.array([StaticDynesty.mpi_rank, StaticDynesty.point_id]))
+        return (lnew, np.array([cls.mpi_rank, cls.point_id]))
     
     @staticmethod
     def gambit_transform(params):
@@ -116,8 +117,14 @@ We add these additional parameters:
             stream.flush()
             
             if self.pkl_name:
+                results = {
+                    "results": self.sampler.results,
+                    "samples": np.array([self.transform_to_vec(p) for p in self.sampler.results["samples_u"]]),
+                    "parameter_names": self.parameter_names
+                    }
+                
                 with open(self.log_dir + self.pkl_name, "wb") as f:
-                    pickle.dump(self.sampler.results, f)
+                    pickle.dump(results, f)
 
 class DynamicDynesty(splug.scanner):
     """
@@ -125,23 +132,24 @@ class DynamicDynesty(splug.scanner):
 
     We add these additional parameters:
 
-        pkl_name ('static_dynesty.pkl'):  File name where results will be pickled
+        pkl_name ('dynamic_dynesty.pkl'):  File name where results will be pickled
         filename ('dynesty.save'):  Filename where temp data will be stored
     """
 
     __version__ = dynesty_version
 
     @copydoc(dynesty_DynamicNestedSampler)
-    def __init__(self, pkl_name=None, filename='dynesty.save', **kwargs):
+    def __init__(self, pkl_name='dynamic_dynesty.pkl', filename='dynesty.save', **kwargs):
         super().__init__(use_mpi=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
-            self.log_dir = get_filename("", "/DynamicDynesty/", **kwargs)
+            self.log_dir = get_directory("DynamicDynesty", **kwargs)
             self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
             self.filename = self.log_dir + filename
         
+    #below is an example to 
     #def __reduce__(self):
         #return (self.__class__, ())
     
@@ -150,11 +158,11 @@ class DynamicDynesty(splug.scanner):
         
         #return (lnew, np.array([self.mpi_rank, self.point_id]))
         
-    @staticmethod
-    def gambit_loglike(params):
-        lnew = DynamicDynesty.loglike_hypercube(params)
+    @classmethod
+    def gambit_loglike(cls, params):
+        lnew = cls.loglike_hypercube(params)
         
-        return (lnew, np.array([DynamicDynesty.mpi_rank, DynamicDynesty.point_id]))
+        return (lnew, np.array([cls.mpi_rank, cls.point_id]))
 
     @staticmethod
     def gambit_transform(params):
@@ -210,9 +218,15 @@ class DynamicDynesty(splug.scanner):
                 
             stream.flush()
             
-            if (not self.pkl_name is None) and (self.pkl_name != ''):
+            if self.pkl_name:
+                results = {
+                    "results": self.sampler.results,
+                    "samples": np.array([self.transform_to_vec(p) for p in self.sampler.results["samples_u"]]),
+                    "parameter_names": self.parameter_names
+                    }
+                
                 with open(self.log_dir + self.pkl_name, "wb") as f:
-                    pickle.dump(self.sampler.results, f)
+                    pickle.dump(results, f)
 
 
 __plugins__ = {"static_dynesty": StaticDynesty,

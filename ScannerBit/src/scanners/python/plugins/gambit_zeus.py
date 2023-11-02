@@ -4,7 +4,8 @@ Zeus scanner
 """
 
 import numpy as np
-from utils import copydoc, version, get_filename, with_mpi
+import pickle
+from utils import copydoc, version, get_directory, with_mpi
 if with_mpi:
     from utils import MPIPool, MPI
 
@@ -92,18 +93,18 @@ AVAILABLE CALLBACKS
         return np.vstack([np.random.rand(self.dim)
                          for i in range(self.nwalkers)])
     
-    @staticmethod
-    def my_like(params):
+    @classmethod
+    def my_like(cls, params):
         
         if ((params < 1.0) & (params > 0.0)).all():
-            lnew = Zeus.loglike_hypercube(params)
+            lnew = cls.loglike_hypercube(params)
             
-            return (lnew, Zeus.mpi_rank, Zeus.point_id)
+            return (lnew, cls.mpi_rank, cls.point_id)
         else:
             return  (-np.inf, -1, -1)
 
     @copydoc(zeus_EnsembleSampler)
-    def __init__(self, nwalkers=8, pkl_name=None, use_chain_manager=False, **kwargs):
+    def __init__(self, nwalkers=8, pkl_name='zeus.pkl', use_chain_manager=False, **kwargs):
         super().__init__()
         
         if self.printer.resume_mode():
@@ -115,9 +116,9 @@ AVAILABLE CALLBACKS
             del self.init_args['nwalkers']
         
         self.use_cm = use_chain_manager
+        self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0 or self.use_cm:
-            self.log_dir = get_filename("", "Zeus", **kwargs)
-            self.assign_aux_numbers("mult")
+            self.log_dir = get_directory("Zeus", **kwargs)
             self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
 
@@ -176,13 +177,17 @@ AVAILABLE CALLBACKS
                 us, cs = np.unique(blobs[1, blobs[0, :]==i], return_counts=True)
                 
                 for u, c in zip(us, cs):
-                    stream.print(c, "mult", i, u)
+                    stream.print(c, "Posterior", i, u)
             stream.flush()
                 
             if self.pkl_name:
-                samples = self.sampler.get_samples()
-                with open(self.log_dir + self.pkl_name + "_" + str(self.mpi_rank), "wb") as f:
-                    pickle.dump(samples, f)
+                results = {
+                    "samples_u": self.sampler.get_chain(flat=True),
+                    "samples": np.array([self.transform_to_vec(p) for p in self.sampler.get_chain(flat=True)]),
+                    "parameter_names": self.parameter_names
+                }
+                with open(self.log_dir + self.pkl_name, "wb") as f:
+                    pickle.dump(results, f)
 
     @copydoc(zeus_EnsembleSampler_run_mcmc)
     def run(self):
