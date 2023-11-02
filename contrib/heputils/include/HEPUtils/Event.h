@@ -109,9 +109,11 @@ namespace HEPUtils {
       for (size_t i = 0; i < ps.size(); ++i) {
         e.add_particle(new Particle(*ps[i]));
       }
-      const std::vector<const Jet*> js = jets();
-      for (size_t i = 0; i < js.size(); ++i) {
-        e.add_jet(new Jet(*js[i]));
+      for ( auto jetcollection : _jets ) {
+        const std::vector<const Jet*> js = jets(jetcollection.first);
+        for (size_t i = 0; i < js.size(); ++i) {
+          e.add_jet(new Jet(*js[i]),jetcollection.first);
+        }
       }
       e._pmiss = _pmiss;
     }
