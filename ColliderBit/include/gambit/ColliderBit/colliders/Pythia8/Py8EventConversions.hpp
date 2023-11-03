@@ -326,7 +326,7 @@ namespace Gambit
         cout << "  #e   = " << result.electrons().size() << endl;
         cout << "  #mu  = " << result.muons().size() << endl;
         cout << "  #tau = " << result.taus().size() << endl;
-        cout << "  #jet = " << result.jets().size() << endl;
+        cout << "  #jet = " << result.jets(jetcollection.key).size() << endl;
         cout << "  #pho  = " << result.photons().size() << endl;
         cout << endl;
       #endif

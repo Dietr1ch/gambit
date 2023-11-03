@@ -358,12 +358,32 @@ namespace HEPUtils {
 
     /// @brief Get a jet collection (not including charged leptons or photons)
     const std::vector<const Jet*>& jets(const std::string& key="CANONICAL") const {
+      // Throw an error if the user does not pass a more descriptive key
+      if (key == "CANONICAL")
+      {
+        throw std::runtime_error("Please supply a key for the jet collection.");
+      }
       return _get_jets(key);
     }
 
     /// @brief Get a jet collection (not including charged leptons or photons) (non-const)
     std::vector<Jet*>& jets(const std::string& key="CANONICAL") {
+      // Throw an error if the user does not pass a more descriptive key
+      if (key == "CANONICAL")
+      {
+        throw std::runtime_error("Please supply a key for the jet collection.");
+      }
       return mkunconst(_get_jets(key));
+    }
+
+    /// Get the list of jet collection names
+    std::vector<std::string> jet_collections() {
+      std::vector<std::string> collection_names;
+      for (auto jetcollection : _jets)
+      {
+        collection_names.push_back(jetcollection.first);
+      }
+      return collection_names;
     }
 
 
