@@ -67,14 +67,12 @@ We defined the additional parameters:
         if self.mpi_size == 1:
             self.output_dir = get_directory(output, **kwargs)
         else:
-            comm = MPI.COMM_WORLD
             if self.mpi_rank == 0:
                 self.output_dir = get_directory(output, **kwargs)
-                for i in range(1, self.mpi_size):
-                    comm.send(self.output_dir, dest=i, tag=1)
             else:
-                self.output_dir = comm.recv(source=0, tag=1)
-                
+                self.output_dir = None
+            self.output_dir = MPI.COMM_WORLD.bcast(self.output_dir, root=0)
+        
         self.ids = store_pt_data(resume=self.printer.resume_mode(), log_dir=self.output_dir)
         
         if logger:

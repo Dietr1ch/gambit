@@ -680,8 +680,8 @@ namespace Gambit
       void Init()
       {
         // Dummies; can't rely on being able to use these seriously as the MPI standard doesn't mandate it.
-        int argc = 0;
-        char** argv = NULL;
+        // int argc = 0;
+        // char** argv = NULL;
 
         // Run any functions needed to queue up MPI datatype definition functions
         // (still a little hacky, but works)

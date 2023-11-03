@@ -1,3 +1,5 @@
+# Imported MPIPool and BasePool from Schwimmbad.  See https://github.com/adrn/schwimmbad
+
 # Standard library
 import abc
 

@@ -194,16 +194,13 @@ namespace Gambit
 
             void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double>) const override
             {
-                const double rtol = 1e-4;
-                for (int i = 0, n = this->size(); i < n; i++)
+                auto &outputMap = const_cast<std::unordered_map<std::string, double> &>(physical);
+                double value = outputMap[name];
+
+                auto it1 = scale.begin(), it2 = shift.begin();
+                for (auto it = param_names.begin(), end = param_names.end(); it != end; ++it, ++it1, ++it2)
                 {
-                    const double a = physical.at(param_names[i]);
-                    const double b = scale[i] * physical.at(name) + shift[i];
-                    const double rdiff = std::abs(a - b) / std::max(std::abs(a), std::abs(b));
-                    if (rdiff > rtol)
-                    {
-                        throw std::runtime_error("no inverse as physical does not match same as value");
-                    }
+                    outputMap[*it] = (*it1)*value + *it2;
                 }
             }
 

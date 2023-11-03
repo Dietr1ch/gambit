@@ -47,7 +47,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: emcee #de
+  use_scanner: nautilus #de
 
   scanners:
 
@@ -107,7 +107,7 @@ Scanner:
 
     zeus:
       like: LogLike
-      pkg: gambit_zeus
+      #pkg: gambit_zeus
       plugin: zeus
       init:
         nwalkers: 8
@@ -121,7 +121,7 @@ Scanner:
     emcee:
       like: LogLike
       plugin: emcee
-      pkg: gambit_emcee
+      #pkg: gambit_emcee
       init:
         nwalkers: 8
       run:
@@ -131,7 +131,7 @@ Scanner:
     pocomc:
       like: LogLike
       plugin: pocomc
-      pkg: gambit_pocomc
+      #pkg: gambit_pocomc
       #init:
       #    nparticles: 1000
       run:
@@ -149,7 +149,7 @@ Scanner:
 
     ultranest:
       like: LogLike
-      pkg: gambit_ultranest
+      #pkg: gambit_ultranest
       plugin: reactive_ultranest
       #init:
       run:
@@ -158,7 +158,7 @@ Scanner:
 
     static_dynesty:
       like: LogLike
-      pkg: gambit_dynesty
+      #pkg: gambit_dynesty
       plugin: static_dynesty
       pkl_name: "static_dynesty.pkl"
       init:
@@ -170,7 +170,7 @@ Scanner:
     dynamic_dynesty:
       like: LogLike
       plugin: dynamic_dynesty
-      pkg: gambit_dynesty
+      #pkg: gambit_dynesty
       pkl_name: "dynamic_dynesty.pkl"
         
       init:
@@ -183,16 +183,23 @@ Scanner:
     nessai:
       like: LogLike
       plugin: nessai_flow_sampler
-      pkg: gambit_nessai
+      #pkg: gambit_nessai
       #init:
         #output: "nessai_log_dir"
         #logger: True
+        
+    nautilus:
+      like: LogLike
+      plugin: nautilus
+      #pkg: gambit_nautilus
+      run:
+        verbose: true
 
     # Python scanners - optimization
 
     stochopy_minimize:
       like: LogLike
-      pkg: gambit_stochopy
+      #pkg: gambit_stochopy
       plugin: stochopy_minimize
       run:
         method: "cmaes"
@@ -216,7 +223,7 @@ Scanner:
     scipy_differential_evolution:
       like: LogLike
       plugin: scipy_differential_evolution
-      pkg: gambit_scipy
+      #pkg: gambit_scipy
       run:
         strategy: 'best1bin'
         maxiter: 1000
