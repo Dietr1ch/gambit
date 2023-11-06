@@ -208,7 +208,6 @@ namespace Gambit
                                                         detail.status = file.attr("__error__").cast<std::string>();
                                                     else
                                                         detail.status = "error thrown";
-                                                    std::cout << "setting " << detail.status << std::endl;
                                                 }
                                                 
                                                 if (py::hasattr(plug_class, "__version__") && py::isinstance<py::str>(plug_class.attr("__version__")))
