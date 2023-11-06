@@ -50,8 +50,13 @@ pkl_name ('ultranest.pkl'):  File name where results will be pickled
         if self.mpi_rank == 0:
             self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
+            self.log_dir = get_directory(output, **kwargs)
+        else:
+            self.log_dir = None
             
-        self.log_dir = get_directory(log_dir, **kwargs)
+        if self.mpi_size > 1:
+            self.log_dir = MPI.COMM_WORLD.bcast(self.log_dir, root=0)
+            
         self.ids = store_pt_data(resume=self.printer.resume_mode(), log_dir=self.log_dir)
 
         self.sampler = ultranest.ReactiveNestedSampler(

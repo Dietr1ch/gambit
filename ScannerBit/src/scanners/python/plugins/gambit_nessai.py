@@ -64,24 +64,21 @@ We defined the additional parameters:
 
         super().__init__(use_mpi=True)
         
-        if self.mpi_size == 1:
-            self.output_dir = get_directory(output, **kwargs)
-        else:
-            if self.mpi_rank == 0:
-                self.output_dir = get_directory(output, **kwargs)
-            else:
-                self.output_dir = None
-            self.output_dir = MPI.COMM_WORLD.bcast(self.output_dir, root=0)
-        
-        self.ids = store_pt_data(resume=self.printer.resume_mode(), log_dir=self.output_dir)
-        
-        if logger:
-            setup_logger(output=self.output_dir)
-            
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
             self.printer.new_stream("txt", synchronised=False)
             self.pkl_name = pkl_name
+            self.output_dir = get_directory(output, **kwargs)
+        else:
+            self.output_dir = None
+            
+        if self.mpi_size > 1:
+            self.output_dir = MPI.COMM_WORLD.bcast(self.output_dir, root=0)
+            
+        self.ids = store_pt_data(resume=self.printer.resume_mode(), log_dir=self.output_dir)
+        
+        if logger:
+            setup_logger(output=self.output_dir)
 
     def run_internal(self, **kwargs):
         model = Gambit_Model(self)

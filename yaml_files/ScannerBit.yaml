@@ -47,7 +47,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: nautilus #de
+  use_scanner: pocomc #de
 
   scanners:
 
@@ -131,11 +131,9 @@ Scanner:
     pocomc:
       like: LogLike
       plugin: pocomc
-      #pkg: gambit_pocomc
+      pkg: gambit_pocomc
       #init:
       #    nparticles: 1000
-      run:
-        pkl_name: "pocomc.pkl"
 
     stochopy_sample:
       like: LogLike

@@ -37,19 +37,21 @@
     if (args.contains("default"))                                                                       \
     {                                                                                                   \
         if (is_type<py::int_>(args, "dtype"))                                                           \
-            return py::cast(GET_INIFILE_VALUE<int>(val, args["default"].cast<int>()));                  \
+            return py::cast(GET_INIFILE_VALUE<int>(val, args["default"].template cast<int>()));         \
         else if (is_type<py::str>(args, "dtype"))                                                       \
-            return py::cast(GET_INIFILE_VALUE<std::string>(val, args["default"].cast<std::string>()));  \
+            return py::cast(GET_INIFILE_VALUE<std::string>(val,                                         \
+                                                           args["default"].template cast<std::string>() \
+                                                           ));                                          \
         else if (is_type<py::list>(args, "dtype"))                                                      \
         {                                                                                               \
-            py::list def = args["default"].cast<py::list>();                                            \
+            py::list def = args["default"].template cast<py::list>();                                   \
             py::list list;                                                                              \
                                                                                                         \
             if (is_type<py::int_>(args, "etype"))                                                       \
             {                                                                                           \
                 std::vector<int> defv;                                                                  \
                 for (auto &&l : def)                                                                    \
-                    defv.push_back(l.cast<int>());                                                      \
+                    defv.push_back(l.template cast<int>());                                             \
                                                                                                         \
                 std::vector<int> ret = GET_INIFILE_VALUE<std::vector<int>>(val, defv);                  \
                                                                                                         \
@@ -60,7 +62,7 @@
             {                                                                                           \
                 std::vector<std::string> defv;                                                          \
                 for (auto &&l : def)                                                                    \
-                    defv.push_back(l.cast<std::string>());                                              \
+                    defv.push_back(l.template cast<std::string>());                                     \
                                                                                                         \
                 std::vector<std::string> ret = GET_INIFILE_VALUE<std::vector<std::string>>(val, defv);  \
                                                                                                         \
@@ -71,7 +73,7 @@
             {                                                                                           \
                 std::vector<double> defv;                                                               \
                 for (auto &&l : def)                                                                    \
-                    defv.push_back(l.cast<double>());                                                   \
+                    defv.push_back(l.template cast<double>());                                          \
                                                                                                         \
                 std::vector<double> ret = GET_INIFILE_VALUE<std::vector<double>>(val, defv);            \
                                                                                                         \
@@ -82,7 +84,7 @@
             return list;                                                                                \
         }                                                                                               \
         else                                                                                            \
-            return py::cast(GET_INIFILE_VALUE<double>(val, args["default"].cast<double>()));            \
+            return py::cast(GET_INIFILE_VALUE<double>(val, args["default"].template cast<double>()));   \
     }                                                                                                   \
     else                                                                                                \
     {                                                                                                   \
@@ -159,7 +161,7 @@ namespace Gambit
                 
                 inline std::string pytype(py::handle o)
                 {
-                    return o.attr("__class__").attr("__name__").cast<std::string>();
+                    return o.attr("__class__").attr("__name__").template cast<std::string>();
                 }
                 
                 template<typename T>
@@ -170,7 +172,7 @@ namespace Gambit
                         auto arg = args[type.c_str()];
                         
                         if (pytype(arg) == "type" ? py::handle(arg).is(T().get_type()) : 
-                            pytype(arg) == "str" || pytype(arg) == "unicode" ? arg.cast<std::string>() == pytype(T()) : false)
+                            pytype(arg) == "str" || pytype(arg) == "unicode" ? arg.template cast<std::string>() == pytype(T()) : false)
                             return true;
                         else
                             return false;
@@ -190,7 +192,7 @@ namespace Gambit
                         py::dict d;
                         for (auto &&n : node)
                         {
-                            d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
+                            d[py::cast(n.first.template as<std::string>())] = yaml_to_dict(n.second);
                         }
                         
                         return d;
@@ -218,7 +220,7 @@ namespace Gambit
                                 return py::cast(ret);
                             else
                             {
-                                return py::cast(node.as<std::string>());
+                                return py::cast(node.template as<std::string>());
                             }
                         }
                     }
@@ -258,19 +260,19 @@ namespace Gambit
                     }
                     else if (type == "float" || type == "float64")
                     {
-                        node = o.cast<double>();
+                        node = o.template cast<double>();
                     }
                     else if (type == "int")
                     {
-                        node = o.cast<int>();
+                        node = o.template cast<int>();
                     }
                     else if (type == "str" || type == "unicode")
                     {
-                        node = o.cast<std::string>();
+                        node = o.template cast<std::string>();
                     }
                     else if (type == "bool")
                     {
-                        node = o.cast<bool>();
+                        node = o.template cast<bool>();
                     }
                     else if (type == "NoneType")
                     {
@@ -341,7 +343,7 @@ namespace Gambit
                         return T();
                     }
 
-                    return pythonPluginData()->node[in].as<T>();
+                    return pythonPluginData()->node[in].template as<T>();
                 }
                 
                 template <typename T>
@@ -352,7 +354,7 @@ namespace Gambit
                         return defaults;
                     }
 
-                    return pythonPluginData()->node[in].as<T>();
+                    return pythonPluginData()->node[in].template as<T>();
                 }
                 
                 inline YAML::Node get_inifile_node(const std::string &in)                                                      
@@ -457,7 +459,7 @@ namespace Gambit
                     
                     static std::shared_ptr<s_func> getLike()
                     {
-                        static std::shared_ptr<s_func> like = getNode()["like"] ? get_purpose(getNode()["like"].as<std::string>()) : nullptr;
+                        static std::shared_ptr<s_func> like = getNode()["like"] ? get_purpose(getNode()["like"].template as<std::string>()) : nullptr;
                         
                         return like;
                     }
@@ -477,12 +479,12 @@ namespace Gambit
                 
                 __attribute__ ((visibility ("default"))) double run(py::object &func, map_doub_type_ &map)
                 {
-                    return func(&map).cast<double>();
+                    return func(&map).template cast<double>();
                 }
                 
                 __attribute__ ((visibility ("default"))) double run(py::object &func, map_doub_type_ &map, py::kwargs &opts)
                 {
-                    return func(&map, **opts).cast<double>();
+                    return func(&map, **opts).template cast<double>();
                 }
                 
                 template <typename T>
@@ -495,7 +497,7 @@ namespace Gambit
                         return T();
                     }
 
-                    return pythonPluginData()->node[in].as<T>();
+                    return pythonPluginData()->node[in].template as<T>();
                 }
                 
                 template <typename T>
@@ -506,7 +508,7 @@ namespace Gambit
                         return defaults;
                     }
 
-                    return pythonPluginData()->node[in].as<T>();
+                    return pythonPluginData()->node[in].template as<T>();
                 }
                 
                 inline YAML::Node get_inifile_node(const std::string &in)                                                      
@@ -595,7 +597,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     m.def("assign_aux_numbers", [](py::args params)
     {
         for (auto &&param : params)
-            ::Gambit::Printers::get_aux_param_id(param.cast<std::string>());
+            ::Gambit::Printers::get_aux_param_id(param.template cast<std::string>());
     });
     
     py::class_<Gambit::Printers::BaseBasePrinter, std::unique_ptr<Gambit::Printers::BaseBasePrinter, py::nodelete>>(m, "printer")
@@ -653,7 +655,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     {
         std::unordered_map<std::string, double> map;
         for (auto &&d : physical)
-            map[d.first.cast<std::string>()] = d.second.cast<double>();
+            map[d.first.template cast<std::string>()] = d.second.template cast<double>();
         
         self.inverse_transform(map, unit);
     })
@@ -669,7 +671,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         Gambit::Scanner::vector<double> unit(self.size());
         std::unordered_map<std::string, double> map;
         for (auto &&d : physical)
-            map[d.first.cast<std::string>()] = d.second.cast<double>();
+            map[d.first.template cast<std::string>()] = d.second.template cast<double>();
         
         self.inverse_transform(map, unit);
         
@@ -734,7 +736,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     .def_static("assign_aux_numbers", [](py::args params)
     {
         for (auto &&param : params)
-            ::Gambit::Printers::get_aux_param_id(param.cast<std::string>());
+            ::Gambit::Printers::get_aux_param_id(param.template cast<std::string>());
     });
     
     typedef std::shared_ptr<Gambit::Scanner::Function_Base<double (std::unordered_map<std::string, double> &)>> s_ptr;
@@ -761,12 +763,17 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     {
         return self.get()(vec);
     })
+    .def("__call__", [](s_hyper_func &self, Gambit::Scanner::hyper_cube<float> vecf)
+    {
+        Gambit::Scanner::vector<double> vec = vecf.template cast<double>();
+        return self.get()(vec);
+    })
     .def("__call__", [](s_hyper_func &self, py::dict params)
     {
         auto &like = self.get();
         auto &map = like->getMap();
         for(auto &&p: params)
-            map[p.first.cast<std::string>()] = p.second.cast<double>();
+            map[p.first.template cast<std::string>()] = p.second.template cast<double>();
         
         return like(map);
     })
@@ -795,12 +802,23 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         
         return like(map);
     })
+    .def("__call__", [](s_phys_func &self, Gambit::Scanner::hyper_cube<float> vecf)
+    {
+        Gambit::Scanner::vector<double> vec = vecf.template cast<double>();
+        auto &like = self.get();
+        auto &map = like->getMap();
+        int i = 0;
+        for(auto &&name : like->getShownParameters())
+            map[name] = vec[i++];
+        
+        return like(map);
+    })
     .def("__call__", [](s_phys_func &self, py::dict params)
     {
         auto &like = self.get();
         auto &map = like->getMap();
         for(auto &&p: params)
-            map[p.first.cast<std::string>()] = p.second.cast<double>();
+            map[p.first.template cast<std::string>()] = p.second.template cast<double>();
         
         return like(map);
     })
@@ -829,12 +847,23 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         
         return like(map, true);
     })
+    .def("__call__", [](s_phys_pr_func &self, Gambit::Scanner::hyper_cube<float> vecf)
+    {
+        Gambit::Scanner::vector<double> vec = vecf.template cast<double>();
+        auto &like = self.get();
+        auto &map = like->getMap();
+        int i = 0;
+        for(auto &&name : like->getShownParameters())
+            map[name] = vec[i++];
+        
+        return like(map, true);
+    })
     .def("__call__", [](s_phys_pr_func &self, py::dict params)
     {
         auto &like = self.get();
         auto &map = like->getMap();
         for(auto &&p: params)
-            map[p.first.cast<std::string>()] = p.second.cast<double>();
+            map[p.first.template cast<std::string>()] = p.second.template cast<double>();
         
         return like(map, true);
     })
@@ -863,12 +892,23 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         
         return like->getPrior().log_prior_density(map);
     })
+    .def("__call__", [](s_pr_func &self, Gambit::Scanner::hyper_cube<float> vecf)
+    {
+        Gambit::Scanner::vector<double> vec = vecf.template cast<double>();
+        auto &like = self.get();
+        auto &map = like->getMap();
+        int i = 0;
+        for(auto &&name : like->getShownParameters())
+            map[name] = vec[++i];
+        
+        return like->getPrior().log_prior_density(map);
+    })
     .def("__call__", [](s_phys_pr_func &self, py::dict params)
     {
         auto &like = self.get();
         auto &map = like->getMap();
         for(auto &&p: params)
-            map[p.first.cast<std::string>()] = p.second.cast<double>();
+            map[p.first.template cast<std::string>()] = p.second.template cast<double>();
         
         return like->getPrior().log_prior_density(map);
     })
@@ -893,7 +933,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     {
         auto &map = self->getMap();
         for(auto &&p: params)
-            map[p.first.cast<std::string>()] = p.second.cast<double>();
+            map[p.first.template cast<std::string>()] = p.second.template cast<double>();
         
         return static_cast<like_ptr &>(self)(map);
     })
@@ -941,7 +981,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         py::object ret = yaml_to_dict(get_inifile_node());
         
         for (auto &&arg : args)
-            ret = py::dict(ret)[py::cast(arg.cast<std::string>())];
+            ret = py::dict(ret)[py::cast(arg.template cast<std::string>())];
         
         return ret;
     });
@@ -954,7 +994,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def(py::init([](py::kwargs opts)
         {
         #ifdef WITH_MPI
-            if (opts.contains("use_mpi") && !opts["use_mpi"].cast<bool>())
+            if (opts.contains("use_mpi") && !opts["use_mpi"].template cast<bool>())
             {
                 int numtasks;
                 MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
@@ -1015,6 +1055,47 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         
         return vec;
     })
+    .def_static("transform", [](Gambit::Scanner::hyper_cube<float> unitf)
+    {
+        Gambit::Scanner::vector<double> unit = unitf.template cast<double>();
+        py::dict physical;
+        //auto &map = getLike()->getMap();
+        static std::unordered_map<std::string, double> map;
+        get_prior().transform(unit, map);
+        
+        for (auto &&m : map)
+            physical[py::cast(m.first)] = py::cast(m.second);
+        
+        return physical;
+    })
+    .def_static("transform", [](Gambit::Scanner::hyper_cube<float> unitf, std::unordered_map<std::string, double> &physical)
+    {
+        Gambit::Scanner::vector<double> unit = unitf.template cast<double>();
+        get_prior().transform(unit, physical);
+    })
+    .def_static("transform", [](Gambit::Scanner::hyper_cube<float> unitf, py::dict physical)
+    {
+        Gambit::Scanner::vector<double> unit = unitf.template cast<double>();
+        //auto &map = getLike()->getMap();
+        static std::unordered_map<std::string, double> map;
+        get_prior().transform(unit, map);
+        for (auto &&m : map)
+            physical[py::cast(m.first)] = py::cast(m.second);
+    })
+    .def_static("transform_to_vec", [](Gambit::Scanner::hyper_cube<float> unitf)
+    {
+        Gambit::Scanner::vector<double> unit = unitf.template cast<double>();
+        //auto &map = getLike()->getMap();
+        static std::unordered_map<std::string, double> map;
+        get_prior().transform(unit, map);
+        auto params = get_prior().getShownParameters();
+        Gambit::Scanner::vector<double> vec(params.size());
+        
+        for (size_t i = 0, end = params.size(); i < end; ++i)
+            vec[i] = map[params[i]];
+        
+        return vec;
+    })
     .def_static("inverse_transform", [](std::unordered_map<std::string, double> &physical)
     {
         Gambit::Scanner::vector<double> unit(get_prior().size());
@@ -1027,7 +1108,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         Gambit::Scanner::vector<double> unit(get_prior().size());
         std::unordered_map<std::string, double> map;
         for (auto &&m : physical)
-            map[m.first.cast<std::string>()] = m.second.cast<double>();
+            map[m.first.template cast<std::string>()] = m.second.template cast<double>();
         
         get_prior().inverse_transform(map, unit);
         
@@ -1041,7 +1122,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     {
         std::unordered_map<std::string, double> map;
         for (auto &&m : physical)
-            map[m.first.cast<std::string>()] = m.second.cast<double>();
+            map[m.first.template cast<std::string>()] = m.second.template cast<double>();
         
         get_prior().inverse_transform(map, unit);
     })
@@ -1126,7 +1207,7 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     .def_static("assign_aux_numbers", [](py::args params)
     {
         for (auto &&param : params)
-            ::Gambit::Printers::get_aux_param_id(param.cast<std::string>());
+            ::Gambit::Printers::get_aux_param_id(param.template cast<std::string>());
     });
 //     .def("__reduce__", [&](scanner_base &)
 //     {
@@ -1147,7 +1228,7 @@ PYBIND11_EMBEDDED_MODULE(objective_plugin, m)
         py::object ret = yaml_to_dict(get_inifile_node());
         
         for (auto &&arg : args)
-            ret = py::dict(ret)[py::cast(arg.cast<std::string>())];
+            ret = py::dict(ret)[py::cast(arg.template cast<std::string>())];
         
         return ret;
     });

@@ -6,11 +6,12 @@ if with_mpi:
     from mpi4py import MPI
 
 def get_directory(path, default_output_path=".", **kwargs):
-    defpath = os.path.abspath((default_output_path + "/" + path + "/").strip())
+    defpath = os.path.abspath((default_output_path + "/" + path).strip())
+
     if not os.path.exists(defpath):
         os.makedirs(defpath)
         
-    return defpath
+    return defpath + "/"
 
 class store_pt_data:
     
