@@ -108,7 +108,7 @@ YAML options:
             self.loglike_hypercube(pt)
             
             # prints value
-            self.print(1.0, "mult")
+            self.print(1.0, "Posterior")
             
             # # or equivalently, you can go the same if using the low-level interface:
             # self.like(pt)

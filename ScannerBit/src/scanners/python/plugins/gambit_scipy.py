@@ -38,6 +38,7 @@ Dual annealing optimizer from scipy.
         bounds = [(0., 1.)] * self.dim
         res = scipy.optimize.dual_annealing(self.loglike_hypercube, bounds, **self.run_args)
         print(res)
+        return 0
         
 
 class BasinHopping(splug.scanner):
@@ -56,6 +57,7 @@ Basin-hopping optimizer from scipy.
         res = scipy.optimize.basinhopping(
             self.loglike_hypercube, bounds, **self.run_args)
         print(res)
+        return 0
 
 
 class DifferentialEvolution(splug.scanner):
@@ -74,6 +76,7 @@ Differential evolution optimizer from scipy.
         res = scipy.optimize.differential_evolution(
             self.loglike_hypercube, bounds, **self.run_args)
         print(res)
+        return 0
         
 
 class Direct(splug.scanner):
@@ -92,6 +95,7 @@ The DIRECT optimizer from scipy.
         bounds = [(0., 1.)] * self.dim
         res = scipy.optimize.direct(self.loglike_hypercube, bounds, **self.run_args)
         print(res)
+        return 0
         
 
 __plugins__ = {"scipy_dual_annealing": DualAnnealing,

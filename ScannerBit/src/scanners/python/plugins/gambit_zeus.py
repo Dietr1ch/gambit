@@ -185,6 +185,7 @@ AVAILABLE CALLBACKS
     @copydoc(zeus_EnsembleSampler_run_mcmc)
     def run(self):
         self.run_internal(**self.run_args)
+        return 0
         
 
 __plugins__ = {"zeus": Zeus}

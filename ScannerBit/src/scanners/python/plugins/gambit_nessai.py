@@ -41,10 +41,10 @@ class Gambit_Model(Model):
     def log_likelihood(self, params):
         for i in range(len(self.names)):
             self.pt[i] = params[self.names[i]]
-        
+        lnew = self.gambit.loglike_hypercube(self.pt)
         self.gambit.ids.save((tuple(self.pt)), (self.gambit.mpi_rank, self.gambit.point_id))
         
-        return self.gambit.loglike_hypercube(self.pt)
+        return lnew
 
 
 class GambitFlowSampler(splug.scanner):
@@ -132,6 +132,7 @@ We defined the additional parameters:
     @copydoc(FlowSampler_run)
     def run(self):
         self.run_internal(**self.run_args)
+        return 0
 
 
 __plugins__ = {"nessai_flow_sampler": GambitFlowSampler}

@@ -95,6 +95,7 @@ pkl_name ('ultranest.pkl'):  File name where results will be pickled
     @copydoc(ultranest_ReactiveNestedSampler_run)
     def run(self):
         self.run_internal(**self.run_args)
+        return 0
 
 
 __plugins__ = {"reactive_ultranest": ReactiveUltranest}

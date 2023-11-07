@@ -177,6 +177,7 @@ pkl_name ('ocomc.pkl'):  File name where results will be pickled
     @copydoc(pocomc_Sampler_run)
     def run(self):
         self.run_internal(**self.run_args)
+        return 0
 
 
 __plugins__ = {"pocomc": PocoMC}

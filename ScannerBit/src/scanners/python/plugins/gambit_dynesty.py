@@ -125,6 +125,8 @@ We add these additional parameters:
                 
                 with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(results, f)
+                    
+        return 0
 
 class DynamicDynesty(splug.scanner):
     """
@@ -227,6 +229,8 @@ class DynamicDynesty(splug.scanner):
                 
                 with open(self.log_dir + self.pkl_name, "wb") as f:
                     pickle.dump(results, f)
+                    
+        return 0
 
 
 __plugins__ = {"static_dynesty": StaticDynesty,
