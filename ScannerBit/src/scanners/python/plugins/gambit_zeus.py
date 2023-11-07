@@ -85,13 +85,6 @@ AVAILABLE CALLBACKS
             return None
         else:
             return ret
-
-    def initial_state(self):
-        """
-        :returns: Choice of initial state for chain
-        """
-        return np.vstack([np.random.rand(self.dim)
-                         for i in range(self.nwalkers)])
     
     @classmethod
     def my_like(cls, params):
@@ -127,7 +120,7 @@ AVAILABLE CALLBACKS
             
         if self.mpi_size == 1:
             if start is None:
-                start = self.initial_state()
+                start = np.random.rand(self.nwalkers, self.dim)
             self.sampler = zeus.EnsembleSampler(self.nwalkers, 
                                                 self.dim, 
                                                 self.my_like, 
@@ -141,7 +134,7 @@ AVAILABLE CALLBACKS
             if self.use_cm:
                 with ChainManager(self.mpi_size) as cm:
                     if start is None:
-                        start = self.initial_state()
+                        start = np.random.rand(self.nwalkers, self.dim)
                     self.sampler = zeus.EnsembleSampler(self.nwalkers, 
                                                         self.dim, 
                                                         self.my_like, 
@@ -155,7 +148,7 @@ AVAILABLE CALLBACKS
                 with MPIPool() as pool:
                     if pool.is_master():
                         if start is None:
-                            start = self.initial_state()
+                            start = np.random.rand(self.nwalkers, self.dim)
                         self.sampler = zeus.EnsembleSampler(self.nwalkers, 
                                                             self.dim, 
                                                             self.my_like, 

@@ -36,12 +36,6 @@ pkl_name ('ocomc.pkl'):  File name where results will be pickled
     __version__ = pocomc_version
     ids=None
 
-    def initial_state(self):
-        """
-        :returns: Choice of initial state for chain
-        """
-        return np.array([np.random.rand(self.dim) for i in range(self.n_particles)], dtype=np.float32)
-
     @copydoc(pocomc_Sampler)
     def __init__(self, pkl_name="pocomc.pkl", n_particles=1000, **kwargs):
         
@@ -117,7 +111,7 @@ pkl_name ('ocomc.pkl'):  File name where results will be pickled
         
         if self.mpi_size == 1:
             if prior_samples is None:
-                prior_samples = self.initial_state()
+                prior_samples = np.random.rand(self.n_particles, self.dim).astype(np.float32)
             self.sampler = self.make_sampler(self.n_particles,
                                              self.dim,
                                              log_likelihood=self.my_like,
@@ -136,7 +130,7 @@ pkl_name ('ocomc.pkl'):  File name where results will be pickled
             with MPIPool() as pool:
                 if pool.is_master():
                     if prior_samples is None:
-                        prior_samples = self.initial_state()
+                        prior_samples = np.random.rand(self.n_particles, self.dim).astype(np.float32)
                     self.sampler = self.make_sampler(self.n_particles,
                                                      self.dim,
                                                      log_likelihood=self.my_like,

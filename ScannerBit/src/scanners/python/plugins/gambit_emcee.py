@@ -47,14 +47,6 @@ There are additional arguments:
             backend.reset(self.nwalkers, self.dim)
 
         return backend
-
-    def initial_state(self):
-        """
-        :returns: Choice of initial state for chain
-        """
-        
-        return np.vstack([np.random.rand(self.dim)
-                         for i in range(self.nwalkers)])
         
     @classmethod
     def my_like(cls, params):
@@ -89,7 +81,7 @@ There are additional arguments:
     def run_internal(self, nsteps=5000, progress=True, initial_state=None, **kwargs):
         if self.mpi_size == 1:
             if initial_state is None:
-                initial_state = self.initial_state()
+                initial_state = np.random.rand(self.nwalkers, self.dim)
                 
             self.sampler = emcee.EnsembleSampler(self.nwalkers,
                                                  self.dim,
@@ -103,7 +95,7 @@ There are additional arguments:
             with MPIPool() as pool:
                 if pool.is_master():
                     if initial_state is None:
-                        initial_state = self.initial_state()
+                        initial_state = np.random.rand(self.nwalkers, self.dim)
                         
                     self.sampler = emcee.EnsembleSampler(self.nwalkers,
                                                          self.dim,

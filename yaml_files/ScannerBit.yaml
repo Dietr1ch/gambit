@@ -47,7 +47,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: pocomc #de
+  use_scanner: de
 
   scanners:
 
@@ -99,11 +99,11 @@ Scanner:
     kombine:
       like: LogLike
       plugin: kombine
+      pkg: gambit_kombine
       init:
         nwalkers: 8
       run:
         nsteps: 20000
-        pkl_name: "kombine.h5"
 
     zeus:
       like: LogLike
@@ -131,7 +131,7 @@ Scanner:
     pocomc:
       like: LogLike
       plugin: pocomc
-      pkg: gambit_pocomc
+      #pkg: gambit_pocomc
       #init:
       #    nparticles: 1000
 
