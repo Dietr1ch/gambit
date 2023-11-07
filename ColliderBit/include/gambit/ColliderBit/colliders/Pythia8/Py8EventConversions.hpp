@@ -14,6 +14,7 @@
 ///  \author Pat Scott
 ///  \author Martin White
 ///  \author Are Raklev  June 2021
+///  \author Chris Chang Nov 2023
 ///
 ///  *********************************************
 
@@ -208,8 +209,8 @@ namespace Gambit
         const FJNS::JetDefinition jet_def(jet_algorithm, jetcollection.R, jet_strategy, jet_recomscheme);
 
         /// @todo For substructure we need to keep this ClusterSequence alive... make_unique() ctor and attach to the Event? Or manage at CB level?
-        FJNS::ClusterSequence cseq(jetparticles, jet_def);
-        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(jet_pt_min));
+        result.set_clusterseq(jetparticles, jet_def, jetcollection.key);
+        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt((result.ClusterSeqMap[jetcollection.key])->inclusive_jets(jet_pt_min));
 
         /// Do jet b-tagging, etc. and add to the Event
         /// @todo Use ghost tagging?
@@ -418,8 +419,8 @@ namespace Gambit
         FJNS::Strategy jet_strategy = FJstrategy_map(jetcollection.strategy);
         FJNS::RecombinationScheme jet_recomscheme = FJRecomScheme_map(jetcollection.recombination_scheme);
         const FJNS::JetDefinition jet_def(jet_algorithm, jetcollection.R, jet_strategy, jet_recomscheme);
-        FJNS::ClusterSequence cseq(jetparticles, jet_def);
-        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(jet_pt_min));
+        result.set_clusterseq(jetparticles, jet_def, jetcollection.key);
+        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt((result.ClusterSeqMap[jetcollection.key])->inclusive_jets(jet_pt_min));
 
         // Add to the event, with b-tagging info"
         for (const FJNS::PseudoJet& pj : pjets)

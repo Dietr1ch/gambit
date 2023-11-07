@@ -424,6 +424,14 @@ namespace HEPUtils {
 
     /// @}
 
+    /// Map between a jet collection and a cluster sequence pointer
+    std::map<const std::string, std::unique_ptr<FJNS::ClusterSequence>> ClusterSeqMap;
+
+    /// Initialise a cluster sequence with a unique pointer
+    void set_clusterseq(std::vector<FJNS::PseudoJet>& jetparticles, const FJNS::JetDefinition& jetdef, const std::string& key="CANONICAL")
+    {
+      ClusterSeqMap[key] = std::make_unique<FJNS::ClusterSequence>(jetparticles, jetdef);
+    }
 
     /// @name Missing momentum
     /// @{
