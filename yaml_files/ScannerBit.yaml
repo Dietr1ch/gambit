@@ -47,7 +47,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: kombine #de
+  use_scanner: de
 
   scanners:
 
@@ -197,12 +197,10 @@ Scanner:
 
     stochopy_minimize:
       like: LogLike
-      #pkg: gambit_stochopy
+      pkg: gambit_stochopy
       plugin: stochopy_minimize
       run:
         method: "cmaes"
-        options:
-          backend: "mpi"
 
     scipy_basin_hopping:
       like: LogLike
