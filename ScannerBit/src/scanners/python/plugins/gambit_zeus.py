@@ -98,11 +98,8 @@ AVAILABLE CALLBACKS
 
     @copydoc(zeus_EnsembleSampler)
     def __init__(self, nwalkers=8, pkl_name='zeus.pkl', use_chain_manager=False, **kwargs):
-        super().__init__()
-        
-        if self.printer.resume_mode():
-            raise Exception("Zeus does not support resuming.")
-        
+        super().__init__(use_mpi=True, use_resume=False)
+
         self.nwalkers = nwalkers
         if 'nwalkers' in self.init_args:
             self.nwalkers = self.init_args['nwalkers']

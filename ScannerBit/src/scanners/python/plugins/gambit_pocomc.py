@@ -39,7 +39,7 @@ pkl_name ('ocomc.pkl'):  File name where results will be pickled
     @copydoc(pocomc_Sampler)
     def __init__(self, pkl_name="pocomc.pkl", n_particles=1000, **kwargs):
         
-        super().__init__(use_mpi=True) # False for right now
+        super().__init__(use_mpi=True, use_resume=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:

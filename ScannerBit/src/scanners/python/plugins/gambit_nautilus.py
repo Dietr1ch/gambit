@@ -34,7 +34,7 @@ We defined the additional parameters:
     
     @copydoc(nautilus_Sampler)
     def __init__(self, pkl_name = "nautilus.pkl", filename='nautilus.hdf5', **kwargs):
-        super().__init__(use_mpi=True)
+        super().__init__(use_mpi=True, use_resume=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:

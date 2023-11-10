@@ -41,7 +41,7 @@ pkl_name ('ultranest.pkl'):  File name where results will be pickled
     @copydoc(ultranest_ReactiveNestedSampler)
     def __init__(self, pkl_name='ultranest.pkl', log_dir="ultranest_log_dir", **kwargs):
         
-        super().__init__(use_mpi=True)
+        super().__init__(use_mpi=True, use_resume=True)
         if self.mpi_size > 1 and parse(ultranest.__version__) < parse("3.6.3"):
             print("WARNING: UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))
             #raise Exception("UltraNest current version is {0}.  Versions < 3.6.3 are bugged when using MPI.".format(ultranest.__version__))

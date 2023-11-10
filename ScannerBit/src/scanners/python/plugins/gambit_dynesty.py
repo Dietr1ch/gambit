@@ -47,7 +47,7 @@ We add these additional parameters:
 
     @copydoc(dynesty_NestedSampler)
     def __init__(self, pkl_name='static_dynesty.pkl', filename='dynesty.save', **kwargs):
-        super().__init__(use_mpi=True)
+        super().__init__(use_mpi=True, use_resume=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
@@ -142,7 +142,7 @@ class DynamicDynesty(splug.scanner):
 
     @copydoc(dynesty_DynamicNestedSampler)
     def __init__(self, pkl_name='dynamic_dynesty.pkl', filename='dynesty.save', **kwargs):
-        super().__init__(use_mpi=True)
+        super().__init__(use_mpi=True, use_resume=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:
@@ -150,16 +150,7 @@ class DynamicDynesty(splug.scanner):
             self.pkl_name = pkl_name
             self.printer.new_stream("txt", synchronised=False)
             self.filename = self.log_dir + filename
-        
-    #below is an example to 
-    #def __reduce__(self):
-        #return (self.__class__, ())
     
-    #def gambit_loglike(self, params):
-        #lnew = self.loglike_hypercube(params)
-        
-        #return (lnew, np.array([self.mpi_rank, self.point_id]))
-        
     @classmethod
     def gambit_loglike(cls, params):
         lnew = cls.loglike_hypercube(params)

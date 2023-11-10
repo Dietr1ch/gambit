@@ -31,7 +31,7 @@ Dual annealing optimizer from scipy.
     __version__ = scipy_version
     
     def __init__(self, **kwargs):
-        super().__init__(use_mpi=False)
+        super().__init__(use_mpi=False, use_resume=False)
 
     @copydoc(scipy_optimize_dual_annealing)
     def run(self):
@@ -49,7 +49,7 @@ Basin-hopping optimizer from scipy.
     __version__ = scipy_version
     
     def __init__(self, **kwargs):
-        super().__init__(use_mpi=False)
+        super().__init__(use_mpi=False, use_resume=False)
 
     @copydoc(scipy_optimize_basinhopping)
     def run(self):
@@ -68,7 +68,7 @@ Differential evolution optimizer from scipy.
     __version__ = scipy_version
     
     def __init__(self, **kwargs):
-        super().__init__(use_mpi=False)
+        super().__init__(use_mpi=False, use_resume=False)
 
     @copydoc(scipy_optimize_differential_evolution)
     def run(self):
@@ -87,7 +87,7 @@ The DIRECT optimizer from scipy.
     __version__ = scipy_version
     
     def __init__(self, **kwargs):
-        super().__init__(use_mpi=False)
+        super().__init__(use_mpi=False, use_resume=False)
 
     @copydoc(scipy_optimize_direct)
     def run(self):

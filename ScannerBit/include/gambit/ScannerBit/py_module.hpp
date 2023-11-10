@@ -991,10 +991,10 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     m.def("get_purpose", get_purpose);
     
     py::class_<scanner_base, std::shared_ptr<scanner_base>>(m, "scanner")
-    .def(py::init([](py::kwargs opts)
+    .def(py::init([](bool use_mpi, bool use_resume)
         {
         #ifdef WITH_MPI
-            if (opts.contains("use_mpi") && !opts["use_mpi"].template cast<bool>())
+            if (!use_mpi)
             {
                 int numtasks;
                 MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
@@ -1004,9 +1004,14 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
                 }
             }
         #endif
+        
+            if (!use_resume && Gambit::Scanner::Plugins::ScannerPyPlugin::get_printer().resume_mode())
+            {
+                scan_err << "This scanner does not support resumming." << scan_end;
+            }
                 
             return new scanner_base();
-        }))
+        }), py::arg("use_mpi")=true, py::arg("use_resume")=true)
     .def("run", &scanner_base::run)
     .def_static("print", [](double val, const std::string &name)
     {

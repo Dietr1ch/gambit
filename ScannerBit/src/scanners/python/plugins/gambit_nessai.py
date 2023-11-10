@@ -62,7 +62,7 @@ We defined the additional parameters:
     @copydoc(FlowSampler)
     def __init__(self, logger=True, pkl_name='nessai.pkl', output="nessai_log_dir", **kwargs):
 
-        super().__init__(use_mpi=True)
+        super().__init__(use_mpi=True, use_resume=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:

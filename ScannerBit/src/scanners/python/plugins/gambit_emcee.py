@@ -61,7 +61,7 @@ There are additional arguments:
     @copydoc(emcee_EnsembleSampler)
     def __init__(self, nwalkers=1, pkl_name='emcee.pkl', filename='emcee.h5', **kwargs):
         
-        super().__init__(use_mpi=True)
+        super().__init__(use_mpi=True, use_resume=True)
         
         self.assign_aux_numbers("Posterior")
         if self.mpi_rank == 0:

@@ -40,7 +40,7 @@ YAML options:
     # A Constructor that takes in arguments is required.
     def __init__(self, grid_pts=10, parameters=[], **options):
         
-        super().__init__()
+        super().__init__(use_mpi=True, use_resume=False)
 
         # You can access plugin data without using base class as follows:
         #
