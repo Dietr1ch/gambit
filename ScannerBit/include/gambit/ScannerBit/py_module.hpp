@@ -210,19 +210,25 @@ namespace Gambit
                     }
                     else if (node.IsScalar())
                     {
-                        int ret;
-                        if (YAML::convert<int>::decode(node, ret))
-                            return py::cast(ret);
-                        else 
+                        int ret_i;
+                        if (YAML::convert<int>::decode(node, ret_i))
                         {
-                            double ret;
-                            if (YAML::convert<double>::decode(node, ret))
-                                return py::cast(ret);
-                            else
-                            {
-                                return py::cast(node.template as<std::string>());
-                            }
+                            return py::cast(ret_i);
                         }
+
+                        double ret_d;
+                        if (YAML::convert<double>::decode(node, ret_d))
+                        {
+                            return py::cast(ret_d);
+                        }
+
+                        bool ret_b;
+                        if (YAML::convert<bool>::decode(node, ret_b))
+                        {
+                            return py::cast(ret_b);
+                        }
+
+                        return py::cast(node.template as<std::string>());
                     }
                     else
                     {
