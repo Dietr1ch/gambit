@@ -96,15 +96,6 @@ Scanner:
 
     # Python scanners - MCMC
 
-    kombine:
-      like: LogLike
-      plugin: kombine
-      pkg: gambit_kombine
-      init:
-        nwalkers: 8
-      run:
-        nsteps: 20000
-
     zeus:
       like: LogLike
       #pkg: gambit_zeus
@@ -134,14 +125,6 @@ Scanner:
       #pkg: gambit_pocomc
       #init:
       #    nparticles: 1000
-
-    stochopy_sample:
-      like: LogLike
-      plugin: stochopy_sample
-      run:
-        method: "mcmc"
-        options:
-          maxiter: 1000
 
     # Python scanners - nested sampling
 
@@ -194,13 +177,6 @@ Scanner:
         verbose: true
 
     # Python scanners - optimization
-
-    stochopy_minimize:
-      like: LogLike
-      pkg: gambit_stochopy
-      plugin: stochopy_minimize
-      run:
-        method: "cmaes"
 
     scipy_basin_hopping:
       like: LogLike
