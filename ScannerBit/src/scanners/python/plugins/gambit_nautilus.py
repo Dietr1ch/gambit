@@ -27,7 +27,7 @@ class Nautilus(splug.scanner):
 A nested sampler that selects points by training a neural net using the live points.  See https://nautilus-sampler.readthedocs.io/en/stable/index.html
 
 We defined the additional parameters:
-    filename ('nautilus.h5'): For passing the name of a h5 file to which to save results using the emcee writer.
+    filename ('nautilus.h5'): For passing the name of a h5 file to which to save results using the nautilus writer.
     pkl_name ('nautilus.pkl'):  File name where results will be pickled
     """
     __version__ = nautilus_version
@@ -44,7 +44,7 @@ We defined the additional parameters:
                 self.prior.add_parameter(key)
             self.printer.new_stream("txt", synchronised=False)
             self.pkl_name = pkl_name
-            self.log_dir = get_directory("Emcee", **kwargs)
+            self.log_dir = get_directory("nautilus", **kwargs)
             self.filename = self.log_dir + filename
             
     @classmethod

@@ -219,6 +219,13 @@ Scanner:
         #output: "nessai_log_dir"
         #logger: true
 
+    nautilus:
+      like: LogLike
+      plugin: nautilus
+      #pkg: gambit_nautilus
+      run:
+        verbose: true
+
     zeus:
       like: LogLike
       pkg: gambit_zeus
@@ -241,6 +248,13 @@ Scanner:
       run:
         nsteps: 20000
         #filename: "emcee.h5"
+
+    pocomc:
+      like: LogLike
+      plugin: pocomc
+      #pkg: gambit_pocomc
+      #init:
+      #    nparticles: 1000
 
     ultranest:
       like: LogLike
