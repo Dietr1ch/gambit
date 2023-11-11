@@ -167,7 +167,7 @@ Scanner:
       #pkg: gambit_nessai
       #init:
         #output: "nessai_log_dir"
-        #logger: True
+        #logger: true
         
     nautilus:
       like: LogLike
@@ -182,6 +182,9 @@ Scanner:
       like: LogLike
       plugin: scipy_basin_hopping
       run:
+        x0:
+          EggBox::param_0: 0.5
+          EggBox::param_1: 0.5
         niter: 100
         T: 1.0
         stepsize: 0.5
@@ -195,7 +198,6 @@ Scanner:
     scipy_differential_evolution:
       like: LogLike
       plugin: scipy_differential_evolution
-      #pkg: gambit_scipy
       run:
         strategy: 'best1bin'
         maxiter: 1000
@@ -208,12 +210,16 @@ Scanner:
         init: 'latinhypercube'
         atol: 0
         updating: 'immediate'
+        # x0:
+        #   EggBox::param_0: 0.4
+        #   EggBox::param_1: 0.6
 
     scipy_direct:
       like: LogLike
       plugin: scipy_direct
       run:
         eps: 0.0001
+        # maxfun: 2000
         maxiter: 1000
         locally_biased: true
         vol_tol: 1e-16
@@ -229,6 +235,10 @@ Scanner:
         visit: 2.62
         accept: -5.0
         maxfun: 10000000.0
+        no_local_search: false
+        x0:
+          EggBox::param_0: 0.4
+          EggBox::param_1: 0.6
 
     square_grid:
       plugin: square_grid

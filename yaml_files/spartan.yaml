@@ -119,7 +119,6 @@ Scanner:
       algorithm: combined # simplex, combined, scan, fumili, bfgs, migrad
       print_level: 1
       strategy: 2
-
       start:
         NormalDist::mu: 25.
         NormalDist::sigma: 2.5
@@ -127,16 +126,67 @@ Scanner:
         NormalDist::mu: 5.
         NormalDist::sigma: 1.
 
-    scipy_dual_annealing:
-      plugin: scipy_dual_annealing
+    scipy_basin_hopping:
       like: LogLike
-      maxiter: 1000
-      initial_temp: 5230.0
-      restart_temp_ratio: 2.0e-05
-      visit: 2.62
-      accept: -5.0
-      maxfun: 10000000.0
+      plugin: scipy_basin_hopping
+      run:
+        x0:
+          NormalDist::mu: 25.
+          NormalDist::sigma: 2.5
+        niter: 100
+        T: 1.0
+        stepsize: 0.5
+        minimizer_kwargs:
+          method: "L-BFGS-B"
+        interval: 50
+        disp: true
+        target_accept_rate: 0.5
+        stepwise_factor: 0.9
 
+    scipy_differential_evolution:
+      like: LogLike
+      plugin: scipy_differential_evolution
+      run:
+        strategy: 'best1bin'
+        maxiter: 1000
+        popsize: 15
+        tol: 0.01
+        mutation: [0.5, 1]
+        recombination: 0.7
+        disp: false
+        polish: true
+        init: 'latinhypercube'
+        atol: 0
+        updating: 'immediate'
+        # x0:
+        #   NormalDist::mu: 25.
+        #   NormalDist::sigma: 2.5
+
+    scipy_direct:
+      like: LogLike
+      plugin: scipy_direct
+      run:
+        eps: 0.0001
+        # maxfun: 2000
+        maxiter: 1000
+        locally_biased: true
+        vol_tol: 1e-16
+        len_tol: 1e-06
+
+    scipy_dual_annealing:
+      like: LogLike
+      plugin: scipy_dual_annealing
+      run:
+        maxiter: 1000
+        initial_temp: 5230.0
+        restart_temp_ratio: 2.0e-05
+        visit: 2.62
+        accept: -5.0
+        maxfun: 10000000.0
+        no_local_search: false
+        x0:
+          NormalDist::mu: 25.
+          NormalDist::sigma: 2.5
 
     static_dynesty:
       like: LogLike
@@ -167,7 +217,7 @@ Scanner:
       pkg: gambit_nessai
       #init:
         #output: "nessai_log_dir"
-        #logger: True
+        #logger: true
 
     zeus:
       like: LogLike
