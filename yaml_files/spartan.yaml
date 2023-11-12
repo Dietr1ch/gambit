@@ -59,6 +59,7 @@ Printer:
     output_file: "gambit_output.hdf5"
     group: "/test"
     delete_file_on_restart: true
+    # disable_combine_routines: true
 
   # printer: none
 
@@ -130,6 +131,7 @@ Scanner:
       like: LogLike
       plugin: scipy_basin_hopping
       run:
+        # n_runs: 4
         x0:
           NormalDist::mu: 25.
           NormalDist::sigma: 2.5
@@ -147,6 +149,7 @@ Scanner:
       like: LogLike
       plugin: scipy_differential_evolution
       run:
+        # n_runs: 4
         strategy: 'best1bin'
         maxiter: 1000
         popsize: 15
@@ -158,28 +161,30 @@ Scanner:
         init: 'latinhypercube'
         atol: 0
         updating: 'immediate'
-        # x0:
-        #   NormalDist::mu: 25.
-        #   NormalDist::sigma: 2.5
+        x0:
+          NormalDist::mu: 25.
+          NormalDist::sigma: 2.5
 
     scipy_direct:
       like: LogLike
       plugin: scipy_direct
       run:
+        # n_runs: 4
         eps: 0.0001
         # maxfun: 2000
         maxiter: 1000
         locally_biased: true
         vol_tol: 1e-16
-        len_tol: 1e-06
+        len_tol: 1e-6
 
     scipy_dual_annealing:
       like: LogLike
       plugin: scipy_dual_annealing
       run:
+        # n_runs: 4
         maxiter: 1000
         initial_temp: 5230.0
-        restart_temp_ratio: 2.0e-05
+        restart_temp_ratio: 2.0e-5
         visit: 2.62
         accept: -5.0
         maxfun: 10000000.0
@@ -187,6 +192,22 @@ Scanner:
         x0:
           NormalDist::mu: 25.
           NormalDist::sigma: 2.5
+
+    scipy_minimize:
+      like: LogLike
+      plugin: scipy_minimize
+      run:
+        # n_runs: 5
+        x0:
+          NormalDist::mu: 25.
+          NormalDist::sigma: 2.5
+        method: "L-BFGS-B"  # "Nelder-Mead", "Powell", "CG", "BFGS", "L-BFGS-B", "TNC", "COBYLA", "SLSQP", "trust-constr",
+        # jac: "2-point"      # "2-point", "3-point", "cs"
+        # hess: "2-point"     # "2-point", "3-point", "cs"
+        tol: 1e-6
+        options:
+          maxiter: 15000
+          disp: false
 
     static_dynesty:
       like: LogLike
