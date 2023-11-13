@@ -50,8 +50,7 @@ Printer:
   #   buffer_length: 10
   #   delete_file_on_restart: true
 
-  printer: hdf5_v1
-  
+  printer: hdf5
   options:
     # Name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
@@ -65,7 +64,7 @@ Printer:
 
 Scanner:
 
-  use_scanner: scipy_shgo
+  use_scanner: de
 
   scanners:
 
@@ -197,7 +196,9 @@ Scanner:
       like: LogLike
       plugin: scipy_shgo
       run:
-        # n_runs: 1
+        split_param_space:
+          NormalDist::mu: 2
+          NormalDist::sigma: 2
         n: 100
         iters: 1
         sampling_method: "sobol"  # "simplicial", "halton", "sobol"

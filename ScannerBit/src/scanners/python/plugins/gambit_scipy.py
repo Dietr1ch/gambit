@@ -5,6 +5,8 @@ Scipy dual annealing scannner
 
 from utils import copydoc, version, with_mpi
 import numpy as np
+from itertools import product
+from collections import OrderedDict
 if with_mpi:
     from utils import MPIPool, MPI
 
@@ -30,12 +32,14 @@ except:
 import scanner_plugin as splug
 
 
-def print_optimization_summary(print_prefix, optimize_result, x_print, x0_print=None):
+def print_optimization_summary(print_prefix, optimize_result, x_print, x0_print=None, bounds_print=None):
     """
 Uility function for printing optimization results
     """
     print(f"\n{print_prefix} Optimization summary:")
-    if x0_print:
+    if bounds_print is not None:
+        print(f"{print_prefix} - Bounds: {bounds_print}")    
+    if x0_print is not None:
         print(f"{print_prefix} - Initial point: {x0_print}")    
     print(f"{print_prefix} - Optimal point: {x_print}")
     print(f"{print_prefix} - OptimizeResult from scipy, with x-coordinates in the unit hypercube:")
@@ -97,7 +101,10 @@ Dual annealing optimizer from scipy.
         if x0_unit is not None:
             x0_print = dict(zip(self.parameter_names, self.transform_to_vec(x0_unit)))
         x_print = dict(zip(self.parameter_names, self.transform_to_vec(res.x)))
-        print_optimization_summary(print_prefix, res, x_print, x0_print=x0_print)
+        bounds_print_min = self.transform_to_vec(np.array([x[0] for x in bounds]))
+        bounds_print_max = self.transform_to_vec(np.array([x[1] for x in bounds]))
+        bounds_print = dict(zip(self.parameter_names, zip(bounds_print_min, bounds_print_max)))
+        print_optimization_summary(print_prefix, res, x_print, x0_print=x0_print, bounds_print=bounds_print)
 
 
 
@@ -207,7 +214,10 @@ Differential evolution optimizer from scipy.
         if x0_unit is not None:
             x0_print = dict(zip(self.parameter_names, self.transform_to_vec(x0_unit)))
         x_print = dict(zip(self.parameter_names, self.transform_to_vec(res.x)))
-        print_optimization_summary(print_prefix, res, x_print, x0_print=x0_print)
+        bounds_print_min = self.transform_to_vec(np.array([x[0] for x in bounds]))
+        bounds_print_max = self.transform_to_vec(np.array([x[1] for x in bounds]))
+        bounds_print = dict(zip(self.parameter_names, zip(bounds_print_min, bounds_print_max)))
+        print_optimization_summary(print_prefix, res, x_print, x0_print=x0_print, bounds_print=bounds_print)
 
 
 
@@ -249,7 +259,10 @@ The DIRECT optimizer from scipy.
         res = scipy.optimize.direct(neg_loglike_hypercube, bounds, **self.run_args)
 
         x_print = dict(zip(self.parameter_names, self.transform_to_vec(res.x)))
-        print_optimization_summary(print_prefix, res, x_print)
+        bounds_print_min = self.transform_to_vec(np.array([x[0] for x in bounds]))
+        bounds_print_max = self.transform_to_vec(np.array([x[1] for x in bounds]))
+        bounds_print = dict(zip(self.parameter_names, zip(bounds_print_min, bounds_print_max)))
+        print_optimization_summary(print_prefix, res, x_print, bounds_print=bounds_print)
 
 
 
@@ -267,23 +280,38 @@ The SHGO optimizer from scipy.
     @copydoc(scipy_optimize_direct)
     def run(self):
 
-        n_runs = self.mpi_size
-        if 'n_runs' in self.run_args:
-            n_runs = self.run_args.pop('n_runs')
+        # Subdivide the parameter space based on the user
+        # setting "split_param_space". Each partition becomes
+        # a separate optimizer run, and the different runs
+        # are distributed evently across MPI processes.
+        n_split_steps = [1] * self.dim
+        if 'split_param_space' in self.run_args:
+            split_param_space = self.run_args.pop('split_param_space')
+            for i, par_name in enumerate(self.parameter_names):
+                n_split_steps[i] = split_param_space[par_name]
+        n_runs = np.prod(n_split_steps)
+        
+        all_bounds = []
+        for d in range(self.dim):
+            n_split_steps_d = n_split_steps[d]
+            split_points = np.linspace(0, 1, n_split_steps_d + 1)
+            d_bounds = []
+            for s in range(n_split_steps_d):
+                d_bounds.append((split_points[s],split_points[s + 1]))
+            all_bounds.append(d_bounds)
+        all_bounds = list(product(*all_bounds))
 
         if self.mpi_size == 1:
             for run_id in range(1, n_runs + 1):
-                self.run_internal(run_id)
+                self.run_internal(run_id, all_bounds[run_id - 1])
         else:
             for run_id in range(self.mpi_rank + 1, n_runs + 1, self.mpi_size):
-                self.run_internal(run_id)
+                self.run_internal(run_id, all_bounds[run_id - 1])
         return 0
 
-    def run_internal(self, run_id):
+    def run_internal(self, run_id, bounds):
 
         print_prefix = f"MPI rank {self.mpi_rank}: {self.__plugin_name__}, run {run_id}:"
-
-        bounds = [(0., 1.)] * self.dim
 
         def neg_loglike_hypercube(x):
             return -self.loglike_hypercube(x)
@@ -291,7 +319,10 @@ The SHGO optimizer from scipy.
         res = scipy.optimize.shgo(neg_loglike_hypercube, bounds, **self.run_args)
 
         x_print = dict(zip(self.parameter_names, self.transform_to_vec(res.x)))
-        print_optimization_summary(print_prefix, res, x_print)
+        bounds_print_min = self.transform_to_vec(np.array([x[0] for x in bounds]))
+        bounds_print_max = self.transform_to_vec(np.array([x[1] for x in bounds]))
+        bounds_print = dict(zip(self.parameter_names, zip(bounds_print_min, bounds_print_max)))
+        print_optimization_summary(print_prefix, res, x_print, bounds_print=bounds_print)
 
 
 
@@ -350,7 +381,10 @@ Local optimization from scipy.
 
         x0_print = dict(zip(self.parameter_names, self.transform_to_vec(x0_unit)))
         x_print = dict(zip(self.parameter_names, self.transform_to_vec(res.x)))
-        print_optimization_summary(print_prefix, res, x_print, x0_print=x0_print)
+        bounds_print_min = self.transform_to_vec(np.array([x[0] for x in bounds]))
+        bounds_print_max = self.transform_to_vec(np.array([x[1] for x in bounds]))
+        bounds_print = dict(zip(self.parameter_names, zip(bounds_print_min, bounds_print_max)))
+        print_optimization_summary(print_prefix, res, x_print, x0_print=x0_print, bounds_print=bounds_print)
         
 
 

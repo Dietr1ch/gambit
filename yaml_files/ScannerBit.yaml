@@ -47,7 +47,7 @@ Scanner:
 
   # This tag specifies which plugin to use as the scanner.
   # You can choose any scanner defined in the scanners section below.
-  use_scanner: scipy_shgo
+  use_scanner: de
 
   scanners:
 
@@ -248,7 +248,9 @@ Scanner:
       like: LogLike
       plugin: scipy_shgo
       run:
-        # n_runs: 1
+        split_param_space:
+          EggBox::param_0: 2
+          EggBox::param_1: 2
         n: 100
         iters: 1
         sampling_method: "sobol"  # "simplicial", "halton", "sobol"
