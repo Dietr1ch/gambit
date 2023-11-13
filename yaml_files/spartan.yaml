@@ -50,7 +50,7 @@ Printer:
   #   buffer_length: 10
   #   delete_file_on_restart: true
 
-  printer: hdf5
+  printer: hdf5_v1
   
   options:
     # Name of info file (explains content of output file)
@@ -59,13 +59,13 @@ Printer:
     output_file: "gambit_output.hdf5"
     group: "/test"
     delete_file_on_restart: true
-    # disable_combine_routines: true
+    disable_combine_routines: true
 
   # printer: none
 
 Scanner:
 
-  use_scanner: de
+  use_scanner: scipy_shgo
 
   scanners:
 
@@ -192,6 +192,32 @@ Scanner:
         x0:
           NormalDist::mu: 25.
           NormalDist::sigma: 2.5
+
+    scipy_shgo:
+      like: LogLike
+      plugin: scipy_shgo
+      run:
+        # n_runs: 1
+        n: 100
+        iters: 1
+        sampling_method: "sobol"  # "simplicial", "halton", "sobol"
+        minimizer_kwargs:
+          method: "SLSQP" # "SLSQP" "L-BFGS-B"
+          options:
+            ftol: 1e-12
+        options:
+          # maxfev:
+          # f_min:
+          # f_tol:
+          # maxiter:
+          # maxev:
+          # maxtime:
+          # minhgrd:
+          jac: false
+          minimize_every_iter: true
+          local_iter: false
+          infty_constraints: true
+          disp: false
 
     scipy_minimize:
       like: LogLike

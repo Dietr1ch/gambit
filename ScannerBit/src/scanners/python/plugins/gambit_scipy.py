@@ -15,6 +15,7 @@ try:
     scipy_optimize_basinhopping = scipy.optimize.basinhopping
     scipy_optimize_differential_evolution = scipy.optimize.differential_evolution
     scipy_optimize_direct = scipy.optimize.direct
+    scipy_optimize_shgo = scipy.optimize.shgo
     scipy_optimize_minimize = scipy.optimize.minimize
 except:
     __error__ = 'scipy.optimize pkg not installed'
@@ -23,6 +24,7 @@ except:
     scipy_optimize_basinhopping = None
     scipy_optimize_differential_evolution = None
     scipy_optimize_direct = None
+    scipy_optimize_shgo = None
     scipy_optimize_minimize = None
 
 import scanner_plugin as splug
@@ -251,6 +253,48 @@ The DIRECT optimizer from scipy.
 
 
 
+class SHGO(splug.scanner):
+    """
+The SHGO optimizer from scipy.
+    """
+
+    __version__ = scipy_version
+    __plugin_name__ = "scipy_shgo"
+    
+    def __init__(self, **kwargs):
+        super().__init__(use_mpi=True, use_resume=False)
+
+    @copydoc(scipy_optimize_direct)
+    def run(self):
+
+        n_runs = self.mpi_size
+        if 'n_runs' in self.run_args:
+            n_runs = self.run_args.pop('n_runs')
+
+        if self.mpi_size == 1:
+            for run_id in range(1, n_runs + 1):
+                self.run_internal(run_id)
+        else:
+            for run_id in range(self.mpi_rank + 1, n_runs + 1, self.mpi_size):
+                self.run_internal(run_id)
+        return 0
+
+    def run_internal(self, run_id):
+
+        print_prefix = f"MPI rank {self.mpi_rank}: {self.__plugin_name__}, run {run_id}:"
+
+        bounds = [(0., 1.)] * self.dim
+
+        def neg_loglike_hypercube(x):
+            return -self.loglike_hypercube(x)
+        
+        res = scipy.optimize.shgo(neg_loglike_hypercube, bounds, **self.run_args)
+
+        x_print = dict(zip(self.parameter_names, self.transform_to_vec(res.x)))
+        print_optimization_summary(print_prefix, res, x_print)
+
+
+
 class Minimize(splug.scanner):
     """
 Local optimization from scipy.
@@ -314,4 +358,5 @@ __plugins__ = {DualAnnealing.__plugin_name__: DualAnnealing,
                BasinHopping.__plugin_name__: BasinHopping,
                DifferentialEvolution.__plugin_name__: DifferentialEvolution,
                Direct.__plugin_name__: Direct,
+               SHGO.__plugin_name__: SHGO,
                Minimize.__plugin_name__: Minimize}
