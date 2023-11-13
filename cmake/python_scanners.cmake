@@ -1,9 +1,44 @@
+# GAMBIT: Global and Modular BSM Inference Tool
+#************************************************
+# \file
+#
+#  Cmake configuration script that checks if
+#  the necessary Python modules are installed
+#  for the different Python scanners in GAMBIT 
+#
+#************************************************
+#
+#  Authors (add name and date if you modify):
+#
+#  \author Gregory Martinez
+#          (gregory.david.martinez@gmail.com)
+#  \date 2023 Jul
+#
+#  \author Anders Kvellestad
+#          (anders.kvellestad@fys.uio.no)
+#  \date 2023 Nov
+#
+#************************************************
 
-macro(check_python_modules name modules)
+# A macro for printing info messages about modules missing for Python scanners.
+# Note that in some cases the pip package name differs from the module name,
+# hence the need for both a "modules" and a "packages" argument.
+macro(check_python_scanner_modules name modules packages)
+
   set(_modules ${modules} ${ARGN})
   string (REPLACE "," ";" _modules "${_modules}")
   string (REPLACE " " "" _modules "${_modules}")
-  foreach(module ${_modules})
+
+  set(_packages ${packages} ${ARGN})
+  string (REPLACE "," ";" _packages "${_packages}")
+  string (REPLACE " " "" _packages "${_packages}")
+
+  list(LENGTH _modules list_length)
+  math(EXPR range_limit "${list_length} - 1")
+
+  foreach(index RANGE ${range_limit})
+    list(GET _modules ${index} module)
+    list(GET _packages ${index} package)
     if (NOT DEFINED PY_${module}_FOUND)
       gambit_find_python_module(${module})
       if (NOT PY_${module}_FOUND)
@@ -11,71 +46,31 @@ macro(check_python_modules name modules)
       endif()
     endif()
     if (NOT PY_${module}_FOUND)
-      set(modules_missing_${name} "${modules_missing_${name}},${module}" )
+      set(packages_missing_${name} "${packages_missing_${name}},${package}" )
     endif()
   endforeach()
+
+  if(packages_missing_${name})
+    string (REPLACE "," " " missing "${packages_missing_${name}}")
+    message("   To enable the scanner ${name}, please install the following Python packages:${missing}")
+  endif()
+
 endmacro()
 
-macro(inform_of_missing_modules name missing_with_commas)
-  string (REPLACE "," " " missing "${missing_with_commas}")
-  set(package ${name})
-  set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-configure")
-  set(errmsg1 "Cannot make ${package} because you are missing Python module(s):${missing}")
-  set(errmsg2 "Please install the missing package(s), e.g. with ")
-  set(errmsg3 "  pip install --user${missing}")
-  set(errmsg4 "and then rerun ")
-  set(errmsg5 "  make ${package}")
-  ExternalProject_Add(${package}
-    DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E make_directory ${package}-prefix/src/${package}
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo
-              COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${errmsg1}
-              COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${errmsg2}
-              COMMAND ${CMAKE_COMMAND} -E echo
-              COMMAND ${CMAKE_COMMAND} -E cmake_echo_color       --bold ${errmsg3}
-              COMMAND ${CMAKE_COMMAND} -E echo
-              COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${errmsg4}
-              COMMAND ${CMAKE_COMMAND} -E echo
-              COMMAND ${CMAKE_COMMAND} -E cmake_echo_color       --bold ${errmsg5}
-              COMMAND ${CMAKE_COMMAND} -E echo
-    BUILD_COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/cmake/backends.cmake
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E remove ${rmstring}
-  )
-endmacro()
 
-macro(check_python_scanner  name required_modules)
-    message("   Checking for Python modules required by the scanner ${name}")
-    check_python_modules(${name}  ${required_modules})
-    if(modules_missing_${name})
-        inform_of_missing_modules(${name}  ${modules_missing_${name}})
-    else()
-    ExternalProject_Add(${name}
-      DOWNLOAD_COMMAND ""
-      #SOURCE_DIR ${dir}
-      BUILD_IN_SOURCE 1
-      PATCH_COMMAND ""
-      CONFIGURE_COMMAND ""
-      BUILD_COMMAND ""
-      #${CMAKE_COMMAND} -E copy_directory ${examples_dir} ${dir}
-      INSTALL_COMMAND ""
-    )
-    endif(modules_missing_${name})
-    set_target_properties(${name} PROPERTIES EXCLUDE_FROM_ALL 1)
-endmacro()
-
-check_python_scanner(emcee "emcee,numpy,h5py")
-check_python_scanner(adaptive_learner_nd "adaptive,numpy")
-check_python_scanner(static_dynesty "dynesty,pickle")
-check_python_scanner(dynamic_dynesty "dynesty,pickle")
-check_python_scanner(pocomc "pocomc,pickle,numpy")
-check_python_scanner(scipy_dual_annealing "scipy")
-check_python_scanner(scipy_basin_hopping "scipy")
-check_python_scanner(scipy_differential_evolution "scipy")
-check_python_scanner(scipy_direct "scipy")
-check_python_scanner(reactive_ultranest "ultranest,pickle")
-check_python_scanner(zeus "zeus,numpy")
-check_python_scanner(kombine "kombine,numpy,pickle")
-check_python_scanner(nautilus "nautilus")
-check_python_scanner(nessai_flow_sampler "nessai")
-check_python_scanner(stochopy_minimize "stochopy,numpy")
-check_python_scanner(stochopy_sample "stochopy,numpy")
+# Run checks for all Python scanner plugins
+message("${Yellow}-- Checking modules required by Python scanner plugins. ${ColourReset}")
+check_python_scanner_modules(static_dynesty "dynesty,numpy" "dynesty,numpy")
+check_python_scanner_modules(dynamic_dynesty "dynesty,numpy" "dynesty,numpy")
+check_python_scanner_modules(emcee "emcee,numpy,h5py" "emcee,numpy,h5py")
+check_python_scanner_modules(nautilus "nautilus,numpy" "nautilus-sampler,numpy")
+check_python_scanner_modules(nessai_flow_sampler "nessai,numpy" "nessai,numpy")
+check_python_scanner_modules(pocomc "pocomc,numpy" "pocomc,numpy")
+check_python_scanner_modules(scipy_dual_annealing "scipy,numpy" "scipy,numpy")
+check_python_scanner_modules(scipy_basin_hopping "scipy,numpy" "scipy,numpy")
+check_python_scanner_modules(scipy_differential_evolution "scipy,numpy" "scipy,numpy")
+check_python_scanner_modules(scipy_direct "scipy,numpy" "scipy,numpy")
+check_python_scanner_modules(scipy_minimize "scipy,numpy" "scipy,numpy")
+check_python_scanner_modules(reactive_ultranest "ultranest,numpy,packaging" "ultranest,numpy,packaging")
+check_python_scanner_modules(zeus "zeus,numpy" "zeus-mcmc,numpy")
 

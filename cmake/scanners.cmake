@@ -29,7 +29,7 @@
 #  \date 2018 May, Dec
 #
 #************************************************
-include(cmake/python_scanners.cmake)
+
 # Diver
 set(name "diver")
 set(ver "1.0.0")
@@ -436,5 +436,8 @@ if(NOT ditched_${name}_${ver})
   add_extra_targets("scanner" ${name} ${ver} ${dir} ${dl} clean)
   set_as_default_version("scanner" ${name} ${ver})
 endif()
+
+# Finally, deal with all the python scanners
+include(cmake/python_scanners.cmake)
 
 # All other scanners are implemented natively in ScannerBit.
