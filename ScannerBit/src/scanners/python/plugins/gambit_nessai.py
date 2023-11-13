@@ -52,7 +52,7 @@ class GambitFlowSampler(splug.scanner):
 Nessai nested sampler. This operates on the unit hypercube as the nessai implementation requires bounds for each parameter, which may not exist in physical parameters.  See https://nessai.readthedocs.io/en/latest/index.html
 
 We defined the additional parameters:
-    output ('nessai_log_dir'):  output directory name.  Defined in given default path.
+    output ('nessai'):  output directory name.  Defined in given default path.
     logger (True):  Whether to use the logger
     pkl_name ('nessai.pkl'):  File name where results will be pickled
     """
@@ -60,7 +60,7 @@ We defined the additional parameters:
     __version__ = nessai_version
 
     @copydoc(FlowSampler)
-    def __init__(self, logger=True, pkl_name='nessai.pkl', output="nessai_log_dir", **kwargs):
+    def __init__(self, logger=True, pkl_name='nessai.pkl', output="nessai", **kwargs):
 
         super().__init__(use_mpi=True, use_resume=True)
         
