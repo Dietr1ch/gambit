@@ -373,16 +373,16 @@ namespace Gambit
 
       /// Add a combination of model groups to the internal list of combinations for which this functor is allowed to be used.
       void setAllowedModelGroupCombo(str groups);
-      
+
       /// Add an observable to the set of those that this functor matches.
       void addMatchedObservable(const DRes::Observable*);
-      
+
       /// Retrieve the set of observables that this functor matches.
       const std::set<const DRes::Observable*>& getMatchedObservables();
 
       /// Add a module rule to the set of those against which this functor has been tested and found to match.
       void addMatchedModuleRule(const DRes::ModuleRule*);
-      
+
       /// Add a backend rule to the set of those against which this functor has been tested and found to match.
       void addMatchedBackendRule(const DRes::BackendRule*);
 
