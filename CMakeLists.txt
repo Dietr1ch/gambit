@@ -41,7 +41,7 @@
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
 # Define minimum compiler versions
-set(MIN_GCC_VERSION 5.1)
+set(MIN_GCC_VERSION 9.1)
 set(MIN_ICC_VERSION 15.0.2)
 set(MIN_CLANG_VERSION 10.0.0)
 set(MIN_APPLECLANG_VERSION 13.0.0)
