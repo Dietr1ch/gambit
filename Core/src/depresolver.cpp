@@ -845,7 +845,7 @@ namespace Gambit
       // Activate those module functors that match the combination of models being scanned.
       for (std::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
-        if (!masterGraph[*vi]->isDisabled() and masterGraph[*vi]->modelComboAllowed(modelList))
+        if (masterGraph[*vi]->isEnabled() and masterGraph[*vi]->modelComboAllowed(modelList))
         {
           for (const str& model : modelList)
           {
@@ -861,7 +861,7 @@ namespace Gambit
         for (functor* f : boundCore->getBackendFunctors())
         {
           // Activate if the backend vertex permits the model and has not been (severely) disabled by the backend system
-          if ( !f->isDisabled() and f->modelAllowed(model) )
+          if ( f->isEnabled() and f->modelAllowed(model) )
           {
             f->setStatus(FunctorStatus::Available);
           }

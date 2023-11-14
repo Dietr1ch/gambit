@@ -130,10 +130,12 @@ namespace Gambit
     FunctorStatus functor::status() const { return myStatus; }
     /// Checks whether the functor is available (or even already activate)
     bool functor::isAvailable() const { return myStatus > 0; }
-    /// Checks whether the functor is activate
-    bool functor::isActive() const { return myStatus == 2; }
+    /// Checks whether the functor is active (or even hyperactive)
+    bool functor::isActive() const { return myStatus >= 2; }
     /// Checks whether the functor is disabled (discriminant is negative)
-    bool functor::isDisabled() const { return myStatus < 0; };
+    bool functor::isDisabled() const { return myStatus < 0; }
+    /// Checks whether the functor is enabled (discriminant is non negative)
+    bool functor::isEnabled() const { return myStatus >= 0; }
 
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
     sspair functor::quantity() const { return std::make_pair(myCapability, myType); }

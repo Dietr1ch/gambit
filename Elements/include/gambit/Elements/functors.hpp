@@ -186,10 +186,12 @@ namespace Gambit
       FunctorStatus status() const;
       /// Checks whether the functor is available (or even already activated)
       bool isAvailable() const;
-      /// Checks whether the functor is activated
+      /// Checks whether the functor is active
       bool isActive() const;
       /// Checks whether the functor is disabled (discriminant is negative)
       bool isDisabled() const;
+      /// Checks whether the functor is enabled (discriminant is non negative)
+      bool isEnabled() const;
 
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() const;
