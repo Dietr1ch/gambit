@@ -113,15 +113,15 @@ namespace Gambit
   ///
   enum FunctorStatus
   {
-      Pybind_missing = -6,
-      Mathematica_missing = -5,
-      Backend_missing = -4,
-      Classes_missing = -3,
-      Function_missing = -2,
-      Origin_missing = -1,
-      Model_incompatible = 0,
-      Available = 1,
-      Active = 2,
+    Pybind_missing = -6,
+    Mathematica_missing = -5,
+    Backend_missing = -4,
+    Classes_missing = -3,
+    Function_missing = -2,
+    Origin_missing = -1,
+    Model_incompatible = 0,
+    Available = 1,
+    Active = 2,
   };
 
   // ======================== Base Functor =====================================
