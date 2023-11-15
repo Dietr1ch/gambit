@@ -19,8 +19,8 @@
 ///  \date 2019 Aug
 ///
 ///  \author Tomas Gonzalo
-///          (gonzalo@physik.rwth-aachen.de)
-///  \date 2021 Apr
+///          (tomas.gonzalo@kit.edu)
+///  \date 2021 Apr, 2023 Nov
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -215,7 +215,7 @@ namespace Gambit
     /// Forward declarations of functions in this file
     void DMEFT_fill_analysis_info_map();
     void DMsimp_fill_analysis_info_map(std::map<str,str>, std::map<str,std::vector<str>>, int);
-    void SubGeVBeamDump_MB_fill_analysis_info_map(std::map<str,str>, std::map<str,std::vector<str>>);
+    void SubGeVDM_fill_analysis_info_map(std::map<str,str>, std::map<str,std::vector<str>>);
 
     void DMEFT_results(AnalysisDataPointers&);
     void DMEFT_results_profiled(AnalysisDataPointers&);
@@ -223,14 +223,15 @@ namespace Gambit
     void DMsimpVectorMedScalarDM_monojet_results(AnalysisDataPointers&);
     void DMsimpVectorMedMajoranaDM_monojet_results(AnalysisDataPointers&);
     void DMsimpVectorMedDiracDM_monojet_results(AnalysisDataPointers&);
-    void SubGeVBeamDump_MB_results(AnalysisDataPointers&);
+    void SubGeVDM_results(AnalysisDataPointers&);
 
     void get_DMEFT_signal_yields_dim6_operator(std::vector<double>&, const str, const Model_analysis_info&, double, double, double, double);
     void get_DMEFT_signal_yields_dim7_operator(std::vector<double>&, const str, const Model_analysis_info&, double, double, double);
     void get_DMsimpVectorMedScalarDM_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double);
     void get_DMsimpVectorMedMajoranaDM_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double);
     void get_DMsimpVectorMedDiracDM_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double, double);
-    void get_SubGeVBeamDump_MB_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double);
+    void get_SubGeVDM_scalar_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double);
+    // TODO: Implement get_SubGeVDM_fermion_signal_yields
 
     void get_DMEFT_signal_yields_dim6_operator(std::vector<double>&, const str, const Model_analysis_info&, double, double, double, double);
     void get_DMEFT_signal_yields_dim7_operator(std::vector<double>&, const str, const Model_analysis_info&, double, double, double);
@@ -241,7 +242,7 @@ namespace Gambit
 
     void get_all_DMEFT_signal_yields(std::vector<double>&, const Model_analysis_info&, const Spectrum&);
     void get_all_DMsimp_signal_yields(std::vector<double>&, const Model_analysis_info&, const Spectrum&, str&);
-    void get_all_SubGeVBeamDump_MB_signal_yields(std::vector<double>&, const Model_analysis_info&, const Spectrum&, str&);
+    void get_all_SubGeVDM_signal_yields(std::vector<double>&, const Model_analysis_info&, const Spectrum&, str&);
 
 
     void signal_modifier_function(AnalysisData&, double, double);
@@ -2009,8 +2010,8 @@ namespace Gambit
 
     //// NEW BEAM-DUMP Functions ////
 
-    /// A function for filling the analysis_info_map for the SubGeVBeamDump_MB model.
-    void SubGeVBeamDump_MB_fill_analysis_info_map(std::map<str,str> Analysis_data_path, std::map<str,std::vector<str>> Interpolation_columns)
+    /// A function for filling the analysis_info_map for the SubGeVDM_fermion and SubGeVDM_scalar models.
+    void SubGeVDM_fill_analysis_info_map(std::map<str,str> Analysis_data_path, std::map<str,std::vector<str>> Interpolation_columns)
     {
 
       std::vector<str> default_skip_analyses;  // The default is empty lists of analyses to skip
@@ -2042,10 +2043,10 @@ namespace Gambit
       }
     }
 
-    /// Results for the SubGeVBeamDump_MB model
-    void SubGeVBeamDump_MB_results(AnalysisDataPointers& result)
+    /// Results for the SubGeVDM_fermion and SubGeVDM_scalar model
+    void SubGeVDM_results(AnalysisDataPointers& result)
     {
-      using namespace Pipes::SubGeVBeamDump_MB_results;
+      using namespace Pipes::SubGeVDM_results;
 
       // Clear previous vectors, etc.
       result.clear();
@@ -2059,8 +2060,12 @@ namespace Gambit
       std::map<str,str> Analysis_data_path;
       std::map<str,std::vector<str>> Interpolation_columns;
 
-      // TODO: Replace the path_to_data_file with the path from within GAMBIT where you have stored your .dat or .txt file with the signals you are interpolating.
-      Analysis_data_path["SubGeVBeamDump_MB_interpolated"] = GAMBIT_DIR "/CollderBit/data/SubGeVDM/BeamDump/MB_electron_scalarDM_Nevents.txt";
+      if(ModelInUse("SubGeVDM_scalar"))
+        Analysis_data_path["SubGeVBeamDump_MB_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_scalarDM_Nevents.txt";
+      else if(ModelInUse("SubGeVDM_fermion"))
+        ColliderBit_error().raise(LOCAL_INFO, "ERROR! Data not present yet for SubGeVDM_fermion model");
+      else
+        ColliderBit_error().raise(LOCAL_INFO, "ERROR! Model not known to GAMBIT");
 
       Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mAp","signal_counts"};
 
@@ -2069,7 +2074,7 @@ namespace Gambit
       // and the thread_local analysis_data_map
       if (first)
       {
-        SubGeVBeamDump_MB_fill_analysis_info_map(Analysis_data_path,Interpolation_columns);
+        SubGeVDM_fill_analysis_info_map(Analysis_data_path,Interpolation_columns);
 
         for (const std::pair<const str, Model_analysis_info>& aname_ainfo_pair : analysis_info_map)
         {
@@ -2082,28 +2087,34 @@ namespace Gambit
       }
 
       // Retrieve the signal yields
-      const Spectrum& spec = *Dep::SubGeVBeamDump_MB_spectrum;
-      str modelname = "SubGeVBeamDump_MB";
-      get_all_signal_yields(get_all_SubGeVBeamDump_MB_signal_yields, spec, analysis_data_map, result, modelname);
-
+      const Spectrum& spec = *Dep::SubGeVDM_spectrum;
+      str modelname = "SubGeVDM_scalar";
+      get_all_signal_yields(get_all_SubGeVDM_signal_yields, spec, analysis_data_map, result, modelname);
     }
 
-    /// Fill the input vector with the total SubGeVBeamDump_MB signal prediction for each SR in the given analysis
-    void get_all_SubGeVBeamDump_MB_signal_yields(std::vector<double>& sr_nums, const Model_analysis_info& analysis_info, const Spectrum& spec, str&)
+    /// Fill the input vector with the total SubGeV signal prediction for each SR in the given analysis
+    void get_all_SubGeVDM_signal_yields(std::vector<double>& sr_nums, const Model_analysis_info& analysis_info, const Spectrum& spec, str& modelname)
     {
 
       // Get the yields
       std::vector<double> signal(analysis_info.n_signal_regions, 0.);
 
       // Get the parameters we need from the theory spectrum
-      // TODO: If your model has more/less than 2 masses and 2 couplings, then the get_SubGeVBeamDump_MB_signal_yields function will need to be changed.
-      // TODO: Would need to change mass_i and coupling_i to the relevant parameters in your model
-      double mDM = spec.get(Par::Pole_Mass, "mDM");
-      double mAp = spec.get(Par::Pole_Mass, "mAp");
-      double kappa = spec.get(Par::dimensionless, "kappa");
-      double gDM = spec.get(Par::dimensionless, "gDM");
-      get_SubGeVBeamDump_MB_signal_yields(signal, analysis_info, mDM, mAp, kappa, gDM);
-
+      if(modelname == "SubGeVDM_scalar")
+      {
+        // TODO: If your model has more/less than 2 masses and 2 couplings, then the get_SubGeVBeamDump_MB_signal_yields function will need to be changed.
+        // TODO: Would need to change mass_i and coupling_i to the relevant parameters in your model
+        double mDM = spec.get(Par::Pole_Mass, "mDM");
+        double mAp = spec.get(Par::Pole_Mass, "mAp");
+        double kappa = spec.get(Par::dimensionless, "kappa");
+        double gDM = spec.get(Par::dimensionless, "gDM");
+        get_SubGeVDM_scalar_signal_yields(signal, analysis_info, mDM, mAp, kappa, gDM);
+      }
+      else if(modelname == "SubGeVDM_fermion")
+      {
+        // TODO: Implement this
+        ColliderBit_error().raise(LOCAL_INFO, "ERROR! Signal yields for model SubGeVDM_fermion not implemented yet");
+      }
       // Add yields and save in sr_num
       for (size_t i = 0; i < analysis_info.n_signal_regions; ++i)
       {
@@ -2113,16 +2124,14 @@ namespace Gambit
 
     /// Fill the input vector with the signal prediction for the SubGeVBeamDump_MB model
     /// TODO: If you apply some scaling based on couplings, then this is where you would want to do this
-    void get_SubGeVBeamDump_MB_signal_yields(std::vector<double>& signal_yields, const Model_analysis_info& analysis_info, double mDM, double mAp, double kappa, double gDM)
+    void get_SubGeVDM_scalar_signal_yields(std::vector<double>& signal_yields, const Model_analysis_info& analysis_info, double mDM, double mAp, double kappa, double gDM)
     {
-
       // Get the interpolator collections for the given operator_key
-      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("SubGeVBeamDump_MB_Data");
+      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("mDM_mAp_events_SubGeVBeamDump_MB");
 
       // Compute the signal
       // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
       double signal = signal_interp.eval(mDM, mAp, 0);
-
 
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with

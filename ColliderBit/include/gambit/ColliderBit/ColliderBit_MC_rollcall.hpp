@@ -319,10 +319,10 @@
     ALLOW_MODELS(DMsimpVectorMedScalarDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedDiracDM, DMsimpVectorMedVectorDM)
     #undef FUNCTION
 
-    #define FUNCTION SubGeVBeamDump_MB_results
+    #define FUNCTION SubGeVDM_results
     START_FUNCTION(AnalysisDataPointers)
-    DEPENDENCY(SubGeVBeamDump_MB_spectrum, Spectrum)
-    ALLOW_MODELS(SubGeVBeamDump_MB)
+    DEPENDENCY(SubGeVDM_spectrum, Spectrum)
+    ALLOW_MODELS(SubGeVDM_fermion, SubGeVDM_scalar)
     #undef FUNCTION
 
   #undef CAPABILITY
