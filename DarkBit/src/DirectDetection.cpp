@@ -504,7 +504,8 @@ namespace Gambit
 
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Set_Sigma_Electron(sigma_e);
-      DM.Set_FormFactor_DM("General", mAp);
+      //DM.Set_FormFactor_DM("General", mAp);
+      DM.Set_FormFactor_DM("Contact", mAp);
 
       // 3. Experiment
       obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::XENON1T_S2_ER();
@@ -531,6 +532,29 @@ namespace Gambit
 
       // 3. Experiment
       obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::DarkSide50_S2_ER();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
+
+    // DarkSide50 S2 Electron Recoil 2023 Log-Likelihood using obscura
+    void calc_DarkSide50_ER_2023_LogLikelihood(double& result)
+    {
+      using namespace Pipes::calc_DarkSide50_ER_2023_LogLikelihood;
+
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double mAp = *Param["mAp"]; // in GeV
+      double sigma_e = *Dep::sigma_e/gev2cm2; // in GeV^-2
+
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
+
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::DarkSide50_S2_ER_2023();
       result = experiment.Log_Likelihood(DM, SHM);
     }
 

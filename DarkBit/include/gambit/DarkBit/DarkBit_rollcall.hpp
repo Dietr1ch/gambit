@@ -2506,6 +2506,18 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY DarkSide50_ER_2023_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_DarkSide50_ER_2023_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(DarkSide50_S2_ER_2023, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY SENSEI_at_MINOS_LogLikelihood
   START_CAPABILITY
     #define FUNCTION calc_SENSEI_at_MINOS_LogLikelihood

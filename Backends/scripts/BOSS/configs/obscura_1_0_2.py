@@ -71,10 +71,12 @@ load_functions = [
     'obscura::Fractional_Days_since_J2000(int , int , int , double , double , double)',
     'obscura::XENON1T_S2_ER()',
     'obscura::DarkSide50_S2_ER()',
+    'obscura::DarkSide50_S2_ER_2023()',
     'obscura::SENSEI_at_MINOS()',
     'obscura::CDMS_HVeV_2020()',
     'obscura::XENON1T_S2_Migdal()',
     'obscura::DarkSide50_S2_Migdal()',
+    'obscura::DarkSide50_S2_Migdal_2023()',
 ]
 
 ditch = []

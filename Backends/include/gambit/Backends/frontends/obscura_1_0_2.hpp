@@ -74,10 +74,12 @@ BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int, double, double,
 // BE_FUNCTION(Fractional_Days_since_J2000, double, (int, int, int), ("Fractional_Days_since_J2000__BOSS_4","_Fractional_Days_since_J2000__BOSS_4"), "Fractional_Days_since_J2000")
 BE_FUNCTION(XENON1T_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("XENON1T_S2_ER__BOSS_33","_XENON1T_S2_ER__BOSS_33"), "XENON1T_S2_ER")
 BE_FUNCTION(DarkSide50_S2_ER, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("DarkSide50_S2_ER__BOSS_34","_DarkSide50_S2_ER__BOSS_34"), "DarkSide50_S2_ER")
-BE_FUNCTION(SENSEI_at_MINOS, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("SENSEI_at_MINOS__BOSS_35","_SENSEI_at_MINOS__BOSS_35"), "SENSEI_at_MINOS")
-BE_FUNCTION(CDMS_HVeV_2020, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("CDMS_HVeV_2020__BOSS_36","_CDMS_HVeV_2020__BOSS_36"), "CDMS_HVeV_2020")
-BE_FUNCTION(XENON1T_S2_Migdal, obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal, (), ("XENON1T_S2_Migdal__BOSS_37","_XENON1T_S2_Migdal__BOSS_37"), "XENON1T_S2_Migdal")
-BE_FUNCTION(DarkSide50_S2_Migdal, obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal, (), ("DarkSide50_S2_Migdal__BOSS_38","_DarkSide50_S2_Migdal__BOSS_38"), "DarkSide50_S2_Migdal")
+BE_FUNCTION(DarkSide50_S2_ER_2023, obscura_1_0_2::obscura::DM_Detector_Ionization_ER, (), ("DarkSide50_S2_ER_2023__BOSS_35","_DarkSide50_S2_ER_2023__BOSS_35"), "DarkSide50_S2_ER_2023")
+BE_FUNCTION(SENSEI_at_MINOS, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("SENSEI_at_MINOS__BOSS_36","_SENSEI_at_MINOS__BOSS_36"), "SENSEI_at_MINOS")
+BE_FUNCTION(CDMS_HVeV_2020, obscura_1_0_2::obscura::DM_Detector_Crystal, (), ("CDMS_HVeV_2020__BOSS_37","_CDMS_HVeV_2020__BOSS_37"), "CDMS_HVeV_2020")
+BE_FUNCTION(XENON1T_S2_Migdal, obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal, (), ("XENON1T_S2_Migdal__BOSS_38","_XENON1T_S2_Migdal__BOSS_38"), "XENON1T_S2_Migdal")
+BE_FUNCTION(DarkSide50_S2_Migdal, obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal, (), ("DarkSide50_S2_Migdal__BOSS_39","_DarkSide50_S2_Migdal__BOSS_39"), "DarkSide50_S2_Migdal")
+BE_FUNCTION(DarkSide50_S2_Migdal_2023, obscura_1_0_2::obscura::DM_Detector_Ionization_Migdal, (), ("DarkSide50_S2_Migdal_2023__BOSS_40","_DarkSide50_S2_Migdal_2023__BOSS_40"), "DarkSide50_S2_Migdal_2023")
 // Variables
 
 // Initialisation function (dependencies)

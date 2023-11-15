@@ -42,7 +42,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void Use_Electron_Threshold__BOSS(unsigned int) =0;
     
-                virtual void Use_Electron_Bins(unsigned int, unsigned int) =0;
+                virtual void Use_Electron_Bins(unsigned int, unsigned int, double) =0;
+    
+                virtual void Use_Electron_Bins__BOSS(unsigned int, unsigned int) =0;
     
                 virtual double R_S2__BOSS(unsigned int, const obscura::Abstract_DM_Particle&, obscura::Abstract_DM_Distribution&, std::vector<double>) =0;
     
