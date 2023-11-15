@@ -638,8 +638,10 @@ namespace Gambit
       BEreq::rdtime->rdt_max = runOptions->getValueOrDef<double>(600, "timeout");
 
       /// Option fast<int>: Numerical performance of Boltzmann solver in DS
-      /// (default: 1) [NB: accurate is fast = 0 !]
+      /// (default: 1) [NB: "quick but maybe inaccurate" is fast=1; old "accurate" is fast = 0, new DS defulat is 20 ]
       DS_RDPARS *myrdpars = BEreq::rdpars.pointer();
+      DS_RDLIMS *myrdlims = BEreq::rdlims.pointer();
+      DS_RD20OPT *myrd20opt = BEreq::rd20opt.pointer();
       int fast = runOptions->getValueOrDef<int>(1, "fast");
       RD_spectrum_type myRDspec = *Dep::RD_spectrum_ordered;
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
@@ -647,16 +649,24 @@ namespace Gambit
       switch (fast)
       {
         case 0:
-          myrdpars->cosmin=0.9999;myrdpars->waccd=0.005;myrdpars->dpminr=1.0e-4;
-          myrdpars->dpthr=5.0e-4;myrdpars->wdiffr=0.05;myrdpars->wdifft=0.02;
+          myrdpars->waccd=0.005;myrdpars->dpminr=1.0e-4;myrdpars->dpthr=5.0e-4;
+          myrdpars->wdiffr=0.05;myrdpars->wdifft=0.02;
+          myrdpars->cosmin=0.9999;
           if (mwimp < 1.0)
           {
             myrdpars->xinit=0.01;myrdpars->xfinal=5.0e4;
           }
+          myrdlims->rd_excl_th_int= true;
           break;
         case 1:
           myrdpars->waccd=0.05;myrdpars->dpminr=5.0e-4;
           myrdpars->dpthr=2.5e-3;myrdpars->wdiffr=0.5;myrdpars->wdifft=0.1;
+          myrdlims->rd_excl_th_int= true;
+          break;
+        case 20:
+          myrdpars->dpminr=0.002;myrdpars->dpthr=1.0e-3;myrdpars->wdifft=0.01;
+          myrd20opt->rdquaderr=0.05;myrd20opt->rdlinerr=0.02;
+          myrdlims->rd_excl_th_int= false;
           break;
         default:
           DarkBit_error().raise(LOCAL_INFO, "Invalid fast flag (should be 0 or 1). Fast > 1 not yet "
@@ -666,6 +676,152 @@ namespace Gambit
       result=fast;
 
     } // function RD_oh2_DS6_ini_func
+
+
+    /*! \brief General routine for calculation of relic density, using DarkSUSY 6+
+     *         Boltzmann solver. Updated settings + support also for asymmetric DM,
+     *         will eventually completely replace  RD_oh2_DS_general
+     *
+     *  Requires:
+     *  - RD_thresholds_resonances from RD_spectrum_ordered
+     *  - RD_eff_annrate (Weff)
+     *   Output:
+     *   - 1 = oh2sym + oh2adm
+     *   - 2 = r = oh2sym / (oh2sym + oh2adm)
+     */
+    void RD_oh2_DS_general_aDM(ddpair &result)
+    {
+      using namespace Pipes::RD_oh2_DS_general_aDM;
+
+      // Retrieve ordered list of resonances and thresholds from
+      // RD_thresholds_resonances.
+      RD_spectrum_type myRDspec = *Dep::RD_spectrum_ordered;
+      if (myRDspec.coannihilatingParticles.empty())
+      {
+        DarkBit_error().raise(LOCAL_INFO, "RD_oh2_DS_general: No DM particle!");
+      }
+      double mwimp=myRDspec.coannihilatingParticles[0].mass;
+
+      // What follows below implements dsrdomega_aDM from DarkSUSY 6.4+
+      // first transfer information from myRDspec (instead of dsrdparticles) to DS common blocks
+      int tnco=myRDspec.coannihilatingParticles.size();
+      int tnrs=myRDspec.resonances.size();
+      int tnthr=myRDspec.threshold_energy.size();
+      double tmco[1000], tdof[1000], trm[1000], trw[1000], ttm[1000];
+      for (std::size_t i=0; i<((unsigned int)tnco); i++)
+      {
+        tmco[i] = myRDspec.coannihilatingParticles[i].mass;
+        tdof[i] = myRDspec.coannihilatingParticles[i].degreesOfFreedom;
+        #ifdef DARKBIT_RD_DEBUG
+          std::cout << "RD_oh2_DS_general - co : "<< tmco[i]  << " " << tdof[i] << std::endl;
+        #endif
+      }
+      for (std::size_t i=0; i<((unsigned int)tnrs); i++)
+      {
+        trm[i] = myRDspec.resonances[i].energy;
+        trw[i] = myRDspec.resonances[i].width;
+        #ifdef DARKBIT_RD_DEBUG
+          std::cout << "RD_oh2_DS_general - res : "<< trm[i]  << " " << trw[i] << std::endl;
+        #endif
+      }
+      //DS does not count 2* WIMP rest mass as thr, hence we start at i=1
+      tnthr -=tnthr;
+      for (std::size_t i=1; i<((unsigned int)tnthr+1); i++)
+      {
+        ttm[i] = myRDspec.threshold_energy[i];
+        #ifdef DARKBIT_RD_DEBUG
+          std::cout << "RD_oh2_DS_general - thr : "<< ttm[i] << std::endl;
+        #endif
+      }
+      #ifdef DARKBIT_RD_DEBUG
+        std::cout << "RD_oh2_DS_general - tnco,tnrs,tnthr : "<< tnco << " " << tnrs << " "
+                  << tnthr << std::endl;
+      #endif
+      BEreq::dsrdstart(tnco,tmco,tdof,tnrs,trm,trw,tnthr,ttm); // DS common blocks set up
+
+      // always check that invariant rate is OK at least at one point
+      double peff = mwimp/100;
+      double weff = (*Dep::RD_eff_annrate)(peff);
+
+      if (Utils::isnan(weff))
+            DarkBit_error().raise(LOCAL_INFO, "Weff is NaN in RD_oh2_DS_general_aDM. This means that the function\n"
+                                            "pointed to by RD_eff_annrate returned NaN for the invariant rate\n"
+                                            "entering the relic density calculation.");
+
+
+      // Determine current contribution to Omega_DM h^2 of the asymmetric component
+      double eta = myRDspec.etaDM; // from dependency
+      eta=1e-14; // TB FIXME: remove this line!
+      DS_ADM_COM *etaDS  = BEreq::adm_com.pointer(); // common block variable in DS
+      double RDfactorfh = 275257140.31638151 ; // TB FIXME RDfactor*fh(nf)
+      double oh2adm = 0;
+      if (myRDspec.isSelfConj)
+      {
+        if (eta != 0) DarkBit_error().raise(LOCAL_INFO, "The DM asymmetry cannot be non-zero if DM is self-conjugate!");
+      }
+      else
+      {
+        oh2adm = RDfactorfh*eta*mwimp;
+      };
+      
+      // We first check whether the symmetric part of the relic density
+      // would be irrelevant, before fully computing it with eta != 0
+      etaDS->adm_eta=0;
+      double oh2sym, xf;
+      int ierr=0; int iwar=0;
+      int fast=*Dep::RD_oh2_DS6_ini;
+      fast=1; // for this estimate, a quick RD calculation is sufficient
+      BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2sym,xf,fast,ierr,iwar);
+      if (oh2sym<oh2adm/200)
+      {
+        oh2sym = 0.0; // actual symmetric component will be tiny
+                      // (but lead to numerical instabilities in dsrdens)
+      }
+      else if (eta != 0)
+      {
+        etaDS->adm_eta=eta;
+        fast=*Dep::RD_oh2_DS6_ini;
+        BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2sym,xf,fast,ierr,iwar);
+        etaDS->adm_eta=0;
+      }
+      oh2sym = (myRDspec.isSelfConj) ? oh2sym : 2*oh2sym; // include also anti-DM
+      
+      //Check for NAN result.
+      if ( Utils::isnan(oh2sym) ) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
+
+      // Check whether DarkSUSY threw an error
+      if (ierr == 1024)
+      {
+        invalid_point().raise("DarkSUSY invariant rate tabulation timed out.");
+      }
+      else if(ierr != 0)
+      {
+        DarkBit_error().raise(LOCAL_INFO, "DarkSUSY Boltzmann solver failed.");
+      }
+      
+      result.first = oh2sym + oh2adm; // total DM density
+      result.second = oh2sym / (oh2sym + oh2adm); // symmetric fraction
+
+      logger() << LogTags::debug << "RD_oh2_DS_general_aDM: oh2 = " << result.first << EOM;
+      logger() << LogTags::debug << "RD_oh2_DS_general_aDM: r = " << result.second << EOM;
+
+    } // function RD_oh2_DS_general_aDM
+
+
+    /*! \brief extract relic density oh2 from capability oh2=(oh2,r)
+     *
+     *  Requires:
+     *  - RD_oh2_aDM
+     *   Output:
+     *   - oh2
+     */
+    void RD_oh2_from_oh2_aDM(double &result)
+    {
+      using namespace Pipes::RD_oh2_from_oh2_aDM;
+      ddpair aDM_pair = *Dep::RD_oh2_aDM;
+      result=aDM_pair.first;
+    } // function RD_oh2_DS_general_aDM
+
 
 
 
@@ -737,7 +893,7 @@ namespace Gambit
 
       // Finally use DS Boltzmann solver with invariant rate
       double oh2, xf;
-      int ierr=0; int iwar=0; int fast=0;
+      int ierr=0; int iwar=0; int fast=20;
       if (Dep::RD_oh2_DS6_ini.active())
       {
         fast=*Dep::RD_oh2_DS6_ini;
@@ -1231,6 +1387,66 @@ namespace Gambit
       result = oh2_theory/oh2_obs;
       logger() << LogTags::debug << "Fraction of dark matter that the scanned model accounts for: " << result << EOM;
     }
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    //
+    //   Infer general suppression of indirect rates
+    //   (for annihilation or decay)
+    //
+    //////////////////////////////////////////////////////////////////////////
+
+    void ID_suppression_symDM(double &result)
+    {
+      using namespace Pipes::ID_suppression_symDM;
+      
+      double DM_fraction = *Dep::RD_fraction;
+      std::string proc = *Dep::DM_process;
+
+      if (proc == "annihilation")
+      {
+        result = DM_fraction*DM_fraction;
+      }
+      else if (proc == "decay")
+      {
+        result = DM_fraction;
+      }
+      else
+      {
+        DarkBit_error().raise(LOCAL_INFO, "Process type " + proc + " (in ID_suppression_symDM) unknown.");
+      }
+
+      logger() << LogTags::debug << "Symmetric DM with fraction " << DM_fraction << ". Suppression of indirect rates by a factor of " << result << EOM;
+    }
+
+    void ID_suppression_aDM(double &result)
+    {
+      using namespace Pipes::ID_suppression_aDM;
+
+      double DM_fraction = *Dep::RD_fraction;
+      ddpair aDM_pair = *Dep::RD_oh2_aDM;
+      double x = aDM_pair.second/DM_fraction; // fsym/fDM
+      std::string proc = *Dep::DM_process;
+
+
+      if (proc == "annihilation")
+      {
+        result = x*(2-x);
+      }
+      else if (proc == "decay") // this assumes CP symmetry for decay
+      {
+        result = DM_fraction;
+      }
+      else
+      {
+        DarkBit_error().raise(LOCAL_INFO, "Process type " + proc + " (in ID_suppression_aDM) unknown.");
+      }
+
+      logger() << LogTags::debug << "Asymmetric DM with (total) fraction " << DM_fraction << ". Suppression of indirect rates by a factor of " << result << EOM;
+    }
+
 
   }
 }

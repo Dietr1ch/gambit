@@ -11,6 +11,10 @@
 ///         (kahlhoefer@kit.edu)
 ///  \date May 2022
 ///                                                  
+///  \author Torsten Bringmann
+///         (torsten.bringmann@fys.uio.no)
+///  \date Oct 2023
+///
 ///  ********************************************* 
 
 #include "boost/make_shared.hpp"
@@ -232,14 +236,14 @@ namespace Gambit
         double mtot_final = 
         catalog.getParticleProperty(p1[i]).mass + 
         catalog.getParticleProperty(p2[i]).mass;  
-        if (mDM*2 > mtot_final*0.5)
+        if (mDM*2 > mtot_final) // TB bugfix (?) -- removed *0.5 on r.h.s.
         {
           daFunk::Funk kinematicFunction = daFunk::funcM(pc, &SubGeVDM_fermion::sv, channels[i], 
           gDM, e*kappa, mDM, daFunk::var("v"), runOptions->getValueOrDef<bool>(true,"smooth"));
           TH_Channel new_channel(daFunk::vec<string>(p1[i], p2[i]), kinematicFunction);
           process_ann.channelList.push_back(new_channel);
         }
-        if (mDM*2 < mtot_final)
+        if (mDM*2 <= mtot_final)
         {
           process_ann.resonances_thresholds.threshold_energy.push_back(mtot_final);
         }

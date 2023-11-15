@@ -23,7 +23,7 @@
 ///          (torsten.bringmann@fys.uio.no)
 ///  \date 2013 Jun
 ///  \date 2014 Mar
-///  \date 2019 May, 2022 Jan
+///  \date 2019 May, 2022 Jan, 2023 Oct
 ///
 ///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
@@ -257,6 +257,8 @@ START_MODULE
       START_FUNCTION(int)
       DEPENDENCY(RD_spectrum_ordered, RD_spectrum_type)
       BACKEND_REQ(rdpars, (ds6), DS_RDPARS)
+      BACKEND_REQ(rdlims, (ds6), DS_RDLIMS)
+      BACKEND_REQ(rd20opt, (ds6), DS_RD20OPT)
       BACKEND_REQ(rdtime, (ds6), DS_RDTIME)
       BACKEND_OPTION((DarkSUSY_MSSM, 6.4.0), (ds6))
       BACKEND_OPTION((DarkSUSY_generic_wimp, 6.4.0), (ds6))
@@ -266,6 +268,13 @@ START_MODULE
 
   #define CAPABILITY RD_oh2
   START_CAPABILITY
+    /// simply grab oh2 from capability RD_oh2_aDM
+    #define FUNCTION RD_oh2_from_oh2_aDM
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2_aDM, ddpair)
+      ALLOW_MODELS(SubGeVDM_scalar,SubGeVDM_fermion)
+    #undef FUNCTION
+
     /// General Boltzmann solver from DarkSUSY, using arbitrary Weff
     #define FUNCTION RD_oh2_DS_general
       START_FUNCTION(double)
@@ -357,6 +366,25 @@ START_MODULE
   #undef CAPABILITY
 
 
+  #define CAPABILITY RD_oh2_aDM
+  START_CAPABILITY
+    /// General Boltzmann solver from DarkSUSY, using arbitrary Weff
+    /// Version  of RD_oh2_DS_general that also allows asymmetric DM
+    #define FUNCTION RD_oh2_DS_general_aDM
+      START_FUNCTION(ddpair)
+      DEPENDENCY(RD_spectrum_ordered, RD_spectrum_type)
+      DEPENDENCY(RD_eff_annrate, fptr_dd)
+      DEPENDENCY(RD_oh2_DS6_ini,int)
+      BACKEND_REQ(dsrdstart,(ds6),void,(int&, double(&)[1000], double(&)[1000], int&, double(&)[1000], double(&)[1000], int&, double(&)[1000]))
+      BACKEND_REQ(dsrdens, (ds6), void, (double(*)(double&), double&, double&, int&, int&, int&))
+      BACKEND_REQ(adm_com, (ds6), DS_ADM_COM)
+      BACKEND_OPTION((DarkSUSY_MSSM, 6.4.0),(ds6))
+      BACKEND_OPTION((DarkSUSY_generic_wimp, 6.4.0),(ds6))
+      FORCE_SAME_BACKEND(ds6)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   /// Get oh2 and Xf simultaneously
   #define CAPABILITY RD_oh2_Xf
   START_CAPABILITY
@@ -419,7 +447,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  /// Fraction of the relic density constituted by the DM candidate under investigation
+  /// Cosmological fraction of the relic density constituted by the DM candidate under investigation
   #define CAPABILITY RD_fraction
   START_CAPABILITY
     #define FUNCTION RD_fraction_one
@@ -437,6 +465,23 @@ START_MODULE
       START_FUNCTION(double)
       ALLOW_MODELS(LCDM, LCDM_theta, LCDM_zreio)
       DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  /// Suppression of indirect rates due to (cosmologically) underabundant DM
+  #define CAPABILITY ID_suppression
+  START_CAPABILITY
+    #define FUNCTION ID_suppression_aDM
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2_aDM, ddpair)
+      DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(DM_process, std::string)
+      ALLOW_MODELS(SubGeVDM_scalar,SubGeVDM_fermion)
+    #undef FUNCTION
+    #define FUNCTION ID_suppression_symDM
+      START_FUNCTION(double)
+      DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(DM_process, std::string)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1017,7 +1062,7 @@ START_MODULE
     DEPENDENCY(WIMP_properties, WIMPprops)
     DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
     DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
-    DEPENDENCY(RD_fraction, double)
+    DEPENDENCY(ID_suppression, double)
     BACKEND_REQ(drn_pbar_logLikes,(),map_str_dbl,(double&,  map_str_dbl&, double& ))
     #undef FUNCTION
   #undef CAPABILITY
@@ -1093,7 +1138,7 @@ START_MODULE
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_Yield, daFunk::Funk)
-      DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(ID_suppression, double)
       DEPENDENCY(DM_process, std::string)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
@@ -1104,7 +1149,7 @@ START_MODULE
     #define FUNCTION lnL_FermiGC_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_Yield, daFunk::Funk)
-      DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(ID_suppression, double)
       DEPENDENCY(set_gamLike_GC_halo, bool)
       DEPENDENCY(DM_process, std::string)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
@@ -1116,7 +1161,7 @@ START_MODULE
     #define FUNCTION lnL_CTAGC_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_Yield, daFunk::Funk)
-      DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(ID_suppression, double)
       DEPENDENCY(DM_process, std::string)
       //DEPENDENCY(set_gamLike_GC_halo, bool)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
@@ -1128,7 +1173,7 @@ START_MODULE
     #define FUNCTION lnL_HESSGC_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_Yield, daFunk::Funk)
-      DEPENDENCY(RD_fraction, double)
+      DEPENDENCY(ID_suppression, double)
       DEPENDENCY(set_gamLike_GC_halo, bool)
       DEPENDENCY(DM_process, std::string)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
@@ -1800,6 +1845,7 @@ START_MODULE
       DEPENDENCY(GA_Yield, daFunk::Funk)
       DEPENDENCY(electron_Yield, daFunk::Funk)
       DEPENDENCY(positron_Yield, daFunk::Funk)
+      DEPENDENCY(ID_suppression, double)
     #undef FUNCTION
   #undef CAPABILITY
 

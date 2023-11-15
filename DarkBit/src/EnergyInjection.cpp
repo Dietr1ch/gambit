@@ -12,6 +12,10 @@
 ///          (stoecker@physik.rwth-aachen.de)
 ///  \date 2021 Mar
 ///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2023 Oct
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -48,6 +52,9 @@ namespace Gambit
       // What is the dark matter particle?
       const std::string DMid = *Dep::DarkMatter_ID;
       const std::string DMbarid = *Dep::DarkMatterConj_ID;
+
+      // Is the (symmetric) DM componenet underabundant ?
+      double suppression = *Dep::ID_suppression;
 
       // Get the ProcessCatalog
       auto& catalog = *Dep::TH_ProcessCatalog;
@@ -106,6 +113,9 @@ namespace Gambit
         positronElectronYield = positronElectronYield / totalRate;
         gammaYield = gammaYield / totalRate;
       }
+
+      // account for underabundant DM
+      totalRate *= suppression;
 
       // Define the underlying energy axes (kinetic energies)
       // Extend above Emax such that resolved monochromatic lines are included.
