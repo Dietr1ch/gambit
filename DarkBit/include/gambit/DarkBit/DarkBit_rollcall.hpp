@@ -172,6 +172,7 @@ START_MODULE
       START_FUNCTION(RD_spectrum_type)
       DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
       DEPENDENCY(DarkMatter_ID, std::string)
+      DEPENDENCY(WIMP_properties, WIMPprops)
       DEPENDENCY(DarkMatterConj_ID, std::string)
       ALLOW_MODELS(ScalarSingletDM_Z2, ScalarSingletDM_Z2_running, ScalarSingletDM_Z3,
                    ScalarSingletDM_Z3_running, DiracSingletDM_Z2, MajoranaSingletDM_Z2,

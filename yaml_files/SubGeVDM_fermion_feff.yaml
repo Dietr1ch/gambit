@@ -20,7 +20,7 @@ Parameters:
     gDM: 2.5
     kappa: 5e-2
     mAp: 1.5
-    etaDM: 0
+    etaDM: 1e-14
 
 Priors:
 

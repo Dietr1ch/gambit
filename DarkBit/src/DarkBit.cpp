@@ -44,6 +44,10 @@
 ///  \date 2021 Sep
 ///  \date 2023 June
 ///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2023 Nov
+///
 ///  *********************************************
 
 #include "gambit/Utils/numerical_constants.hpp"
@@ -68,6 +72,7 @@ namespace Gambit
       using namespace Pipes::WIMP_properties;
       props.name = *Dep::DarkMatter_ID;
       props.spinx2 = Models::ParticleDB().get_spinx2(props.name);
+      props.etaDM = 0.0; // per default, there is no primordial DM-antiDM asymmetry
       props.sc = not Models::ParticleDB().has_antiparticle(props.name);
       props.conjugate = props.sc ? props.name : *Dep::DarkMatterConj_ID;
       if(props.conjugate != Models::ParticleDB().get_antiparticle(props.name))
@@ -106,15 +111,17 @@ namespace Gambit
         props.mass = Dep::DMEFT_spectrum->get(Par::Pole_Mass, props.name);
       else if(ModelInUse("SubGeVDM_scalar"))
       {
-        // TODO: Probably only need the mass here
+        // TODO: Probably only need mass & etaDM here (?)
         props.mass = *Param["mDM"];
+        props.etaDM = *Param["etaDM"];
         props.spinx2 = 0;
         props.sc = false;
       }
       else if(ModelInUse("SubGeVDM_fermion"))
       {
-        // TODO: Probably only need the mass here
+        // TODO: Probably only need mass & etaDM  here (?)
         props.mass = *Param["mDM"];
+        props.etaDM = *Param["etaDM"];
         props.spinx2 = 2;
         props.sc = false;
       }

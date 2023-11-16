@@ -55,8 +55,8 @@ namespace Gambit
         invalid_point().raise(
             "RD_spectrum_MSSM requires DMid to be ~chi0_1.");
       }
-      // Neutralino DM is self-conjugate
-      result.isSelfConj = true;
+      // Neutralino DM is self-conjugate (and hence there cannot be an aDM component)
+      result.isSelfConj = true; result.etaDM = 0.0;
       // This function reports particle IDs in terms of PDG codes
       result.particle_index_type = "PDG";
 
@@ -320,6 +320,12 @@ namespace Gambit
       //     is calculated directly from the ProcessCatalogue!
       result.particle_index_type = "DarkSUSY";
 
+      // Is there an asymmetric dark matter component?
+      result.etaDM = 0.0;
+      if (not annihilation.isSelfConj)
+      {
+        result.etaDM = (*Dep::WIMP_properties).etaDM;
+      };
 
       // get thresholds & resonances from process catalog
       result.resonances = annihilation.resonances_thresholds.resonances;
@@ -751,9 +757,9 @@ namespace Gambit
 
       // Determine current contribution to Omega_DM h^2 of the asymmetric component
       double eta = myRDspec.etaDM; // from dependency
-      eta=1e-14; // TB FIXME: remove this line!
       DS_ADM_COM *etaDS  = BEreq::adm_com.pointer(); // common block variable in DS
-      double RDfactorfh = 275257140.31638151 ; // TB FIXME RDfactor*fh(nf)
+      double RDfactor = 70262213.646822274*pow(TCMB/2.725, 3.0); // defined as in DarkSUSY [1/GeV]
+      double RDfactorfh = RDfactor*g0_entr; // g0_entr = fh(nf) in DarkSUSY
       double oh2adm = 0;
       if (myRDspec.isSelfConj)
       {

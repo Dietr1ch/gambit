@@ -30,6 +30,10 @@
 ///          (tomas.gonzalo@kit.edu)
 ///  \date 2020 Jan
 ///  \date 2023 June
+///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2023 Nov
 //
 ///  *********************************************
 
@@ -63,6 +67,8 @@ namespace Gambit
   const double m_deuteron = 1.87561294257;                      // deuteron mass (GeV/c^2)
   const double m_electron = 0.5109989461e-3;                    // electron mass (GeV/c^2)
   const double alpha_EM = 7.2973525664e-3;                      // fine structure constant
+  const double TCMB = 2.725;                                    // Photon temperature today (K)
+  const double g0_entr = 3.91757;                               // entropy degrees of freedom today
 
   /// Values from Particle Data Group 2018 (http://pdg.lbl.gov/2018/reviews/rpp2018-rev-phys-constants.pdf)
   const double c_SI = s2cm/100;                                 // speed of light in m/s
