@@ -2067,7 +2067,7 @@ namespace Gambit
       else
         ColliderBit_error().raise(LOCAL_INFO, "ERROR! Model not known to GAMBIT");
 
-      Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mAp","signal_counts"};
+      Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mApmdm_ratio","signal_counts"};
 
 
       // The first time this function is run we must initialize the global analysis_info_map
@@ -2109,6 +2109,10 @@ namespace Gambit
         double kappa = spec.get(Par::dimensionless, "kappa");
         double gDM = spec.get(Par::dimensionless, "gDM");
         get_SubGeVDM_scalar_signal_yields(signal, analysis_info, mDM, mAp, kappa, gDM);
+
+        double mApmdm_ratio = mAp/mDM;
+        if (mApmdm_ratio <= 2.)
+          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");}
       }
       else if(modelname == "SubGeVDM_fermion")
       {
@@ -2131,7 +2135,9 @@ namespace Gambit
 
       // Compute the signal
       // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
-      double signal = signal_interp.eval(mDM, mAp, 0);
+      double mApmdm_ratio = mAp/mDM;
+
+      double signal = signal_interp.eval(mDM, mApmdm_ratio, 0); // mdm and mAp/mdm
 
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
@@ -2140,6 +2146,7 @@ namespace Gambit
       double me = 0.000511; // mass of electron
       double mmu = 0.1057; // mass of muon
       double ee = 0.31343; // elementary charge
+
 
       double width_ff = 0.0;
       if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
