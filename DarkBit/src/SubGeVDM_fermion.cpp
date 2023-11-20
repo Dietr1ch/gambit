@@ -13,7 +13,7 @@
 ///                                                  
 ///  \author Torsten Bringmann
 ///         (torsten.bringmann@fys.uio.no)
-///  \date Oct 2023
+///  \date Oct, Nov 2023
 ///
 ///  ********************************************* 
 
@@ -52,7 +52,16 @@ namespace Gambit
       /// Helper function (Breit-Wigner)
       double DAp2 (double s)
       {
-        return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
+        if (Gamma_Ap/mAp>1e-4)
+        {
+          return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
+        }
+        else // very narrow resonance -> need to regulate
+        {
+          double mGamma_reg = mAp*Gamma_Ap + 5e-5; // result does not depend on numerical value,
+                                                   // but becomes unreliable for <~1e-6
+          return mGamma_reg/Gamma_Ap/mAp/((s-mAp*mAp)*(s-mAp*mAp)+mGamma_reg*mGamma_reg);
+        };
       }
       
       double sv(std::string channel, double gDM, double gSM, double mass, double v, bool smooth)
@@ -66,7 +75,8 @@ namespace Gambit
           if ( channel == "tautau" and sqrt_s < mtau*2 ) return 0;
           if ( channel == "pipi" and sqrt_s < mpi*2 ) return 0;
           if ( channel == "ApAp" and sqrt_s < mAp*2) return 0;
-
+          
+ 
           if ( channel == "bb" ) return sv_ff(gDM, gSM, mass, v, mb, -1/3., 3);
           if ( channel == "ee" ) return sv_ff(gDM, gSM, mass, v, me, -1., 1);
           if ( channel == "mumu" ) return sv_ff(gDM, gSM, mass, v, mmu, -1., 1);
@@ -233,13 +243,14 @@ namespace Gambit
       
       for (unsigned int i = 0; i < channels.size(); ++i)
       {
-        double mtot_final = 
+        double eff = e*kappa;
+        double mtot_final =
         catalog.getParticleProperty(p1[i]).mass + 
-        catalog.getParticleProperty(p2[i]).mass;  
+        catalog.getParticleProperty(p2[i]).mass;
         if (mDM*2 > mtot_final) // TB bugfix (?) -- removed *0.5 on r.h.s.
         {
           daFunk::Funk kinematicFunction = daFunk::funcM(pc, &SubGeVDM_fermion::sv, channels[i], 
-          gDM, e*kappa, mDM, daFunk::var("v"), runOptions->getValueOrDef<bool>(true,"smooth"));
+          gDM, eff, mDM, daFunk::var("v"), runOptions->getValueOrDef<bool>(true,"smooth"));
           TH_Channel new_channel(daFunk::vec<string>(p1[i], p2[i]), kinematicFunction);
           process_ann.channelList.push_back(new_channel);
         }

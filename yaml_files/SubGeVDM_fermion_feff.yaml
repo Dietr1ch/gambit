@@ -14,13 +14,20 @@ Parameters:
      mH: 125.10 # PDG 2020 value
 
   SubGeVDM_fermion:
-    mDM: 
-      prior_type: log
-      range: [0.01,1]
-    gDM: 2.5
-    kappa: 5e-2
+#    mDM:
+#      prior_type: log
+#      range: [0.01,1]
+#    gDM: 2.5
+#    kappa: 5e-2
+#    mAp: 1.5
+#    etaDM: 1e-14
+
+    mDM: 0.70548
+    gDM: 0.004
+    kappa: 0.001
     mAp: 1.5
-    etaDM: 1e-14
+    etaDM: 0
+
 
 Priors:
 
@@ -153,7 +160,7 @@ Rules:
   - capability: RD_oh2_DS6_ini
     options:
       # these options are identical for DS5 and DS6+ version
-      fast: 1  # 0: standard, 1: fast but may be inaccurate 20: new DS default (default)
+      fast: 0  # 0: standard, 1: fast but may be inaccurate 20: new DS default (default)
 
 
   # Use DarkBit's own calculations of the direct detection couplings

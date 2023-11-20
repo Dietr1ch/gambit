@@ -44,6 +44,10 @@
 ///  \date 2018 Sep
 ///  \date 2019 Jul
 ///
+///  \author Torsten Bringmann
+///          (torsten.bringmann@fys.uio.no)
+///  \date 2023 Nov
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -3903,13 +3907,14 @@ namespace Gambit
       //result.set_BF(BEreq::dark_photon_branching_fraction("others",mAp), 0.0, "others");
 
       // Add the dark photon invisible width to the total
-      //TODO: Check expression
+      //TODO: Check expression;
 
       double gamma = 0;
       if (ModelInUse("SubGeVDM_scalar"))
       {
           if (2.0*mDM <= mAp)
-              gamma = pow(gDM,2)*mAp/(48.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2)); //See eq. (5) or arXiv:1707.03835
+              // gamma = pow(gDM,2)*mAp/(48.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2)); //See eq. (5) or arXiv:1707.03835
+              gamma = pow(gDM,2)*mAp/(48.*pi) * pow(sqrt(1.0 - 4.0*pow(mDM/mAp,2)),3); // TB bugfix (?)
       }
       if (ModelInUse("SubGeVDM_fermion"))
       {
