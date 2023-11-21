@@ -1083,8 +1083,34 @@ START_MODULE
     DEPENDENCY(pbar_logLikes,map_str_dbl)
     #undef FUNCTION
   #undef CAPABILITY
+   
+  // Self-interaction likelihoods ================================================
 
-  // X-ray likelihoods ================================================
+  #define CAPABILITY SigmaOverM_SelfInteraction
+  START_CAPABILITY
+    #define FUNCTION self_int_xsection
+    START_FUNCTION(double)
+    #undef FUNCTION
+  #undef CAPABILITY  
+  
+  #define CAPABILITY lnL_1D_BulletClusterEvap
+  START_CAPABILITY
+    #define FUNCTION calc_1d_lnL_BulletClusterEvap
+    START_FUNCTION(double)
+    DEPENDENCY(SigmaOverM_SelfInteraction, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_2D_BulletClusterEvap
+  START_CAPABILITY
+    #define FUNCTION calc_2d_lnL_BulletClusterEvap
+    START_FUNCTION(double)
+    DEPENDENCY(SigmaOverM_SelfInteraction, double)
+    DEPENDENCY(RD_fraction, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+// X-ray likelihoods ================================================
 
   #define CAPABILITY Xray_likelihoods
   START_CAPABILITY
@@ -1096,7 +1122,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  // Gamma-ray likelihoods =============================================
+// Gamma-ray likelihoods =============================================
 
   #define CAPABILITY set_gamLike_GC_halo
   START_CAPABILITY
@@ -2838,4 +2864,3 @@ START_MODULE
 */
 #undef REFERENCE
 #undef MODULE
-
