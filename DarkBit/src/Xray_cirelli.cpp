@@ -37,7 +37,7 @@ namespace Gambit
       double DM_mass = Dep::WIMP_properties->mass;
       double suppression = *Dep::ID_suppression;
 //      double suppression=1000.0;
-      std::cout <<"at a mass of "<< DM_mass << " suppression is equal to " << suppression;
+//      std::cout <<"at a mass of "<< DM_mass << " suppression is equal to " << suppression;
       TH_Process process = Dep::TH_ProcessCatalog->getProcess(DM_ID, DMbar_ID);
 
       double logchisqre;
