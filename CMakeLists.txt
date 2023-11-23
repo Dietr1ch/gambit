@@ -500,18 +500,27 @@ set(BACKEND_GNU99_FLAGS "${BACKEND_C_FLAGS} -std=gnu99")
 # Should we use pragmas to suppress common compiler warnings from external libraries?
 option(SUPPRESS_LIBRARY_WARNINGS "Suppress common compiler warnings due to external libraries" ON)
 
+# Unless "-rdynamic" or "-Wl,--export-dynamic" is set, make symbols hidden by default when compiling GAMBIT source files only
+string(FIND ${CMAKE_CXX_FLAGS} "-rdynamic" FOUND_RDYNAMIC_CXX)
+string(FIND ${CMAKE_CXX_FLAGS} "--export-dynamic" FOUND_EXPORT_DYNAMIC_CXX)
+if(${FOUND_RDYNAMIC_CXX} EQUAL -1 AND ${FOUND_EXPORT_DYNAMIC_CXX} EQUAL -1)
+  if(${CMAKE_MAJOR_VERSION} MATCHES "2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
+  else()
+    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
+  endif()
+endif()
 
-# LUMI debug
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic")
-# # Make symbols hidden by default when compiling GAMBIT source files only
-# if(${CMAKE_MAJOR_VERSION} MATCHES "2")
-#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
-#   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fvisibility=hidden")
-# else()
-#   set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-#   set(CMAKE_Fortran_VISIBILITY_PRESET hidden)
-#   set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
-# endif()
+string(FIND ${CMAKE_Fortran_FLAGS} "-rdynamic" FOUND_RDYNAMIC_FORTRAN)
+string(FIND ${CMAKE_Fortran_FLAGS} "--export-dynamic" FOUND_EXPORT_DYNAMIC_FORTRAN)
+if(${FOUND_RDYNAMIC_FORTRAN} EQUAL -1 AND ${FOUND_EXPORT_DYNAMIC_FORTRAN} EQUAL -1)
+  if(${CMAKE_MAJOR_VERSION} MATCHES "2")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fvisibility=hidden")
+  else()
+    set(CMAKE_Fortran_VISIBILITY_PRESET hidden)
+  endif()
+endif()
 
 # Check for optional packages and disable sections of GAMBIT accordingly
 include(cmake/optional.cmake)
