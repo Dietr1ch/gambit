@@ -211,27 +211,23 @@ namespace Gambit
         // log prior from lower to flat_start
         double u01 = std::log(p / lower) / std::log(flat_start / lower);
         unit[0] = u01 * P01;
-        //return {u01 * P01};
       }
       else if (p >= flat_start && p < flat_end)
       {
         // flat prior from flat_start to flat_end
         double u01 = (p - flat_start) / (flat_end - flat_start);
         unit[0] = P01 + u01 * P12;
-        //return {P01 + u01 * P12};
       }
       else if (p>= flat_end && p < upper)
       {
         // log prior from flat_end to upper
         double u01 = std::log(p / flat_end) / std::log(upper / flat_end);
-        unit[0] = 01 + P12 + u01 * P23;
-        //return {P01 + P12 + u01 * P23};
+        unit[0] = P01 + P12 + u01 * P23;
       }
       else
       {
         scan_err << "no inverse transformation for double_log_flat_join - outside range"
                  << scan_end;
-      //return {};  // silence compiler warning (reaches end non-void function)
       }
     }
       
