@@ -2067,7 +2067,7 @@ namespace Gambit
       else
         ColliderBit_error().raise(LOCAL_INFO, "ERROR! Model not known to GAMBIT");
 
-      Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mApmdm_ratio","signal_counts"};
+      Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mAp","signal_counts"};
 
 
       // The first time this function is run we must initialize the global analysis_info_map
@@ -2112,7 +2112,7 @@ namespace Gambit
 
         double mApmdm_ratio = mAp/mDM;
         if (mApmdm_ratio <= 2.)
-          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");}
+          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");} // beam dump yield will just return 0
       }
       else if(modelname == "SubGeVDM_fermion")
       {
@@ -2137,7 +2137,7 @@ namespace Gambit
       // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
       double mApmdm_ratio = mAp/mDM;
 
-      double signal = signal_interp.eval(mDM, mApmdm_ratio, 0); // mdm and mAp/mdm
+      double signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
 
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
