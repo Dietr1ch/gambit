@@ -33,84 +33,86 @@
 #include "gambit/ScannerBit/scanner_utils.hpp"
 
 namespace Gambit {
-namespace Priors {
 
-using ::Gambit::Scanner::hyper_cube;
-using ::Gambit::Scanner::map_vector;
+    namespace Priors {
 
-/**
-* @brief Abstract base class for priors
-*/
-class BasePrior 
-{
-private:
-    unsigned int param_size;
+        using ::Gambit::Scanner::hyper_cube;
+        using ::Gambit::Scanner::map_vector;
 
-protected:
-    std::vector<std::string> param_names;
+        /**
+        * @brief Abstract base class for priors
+        */
+        class BasePrior 
+        {
+        private:
+            unsigned int param_size;
 
-public:
-    virtual ~BasePrior() = default;
+        protected:
+            std::vector<std::string> param_names;
 
-    BasePrior() : param_size(0), param_names(0) {}
+        public:
+            virtual ~BasePrior() = default;
 
-    explicit BasePrior(const int param_size) : param_size(param_size), param_names(0) {}
+            BasePrior() : param_size(0), param_names(0) {}
 
-    explicit BasePrior(const std::vector<std::string> &param_names, const int param_size = 0) :
-        param_size(param_size), param_names(param_names) {}
+            explicit BasePrior(const int param_size) : param_size(param_size), param_names(0) {}
 
-    explicit BasePrior(const std::string &param_name, const int param_size = 0) :
-        param_size(param_size), param_names(1, param_name) {}
+            explicit BasePrior(const std::vector<std::string> &param_names, const int param_size = 0) :
+                param_size(param_size), param_names(param_names) {}
 
-    /** @brief Transform from unit hypercube to physical parameter */
-    virtual void transform(hyper_cube<double> unit, std::unordered_map<std::string, double> &physical) const = 0;
+            explicit BasePrior(const std::string &param_name, const int param_size = 0) :
+                param_size(param_size), param_names(1, param_name) {}
 
-    /** @overload in place STL containers */
-    void transform(const std::vector<double> &unit, std::unordered_map<std::string, double> &physical) const 
-    {
-        transform(map_vector<double>(const_cast<double *>(&unit[0]), unit.size()), physical);
-    }
+            /** @brief Transform from unit hypercube to physical parameter */
+            virtual void transform(hyper_cube<double> unit, std::unordered_map<std::string, double> &physical) const = 0;
 
-    /** @overload return STL containers */
-    std::unordered_map<std::string, double> transform(const std::vector<double> &unit) const 
-    {
-        std::unordered_map<std::string, double> physical;
-        transform(unit, physical);
-        return physical;
-    }
+            /** @overload in place STL containers */
+            void transform(const std::vector<double> &unit, std::unordered_map<std::string, double> &physical) const 
+            {
+                transform(map_vector<double>(const_cast<double *>(&unit[0]), unit.size()), physical);
+            }
 
-    /** @brief Transform from physical parameter to unit hypercube */
-    virtual void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const = 0;
+            /** @overload return STL containers */
+            std::unordered_map<std::string, double> transform(const std::vector<double> &unit) const 
+            {
+                std::unordered_map<std::string, double> physical;
+                transform(unit, physical);
+                return physical;
+            }
 
-    /** @overload in place STL containers */
-    void inverse_transform(const std::unordered_map<std::string, double> &physical, std::vector<double> &unit) const 
-    {
-        inverse_transform(physical, map_vector<double>(const_cast<double *>(&unit[0]), unit.size()));
-    }
+            /** @brief Transform from physical parameter to unit hypercube */
+            virtual void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const = 0;
 
-    /** @overload return STL containers */
-    std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const 
-    {
-        std::vector<double> unit(param_size);
-        inverse_transform(physical, unit);
-        return unit;
-    }
+            /** @overload in place STL containers */
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, std::vector<double> &unit) const 
+            {
+                inverse_transform(physical, map_vector<double>(const_cast<double *>(&unit[0]), unit.size()));
+            }
 
-    /** @brief Log of prior density */
-    virtual double log_prior_density(const std::unordered_map<std::string, double> &) const = 0;
+            /** @overload return STL containers */
+            std::vector<double> inverse_transform(const std::unordered_map<std::string, double> &physical) const 
+            {
+                std::vector<double> unit(param_size);
+                inverse_transform(physical, unit);
+                return unit;
+            }
 
-    virtual std::vector<std::string> getShownParameters() const { return param_names; }
+            /** @brief Log of prior density */
+            virtual double log_prior_density(const std::unordered_map<std::string, double> &) const = 0;
 
-    inline unsigned int size() const { return param_size; }
+            virtual std::vector<std::string> getShownParameters() const { return param_names; }
 
-    inline void setSize(const unsigned int size) { param_size = size; }
+            inline unsigned int size() const { return param_size; }
 
-    inline unsigned int & sizeRef() { return param_size; }
+            inline void setSize(const unsigned int size) { param_size = size; }
 
-    inline std::vector<std::string> getParameters() const { return param_names; }
-};
+            inline unsigned int & sizeRef() { return param_size; }
 
-}  // namespace Priors
+            inline std::vector<std::string> getParameters() const { return param_names; }
+        };
+
+    }  // namespace Priors
+    
 }  // namespace Gambit
 
 #endif  // __BASE_PRIORS_HPP__
