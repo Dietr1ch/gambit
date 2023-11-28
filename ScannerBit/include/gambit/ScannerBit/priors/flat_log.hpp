@@ -226,7 +226,6 @@ namespace Gambit
                 const double u = (x - lower) / (upper - lower);
                 
                 unit[0] = u;
-                //return {u};
             }
 
             double log_prior_density(const std::unordered_map<std::string, double> &physical) const override 
