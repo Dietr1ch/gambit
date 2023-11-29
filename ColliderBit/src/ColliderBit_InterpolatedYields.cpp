@@ -2067,7 +2067,7 @@ namespace Gambit
       else
         ColliderBit_error().raise(LOCAL_INFO, "ERROR! Model not known to GAMBIT");
 
-      Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mApmdm_ratio","signal_counts"};
+      Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mAp","signal_counts"};
 
 
       // The first time this function is run we must initialize the global analysis_info_map
@@ -2104,15 +2104,15 @@ namespace Gambit
       {
         // TODO: If your model has more/less than 2 masses and 2 couplings, then the get_SubGeVBeamDump_MB_signal_yields function will need to be changed.
         // TODO: Would need to change mass_i and coupling_i to the relevant parameters in your model
-        double mDM = spec.get(Par::Pole_Mass, "mDM");
-        double mAp = spec.get(Par::Pole_Mass, "mAp");
+        double mDM = spec.get(Par::Pole_Mass, "DM");
+        double mAp = spec.get(Par::Pole_Mass, "Ap");
         double kappa = spec.get(Par::dimensionless, "kappa");
         double gDM = spec.get(Par::dimensionless, "gDM");
         get_SubGeVDM_scalar_signal_yields(signal, analysis_info, mDM, mAp, kappa, gDM);
 
         double mApmdm_ratio = mAp/mDM;
         if (mApmdm_ratio <= 2.)
-          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");}
+          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");} // beam dump yield will just return 0
       }
       else if(modelname == "SubGeVDM_fermion")
       {
@@ -2137,12 +2137,12 @@ namespace Gambit
       // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
       double mApmdm_ratio = mAp/mDM;
 
-      double signal = signal_interp.eval(mDM, mApmdm_ratio, 0); // mdm and mAp/mdm
+      double signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
 
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
       double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
-      
+
       double me = 0.000511; // mass of electron
       double mmu = 0.1057; // mass of muon
       double ee = 0.31343; // elementary charge

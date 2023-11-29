@@ -1083,7 +1083,7 @@ START_MODULE
     DEPENDENCY(pbar_logLikes,map_str_dbl)
     #undef FUNCTION
   #undef CAPABILITY
-   
+
   // Self-interaction likelihoods ================================================
 
   #define CAPABILITY SigmaOverM_SelfInteraction
@@ -1091,8 +1091,8 @@ START_MODULE
     #define FUNCTION self_int_xsection
     START_FUNCTION(double)
     #undef FUNCTION
-  #undef CAPABILITY  
-  
+  #undef CAPABILITY
+
   #define CAPABILITY lnL_1D_BulletClusterEvap
   START_CAPABILITY
     #define FUNCTION calc_1d_lnL_BulletClusterEvap
@@ -2653,7 +2653,18 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-
+  #define CAPABILITY DarkSide50_Migdal_2023_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_DarkSide50_Migdal_2023_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(DarkSide50_S2_Migdal_2023, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_SI_p, double)
+    DEPENDENCY(sigma_SI_n, double)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Super Renormalizable Higgs Portal DM relative observables and likelihoods -----------------
 
