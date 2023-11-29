@@ -64,7 +64,7 @@ namespace Gambit
             LogNormal(const std::vector<std::string>&, const Options&);
 
             // Transformation from unit interval to the Log-Normal
-            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
+            void transform(hyper_cube_ref<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
             {
                 std::vector<double> vec(unitpars.size());
                 for (int i = 0, end = vec.size(); i < end; ++i)
@@ -80,7 +80,7 @@ namespace Gambit
                 }
             }
 
-            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double> unit) const override
             {
                 // undo exponentiation
                 std::vector<double> log_physical;

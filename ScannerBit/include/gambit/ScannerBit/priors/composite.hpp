@@ -74,7 +74,7 @@ namespace Gambit
             inline std::vector<std::string> getShownParameters() const override { return shown_param_names; }
             
             // Transformation from unit hypercube to physical parameters
-            void transform(hyper_cube<double> unitPars, std::unordered_map<std::string,double> &outputMap) const override
+            void transform(hyper_cube_ref<double> unitPars, std::unordered_map<std::string,double> &outputMap) const override
             {
                 int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; ++it)
@@ -86,7 +86,7 @@ namespace Gambit
             }
 
             // Transformation from physical parameters back to unit hypercube
-            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double> unit) const override
             {
                 int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)

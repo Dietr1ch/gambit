@@ -335,7 +335,7 @@ namespace Gambit
                 return (*this)(map_vector<double>(const_cast<double *>(&vec[0]), vec.size()));
             }
             
-            double operator()(hyper_cube<double> vec)
+            double operator()(hyper_cube_ref<double> vec)
             {
                 std::unordered_map<std::string, double> &map = (*this)->getMap();
                 int rank = (*this)->getRank();

@@ -49,7 +49,7 @@ namespace Gambit
         /// \brief Represents the unit hypercube.
         ///
         template <typename T>
-        using hyper_cube = Eigen::Ref<vector<T>, 0, Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic>>;
+        using hyper_cube_ref = Eigen::Ref<vector<T>, 0, Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic>>;
         
         /// \brief Vector using raw data.
         ///

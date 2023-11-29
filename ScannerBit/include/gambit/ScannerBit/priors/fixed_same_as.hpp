@@ -77,7 +77,7 @@ namespace Gambit
             
             std::vector<std::string> getShownParameters() const override {return std::vector<std::string>();}
 
-            void transform(hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const override
+            void transform(hyper_cube_ref<double>, std::unordered_map<std::string, double> &outputMap) const override
             {
                 for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
                 {
@@ -87,7 +87,7 @@ namespace Gambit
                 iter = (iter + 1)%value.size();
             }
 
-            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double>) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double>) const override
             {
                 const double rtol = 1e-4;
                 for (int i = 0, n = this->size(); i < n; i++)
@@ -181,7 +181,7 @@ namespace Gambit
             
             std::vector<std::string> getShownParameters() const override {return std::vector<std::string>();}
 
-            void transform(hyper_cube<double>, std::unordered_map<std::string, double> &outputMap) const override
+            void transform(hyper_cube_ref<double>, std::unordered_map<std::string, double> &outputMap) const override
             {
                 double value = outputMap[name];
 
@@ -192,7 +192,7 @@ namespace Gambit
                 }
             }
 
-            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double>) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double>) const override
             {
                 auto &outputMap = const_cast<std::unordered_map<std::string, double> &>(physical);
                 double value = outputMap[name];

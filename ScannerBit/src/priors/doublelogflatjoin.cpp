@@ -164,7 +164,7 @@ namespace Gambit
     
 
     /// Transformation from unit interval to the double log + flat join
-    void DoubleLogFlatJoin::transform(hyper_cube<double> unitpars, std::unordered_map <std::string, double> &output) const
+    void DoubleLogFlatJoin::transform(hyper_cube_ref<double> unitpars, std::unordered_map <std::string, double> &output) const
     {
       // Only valid for 1D parameter transformation
       if (unitpars.size()!=1)
@@ -202,7 +202,7 @@ namespace Gambit
       output[myparameter] = x;
     }
 
-    void DoubleLogFlatJoin::inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const
+    void DoubleLogFlatJoin::inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double> unit) const
     {
       const double p = physical.at(myparameter);
 

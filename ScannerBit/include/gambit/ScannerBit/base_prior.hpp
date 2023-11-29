@@ -36,7 +36,7 @@ namespace Gambit {
 
     namespace Priors {
 
-        using ::Gambit::Scanner::hyper_cube;
+        using ::Gambit::Scanner::hyper_cube_ref;
         using ::Gambit::Scanner::map_vector;
 
         /**
@@ -64,7 +64,7 @@ namespace Gambit {
                 param_size(param_size), param_names(1, param_name) {}
 
             /** @brief Transform from unit hypercube to physical parameter */
-            virtual void transform(hyper_cube<double> unit, std::unordered_map<std::string, double> &physical) const = 0;
+            virtual void transform(hyper_cube_ref<double> unit, std::unordered_map<std::string, double> &physical) const = 0;
 
             /** @overload in place STL containers */
             void transform(const std::vector<double> &unit, std::unordered_map<std::string, double> &physical) const 
@@ -81,7 +81,7 @@ namespace Gambit {
             }
 
             /** @brief Transform from physical parameter to unit hypercube */
-            virtual void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const = 0;
+            virtual void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double> unit) const = 0;
 
             /** @overload in place STL containers */
             void inverse_transform(const std::unordered_map<std::string, double> &physical, std::vector<double> &unit) const 
