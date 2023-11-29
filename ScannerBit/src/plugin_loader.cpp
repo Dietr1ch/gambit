@@ -366,8 +366,7 @@ namespace Gambit
                 {
                     scan_err << "Cannot open ./ScannerBit/lib/plugin_libraries.list" << scan_end;
                 }
-                
-                //Load_PyPlugins();
+
             }
 
             /// Check a plugin map and return a flag indicating if a candidate plugin is already in the map or not.

@@ -76,15 +76,6 @@ namespace Gambit
             // Transformation from unit hypercube to physical parameters
             void transform(hyper_cube<double> unitPars, std::unordered_map<std::string,double> &outputMap) const override
             {
-                //std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
-                //for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
-                //{
-                //    unit_next = unit_it + (*it)->size();
-                //    std::vector<double> subUnit(unit_it, unit_next);
-                //    unit_it = unit_next;
-                //    (*it)->transform(subUnit, outputMap);
-                //}
-                
                 int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; ++it)
                 {
@@ -100,8 +91,6 @@ namespace Gambit
                 int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
                 {
-                    //auto ublock = (*it)->inverse_transform(physical);
-                    //u.insert(u.end(), ublock.begin(), ublock.end());
                     unit_size = (*it)->size();
                     (*it)->inverse_transform(physical, unit.segment(unit_i, unit_size));
                     unit_i += unit_size;
