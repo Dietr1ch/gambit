@@ -569,8 +569,8 @@ namespace Gambit
     
 }
 
-PYBIND11_MAKE_OPAQUE(map_doub_type_);
-PYBIND11_MAKE_OPAQUE(vec_str_type_);
+PYBIND11_MAKE_OPAQUE(map_doub_type_)
+PYBIND11_MAKE_OPAQUE(vec_str_type_)
 
 PYBIND11_EMBEDDED_MODULE(scannerbit, m) 
 {
