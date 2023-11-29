@@ -51,8 +51,8 @@ Priors:
 
 Printer:
 
-#  printer: cout
-  printer: ascii
+  printer: cout
+#  printer: ascii
   # printer: hdf5
 
   options:
@@ -86,9 +86,9 @@ ObsLikes:
 
 #    - capability: BaBar_single_photon_LogLike
 #      purpose:    Observable
-      
+
   # Direct detection likelihoods (nucleon)
-  
+
 #    - capability: CRESST_III_LogLikelihood
 #      purpose:    LogLike
 
@@ -123,13 +123,13 @@ ObsLikes:
 
 #    - capability: DarkSide50_Migdal_LogLikelihood
 #      purpose:    LogLike
-      
+
 #    - purpose:    Observable
 #      capability: sigma_e
 
   # Xray Likelihoods
 
-    - capability: Xray_likelihoods
+    - capability: Xray_loglikelihoods
       purpose:    LogLike
 
 #    - capability: ID_suppression
@@ -206,7 +206,7 @@ Rules:
     function: RD_fraction_one
     options: # Planck 2018 values
       oh2_obs: 0.120
-      
+
   # Use DarkSUSY directly , MicrOmegas or the DarkBit native calculator (based on the DarkSUSY Boltzmann solver) for the relic density?
   # Consult the DarkBit manual for the required options in each case
 #  - capability: RD_oh2
@@ -228,7 +228,7 @@ Rules:
   # Use DarkBit's own calculations of the direct detection couplings
 #  - capability: DD_couplings
 #    function: DD_couplings_SubGeVDM_fermion
-    
+
   # Select WIMP-nucleon couplings for DDCalc 2.1.0 WIMP object
 #  - capability: DDCalc_Couplings
 #    function: DDCalc_Couplings_WIMP_nucleon
@@ -238,7 +238,7 @@ Rules:
 
   - capability: decay_rates
     function: all_decays
-    
+
 #  # Choose to use DarkSUSY yield tables for indirect detection
 #  - capability: GA_SimYieldTable
 #    #function: GA_SimYieldTable_DS5
@@ -283,7 +283,7 @@ Rules:
 #  # Calculate the constant f_eff by convolution of f_eff(z) with a weighting function
 #  - capability: f_eff
 #    function: f_eff_weighted
-    
+
   - if:
       module: DarkBit
     then:
@@ -313,6 +313,8 @@ Logger:
     [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
+
+  debug: True
 
   dependency_resolution:
     prefer_model_specific_functions: true
