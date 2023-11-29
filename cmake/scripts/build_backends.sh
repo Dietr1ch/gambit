@@ -8,7 +8,7 @@ while getopts "f:s:j:" opt; do
   case $opt in
     f) backends_list_file="${OPTARG}"
     ;;
-    s) skip_backends="${OPTARG}"
+    s) skip_backends_list="${OPTARG}"
     ;;
     j) make_j_option="${OPTARG}"
     ;;
@@ -38,15 +38,16 @@ then
 fi
 
 # For each backend listed in the input file:
-# - Check if the backend is in the $skip_backends list.
+# - Check if the backend is in the $skip_backends_list.
 # - If not, try to build it.
 # - If the build fails, add it to $failed_backends_list
 did_fail=0
+succeeded_backends_list=""
 failed_backends_list=""
 while read backend || [[ -n $backend ]];
 do
   do_skip_backend=0
-  for skip_backend_name in $(echo ${skip_backends}); 
+  for skip_backend_name in $(echo ${skip_backends_list}); 
   do 
     if [ ${skip_backend_name} = ${backend} ];
     then
@@ -66,19 +67,20 @@ do
     then 
       did_fail=1
       failed_backends_list="${failed_backends_list}, ${backend}"
+    else
+      succeeded_backends_list="${succeeded_backends_list}, ${backend}"
     fi
   fi
 done < ${backends_list_file}
 
+succeeded_backends_list="${succeeded_backends_list:2}"
 failed_backends_list="${failed_backends_list:2}"
 
 # Report result
-if [ ${did_fail} -eq 1 ];
-then
-  printf "\n${prefix} The following backends failed to build: ${failed_backends_list}\n" >&2
-else
-  printf "\n${prefix} All backends built successfully!\n"
-fi
+printf "\n${prefix} SUMMARY:\n"
+printf "${prefix} Successful backend builds: ${succeeded_backends_list}\n"
+printf "${prefix} Skipped backend builds: ${skip_backends_list}\n"
+printf "${prefix} Failed backend builds: ${failed_backends_list}\n\n"
 
 # Return correct exit code
 exit ${did_fail}

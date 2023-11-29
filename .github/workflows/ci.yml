@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  test_run_ColliderBit_CMSSM:
+  test_runs:
     runs-on: [docker, self-hosted]
     strategy:
       fail-fast: false
@@ -49,10 +49,16 @@ jobs:
     - name: Configure with cmake
       run: |
         cd BUILD/ && . buildenv.sh
-        cmake .. -D WITH_ROOT=OFF -D WITH_RESTFRAMES=OFF -D WITH_HEPMC=ON -D WITH_YODA=ON -D BUILD_FS_MODELS="CMSSM" -D WITH_MPI=OFF -Ditch="DarkBit;CosmoBit;FlavBit;NeutrinoBit;ObjectivesBit"
+        cmake .. -D WITH_ROOT=OFF -D WITH_RESTFRAMES=OFF -D WITH_HEPMC=ON -D WITH_YODA=ON -D BUILD_FS_MODELS="CMSSM" -D WITH_MPI=OFF -Ditch="DarkBit;CosmoBit;NeutrinoBit;ObjectivesBit"
+    - name: Build required scanners
+      run: |
+        cd BUILD/ && . buildenv.sh
+        make -j$(( ($(nproc)+1)/2 )) diver
+        cmake ..
     - name: Build required backends
       run: |
         cd BUILD/ && . buildenv.sh
+        # Build bakends needed for ColliderBit_CMSSM.yaml
         make -j$(( ($(nproc)+1)/2 )) nulike
         make -j$(( ($(nproc)+1)/2 )) susyhit
         make -j$(( ($(nproc)+1)/2 )) rivet
@@ -61,14 +67,23 @@ jobs:
         make -j$(( ($(nproc)+1)/2 )) higgsbounds
         make -j$(( ($(nproc)+1)/2 )) higgssignals
         make ATLAS_FullLikes
+        # Build bakends needed for WC.yaml
+        make -j$(( ($(nproc)+1)/2 )) superiso
+        make -j$(( ($(nproc)+1)/2 )) heplikedata
+        make -j$(( ($(nproc)+1)/2 )) heplike
     - name: Build required Gambit bits
       run: |
         cd BUILD && . buildenv.sh
         make -j$(( ($(nproc)+1)/2 )) gambit
-    - name: Test run with ColliderBit_CMSSM.yaml
+    - name: Run ColliderBit_CMSSM.yaml
       run: |
         . BUILD/buildenv.sh
         ./gambit -rf yaml_files/ColliderBit_CMSSM.yaml
+    - name: Run WC.yaml
+      run: |
+        . BUILD/buildenv.sh
+        ./gambit -rf yaml_files/WC.yaml
+
 
   backends_build:
     runs-on: [docker, self-hosted]
@@ -115,7 +130,8 @@ jobs:
         cd BUILD && . buildenv.sh
         # Build backends, except those that are tested via other jobs.
         # This replaces the "make backends" command.
-        ../cmake/scripts/build_backends.sh -f default_backends.txt -j 1 -s "susyhit pythia rivet contur higgsbounds higgssignals ATLAS_FullLikes" 
+        ../cmake/scripts/build_backends.sh -f default_backends.txt -j 1 -s "nulike susyhit rivet contur pythia higgsbounds higgssignals ATLAS_FullLikes superiso heplikedata heplike" 
+
 
   gambit_build:
     runs-on: [docker, self-hosted]
@@ -220,20 +236,6 @@ jobs:
       run: |
         cd BUILD && . buildenv.sh
         make standalones
-
-
-  # # Split as different runs
-  # test_runs:
-  #   # Need to build from scratch?
-  #   - name: WC test
-  #     run: |
-  #       . BUILD/buildenv.sh
-  #       ./gambit -f yaml_files/WC_lite.yaml
-  #   - name: ColliderBit test
-  #     run: |
-  #       . BUILD/buildenv.sh
-  #       ./gambit -f yaml_files/ColliderBit_CMSSM.yaml
-        
 
 
     # - name: Validation dependencies
