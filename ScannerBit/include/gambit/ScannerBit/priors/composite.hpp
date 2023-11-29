@@ -97,7 +97,6 @@ namespace Gambit
             // Transformation from physical parameters back to unit hypercube
             void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
             {
-                //std::vector<double> u;
                 int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
                 {
@@ -108,16 +107,7 @@ namespace Gambit
                     unit_i += unit_size;
                 }
 
-                // check it
-
-                //for (const auto &p : u)
-                //{
-                //    if (p > 1. || p < 0.)
-                //    {
-                //        throw std::runtime_error("unit hypercube outside 0 and 1");
-                //    }
-                //}
-                
+                // Check it
                 for (int i = 0, end = unit.size(); i < end; ++i)
                 {
                     if (unit[i] >= 1 || unit[i] <= 0)
@@ -127,7 +117,6 @@ namespace Gambit
                 }
 
                 auto round_trip = physical;
-                //transform(map_vector<double>(&u[0], u.size()), round_trip);
                 transform(unit, round_trip);
                 const double rtol = 1e-4;
                 for (const auto &s : physical) 
@@ -140,8 +129,6 @@ namespace Gambit
                         scan_err << "could not convert physical parameters to hypercube" << scan_end;
                     }
                 }
-
-                //return u;        
             }
             
             //~CompositePrior() noexcept

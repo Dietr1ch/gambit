@@ -328,9 +328,6 @@ namespace Gambit
         public:
             using s_ptr::s_ptr;
             like_ptr(){}
-            //like_ptr(const like_ptr &in) : s_ptr (in){}
-            //like_ptr(like_ptr &in) : s_ptr (in){}
-            //like_ptr& operator=(const like_ptr&) = default;
             like_ptr(void *in) : s_ptr(in) {}
 
             double operator()(const std::vector<double> &vec)

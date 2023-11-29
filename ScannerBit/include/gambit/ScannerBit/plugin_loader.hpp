@@ -108,29 +108,6 @@ namespace Gambit
             };
         #endif
             
-            /*class EXPORT_SYMBOLS PyPlugin_Loader
-            {
-            private:
-                std::map<std::string, std::map<std::string, PyPlugin_Details>> python_plugin_map;
-                
-            public:
-                PyPlugin_Loader()
-                {
-                    std::vector<std::string> types = {"objective", "scanner"};
-                    for (auto &&type : types)
-                    {
-                        Load_PyPlugins(type);
-                    }
-                }
-                
-                void Load_PyPlugins(const std::string &);
-                
-                std::map<std::string, std::map<std::string, PyPlugin_Details>> &operator()()
-                {
-                    return  python_plugin_map;
-                }
-            };*/
-            
             ///container class for the actual plugins detected by ScannerBit
             class EXPORT_SYMBOLS Plugin_Loader
             {
