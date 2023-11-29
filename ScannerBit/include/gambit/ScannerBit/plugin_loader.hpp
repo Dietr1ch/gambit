@@ -327,7 +327,6 @@ namespace Gambit
             ///Access Functor for plugin info.  This will manage all the
             ///plugins including stored and writing resume info.
             extern EXPORT_SYMBOLS pluginInfo plugin_info;
-            //extern EXPORT_SYMBOLS PyPlugin_Loader pyplugin_info;
 
         }
 
