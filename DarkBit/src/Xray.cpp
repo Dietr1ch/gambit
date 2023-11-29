@@ -3,6 +3,7 @@
 ///  \file
 ///
 ///  Xray likelihoods for DarkBit.
+///  From Cirelli et al. https://arxiv.org/abs/2303.08854
 ///
 ///  *********************************************
 ///
