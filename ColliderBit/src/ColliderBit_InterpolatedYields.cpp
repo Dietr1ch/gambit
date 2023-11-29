@@ -2135,8 +2135,6 @@ namespace Gambit
 
       // Compute the signal
       // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
-      double mApmdm_ratio = mAp/mDM;
-
       double signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
 
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
