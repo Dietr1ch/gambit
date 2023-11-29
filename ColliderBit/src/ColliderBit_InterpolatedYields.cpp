@@ -2104,8 +2104,8 @@ namespace Gambit
       {
         // TODO: If your model has more/less than 2 masses and 2 couplings, then the get_SubGeVBeamDump_MB_signal_yields function will need to be changed.
         // TODO: Would need to change mass_i and coupling_i to the relevant parameters in your model
-        double mDM = spec.get(Par::Pole_Mass, "mDM");
-        double mAp = spec.get(Par::Pole_Mass, "mAp");
+        double mDM = spec.get(Par::Pole_Mass, "DM");
+        double mAp = spec.get(Par::Pole_Mass, "Ap");
         double kappa = spec.get(Par::dimensionless, "kappa");
         double gDM = spec.get(Par::dimensionless, "gDM");
         get_SubGeVDM_scalar_signal_yields(signal, analysis_info, mDM, mAp, kappa, gDM);
@@ -2142,7 +2142,7 @@ namespace Gambit
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
       double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
-      
+
       double me = 0.000511; // mass of electron
       double mmu = 0.1057; // mass of muon
       double ee = 0.31343; // elementary charge
