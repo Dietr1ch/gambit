@@ -1,4 +1,4 @@
-name: Gambit CI
+name: Gambit Ubuntu CI
 
 on:
   push:
