@@ -20,7 +20,7 @@ try:
     scipy_optimize_shgo = scipy.optimize.shgo
     scipy_optimize_minimize = scipy.optimize.minimize
 except:
-    __error__ = 'scipy.optimize pkg not installed'
+    __error__ = 'scipy pkg (v1.9 or later) not installed'
     scipy_version = 'n/a'
     scipy_optimize_dual_annealing = None
     scipy_optimize_basinhopping = None
