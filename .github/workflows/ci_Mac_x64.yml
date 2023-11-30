@@ -1,4 +1,4 @@
-name: Gambit CI
+name: Gambit Mac X64 CI
 
 on:
   push:
@@ -38,22 +38,6 @@ jobs:
         cd BUILD
         make -j $(( $(sysctl -n hw.ncpu)/2 )) scanners
         cmake ..
-    - name: Build Backends for tests
-      run: |
-        echo "Building Backends"
-        cd BUILD
-        #make -j $(( $(sysctl -n hw.ncpu)/2 )) pythia higgssignals nulike ATLAS_FullLikes susyhit heplike superiso
-        make pythia
-        make higgssignals
-        make nulike
-        make ATLAS_FullLikes
-        make susyhit
-        make heplike
-        make superiso
-        make rivet
-        make contur
-        echo "Running cmake again, since this is required for ColliderBit/pythia"
-        cmake ..
     - name: Build Gambit
       run: |
         echo "Build GAMBIT."
@@ -68,23 +52,123 @@ jobs:
       run: |
         echo "Run the test of gambit help"
         ./gambit -h
+
+  standalones_build:
+    runs-on: [self-hosted, macOS,x64]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64]
+    defaults:
+      run:
+        shell: bash -eo pipefail {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up build environment
+      run: |
+        echo "Set up the build environment"
+        mkdir -p BUILD
+        cd BUILD
+    - name: Configure with cmake
+      run: |
+        echo "Configure with cmake"
+        cd BUILD
+        # Ditching a few backends that don't currently work on Mac
+        cmake -DWITH_MPI=ON -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
+    - name: Build standalones
+      run: |
+        echo "Test the building of the standalones"
+        cd BUILD
+        make standalones
+
+  backends_build:
+    runs-on: [self-hosted, macOS,x64]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64]
+    defaults:
+      run:
+        shell: bash -eo pipefail {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up build environment
+      run: |
+        echo "Set up the build environment"
+        mkdir -p BUILD
+        cd BUILD
+    - name: Configure with cmake
+      run: |
+        echo "Configure with cmake"
+        cd BUILD
+        # Ditching a few backends that don't currently work on Mac
+        cmake -DWITH_MPI=ON -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
+    - name: Build Backends
+      run: |
+        echo "Building all Backends"
+        cd BUILD
+        # Build backends, except those that are tested via other jobs.
+        # This replaces the "make backends" command.
+        ../cmake/scripts/build_backends.sh -f default_backends.txt -j 1 -s "nulike susyhit rivet contur pythia higgsbounds higgssignals ATLAS_FullLikes superiso heplikedata heplike" 
+
+  test_runs:
+    runs-on: [self-hosted, macOS,x64]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64]
+    defaults:
+      run:
+        shell: bash -eo pipefail {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up build environment
+      run: |
+        echo "Set up the build environment"
+        mkdir -p BUILD
+        cd BUILD
+    - name: Configure with cmake
+      run: |
+        echo "Configure with cmake"
+        cd BUILD
+        # Ditching a few backends that don't currently work on Mac
+        cmake -DWITH_MPI=ON -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="DarkBit;CosmoBit;NeutrinoBit;ObjectivesBit;micromegas_DMsimpVectorMedVectorDM" ..
+    - name: Build scanners
+      run: |
+        echo "Build diver"
+        cd BUILD
+        make -j $(( $(sysctl -n hw.ncpu)/2 )) diver
+        cmake ..
+    - name: Build Backends for tests
+      run: |
+        echo "Building Backends required for tests"
+        cd BUILD
+        make pythia
+        make higgssignals
+        make nulike
+        make ATLAS_FullLikes
+        make susyhit
+        make heplike
+        make superiso
+        make rivet
+        make contur
+        cmake ..
+    - name: Build Gambit
+      run: |
+        echo "Build GAMBIT."
+        cd BUILD
+        make -j $(( $(sysctl -n hw.ncpu)/2 )) gambit
+    - name: ColliderBit test
+      run: |
+        echo "Test the ColliderBit CMSSM yaml file"
+        ./gambit -f yaml_files/ColliderBit_CMSSM.yaml
     - name: WC test
       run: |
         echo "Test WC_lite yaml (no printing)"
         sed -i "" 's/ hdf5/ none/g' yaml_files/WC_lite.yaml
         ./gambit -f yaml_files/WC_lite.yaml
-    - name: ColliderBit test
-      run: |
-        echo "Test the ColliderBit CMSSM yaml file"
-        ./gambit -f yaml_files/ColliderBit_CMSSM.yaml
-    - name: Build Backends
-      run: |
-        echo "Building all Backends"
-        cd BUILD
-        #make -j $(( $(sysctl -n hw.ncpu)/2 )) backends
-        make backends
-    #- name: Build standalones
-    #  run: |
-    #    echo "Test the building of the standalones"
-    #    cd BUILD
-    #    make standalones
+
+
