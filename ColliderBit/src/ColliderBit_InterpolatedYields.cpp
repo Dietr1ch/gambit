@@ -231,7 +231,7 @@ namespace Gambit
     void get_DMsimpVectorMedMajoranaDM_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double);
     void get_DMsimpVectorMedDiracDM_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double, double);
     void get_SubGeVDM_scalar_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double);
-    // TODO: Implement get_SubGeVDM_fermion_signal_yields
+    void get_SubGeVDM_fermion_signal_yields(std::vector<double>&, const Model_analysis_info&, double, double, double, double);
 
     void get_DMEFT_signal_yields_dim6_operator(std::vector<double>&, const str, const Model_analysis_info&, double, double, double, double);
     void get_DMEFT_signal_yields_dim7_operator(std::vector<double>&, const str, const Model_analysis_info&, double, double, double);
@@ -458,7 +458,7 @@ namespace Gambit
       // New analysis: SubGeVBeamDump_MB_interpolated
       ////////////////////////////////////////////
 
-      if (current_analysis_name == "SubGeVBeamDump_MB_interpolated")
+      if (current_analysis_name == "SubGeVBeamDump_MBe_interpolated") // MiniBooNE electron limits
       {
         // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
         analysis_info_map[current_analysis_name] = Model_analysis_info();
@@ -475,6 +475,61 @@ namespace Gambit
         assert(current_ainfo->obsnum.size() == current_ainfo->bkgerr.size());
         current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
       }
+
+      if (current_analysis_name == "SubGeVBeamDump_MBN_interpolated") // MiniBooNE nucleon limits
+      {
+        // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+        analysis_info_map[current_analysis_name] = Model_analysis_info();
+        current_ainfo = &(analysis_info_map[current_analysis_name]);
+
+        current_ainfo->name = current_analysis_name;
+
+        // Set the background counts and observed counts TODO: I am just setting this to 1. Replace with your numbers.
+        current_ainfo->obsnum = {0};
+        current_ainfo->bkgnum = {0.0};
+        current_ainfo->bkgerr = {0.0};
+
+        assert(current_ainfo->obsnum.size() == current_ainfo->bkgnum.size());
+        assert(current_ainfo->obsnum.size() == current_ainfo->bkgerr.size());
+        current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
+      }
+
+    if (current_analysis_name == "SubGeVBeamDump_LSND_interpolated") // LSND electron limits
+      {
+        // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+        analysis_info_map[current_analysis_name] = Model_analysis_info();
+        current_ainfo = &(analysis_info_map[current_analysis_name]);
+
+        current_ainfo->name = current_analysis_name;
+
+        // Set the background counts and observed counts TODO: I am just setting this to 1. Replace with your numbers.
+        current_ainfo->obsnum = {0}; /// Needs to be added
+        current_ainfo->bkgnum = {0.0}; /// Needs to be added
+        current_ainfo->bkgerr = {0.0}; /// Needs to be added
+
+        assert(current_ainfo->obsnum.size() == current_ainfo->bkgnum.size());
+        assert(current_ainfo->obsnum.size() == current_ainfo->bkgerr.size());
+        current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
+      }
+
+      // if (current_analysis_name == "SubGeVBeamDump_NA64_interpolated") // NA64 limits
+      // {
+      //   // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+      //   analysis_info_map[current_analysis_name] = Model_analysis_info();
+      //   current_ainfo = &(analysis_info_map[current_analysis_name]);
+
+      //   current_ainfo->name = current_analysis_name;
+
+      //   // Set the background counts and observed counts TODO: I am just setting this to 1. Replace with your numbers.
+      //   current_ainfo->obsnum = {0};
+      //   current_ainfo->bkgnum = {0.0};
+      //   current_ainfo->bkgerr = {0.0};
+
+      //   assert(current_ainfo->obsnum.size() == current_ainfo->bkgnum.size());
+      //   assert(current_ainfo->obsnum.size() == current_ainfo->bkgerr.size());
+      //   current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
+      // }
+
 
 
     }
@@ -2024,7 +2079,7 @@ namespace Gambit
 
 
       // Analysis name
-      current_analysis_name = "SubGeVBeamDump_MB_interpolated";
+      current_analysis_name = "SubGeVBeamDump_MBe_interpolated";
 
       if (std::find(skip_analyses.begin(), skip_analyses.end(), current_analysis_name) == skip_analyses.end())
       {
@@ -2037,10 +2092,68 @@ namespace Gambit
         analysis_info_map[current_analysis_name] = Model_analysis_info();
         current_ainfo = &(analysis_info_map[current_analysis_name]);
         fill_analysis_info_map(current_analysis_name, current_ainfo);
-        current_ainfo->add_interp2d("mDM_mAp_events_SubGeVBeamDump_MB", Analysis_data_path[current_analysis_name], Interpolation_columns[current_analysis_name]);
+        current_ainfo->add_interp2d("SubGeVBeamDump", Analysis_data_path[current_analysis_name], Interpolation_columns[current_analysis_name]);
 
         current_ainfo = &empty_analysis_info;
       }
+
+      // Analysis name
+      current_analysis_name = "SubGeVBeamDump_MBN_interpolated";
+
+      if (std::find(skip_analyses.begin(), skip_analyses.end(), current_analysis_name) == skip_analyses.end())
+      {
+        if (not(Utils::file_exists(Analysis_data_path[current_analysis_name])))
+        {
+          ColliderBit_error().raise(LOCAL_INFO, "ERROR! Cannot find interpolation data file: " + Analysis_data_path[current_analysis_name]);
+        }
+
+        // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+        analysis_info_map[current_analysis_name] = Model_analysis_info();
+        current_ainfo = &(analysis_info_map[current_analysis_name]);
+        fill_analysis_info_map(current_analysis_name, current_ainfo);
+        current_ainfo->add_interp2d("SubGeVBeamDump", Analysis_data_path[current_analysis_name], Interpolation_columns[current_analysis_name]);
+
+        current_ainfo = &empty_analysis_info;
+      }
+
+      // Analysis name
+      current_analysis_name = "SubGeVBeamDump_LSND_interpolated";
+
+      if (std::find(skip_analyses.begin(), skip_analyses.end(), current_analysis_name) == skip_analyses.end())
+      {
+        if (not(Utils::file_exists(Analysis_data_path[current_analysis_name])))
+        {
+          ColliderBit_error().raise(LOCAL_INFO, "ERROR! Cannot find interpolation data file: " + Analysis_data_path[current_analysis_name]);
+        }
+
+        // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+        analysis_info_map[current_analysis_name] = Model_analysis_info();
+        current_ainfo = &(analysis_info_map[current_analysis_name]);
+        fill_analysis_info_map(current_analysis_name, current_ainfo);
+        current_ainfo->add_interp2d("SubGeVBeamDump", Analysis_data_path[current_analysis_name], Interpolation_columns[current_analysis_name]);
+
+        current_ainfo = &empty_analysis_info;
+      }
+
+      // // Analysis name
+      // current_analysis_name = "SubGeVBeamDump_NA64_interpolated";
+
+      // if (std::find(skip_analyses.begin(), skip_analyses.end(), current_analysis_name) == skip_analyses.end())
+      // {
+      //   if (not(Utils::file_exists(Analysis_data_path[current_analysis_name])))
+      //   {
+      //     ColliderBit_error().raise(LOCAL_INFO, "ERROR! Cannot find interpolation data file: " + Analysis_data_path[current_analysis_name]);
+      //   }
+
+      //   // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+      //   analysis_info_map[current_analysis_name] = Model_analysis_info();
+      //   current_ainfo = &(analysis_info_map[current_analysis_name]);
+      //   fill_analysis_info_map(current_analysis_name, current_ainfo);
+      //   current_ainfo->add_interp1d("mAp_eps_events_SubGeVBeamDump_NA64", Analysis_data_path[current_analysis_name], Interpolation_columns[current_analysis_name]);
+
+      //   current_ainfo = &empty_analysis_info;
+      // }
+
     }
 
     /// Results for the SubGeVDM_fermion and SubGeVDM_scalar model
@@ -2061,13 +2174,35 @@ namespace Gambit
       std::map<str,std::vector<str>> Interpolation_columns;
 
       if(ModelInUse("SubGeVDM_scalar"))
-        Analysis_data_path["SubGeVBeamDump_MB_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_scalarDM_Nevents.txt";
-      else if(ModelInUse("SubGeVDM_fermion"))
-        ColliderBit_error().raise(LOCAL_INFO, "ERROR! Data not present yet for SubGeVDM_fermion model");
-      else
-        ColliderBit_error().raise(LOCAL_INFO, "ERROR! Model not known to GAMBIT");
+      {
+        Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_scalarDM_Nevents.txt";
+        Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_scalarDM_Nevents.txt";
+        Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_scalarDM_Nevents.txt";
+       // Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_scalarDM_Nevents.txt";
+      }
 
-      Interpolation_columns["SubGeVBeamDump_MB_interpolated"] = {"mDM","mAp","signal_counts"};
+        Interpolation_columns["SubGeVBeamDump_MBe_interpolated"] = {"mDM","mAp","signal_counts"};
+        Interpolation_columns["SubGeVBeamDump_MBN_interpolated"] = {"mDM","mAp","signal_counts"};
+        Interpolation_columns["SubGeVBeamDump_LSND_interpolated"] = {"mDM","mAp","signal_counts"};
+        //Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
+
+      else if(ModelInUse("SubGeVDM_fermion"))
+      {
+        Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_fermionDM_Nevents.txt";
+        Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_fermionDM_Nevents.txt";
+        Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_fermionDM_Nevents.txt";
+        //Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_fermionDM_Nevents.txt";
+
+        Interpolation_columns["SubGeVBeamDump_MBe_interpolated"] = {"mDM","mAp","signal_counts"};
+        Interpolation_columns["SubGeVBeamDump_MBN_interpolated"] = {"mDM","mAp","signal_counts"};
+        Interpolation_columns["SubGeVBeamDump_LSND_interpolated"] = {"mDM","mAp","signal_counts"};
+        // Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
+      }
+
+      else
+      {
+        ColliderBit_error().raise(LOCAL_INFO, "ERROR! Model not known to GAMBIT");
+      }
 
 
       // The first time this function is run we must initialize the global analysis_info_map
@@ -2087,9 +2222,15 @@ namespace Gambit
       }
 
       // Retrieve the signal yields
-      const Spectrum& spec = *Dep::SubGeVDM_spectrum;
-      str modelname = "SubGeVDM_scalar";
-      get_all_signal_yields(get_all_SubGeVDM_signal_yields, spec, analysis_data_map, result, modelname);
+      if(ModelInUse("SubGeVDM_scalar"))
+        {const Spectrum& spec = *Dep::SubGeVDM_spectrum;
+        str modelname = "SubGeVDM_scalar";
+        get_all_signal_yields(get_all_SubGeVDM_signal_yields, spec, analysis_data_map, result, modelname);}
+
+      else if(ModelInUse("SubGeVDM_fermion"))
+      {const Spectrum& spec = *Dep::SubGeVDM_spectrum;
+        str modelname = "SubGeVDM_fermion";
+        get_all_signal_yields(get_all_SubGeVDM_signal_yields, spec, analysis_data_map, result, modelname);}
     }
 
     /// Fill the input vector with the total SubGeV signal prediction for each SR in the given analysis
@@ -2117,7 +2258,16 @@ namespace Gambit
       else if(modelname == "SubGeVDM_fermion")
       {
         // TODO: Implement this
-        ColliderBit_error().raise(LOCAL_INFO, "ERROR! Signal yields for model SubGeVDM_fermion not implemented yet");
+        //ColliderBit_error().raise(LOCAL_INFO, "ERROR! Signal yields for model SubGeVDM_fermion not implemented yet");
+        double mDM = spec.get(Par::Pole_Mass, "DM");
+        double mAp = spec.get(Par::Pole_Mass, "Ap");
+        double kappa = spec.get(Par::dimensionless, "kappa");
+        double gDM = spec.get(Par::dimensionless, "gDM");
+        get_SubGeVDM_fermion_signal_yields(signal, analysis_info, mDM, mAp, kappa, gDM);
+
+        double mApmdm_ratio = mAp/mDM;
+        if (mApmdm_ratio <= 2.)
+          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");} // beam dump yield will just return 0
       }
       // Add yields and save in sr_num
       for (size_t i = 0; i < analysis_info.n_signal_regions; ++i)
@@ -2131,7 +2281,7 @@ namespace Gambit
     void get_SubGeVDM_scalar_signal_yields(std::vector<double>& signal_yields, const Model_analysis_info& analysis_info, double mDM, double mAp, double kappa, double gDM)
     {
       // Get the interpolator collections for the given operator_key
-      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("mDM_mAp_events_SubGeVBeamDump_MB");
+      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("SubGeVBeamDump");
 
       // Compute the signal
       // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
@@ -2155,6 +2305,42 @@ namespace Gambit
       //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
       double BR_scalarDM  = width_XXscalar / (width_XXscalar + width_ff); // Branching ratio for scalar DM
       double signalcounts = signal * pow(kappa/kappa_simulated,4) * pow(gDM/gDM_simulated,2) * BR_scalarDM;
+
+      // TODO: TG: Is this intended to loop over signal regions? Why is it the same for all signal regions? ; Taylor: I think there is only one in this case..
+      for (size_t sr_i = 0; sr_i < analysis_info.n_signal_regions; ++sr_i)
+      {
+        signal_yields[sr_i] = signalcounts;
+      }
+    }
+
+    void get_SubGeVDM_fermion_signal_yields(std::vector<double>& signal_yields, const Model_analysis_info& analysis_info, double mDM, double mAp, double kappa, double gDM)
+    {
+      // Get the interpolator collections for the given operator_key
+      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("mDM_mAp_events_SubGeVBeamDump_MB");
+
+      // Compute the signal
+      // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
+      double signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
+
+      // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
+      double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
+      double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
+
+      double me = 0.000511; // mass of electron
+      double mmu = 0.1057; // mass of muon
+      double ee = 0.31343; // elementary charge
+
+
+      double width_ff = 0.0;
+      if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
+      if (mAp > 2*mmu) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(mmu,2))*sqrt(pow(mAp,2)/4-pow(mmu,2)) / (24*pi*pow(mAp,2));}
+
+      double width_XXfermion = pow(gDM,2)/3 * (4*pow(mAp,2)+8*pow(mdm,2)) * sqrt(pow(mAp,2)/4 - pow(mdm,2))/(8*pi*pow(mAp,2));
+
+      //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
+      double BR_fermionDM  = width_XXfermion / (width_XXfermion + width_ff); // Branching ratio for dirac fermion DM
+
+      double signalcounts = signal * pow(kappa/kappa_simulated,4) * pow(gDM/gDM_simulated,2) * BR_fermionDM;
 
       // TODO: TG: Is this intended to loop over signal regions? Why is it the same for all signal regions? ; Taylor: I think there is only one in this case..
       for (size_t sr_i = 0; sr_i < analysis_info.n_signal_regions; ++sr_i)
