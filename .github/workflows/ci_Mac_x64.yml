@@ -9,6 +9,46 @@ on:
     - cron:  '0 5 * * *'
 
 jobs:
+  rivet_debug_test:
+    runs-on: [self-hosted, macOS,x64]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64]
+    defaults:
+      run:
+        shell: bash -eo pipefail {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up build environment
+      run: |
+        echo "Set up the build environment"
+        mkdir -p BUILD
+        cd BUILD
+    - name: Configure with cmake
+      run: |
+        echo "Configure with cmake"
+        cd BUILD
+        # Ditching a few backends that don't currently work on Mac
+        cmake -DWITH_MPI=ON -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM" -Ditch="DarkBit;CosmoBit;NeutrinoBit;ObjectivesBit;micromegas_DMsimpVectorMedVectorDM" ..
+    - name: Build Rivet
+      run: |
+        echo "Building Rivet"
+        cd BUILD
+        VERBOSE=1 make rivet
+        cmake ..
+    - name: Build Gambit
+      run: |
+        echo "Build GAMBIT."
+        cd BUILD
+        make -j $(( $(sysctl -n hw.ncpu)/2 )) gambit
+    - name: ColliderBit test
+      run: |
+        echo "Test the ColliderBit CMSSM yaml file"
+        ./gambit -f yaml_files/ColliderBit_CMSSM.yaml
+
+
   gambit_build:
     runs-on: [self-hosted, macOS,x64]
     strategy:
