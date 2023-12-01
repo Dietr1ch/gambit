@@ -229,11 +229,11 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     
     // Bind the "prior" class to the module
     py::class_<Gambit::Priors::BasePrior, std::unique_ptr<Gambit::Priors::BasePrior, py::nodelete>>(m, "prior")
-    .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube<double> unit, std::unordered_map<std::string, double> &physical)
+    .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube_ref<double> unit, std::unordered_map<std::string, double> &physical)
     {
         self.transform(unit, physical);
     })
-    .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube<double> unit, py::dict physical)
+    .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube_ref<double> unit, py::dict physical)
     {
         static std::unordered_map<std::string, double> map;
         self.transform(unit, map);
@@ -241,7 +241,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         for (auto &&m : map)
             physical[py::cast(m.first)] = py::cast(m.second);
     })
-    .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube<double> unit)
+    .def("transform", [](Gambit::Priors::BasePrior &self, Gambit::Scanner::hyper_cube_ref<double> unit)
     {
         py::dict physical;
         static std::unordered_map<std::string, double> map;
@@ -253,11 +253,11 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
         
         return physical;
     })
-    .def("inverse_transform", [](Gambit::Priors::BasePrior &self, std::unordered_map<std::string, double> &physical, Gambit::Scanner::hyper_cube<double> unit)
+    .def("inverse_transform", [](Gambit::Priors::BasePrior &self, std::unordered_map<std::string, double> &physical, Gambit::Scanner::hyper_cube_ref<double> unit)
     {
         self.inverse_transform(physical, unit);
     })
-    .def("inverse_transform", [](Gambit::Priors::BasePrior &self, py::dict physical, Gambit::Scanner::hyper_cube<double> unit)
+    .def("inverse_transform", [](Gambit::Priors::BasePrior &self, py::dict physical, Gambit::Scanner::hyper_cube_ref<double> unit)
     {
         std::unordered_map<std::string, double> map;
         for (auto &&d : physical)
@@ -353,7 +353,7 @@ PYBIND11_EMBEDDED_MODULE(scannerbit, m)
     
     // Bind the "like" class to the module
     py::class_<s_func, s_ptr>(m, "like_ptr")
-    .def("__call__", [](s_ptr self, Gambit::Scanner::hyper_cube<double> vec)
+    .def("__call__", [](s_ptr self, Gambit::Scanner::hyper_cube_ref<double> vec)
     {
         return static_cast<like_ptr &>(self)(vec);
     })
