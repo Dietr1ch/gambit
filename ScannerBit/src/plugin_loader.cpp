@@ -126,7 +126,6 @@ namespace Gambit
                     guard = nullptr;
                 }
                 {
-                    //std::cout << "Loading Plugins" << std::endl;
                     std::string path = std::string(GAMBIT_DIR "/ScannerBit/src/") + type + "s/python/plugins";
                     auto sys_list = py::list(py::module::import("sys").attr("path"));
                     sys_list.append(py::cast(path));
@@ -142,7 +141,6 @@ namespace Gambit
                         {
                             ss << std::string(path_buffer, p_n);
                         }
-                        //std::cout << "all stuff: " << ss.str() << std::endl;
                         while (ss >> fname)
                         {
                             std::string loc = path + "/" + fname;
@@ -150,14 +148,11 @@ namespace Gambit
                                 fname = fname.substr(0, fname.size() - 3);
                             else if (fname.substr(fname.size() - 4) == ".pyc")
                                 fname = fname.substr(0, fname.size() - 4);
-                            //std::cout << "testing " << fname << std::endl;
                             try
                             {
                                 auto file = py::module::import(fname.c_str());
-                                //std::cout << "passed " << fname << std::endl;
                                 if (py::hasattr(file, "__plugins__") && py::isinstance<py::dict>(file.attr("__plugins__")))
                                 {
-                                    //std::cout << "has plugin dict" << std::endl;
                                     py::dict plugins = file.attr("__plugins__");
                                     for (auto &&plug : plugins)
                                     {
@@ -176,7 +171,6 @@ namespace Gambit
                                             {
                                                 if (py::hasattr(plug_class, "run") && py::isinstance<py::function>(plug_class.attr("run")))
                                                 {
-                                                    //std::cout << "has run" << std::endl;
                                                     auto run = plug_class.attr("run");
                                                     if (py::hasattr(run, "__doc__") && py::isinstance<py::str>(run.attr("__doc__")))
                                                     {
@@ -190,7 +184,6 @@ namespace Gambit
                                                 
                                                 if (py::hasattr(plug_class, "__init__") && py::isinstance<py::function>(plug_class.attr("__init__")))
                                                 {
-                                                    //std::cout << "has init" << std::endl;
                                                     auto init = plug_class.attr("__init__");
                                                     if (py::hasattr(init, "__doc__")&& py::isinstance<py::str>(init.attr("__doc__")))
                                                     {
@@ -240,7 +233,6 @@ namespace Gambit
                             {
                                 if (fname != "utils")
                                     scan_warn << "\"" << fname << "\" was not loaded: " << ex.what() << scan_end;
-                                //std::cout << "failed because of: " << ex.what() << std::endl;
                             }
                             
                         }
@@ -374,8 +366,7 @@ namespace Gambit
                 {
                     scan_err << "Cannot open ./ScannerBit/lib/plugin_libraries.list" << scan_end;
                 }
-                
-                //Load_PyPlugins();
+
             }
 
             /// Check a plugin map and return a flag indicating if a candidate plugin is already in the map or not.

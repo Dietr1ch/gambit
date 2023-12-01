@@ -64,16 +64,9 @@ namespace Gambit
             LogNormal(const std::vector<std::string>&, const Options&);
 
             // Transformation from unit interval to the Log-Normal
-            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
+            void transform(hyper_cube_ref<double> unitpars, std::unordered_map<std::string, double> &outputMap) const override
             {
                 std::vector<double> vec(unitpars.size());
-
-                //auto v_it = vec.begin();
-                //for (auto elem_it = unitpars.begin(), elem_end = unitpars.end(); elem_it != elem_end; elem_it++, v_it++)
-                //{
-                //    *v_it = M_SQRT2 * boost::math::erf_inv(2. * (*elem_it) - 1.);
-                //}
-                
                 for (int i = 0, end = vec.size(); i < end; ++i)
                     vec[i] = M_SQRT2 * boost::math::erf_inv(2. * unitpars[i] - 1.);
 
@@ -87,7 +80,7 @@ namespace Gambit
                 }
             }
 
-            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double> unit) const override
             {
                 // undo exponentiation
                 std::vector<double> log_physical;
@@ -107,13 +100,6 @@ namespace Gambit
                 std::vector<double> rotated = col.invElMult(central);
 
                 // now diagonal; invert Gaussian CDF
-                //std::vector<double> u;
-                //for (const auto& v : rotated)
-                //{
-                //    u.push_back(0.5 * (boost::math::erf(v / M_SQRT2) + 1.));
-                //}
-                //return u;
-                
                 for (int i = 0, end = rotated.size(); i < end; ++i)
                     unit[i] = 0.5 * (boost::math::erf(rotated[i] / M_SQRT2) + 1.0);
             }
@@ -135,6 +121,7 @@ namespace Gambit
         LOAD_PRIOR(lognormal, LogNormal)
 
     }  // namespace Priors
+
 }  // namespace Gambit
 
 #endif  // __PRIOR_LOGNORMAL_HPP__

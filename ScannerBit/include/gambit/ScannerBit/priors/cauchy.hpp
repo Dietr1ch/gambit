@@ -62,16 +62,10 @@ namespace Gambit
             Cauchy(const std::vector<std::string>& param, const Options& options);
 
             /** @brief Transformation from unit interval to the Cauchy */
-            void transform(hyper_cube<double> unitpars, std::unordered_map<std::string, double>& outputMap) const
+            void transform(hyper_cube_ref<double> unitpars, std::unordered_map<std::string, double>& outputMap) const
             {
                 std::vector<double> vec(unitpars.size());
 
-        //         auto v_it = vec.begin();
-        //         for (auto elem_it = unitpars.begin(), elem_end = unitpars.end(); elem_it != elem_end; elem_it++, v_it++)
-        //         {
-        //           *v_it = std::tan(M_PI * (*elem_it - 0.5));
-        //         }
-                
                 for (int i = 0, end = vec.size(); i < end; ++i)
                     vec[i] = std::tan(M_PI * (unitpars[i] - 0.5));
 
@@ -85,7 +79,7 @@ namespace Gambit
                 }
             }
 
-            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double> unit) const override
             {
                 // subtract location
                 std::vector<double> central;
@@ -98,14 +92,6 @@ namespace Gambit
                 std::vector<double> rotated = col.invElMult(central);
 
                 // now diagonal; invert Cauchy CDF
-                //std::vector<double> u;
-                //for (const auto& v : rotated)
-                //{
-                //    u.push_back(std::atan(v) / M_PI + 0.5);
-                //}
-                
-                //return u;
-                
                 for (int i = 0, end = rotated.size(); i < end; ++i)
                     unit[i] = std::atan(rotated[i]) / M_PI + 0.5;
             }
@@ -125,6 +111,7 @@ namespace Gambit
         LOAD_PRIOR(cauchy, Cauchy)
 
     }  // namespace Priors
+
 }  // namespace Gambit
 
 #endif  // __PRIOR_CAUCHY_HPP__

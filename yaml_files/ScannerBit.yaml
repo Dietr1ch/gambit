@@ -181,6 +181,8 @@ Scanner:
     scipy_basin_hopping:
       like: LogLike
       plugin: scipy_basin_hopping
+      # The run arguments below have been tested with scipy v1.9. 
+      # Other versions might expect different arguments.
       run:
         # n_runs: 4
         x0:
@@ -199,6 +201,8 @@ Scanner:
     scipy_differential_evolution:
       like: LogLike
       plugin: scipy_differential_evolution
+      # The run arguments below have been tested with scipy v1.9. 
+      # Other versions might expect different arguments.
       run:
         # n_runs: 4
         strategy: 'best1bin'
@@ -219,6 +223,8 @@ Scanner:
     scipy_direct:
       like: LogLike
       plugin: scipy_direct
+      # The run arguments below have been tested with scipy v1.9. 
+      # Other versions might expect different arguments.
       run:
         # n_runs: 4
         eps: 0.0001
@@ -231,6 +237,8 @@ Scanner:
     scipy_dual_annealing:
       like: LogLike
       plugin: scipy_dual_annealing
+      # The run arguments below have been tested with scipy v1.9. 
+      # Other versions might expect different arguments.
       run:
         # n_runs: 4
         maxiter: 1000
@@ -247,6 +255,8 @@ Scanner:
     scipy_shgo:
       like: LogLike
       plugin: scipy_shgo
+      # The run arguments below have been tested with scipy v1.9. 
+      # Other versions might expect different arguments.
       run:
         split_param_space:
           EggBox::param_0: 2
@@ -266,7 +276,7 @@ Scanner:
           # maxev:
           # maxtime:
           # minhgrd:
-          jac: false
+          # jac: false  # Buggy in some scipy versions: https://github.com/scipy/scipy/issues/14533
           minimize_every_iter: true
           local_iter: false
           infty_constraints: true
@@ -275,6 +285,8 @@ Scanner:
     scipy_minimize:
       like: LogLike
       plugin: scipy_minimize
+      # The run arguments below have been tested with scipy v1.9. 
+      # Other versions might expect different arguments.
       run:
         # n_runs: 5
         x0:

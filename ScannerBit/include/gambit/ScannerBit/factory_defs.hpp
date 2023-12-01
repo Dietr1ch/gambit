@@ -328,9 +328,6 @@ namespace Gambit
         public:
             using s_ptr::s_ptr;
             like_ptr(){}
-            //like_ptr(const like_ptr &in) : s_ptr (in){}
-            //like_ptr(like_ptr &in) : s_ptr (in){}
-            //like_ptr& operator=(const like_ptr&) = default;
             like_ptr(void *in) : s_ptr(in) {}
 
             double operator()(const std::vector<double> &vec)
@@ -338,7 +335,7 @@ namespace Gambit
                 return (*this)(map_vector<double>(const_cast<double *>(&vec[0]), vec.size()));
             }
             
-            double operator()(hyper_cube<double> vec)
+            double operator()(hyper_cube_ref<double> vec)
             {
                 std::unordered_map<std::string, double> &map = (*this)->getMap();
                 int rank = (*this)->getRank();
@@ -363,10 +360,9 @@ namespace Gambit
                 return modified_ret_val + (*this)->getPurposeOffset();
             }
 
-            double operator()(std::unordered_map<std::string, double> &map, bool use_prior = false)//, const std::vector<double> &vec = std::vector<double>())
+            double operator()(std::unordered_map<std::string, double> &map, bool use_prior = false)
             {
                 int rank = (*this)->getRank();
-                //(*this)->getPrior().transform(vec, map);
                 double ret_val;
                 if (use_prior)
                     ret_val = (*this)->operator()(map) + (*this)->getPrior().log_prior_density(map);
@@ -376,10 +372,6 @@ namespace Gambit
                 unsigned long long int id = Gambit::Printers::get_point_id();
                 (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
                 (*this)->getPrinter().print(modified_ret_val, "Modified" + (*this)->getPurpose(), rank, id);
-                //if (vec.size() > 0 && (*this)->getPrinter().get_printUnitcube())
-                //{
-                //  (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
-                //}
                 (*this)->getPrinter().print(id,   "pointID", rank, id);
                 (*this)->getPrinter().print(rank, "MPIrank", rank, id);
                 (*this)->getPrinter().enable(); // Make sure printer is re-enabled (might have been disabled by invalid point error)

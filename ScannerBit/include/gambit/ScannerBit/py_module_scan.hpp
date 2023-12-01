@@ -877,9 +877,5 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         for (auto &&param : params)
             ::Gambit::Printers::get_aux_param_id(param.template cast<std::string>());
     });
-//     .def("__reduce__", [&](scanner_base &)
-//     {
-//         return py::make_tuple(py_scanner_base, py::tuple());
-//     });
 
 }

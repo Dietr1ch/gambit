@@ -20,7 +20,7 @@ try:
     scipy_optimize_shgo = scipy.optimize.shgo
     scipy_optimize_minimize = scipy.optimize.minimize
 except:
-    __error__ = 'scipy.optimize pkg not installed'
+    __error__ = 'scipy pkg (v1.9 or later) not installed'
     scipy_version = 'n/a'
     scipy_optimize_dual_annealing = None
     scipy_optimize_basinhopping = None
@@ -87,6 +87,7 @@ Dual annealing optimizer from scipy.
             if run_id == 1:
                 x0_phys = run_args.pop('x0')
                 x0_unit = self.inverse_transform(x0_phys)
+                run_args['x0'] = x0_unit
             else:
                 del run_args['x0']
 
@@ -95,7 +96,7 @@ Dual annealing optimizer from scipy.
         def neg_loglike_hypercube(x):
             return -self.loglike_hypercube(x)
 
-        res = scipy.optimize.dual_annealing(neg_loglike_hypercube, bounds, x0=x0_unit, **run_args)
+        res = scipy.optimize.dual_annealing(neg_loglike_hypercube, bounds, **run_args)
 
         x0_print = None
         if x0_unit is not None:
@@ -200,6 +201,7 @@ Differential evolution optimizer from scipy.
             if run_id == 1:
                 x0_phys = run_args.pop('x0')
                 x0_unit = self.inverse_transform(x0_phys)
+                run_args['x0'] = x0_unit
             else:
                 del run_args['x0']
 
@@ -208,7 +210,7 @@ Differential evolution optimizer from scipy.
         def neg_loglike_hypercube(x):
             return -self.loglike_hypercube(x)
 
-        res = scipy.optimize.differential_evolution(neg_loglike_hypercube, bounds, x0=x0_unit, **run_args)
+        res = scipy.optimize.differential_evolution(neg_loglike_hypercube, bounds, **run_args)
 
         x0_print = None
         if x0_unit is not None:

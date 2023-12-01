@@ -74,17 +74,8 @@ namespace Gambit
             inline std::vector<std::string> getShownParameters() const override { return shown_param_names; }
             
             // Transformation from unit hypercube to physical parameters
-            void transform(hyper_cube<double> unitPars, std::unordered_map<std::string,double> &outputMap) const override
+            void transform(hyper_cube_ref<double> unitPars, std::unordered_map<std::string,double> &outputMap) const override
             {
-                //std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
-                //for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
-                //{
-                //    unit_next = unit_it + (*it)->size();
-                //    std::vector<double> subUnit(unit_it, unit_next);
-                //    unit_it = unit_next;
-                //    (*it)->transform(subUnit, outputMap);
-                //}
-                
                 int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; ++it)
                 {
@@ -95,29 +86,17 @@ namespace Gambit
             }
 
             // Transformation from physical parameters back to unit hypercube
-            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube<double> unit) const override
+            void inverse_transform(const std::unordered_map<std::string, double> &physical, hyper_cube_ref<double> unit) const override
             {
-                //std::vector<double> u;
                 int unit_i = 0, unit_size;
                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)
                 {
-                    //auto ublock = (*it)->inverse_transform(physical);
-                    //u.insert(u.end(), ublock.begin(), ublock.end());
                     unit_size = (*it)->size();
                     (*it)->inverse_transform(physical, unit.segment(unit_i, unit_size));
                     unit_i += unit_size;
                 }
 
-                // check it
-
-                //for (const auto &p : u)
-                //{
-                //    if (p > 1. || p < 0.)
-                //    {
-                //        throw std::runtime_error("unit hypercube outside 0 and 1");
-                //    }
-                //}
-                
+                // Check it
                 for (int i = 0, end = unit.size(); i < end; ++i)
                 {
                     if (unit[i] >= 1 || unit[i] <= 0)
@@ -127,7 +106,6 @@ namespace Gambit
                 }
 
                 auto round_trip = physical;
-                //transform(map_vector<double>(&u[0], u.size()), round_trip);
                 transform(unit, round_trip);
                 const double rtol = 1e-4;
                 for (const auto &s : physical) 
@@ -140,8 +118,6 @@ namespace Gambit
                         scan_err << "could not convert physical parameters to hypercube" << scan_end;
                     }
                 }
-
-                //return u;        
             }
             
             //~CompositePrior() noexcept
