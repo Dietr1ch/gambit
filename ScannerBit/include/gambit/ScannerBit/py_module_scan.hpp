@@ -473,7 +473,8 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
     typedef Gambit::Scanner::Plugins::ScannerPyPlugin::prior_physical s_pr_func;
     using namespace Gambit::Scanner::Plugins::ScannerPyPlugin;
     
-    // Bind the "like" class to the module
+
+
     py::class_<s_hyper_func, std::shared_ptr<s_hyper_func>> pylike_hypercube_ptr(m, "like_hypercube_ptr");
     pylike_hypercube_ptr
     .def(py::init([]()
@@ -507,7 +508,8 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         return self.get()(map);
     });
     
-    // Bind the "like" class to the module
+
+
     py::class_<s_phys_func, std::shared_ptr<s_phys_func>> pylike_physical_ptr(m, "like_physical_ptr");
     pylike_physical_ptr
     .def(py::init([]()
@@ -553,7 +555,8 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         return self.get()(map);
     });
     
-    // Bind the "like" class to the module
+
+
     py::class_<s_phys_pr_func, std::shared_ptr<s_phys_pr_func>> pylike_prior_physical_ptr(m, "like_prior_physical_ptr");
     pylike_prior_physical_ptr
     .def(py::init([]()
@@ -599,7 +602,8 @@ PYBIND11_EMBEDDED_MODULE(scanner_plugin, m)
         return self.get()(map, true);
     });
     
-    // Bind the "like" class to the module
+
+
     py::class_<s_pr_func, std::shared_ptr<s_pr_func>> pyprior_physical_ptr(m, "prior_physical_ptr");
     pyprior_physical_ptr
     .def(py::init([]()
