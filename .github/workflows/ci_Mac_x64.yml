@@ -36,18 +36,12 @@ jobs:
       run: |
         echo "Building Rivet"
         cd BUILD
-        VERBOSE=1 make rivet
-        cmake ..
-    - name: Build Gambit
-      run: |
-        echo "Build GAMBIT."
-        cd BUILD
-        make -j $(( $(sysctl -n hw.ncpu)/2 )) gambit
-    - name: ColliderBit test
-      run: |
-        echo "Test the ColliderBit CMSSM yaml file"
-        ./gambit -f yaml_files/ColliderBit_CMSSM.yaml
-
+        VERBOSE=1 make rivet ; printf "\n\nDEBUG: Will now dump some files to screen:\n"
+        printf "\n DEBUG: setup.py.in: \n\n" ; cat /Users/gambitremotecontrol/GAMBIT/Runners/Organisation_level/actions-runner/_work/gambit/gambit/Backends/installed/rivet/3.1.5/pyext/setup.py.in
+        printf "\n DEBUG: setup.py: \n\n" ; cat /Users/gambitremotecontrol/GAMBIT/Runners/Organisation_level/actions-runner/_work/gambit/gambit/Backends/installed/rivet/3.1.5/pyext/setup.py
+        printf "\n DEBUG: Makefile.in: \n\n" ; cat /Users/gambitremotecontrol/GAMBIT/Runners/Organisation_level/actions-runner/_work/gambit/gambit/Backends/installed/rivet/3.1.5/pyext/Makefile.in
+        printf "\n DEBUG: Makefile: \n\n" ; cat /Users/gambitremotecontrol/GAMBIT/Runners/Organisation_level/actions-runner/_work/gambit/gambit/Backends/installed/rivet/3.1.5/pyext/Makefile
+        printf "\n DEBUG: Done. \n"
 
   # gambit_build:
   #   runs-on: [self-hosted, macOS,x64]
