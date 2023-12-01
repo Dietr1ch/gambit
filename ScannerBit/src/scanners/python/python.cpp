@@ -47,6 +47,7 @@
 
 #include "gambit/Utils/python_interpreter.hpp"
 #include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/ScannerBit/python_utils.hpp"
 
 namespace py = pybind11;
 
@@ -56,76 +57,25 @@ namespace Gambit
     namespace Scanner 
     {
     
-        inline py::object yaml_to_dict(const YAML::Node &node)
-        {
-            if (node.IsMap())
-            {
-                py::dict d;
-                for (auto &&n : node)
-                {
-                    d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
-                }
-                
-                return d;
-            }
-            else if (node.IsSequence())
-            {
-                py::list l;
-                
-                for (auto &&n : node)
-                {
-                    l.append(yaml_to_dict(n));
-                }
-                
-                return l;
-            }
-            else if (node.IsScalar())
-            {
-                bool ret;
-                if (YAML::convert<bool>::decode(node, ret))
-                {
-                    return py::cast(ret);
-                }
-                else
-                {
-                    int ret;
-                    if (YAML::convert<int>::decode(node, ret))
-                    {
-                        return py::cast(ret);
-                    }
-                    else
-                    {
-                        double ret;
-                        if (YAML::convert<double>::decode(node, ret))
-                        {
-                            return py::cast(ret);
-                        }
-                        else
-                        {
-                            return py::cast(node.as<std::string>());
-                        }
-                    }
-                }
-            } 
-            else 
-            {
-                return py::object();
-            }
-        }
-
-
         namespace Plugins 
         {
+            
             namespace ScannerPyPlugin 
             {
+                
                 pluginData *&pythonPluginData();
+                
             }  // end namespace ScannerPyPlugin
+            
         }  // end namespace Plugins
+        
     }  // end namespace Scanner
+    
 }  // end namespace Gambit
 
 scanner_plugin(python, version(1, 0, 0))
 {
+    
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
 
@@ -139,33 +89,19 @@ scanner_plugin(python, version(1, 0, 0))
 
     plugin_constructor
     {
+        // export plugin data to python plugin
         Gambit::Scanner::Plugins::ScannerPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
         // get plugin name
         std::string plugin_name = get_inifile_value<std::string>("plugin");
 
         // get yaml as dict
-        py::dict options = yaml_to_dict(get_inifile_node());
-        
-        // log a warning if both 'init' and 'run' options are missing
-        /*if (!options.contains("init") && !options.contains("run"))
-        {
-            scan_warn << 
-                "Neither an 'init' nor a 'run' section was found in "
-                "the YAML options for the scanner " << plugin_name << ", "
-                "Some scanner need these options to run." << scan_end;
-        }*/
-
-        // get kwargs
-        py::kwargs init_kwargs;
-        /*if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
-            init_kwargs = py::dict(options["init"]);
-        else*/
-            init_kwargs = options;
+        py::kwargs options = yaml_to_dict(get_inifile_node());
         
         // make instance of plugin
         py::module file;
         std::string pkg = get_inifile_value<std::string>("pkg", "");
+        
         try 
         {
             if (pkg == "")
@@ -193,7 +129,7 @@ scanner_plugin(python, version(1, 0, 0))
                 file = py::module::import(pkg_name.c_str());
             }
             
-            instance = py::dict(file.attr("__plugins__"))[plugin_name.c_str()](**init_kwargs);
+            instance = py::dict(file.attr("__plugins__"))[plugin_name.c_str()](**options);
             run_func = instance.attr("run");
         }
         catch (std::exception &ex)
@@ -213,6 +149,7 @@ scanner_plugin(python, version(1, 0, 0))
     plugin_deconstructor 
     {
     }
+    
 }
 
 #endif

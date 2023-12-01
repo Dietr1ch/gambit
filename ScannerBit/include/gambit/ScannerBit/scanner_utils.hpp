@@ -86,8 +86,10 @@ Gambit::Scanner::Errors::_warn_()                               \
 
 namespace Gambit
 {
+    
     namespace Scanner
     {
+        
         /**********************************/
         /****** error and warnings ********/
         /**********************************/
@@ -726,7 +728,9 @@ namespace Gambit
             return param.length();
         }
         /// @}
+        
     }
+    
 }
 
 #endif

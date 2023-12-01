@@ -2,13 +2,16 @@
 //  *********************************************
 ///  \file
 ///
-///  ????
+///  Make an instance of objective scanner and
+///  define method to run it
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
 ///
-///  ????  
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2023 Dec
 ///
 ///  *********************************************
 
@@ -32,6 +35,7 @@
 
 #include "gambit/Utils/python_interpreter.hpp"
 #include "gambit/ScannerBit/objective_plugin.hpp"
+#include "gambit/ScannerBit/python_utils.hpp"
 
 namespace py = pybind11;
 
@@ -41,51 +45,6 @@ namespace Gambit
     namespace Scanner 
     {
         
-        inline py::object yaml_to_dict(const YAML::Node &node)
-        {
-            if (node.IsMap())
-            {
-                py::dict d;
-                for (auto &&n : node)
-                {
-                    d[py::cast(n.first.as<std::string>())] = yaml_to_dict(n.second);
-                }
-                
-                return d;
-            }
-            else if (node.IsSequence())
-            {
-                py::list l;
-                
-                for (auto &&n : node)
-                {
-                    l.append(yaml_to_dict(n));
-                }
-                
-                return l;
-            }
-            else if (node.IsScalar())
-            {
-                int ret;
-                if (YAML::convert<int>::decode(node, ret))
-                    return py::cast(ret);
-                else 
-                {
-                    double ret;
-                    if (YAML::convert<double>::decode(node, ret))
-                        return py::cast(ret);
-                    else
-                    {
-                        return py::cast(node.as<std::string>());
-                    }
-                }
-            }
-            else
-            {
-                return py::object();
-            }
-        }
-        
         namespace Plugins
         {
             
@@ -94,7 +53,6 @@ namespace Gambit
                 
                 pluginData *&pythonPluginData();
                 double run(py::object &, std::unordered_map<std::string,double> &);
-                double run(py::object &, std::unordered_map<std::string,double> &, py::kwargs &);
                 
             }
             
@@ -106,6 +64,7 @@ namespace Gambit
 
 objective_plugin(python, version(1, 0, 0))
 {
+    
     reqd_headers("PYTHONLIBS");
     reqd_headers("pybind11");
     
@@ -119,22 +78,17 @@ objective_plugin(python, version(1, 0, 0))
 
     plugin_constructor 
     {
+        // export plugin data to objective plugin
         Gambit::Scanner::Plugins::ObjPyPlugin::pythonPluginData() = &__gambit_plugin_namespace__::myData;
 
         // get yaml as dict
-        py::dict options = yaml_to_dict(get_inifile_node());
-
-        // get kwargs
-        py::kwargs init_kwargs;
-        /*if (options.contains("init") && py::isinstance<py::dict>(options["init"]))
-            init_kwargs = py::dict(options["init"]);
-        else*/
-            init_kwargs = options;
+        py::kwargs options = yaml_to_dict(get_inifile_node());
         
         // make instance of plugin
         py::module file;
         std::string pkg = get_inifile_value<std::string>("pkg", "");
         std::string plugin_name = get_inifile_value<std::string>("plugin");
+        
         try 
         {
             if (pkg == "")
@@ -162,7 +116,7 @@ objective_plugin(python, version(1, 0, 0))
                 file = py::module::import(pkg_name.c_str());
             }
             
-            instance = py::dict(file.attr("__plugins__"))[plugin_name.c_str()](**init_kwargs);
+            instance = py::dict(file.attr("__plugins__"))[plugin_name.c_str()](**options);
             run_func = instance.attr("run");
         }
         catch (std::exception &ex)

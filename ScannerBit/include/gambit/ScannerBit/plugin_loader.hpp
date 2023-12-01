@@ -50,6 +50,7 @@ namespace Gambit
 
         namespace Plugins
         {
+            
             ///Plugin info from inifile
             struct Proto_Plugin_Details
             {
