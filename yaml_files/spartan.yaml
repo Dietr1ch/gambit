@@ -56,7 +56,7 @@ Printer:
     #info_file: "runs/spartan/samples/gambit_output2.info"
     # Name of output file
     output_file: "gambit_output.hdf5"
-    group: "/test"
+    group: "/data"
     delete_file_on_restart: true
     disable_combine_routines: true
 
