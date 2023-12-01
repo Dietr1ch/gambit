@@ -126,6 +126,7 @@ namespace HEPUtils {
         }
       }
       e._pmiss = _pmiss;
+      e._cseqs = _cseqs;
     }
 
     /// @}
