@@ -24,6 +24,7 @@
 ///  *********************************************
 
 #include "gambit/cmake/cmake_variables.hpp"
+#include "gambit/ColliderBit/Utils.hpp"
 
 #ifndef EXCLUDE_HEPMC
 
@@ -33,6 +34,6 @@
 namespace LHEF { class Reader; }
 
 /// Extract an LHE event as a HEPUtils::Event
-void get_HEPUtils_event(const LHEF::Reader&, HEPUtils::Event&, double);
+void get_HEPUtils_event(const LHEF::Reader&, HEPUtils::Event&, double, std::vector<Gambit::ColliderBit::jet_collection_settings>);
 
 #endif

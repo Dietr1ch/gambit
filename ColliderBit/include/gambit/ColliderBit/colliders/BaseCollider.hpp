@@ -21,20 +21,12 @@
 #include <string>
 #include <vector>
 
+#include "gambit/ColliderBit/Utils.hpp"
+
 namespace Gambit
 {
   namespace ColliderBit
   {
-
-    /// Struct of different jet collection settings
-    struct jet_collection_settings
-    {
-      std::string key;
-      std::string algorithm;
-      double R;
-      std::string recombination_scheme;
-      std::string strategy;
-    };
 
     /// An abstract base class for collider simulators within ColliderBit.
     class BaseCollider

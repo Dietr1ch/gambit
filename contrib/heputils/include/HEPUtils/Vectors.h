@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://gitlab.com/hepcedar/heputils/
-// Copyright (C) 2013-2022 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2023 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -367,10 +367,14 @@ namespace HEPUtils {
     /// Get the transverse momentum (same as rho)
     double pT() const { return rho(); }
 
-    /// Get the spatial phi
-    double phi() const { if (rho2() == 0) return 0; else return atan2(py(),px()); }
-    /// Get the spatial theta
-    double theta() const { if (p2() == 0) return 0; else if (pz() == 0) return 0.5 * M_PI; else return atan2(rho(),pz()); }
+    /// Get the spatial phi (in the range -pi .. pi)
+    double phi() const { if (rho2() == 0) return 0; else return atan2(py(), px()); }
+    /// Get the spatial phi (in the range 0 .. 2pi)
+    double phi_02pi() const { if (rho2() == 0) return 0; else return phi() + M_PI; }
+
+    /// Get the spatial theta (in the range 0 .. pi)
+    double theta() const { if (p2() == 0) return 0; else
+	if (pz() == 0) return M_PI/2; else return atan2(rho(), pz()); } //< atan2(+ve, z) is +ve
     /// Get the spatial-vector pseudorapidity
     double eta() const { return std::copysign(log((p() + fabs(pz())) / pT()), pz()); }
     /// Get the spatial-vector absolute pseudorapidity

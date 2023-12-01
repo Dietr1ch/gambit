@@ -154,7 +154,7 @@ namespace Gambit {
             // Jets
             vector<const HEPUtils::Jet*> baselineJets;
             vector<const HEPUtils::Jet*> fullJets;
-            for (const HEPUtils::Jet* jet : event->jets()) {
+            for (const HEPUtils::Jet* jet : event->jets("antikt_R04")) {
                 if (jet->pT() > 30. && jet->abseta() < 2.4) baselineJets.push_back(jet);
                 if (jet->abseta() < 5.0) fullJets.push_back(jet);
             }

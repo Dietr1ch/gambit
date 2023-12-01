@@ -232,7 +232,7 @@ namespace Gambit {
 
         // Get b jets with efficiency and mistag (fake) rates
         vector<const HEPUtils::Jet*> baselineJets, bJets; // trueBJets; //for debugging
-        for (const HEPUtils::Jet* jet : event->jets()) {
+        for (const HEPUtils::Jet* jet : event->jets("antikt_R04")) {
           if (jet->pT() > 20. && jet->abseta() < 10.0) baselineJets.push_back(jet);
           if (jet->abseta() < 2.5 && jet->pT() > 25.) {
             if ((jet->btag() && Random::draw() < 0.75) || (!jet->btag() && Random::draw() < 0.02)) bJets.push_back(jet);

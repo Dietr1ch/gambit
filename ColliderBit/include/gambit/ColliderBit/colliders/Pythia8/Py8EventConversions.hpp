@@ -34,11 +34,6 @@ namespace Gambit
 
     using namespace EventConversion;
 
-    /// Storage of different FastJet methods
-    FJNS::JetAlgorithm FJalgorithm_map(std::string);
-    FJNS::Strategy FJstrategy_map(std::string);
-    FJNS::RecombinationScheme FJRecomScheme_map(std::string);
-
     /// Convert a hadron-level EventT into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     template<typename EventT>
@@ -200,7 +195,6 @@ namespace Gambit
       }
 
       /// Jet finding
-      /// @todo We can now run several algs and store them under different jet-collection names
       for (jet_collection_settings jetcollection : all_jet_collection_settings)
       {
         FJNS::JetAlgorithm jet_algorithm = FJalgorithm_map(jetcollection.algorithm);
@@ -209,8 +203,8 @@ namespace Gambit
         const FJNS::JetDefinition jet_def(jet_algorithm, jetcollection.R, jet_strategy, jet_recomscheme);
 
         /// @todo For substructure we need to keep this ClusterSequence alive... make_unique() ctor and attach to the Event? Or manage at CB level?
-        result.set_clusterseq(jetparticles, jet_def, jetcollection.key);
-        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt((result.ClusterSeqMap[jetcollection.key])->inclusive_jets(jet_pt_min));
+        std::shared_ptr<const FJNS::ClusterSequence> CSeqBasePtr = result.emplace_clusterseq(jetparticles, jet_def, jetcollection.key);
+        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(CSeqBasePtr->inclusive_jets(jet_pt_min));
 
         /// Do jet b-tagging, etc. and add to the Event
         /// @todo Use ghost tagging?
@@ -419,8 +413,8 @@ namespace Gambit
         FJNS::Strategy jet_strategy = FJstrategy_map(jetcollection.strategy);
         FJNS::RecombinationScheme jet_recomscheme = FJRecomScheme_map(jetcollection.recombination_scheme);
         const FJNS::JetDefinition jet_def(jet_algorithm, jetcollection.R, jet_strategy, jet_recomscheme);
-        result.set_clusterseq(jetparticles, jet_def, jetcollection.key);
-        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt((result.ClusterSeqMap[jetcollection.key])->inclusive_jets(jet_pt_min));
+        std::shared_ptr<const FJNS::ClusterSequence> CSeqBasePtr = result.emplace_clusterseq(jetparticles, jet_def, jetcollection.key);
+        std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(CSeqBasePtr->inclusive_jets(jet_pt_min));
 
         // Add to the event, with b-tagging info"
         for (const FJNS::PseudoJet& pj : pjets)

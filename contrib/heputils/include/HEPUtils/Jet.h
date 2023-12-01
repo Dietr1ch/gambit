@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://gitlab.com/hepcedar/heputils/
-// Copyright (C) 2013-2022 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2023 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -51,17 +51,17 @@ namespace HEPUtils {
     /// Constructor for a light jet without explicit constituents
     Jet(const P4& mom, bool isB=false, bool isC=false)
       : _p4(mom)
-    { set_btag(isB); set_ctag(isC); }
+    { set_btag(int(isB)); set_ctag(int(isC)); }
 
     /// "Cartesian" constructor
     Jet(double px, double py, double pz, double E, bool isB=false, bool isC=false)
       : _p4(px, py, pz, E)
-    { set_btag(isB); set_ctag(isC); }
+    { set_btag(int(isB)); set_ctag(int(isC)); }
 
     /// "PseudoJet" constructor
     Jet(const FJNS::PseudoJet& pj, bool isB=false, bool isC=false)
-      : _p4(mk_p4(pj))
-    { set_btag(isB); set_ctag(isC); }
+      : _p4(mk_p4(pj)), _pj(pj)
+    { set_btag(int(isB)); set_ctag(int(isC)); }
 
 
     /// Constructor for a light jet without explicit constituents, with a general tags map
@@ -74,7 +74,7 @@ namespace HEPUtils {
 
     /// "PseudoJet" constructor, with a general tags map
     Jet(const FJNS::PseudoJet& pj, const TagCounts& tags)
-      : _p4(mk_p4(pj)), _tags(tags) {  }
+      : _p4(mk_p4(pj)), _tags(tags), _pj(pj) {  }
 
     /// @}
 
@@ -149,14 +149,17 @@ namespace HEPUtils {
     /// Is this particle tagged as a b?
     bool btag() const { return tagged(5); }
     /// Set b-tag value
-    void set_btag(bool isb) { set_ntags(5, isb); }
+    void set_btag(int ntag=1) { set_ntags(5, ntag); }
 
     /// Is this particle tagged as a c?
     ///
-    /// @note Can be simultaneously btag()'d -- analyses should probably only use if fallback from b-tag.
-    bool ctag() const { return tagged(4); }
+    /// @note Can be simultaneously b-tagged unless the optional bool is set true
+    bool ctag(bool not_if_b=false) const {
+      if (not_if_b) return tagged(5) ? false : tagged(4);
+      return tagged(4);
+    }
     /// Set c-tag value
-    void set_ctag(bool isc) { set_ntags(4, isc); }
+    void set_ctag(int ntag=1) { set_ntags(4, ntag); }
 
     /// @}
 
@@ -177,8 +180,16 @@ namespace HEPUtils {
     ///
     /// Optional template arg can be used to cast to a specific derived CS type if wanted.
     template <typename CS=FJNS::ClusterSequence>
-    const CS* clusterseq() {
-      return dynamic_cast<CS*>(_pj.associated_cs());
+    typename std::shared_ptr<const CS> clusterseq() const {  
+      return std::shared_ptr<const CS>(clusterseq_raw<CS>());
+    }
+    
+    /// @brief Access the ClusterSequence object if possible (can be null)
+    ///
+    /// Optional template arg can be used to cast to a specific derived CS type if wanted.
+    template <typename CS=FJNS::ClusterSequence>
+    const CS* clusterseq_raw() const {
+      return dynamic_cast<const CS*>(_pj.associated_cs());
     }
 
     /// @}

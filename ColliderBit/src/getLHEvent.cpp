@@ -55,6 +55,50 @@ namespace Gambit
       }
       static LHEF::Reader lhe(lhef_filename);
 
+      // Get all jet collection settings
+      str jetcollection_taus;
+      std::vector<jet_collection_settings> all_jet_collection_settings = {}; // Initialise with no collections, if no jet collection setting specified, then should use the basecollider's initialised jet collection
+      if (runOptions->hasKey((*Dep::RunMC).current_collider()))
+      {
+        YAML::Node colNode = runOptions->getValue<YAML::Node>((*Dep::RunMC).current_collider());
+        Options colOptions(colNode);
+
+        // Fill the jet collection settings
+        if (colOptions.hasKey("jet_collections"))
+        {
+          YAML::Node jetcollectionNode = colOptions.getValue<YAML::Node>("jet_collections");
+          Options jetcollectionOptions(jetcollectionNode);
+
+          str algorithm;
+          double R;
+          str recombination_scheme;
+          str strategy;
+          std::vector<str> jetcollections = jetcollectionOptions.getNames();
+
+          for (str key : jetcollections)
+          {
+            algorithm = jetcollectionOptions.getValueOrDef<str>("antikt", "algorithm");
+            R = jetcollectionOptions.getValueOrDef<double>(0.4, "R");
+            recombination_scheme = jetcollectionOptions.getValueOrDef<str>("E_scheme", "recombination_scheme");
+            strategy = jetcollectionOptions.getValueOrDef<str>("Best", "strategy");
+
+            all_jet_collection_settings.push_back({key, algorithm, R, recombination_scheme, strategy});
+          }
+
+          jetcollection_taus = colOptions.getValueOrDef<str>("antikt_R04", "jetcollection_taus");
+          // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
+          if (std::find(jetcollections.begin(), jetcollections.end(), jetcollection_taus) == jetcollections.end())
+          {
+            ColliderBit_error().raise(LOCAL_INFO,"Please provide the jetcollection_taus setting for jet collections if not using antikt_R04.");
+          }
+        }
+      }
+      else
+      {
+        all_jet_collection_settings = {{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}};
+        jetcollection_taus = "antikt_R04";
+      }
+
       // Don't do anything during special iterations
       if (*Loop::iteration < 0) return;
 
@@ -62,7 +106,7 @@ namespace Gambit
       bool event_retrieved = true;
       #pragma omp critical (reading_LHEvent)
       {
-        if (lhe.readEvent()) get_HEPUtils_event(lhe, result, jet_pt_min);
+        if (lhe.readEvent()) get_HEPUtils_event(lhe, result, jet_pt_min, all_jet_collection_settings);
         else event_retrieved = false;
       }
       if (not event_retrieved)
