@@ -169,7 +169,7 @@ namespace Gambit
           vector<const HEPUtils::Jet*> fatJets;
           for (const HEPUtils::Jet* jet : event->jets("antikt_R04"))
           {
-            //  cout  << jet->pT() << " " << jet->mass() << " Z-tag " <<  jet-tagged(23) << " W-tag " << jet->tagged(24) << " " << endl;
+            //  cout  << jet->pT() << " " << jet->mass() << " Z-tag " <<  jet->tagged(23) << " W-tag " << jet->tagged(24) << " " << endl;
             if (jet->pT() > 200. && fabs(jet->eta()) < 2.0 && jet->mass() > 40.)
             {
               fatJets.push_back(jet);

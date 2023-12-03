@@ -74,7 +74,7 @@ namespace Gambit
         std::vector<jet_collection_settings> all_jet_collection_settings;
 
         /// Key for jet collection used in adding taus
-        str jetcollection_taus;
+        std::string jetcollection_taus;
 
     };
 
