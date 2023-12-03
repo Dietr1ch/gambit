@@ -319,7 +319,7 @@ namespace Gambit
 
 
     /// Check if there's a physics object above ptmin in an annulus rmin..rmax around the given four-momentum p4
-    inline bool object_in_cone(const HEPUtils::Event& e, const HEPUtils::P4& p4, double ptmin, double rmax, double rmin=0.05, std::string jetcollection = "antikt_R04") {
+    inline bool object_in_cone(const HEPUtils::Event& e, std::string jetcollection, const HEPUtils::P4& p4, double ptmin, double rmax, double rmin=0.05) {
       for (const HEPUtils::Particle* p : e.visible_particles())
         if (p->pT() > ptmin && HEPUtils::in_range(HEPUtils::deltaR_eta(p4, *p), rmin, rmax)) return true;
       for (const HEPUtils::Jet* j : e.jets(jetcollection))
