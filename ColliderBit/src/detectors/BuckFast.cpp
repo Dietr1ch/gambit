@@ -41,14 +41,14 @@ namespace Gambit
       // Smear jet momenta
       if (smearJets != NULL)
       {
-        for ( std::string jetcollection : event.jet_collections())
+        for (std::string jetcollection : event.jet_collections())
         {
           smearJets(event.jets(jetcollection));
         }
       }
 
       // Unset b-tags outside |eta|=2.5
-      for ( std::string jetcollection : event.jet_collections())
+      for (std::string jetcollection : event.jet_collections())
       {
         for (HEPUtils::Jet* j : event.jets(jetcollection))
         {

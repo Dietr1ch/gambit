@@ -371,7 +371,7 @@ namespace Gambit
 
           // Compare meff spectrum
           cout << "Meff SR-4Q-VV\t" << "GAMBIT\t" << "ATLAS " << endl;
-          for( size_t j = 0; j < _meff_4QVV.size(); j++){
+          for (size_t j = 0; j < _meff_4QVV.size(); j++){
             cout << "[" << _meff_bins[j] << ", " << _meff_bins[j+1] << "]\t" << _meff_4QVV[j]*_scale << "\t" << _meff_4QVV_model[j] << endl;
           }
 
