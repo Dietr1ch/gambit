@@ -35,7 +35,7 @@ namespace Gambit
       public:
 
         /// Constructor
-        BaseCollider() : partonOnly(false), all_jet_collection_settings({{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}}), jetcollection_taus("antikt_R04") {}
+        BaseCollider() : partonOnly(false), all_jet_collection_settings({}), jetcollection_taus("") {}
         /// Destructor
         virtual ~BaseCollider() {}
         /// Reset this instance for reuse, avoiding the need for "new" or "delete".
