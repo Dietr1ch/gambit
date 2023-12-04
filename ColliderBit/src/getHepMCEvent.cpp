@@ -231,19 +231,14 @@ namespace Gambit
 
     }
 
-    /// A nested function that reads in HepMC event files and converts them to HEPUtils::Event format
-    void getHepMCEvent_HEPUtils(HEPUtils::Event &result)
-    {
-      using namespace Pipes::getHepMCEvent_HEPUtils;
 
-      // Get yaml options
-      const static str HepMC_filename = runOptions->getValueOrDef<str>("", "hepmc_filename");
-      const static double jet_pt_min = runOptions->getValueOrDef<double>(10.0, "jet_pt_min");
-      std::vector<jet_collection_settings> all_jet_collection_settings = {};
-      str jetcollection_taus;
-      if (runOptions->hasKey("jet_collections"))
+    /// A helper function for collecting the jet_collections yaml settings. 
+    /// Used by functions getHepMCEvent_HEPUtils and convertHepMCEvent_HEPUtils.
+    void read_jet_collections_settings(const Options& runOptions, std::vector<jet_collection_settings>& all_jet_collection_settings, str& jetcollection_taus)
+    {
+      if (runOptions.hasKey("jet_collections"))
       {
-        YAML::Node jetcollectionNode = runOptions->getValue<YAML::Node>("jet_collections");
+        YAML::Node jetcollectionNode = runOptions.getValue<YAML::Node>("jet_collections");
         Options jetcollectionOptions(jetcollectionNode);
             
         str algorithm;
@@ -274,6 +269,20 @@ namespace Gambit
         all_jet_collection_settings = {{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}};
         jetcollection_taus = "antikt_R04";
       }
+    }
+
+
+    /// A nested function that reads in HepMC event files and converts them to HEPUtils::Event format
+    void getHepMCEvent_HEPUtils(HEPUtils::Event &result)
+    {
+      using namespace Pipes::getHepMCEvent_HEPUtils;
+
+      // Get yaml options
+      const static str HepMC_filename = runOptions->getValueOrDef<str>("", "hepmc_filename");
+      const static double jet_pt_min = runOptions->getValueOrDef<double>(10.0, "jet_pt_min");
+      std::vector<jet_collection_settings> all_jet_collection_settings = {};
+      str jetcollection_taus;
+      read_jet_collections_settings(*runOptions, all_jet_collection_settings, jetcollection_taus);
 
       // Get the HepMC event
       //HepMC3::GenEvent ge = *Dep::HardScatteringEvent;
@@ -305,39 +314,7 @@ namespace Gambit
       const static double jet_pt_min = runOptions->getValueOrDef<double>(10.0, "jet_pt_min");
       std::vector<jet_collection_settings> all_jet_collection_settings = {};
       str jetcollection_taus;
-      if (runOptions->hasKey("jet_collections"))
-      {
-        YAML::Node jetcollectionNode = runOptions->getValue<YAML::Node>("jet_collections");
-        Options jetcollectionOptions(jetcollectionNode);
-            
-        str algorithm;
-        double R;
-        str recombination_scheme;
-        str strategy;
-        std::vector<str> jetcollections = jetcollectionOptions.getNames();
-
-        for (str key : jetcollections)
-        {
-          algorithm = jetcollectionOptions.getValueOrDef<str>("antikt", "algorithm");
-          R = jetcollectionOptions.getValueOrDef<double>(0.4, "R");
-          recombination_scheme = jetcollectionOptions.getValueOrDef<str>("E_scheme", "recombination_scheme");
-          strategy = jetcollectionOptions.getValueOrDef<str>("Best", "strategy");
-
-          all_jet_collection_settings.push_back({key, algorithm, R, recombination_scheme, strategy});
-        }
-
-        jetcollection_taus = jetcollectionOptions.getValueOrDef<str>("antikt_R04", "jetcollection_taus");
-        // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
-        if (std::find(jetcollections.begin(), jetcollections.end(), jetcollection_taus) == jetcollections.end())
-        {
-          ColliderBit_error().raise(LOCAL_INFO,"Please provide the jetcollection_taus setting for jet collections if not using antikt_R04.");
-        }
-      }
-      else
-      {
-        all_jet_collection_settings = {{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}};
-        jetcollection_taus = "antikt_R04";
-      }
+      read_jet_collections_settings(*runOptions, all_jet_collection_settings, jetcollection_taus);
 
       //Set the weight
       result.set_weight(ge.weight());
