@@ -337,10 +337,10 @@ Rules:
         partonOnly: false
         jet_collections:
           antikt_R04:
-            algorithm: antikt
+            algorithm: antikt  # antikt, cambridge, kt, genkt, cambridge_for_passive
             R: 0.4
-            recombination_scheme: E_scheme
-            strategy: Best
+            recombination_scheme: E_scheme   # E_scheme, pt_scheme, pt2_scheme 
+            strategy: Best     # Best, NlnN
           # antikt_R08:
           #   algorithm: antikt
           #   R: 0.8
