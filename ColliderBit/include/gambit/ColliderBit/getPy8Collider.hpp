@@ -112,31 +112,34 @@ namespace Gambit
           // Fill the jet collection settings
           if (colOptions.hasKey("jet_collections"))
           {
-            YAML::Node jetcollectionNode = colOptions.getValue<YAML::Node>("jet_collections");
-            Options jetcollectionOptions(jetcollectionNode);
+            YAML::Node all_jetcollections_node = colOptions.getValue<YAML::Node>("jet_collections");
+            Options all_jetcollection_options(all_jetcollections_node);
             
             str algorithm;
             double R;
             str recombination_scheme;
             str strategy;
             result.all_jet_collection_settings = {}; // Initialise with no collections, if no jet collection setting specified, then should use the basecollider's initialised jet collection
-            std::vector<str> jetcollections = jetcollectionOptions.getNames();
+            std::vector<str> jetcollection_names = all_jetcollection_options.getNames();
 
-            for (str key : jetcollections)
+            for (str key : jetcollection_names)
             {
-              algorithm = jetcollectionOptions.getValueOrDef<str>(algorithm_default, "algorithm");
-              R = jetcollectionOptions.getValueOrDef<double>(R_default, "R");
-              recombination_scheme = jetcollectionOptions.getValueOrDef<str>(recombination_scheme_default, "recombination_scheme");
-              strategy = jetcollectionOptions.getValueOrDef<str>(strategy_default, "strategy");
+              YAML::Node current_jc_node = all_jetcollection_options.getValue<YAML::Node>(key);
+              Options current_jc_options(current_jc_node);
+
+              algorithm = current_jc_options.getValueOrDef<str>(algorithm_default, "algorithm");
+              R = current_jc_options.getValueOrDef<double>(R_default, "R");
+              recombination_scheme = current_jc_options.getValueOrDef<str>(recombination_scheme_default, "recombination_scheme");
+              strategy = current_jc_options.getValueOrDef<str>(strategy_default, "strategy");
 
               (result.all_jet_collection_settings).push_back({key, algorithm, R, recombination_scheme, strategy});
             }
 
-            result.jetcollection_taus = colOptions.getValueOrDef<str>("antikt_R04", "jetcollection_taus");
+            result.jetcollection_taus = colOptions.getValueOrDef<str>("antikt_R04", "jet_collection_taus");
             // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
-            if (std::find(jetcollections.begin(), jetcollections.end(), result.jetcollection_taus) == jetcollections.end())
+            if (std::find(jetcollection_names.begin(), jetcollection_names.end(), result.jetcollection_taus) == jetcollection_names.end())
             {
-              ColliderBit_error().raise(LOCAL_INFO,"Please provide the jetcollection_taus setting for jet collections if not using antikt_R04.");
+              ColliderBit_error().raise(LOCAL_INFO,"Please provide the jet_collection_taus setting for jet collections if not using antikt_R04.");
             }
           }
           if (colOptions.hasKey("pythia_settings"))

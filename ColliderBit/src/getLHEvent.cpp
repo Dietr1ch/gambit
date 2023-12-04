@@ -66,30 +66,33 @@ namespace Gambit
         // Fill the jet collection settings
         if (colOptions.hasKey("jet_collections"))
         {
-          YAML::Node jetcollectionNode = colOptions.getValue<YAML::Node>("jet_collections");
-          Options jetcollectionOptions(jetcollectionNode);
+          YAML::Node all_jetcollections_node = colOptions.getValue<YAML::Node>("jet_collections");
+          Options all_jetcollection_options(all_jetcollections_node);
 
           str algorithm;
           double R;
           str recombination_scheme;
           str strategy;
-          std::vector<str> jetcollections = jetcollectionOptions.getNames();
+          std::vector<str> jetcollection_names = all_jetcollection_options.getNames();
 
-          for (str key : jetcollections)
+          for (str key : jetcollection_names)
           {
-            algorithm = jetcollectionOptions.getValueOrDef<str>("antikt", "algorithm");
-            R = jetcollectionOptions.getValueOrDef<double>(0.4, "R");
-            recombination_scheme = jetcollectionOptions.getValueOrDef<str>("E_scheme", "recombination_scheme");
-            strategy = jetcollectionOptions.getValueOrDef<str>("Best", "strategy");
+            YAML::Node current_jc_node = all_jetcollection_options.getValue<YAML::Node>(key);
+            Options current_jc_options(current_jc_node);
+
+            algorithm = current_jc_options.getValueOrDef<str>("antikt", "algorithm");
+            R = current_jc_options.getValueOrDef<double>(0.4, "R");
+            recombination_scheme = current_jc_options.getValueOrDef<str>("E_scheme", "recombination_scheme");
+            strategy = current_jc_options.getValueOrDef<str>("Best", "strategy");
 
             all_jet_collection_settings.push_back({key, algorithm, R, recombination_scheme, strategy});
           }
 
-          jetcollection_taus = colOptions.getValueOrDef<str>("antikt_R04", "jetcollection_taus");
+          jetcollection_taus = colOptions.getValueOrDef<str>("antikt_R04", "jet_collection_taus");
           // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
-          if (std::find(jetcollections.begin(), jetcollections.end(), jetcollection_taus) == jetcollections.end())
+          if (std::find(jetcollection_names.begin(), jetcollection_names.end(), jetcollection_taus) == jetcollection_names.end())
           {
-            ColliderBit_error().raise(LOCAL_INFO,"Please provide the jetcollection_taus setting for jet collections if not using antikt_R04.");
+            ColliderBit_error().raise(LOCAL_INFO,"Please provide the jet_collection_taus setting for jet collections if not using antikt_R04.");
           }
         }
       }
