@@ -98,10 +98,6 @@ namespace Gambit
         // Get options from yaml file.
         const double xsec_veto_default = 0.0;
         const bool partonOnly_default = false;
-        const str algorithm_default = "antikt";
-        const double R_default = 0.4;
-        const str recombination_scheme_default = "E_scheme";
-        const str strategy_default = "Best";
         if (runOptions.hasKey(RunMC.current_collider()))
         {
           YAML::Node colNode = runOptions.getValue<YAML::Node>(RunMC.current_collider());
@@ -114,12 +110,6 @@ namespace Gambit
           {
             YAML::Node all_jetcollections_node = colOptions.getValue<YAML::Node>("jet_collections");
             Options all_jetcollection_options(all_jetcollections_node);
-            
-            str algorithm;
-            double R;
-            str recombination_scheme;
-            str strategy;
-            result.all_jet_collection_settings = {}; // Initialise with no collections, if no jet collection setting specified, then should use the basecollider's initialised jet collection
             std::vector<str> jetcollection_names = all_jetcollection_options.getNames();
 
             for (str key : jetcollection_names)
@@ -127,20 +117,24 @@ namespace Gambit
               YAML::Node current_jc_node = all_jetcollection_options.getValue<YAML::Node>(key);
               Options current_jc_options(current_jc_node);
 
-              algorithm = current_jc_options.getValueOrDef<str>(algorithm_default, "algorithm");
-              R = current_jc_options.getValueOrDef<double>(R_default, "R");
-              recombination_scheme = current_jc_options.getValueOrDef<str>(recombination_scheme_default, "recombination_scheme");
-              strategy = current_jc_options.getValueOrDef<str>(strategy_default, "strategy");
+              str algorithm = current_jc_options.getValue<str>("algorithm");
+              double R = current_jc_options.getValue<double>("R");
+              str recombination_scheme = current_jc_options.getValue<str>("recombination_scheme");
+              str strategy = current_jc_options.getValue<str>("strategy");
 
               (result.all_jet_collection_settings).push_back({key, algorithm, R, recombination_scheme, strategy});
             }
 
-            result.jetcollection_taus = colOptions.getValueOrDef<str>("antikt_R04", "jet_collection_taus");
+            result.jetcollection_taus = colOptions.getValue<str>("jet_collection_taus");
             // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
             if (std::find(jetcollection_names.begin(), jetcollection_names.end(), result.jetcollection_taus) == jetcollection_names.end())
             {
-              ColliderBit_error().raise(LOCAL_INFO,"Please provide the jet_collection_taus setting for jet collections if not using antikt_R04.");
+              ColliderBit_error().raise(LOCAL_INFO,"Please provide the jet_collection_taus setting for jet collections.");
             }
+          }
+          else
+          {
+            ColliderBit_error().raise(LOCAL_INFO,"Could not find jet_collections option for collider " + RunMC.current_collider() + ". Please provide this in the YAML file.");
           }
           if (colOptions.hasKey("pythia_settings"))
           {
@@ -150,10 +144,7 @@ namespace Gambit
         }
         else
         {
-          xsec_veto_fb = xsec_veto_default;
-          result.partonOnly = partonOnly_default;
-          result.all_jet_collection_settings = {{"antikt_R04", "antikt", 0.4, "E_scheme", "Best"}};
-          result.jetcollection_taus = "antikt_R04";
+          ColliderBit_error().raise(LOCAL_INFO,"Could not find runOptions for collider " + RunMC.current_collider() + ".");
         }
 
         // We need showProcesses for the xsec veto.
