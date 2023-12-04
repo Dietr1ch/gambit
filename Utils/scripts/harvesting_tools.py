@@ -287,7 +287,7 @@ def first_simple_type_equivalent(candidate_in, equivs, nses, existing):
         for index in range(len(equivalency_class)):
             equivalent = equivalency_class[index]
             if "," not in equivalent:
-                return equivalent+candidate_suffix
+                return candidate_prefix+equivalent+candidate_suffix
         print("Error: all equivalent types found have commas in them!  Please typedef one without a comma.")
         print("Types are: ", equivalency_class)
         sys.exit(1)
@@ -476,6 +476,7 @@ def addifbefunctormacro(line, be_typeset, type_pack_set, equiv_classes, equiv_ns
             else:
                 # Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
                 functor_template_types[0] += "*"
+
 
         # Iterate over all the candidate types and remove any leading Gambit namespace
         candidate_types = set(functor_template_types)
