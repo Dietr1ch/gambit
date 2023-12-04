@@ -202,8 +202,11 @@ namespace Gambit
         FJNS::RecombinationScheme jet_recomscheme = FJRecomScheme_map(jetcollection.recombination_scheme);
         const FJNS::JetDefinition jet_def(jet_algorithm, jetcollection.R, jet_strategy, jet_recomscheme);
 
-        /// @todo For substructure we need to keep this ClusterSequence alive... make_unique() ctor and attach to the Event? Or manage at CB level?
+        /// Create and run a new cluster sequence for the given jet collection. 
+        /// The HEPUtils::Event instance ('result') takes ownership of the 
+        /// cluster sequence and a shared_ptr is returned here.
         std::shared_ptr<const FJNS::ClusterSequence> CSeqBasePtr = result.emplace_clusterseq(jetparticles, jet_def, jetcollection.key);
+        /// Get the resulting pseudojets
         std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(CSeqBasePtr->inclusive_jets(jet_pt_min));
 
         /// Do jet b-tagging, etc. and add to the Event
@@ -286,7 +289,6 @@ namespace Gambit
           }
 
           // Add jet to collection including tags and PseudoJet
-          /// @todo We need to do something smart if we want to keep the ClusterSequence alive
           HEPUtils::Jet::TagCounts tags{ {5,int(isB)}, {4,int(isC)}, {23,int(isZ)}, {24,int(isW)}, {25,int(ish)} };
           result.add_jet(new HEPUtils::Jet(pj, tags), jetcollection.key);
         }
