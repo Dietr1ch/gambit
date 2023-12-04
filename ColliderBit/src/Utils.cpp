@@ -53,7 +53,7 @@ namespace Gambit
       else if (algorithm == "cambridge_for_passive") {result = FJNS::cambridge_for_passive_algorithm;}
       else
       {
-        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet algorithm in list available. Please add the missing option to the FJalgorithm_map function in ColliderBit/src/Utils.hpp.");
+        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet algorithm in list available. Please add the missing option to the FJalgorithm_map function in ColliderBit/src/Utils.cpp.");
       }
       return result;
     }
@@ -65,7 +65,7 @@ namespace Gambit
       else if (strategy == "NlnN") {result = FJNS::NlnN;}
       else
       {
-        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet strategy in list available. Please add the missing option to the FJstrategy_map function in ColliderBit/src/Utils.hpp.");
+        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet strategy in list available. Please add the missing option to the FJstrategy_map function in ColliderBit/src/Utils.cpp.");
       }
       return result;
     }
@@ -78,7 +78,7 @@ namespace Gambit
       else if (reco_scheme == "pt2_scheme") {result = FJNS::pt2_scheme;}
       else
       {
-        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet recombination scheme in list available. Please add the missing option to the FJRecomScheme_map function in ColliderBit/src/Utils.hpp.");
+        ColliderBit_error().raise(LOCAL_INFO, "Could not find jet recombination scheme in list available. Please add the missing option to the FJRecomScheme_map function in ColliderBit/src/Utils.cpp.");
       }
       return result;
     }
