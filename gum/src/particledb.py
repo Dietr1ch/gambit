@@ -394,7 +394,7 @@ def get_higgses(partlist):
     
 def get_invisibles(invisible_pdgs):
     """
-    Get the PDG codes of invisibles particles to write to 'contrib/heputils/include/HEPUtils/Particleh'
+    Get the PDG codes of invisibles particles to write to 'contrib/heputils/include/HEPUtils/Particle.h'
     Will not write for photons, leptons or existing invisibles
     """
     
