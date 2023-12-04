@@ -214,8 +214,8 @@ namespace Gambit
           all_jet_collection_settings.push_back({key, algorithm, R, recombination_scheme, strategy});
         }
 
-        jetcollection_taus = runOptions.getValueOrDef<str>("antikt_R04", "jet_collection_taus");
-        // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
+        jetcollection_taus = runOptions.getValue<str>("jet_collection_taus");
+        // Throw an error if the "jet_collection_taus" setting does not match an entry in "jet_collections".
         if (std::find(jetcollection_names.begin(), jetcollection_names.end(), jetcollection_taus) == jetcollection_names.end())
         {
           ColliderBit_error().raise(LOCAL_INFO,"Please provide the jet_collection_taus setting for jet collections.");

@@ -126,7 +126,7 @@ namespace Gambit
             }
 
             result.jetcollection_taus = colOptions.getValue<str>("jet_collection_taus");
-            // Throw an error if the jetcollection_taus setting is not given and not using the antikt_R04 collection
+            // Throw an error if the "jet_collection_taus" setting does not match an entry in "jet_collections".
             if (std::find(jetcollection_names.begin(), jetcollection_names.end(), result.jetcollection_taus) == jetcollection_names.end())
             {
               ColliderBit_error().raise(LOCAL_INFO,"Please provide the jet_collection_taus setting for jet collections.");
