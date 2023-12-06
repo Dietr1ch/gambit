@@ -1110,14 +1110,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  // Gamma-ray likelihoods =============================================
+// X-ray likelihoods ================================================
 
-  #define CAPABILITY set_gamLike_GC_halo
+  #define CAPABILITY Xray_loglikelihoods
   START_CAPABILITY
-    #define FUNCTION set_gamLike_GC_halo
-      START_FUNCTION(bool)
-      DEPENDENCY(GalacticHalo, GalacticHaloProperties)
-      BACKEND_REQ(set_halo_profile, (gamLike), void, (int, const std::vector<double> &, const std::vector<double> &, double))
+    #define FUNCTION Xray_loglikes_Cirelli
+    START_FUNCTION(double)
+    DEPENDENCY(WIMP_properties, WIMPprops)
+    DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
+    DEPENDENCY(ID_suppression, double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1159,6 +1160,18 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 */
+
+// Gamma-ray likelihoods =============================================
+
+  #define CAPABILITY set_gamLike_GC_halo
+  START_CAPABILITY
+    #define FUNCTION set_gamLike_GC_halo
+      START_FUNCTION(bool)
+      DEPENDENCY(GalacticHalo, GalacticHaloProperties)
+      BACKEND_REQ(set_halo_profile, (gamLike), void, (int, const std::vector<double> &, const std::vector<double> &, double))
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
@@ -2901,4 +2914,3 @@ START_MODULE
 */
 #undef REFERENCE
 #undef MODULE
-
