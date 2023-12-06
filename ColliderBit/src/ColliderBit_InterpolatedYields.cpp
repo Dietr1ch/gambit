@@ -2175,22 +2175,21 @@ namespace Gambit
 
       if(ModelInUse("SubGeVDM_scalar"))
       {
-        Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_scalarDM_Nevents.txt";
-        Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_scalarDM_Nevents.txt";
-        Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_scalarDM_Nevents.txt";
-       // Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_scalarDM_Nevents.txt";
-      }
+        Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_scalarDM_NEvents.txt";
+        Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_scalarDM_NEvents.txt";
+        Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_scalarDM_NEvents.txt";
+        // Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_scalarDM_NEvents.txt";
 
         Interpolation_columns["SubGeVBeamDump_MBe_interpolated"] = {"mDM","mAp","signal_counts"};
         Interpolation_columns["SubGeVBeamDump_MBN_interpolated"] = {"mDM","mAp","signal_counts"};
         Interpolation_columns["SubGeVBeamDump_LSND_interpolated"] = {"mDM","mAp","signal_counts"};
         //Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
-
+      }
       else if(ModelInUse("SubGeVDM_fermion"))
       {
-        Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_fermionDM_Nevents.txt";
-        Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_fermionDM_Nevents.txt";
-        Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_fermionDM_Nevents.txt";
+        Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_fermionDM_NEvents.txt";
+        Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_fermionDM_NEvents.txt";
+        Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_fermionDM_NEvents.txt";
         //Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_fermionDM_Nevents.txt";
 
         Interpolation_columns["SubGeVBeamDump_MBe_interpolated"] = {"mDM","mAp","signal_counts"};
@@ -2198,7 +2197,6 @@ namespace Gambit
         Interpolation_columns["SubGeVBeamDump_LSND_interpolated"] = {"mDM","mAp","signal_counts"};
         // Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
       }
-
       else
       {
         ColliderBit_error().raise(LOCAL_INFO, "ERROR! Model not known to GAMBIT");
@@ -2222,15 +2220,14 @@ namespace Gambit
       }
 
       // Retrieve the signal yields
+      const Spectrum& spec = *Dep::SubGeVDM_spectrum;
+      str modelname;
       if(ModelInUse("SubGeVDM_scalar"))
-        {const Spectrum& spec = *Dep::SubGeVDM_spectrum;
-        str modelname = "SubGeVDM_scalar";
-        get_all_signal_yields(get_all_SubGeVDM_signal_yields, spec, analysis_data_map, result, modelname);}
-
+        modelname = "SubGeVDM_scalar";
       else if(ModelInUse("SubGeVDM_fermion"))
-      {const Spectrum& spec = *Dep::SubGeVDM_spectrum;
-        str modelname = "SubGeVDM_fermion";
-        get_all_signal_yields(get_all_SubGeVDM_signal_yields, spec, analysis_data_map, result, modelname);}
+        modelname = "SubGeVDM_fermion";
+      get_all_signal_yields(get_all_SubGeVDM_signal_yields, spec, analysis_data_map, result, modelname);
+
     }
 
     /// Fill the input vector with the total SubGeV signal prediction for each SR in the given analysis
@@ -2253,12 +2250,10 @@ namespace Gambit
 
         double mApmdm_ratio = mAp/mDM;
         if (mApmdm_ratio <= 2.)
-          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");} // beam dump yield will just return 0
+          ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime"); // beam dump yield will just return 0
       }
       else if(modelname == "SubGeVDM_fermion")
       {
-        // TODO: Implement this
-        //ColliderBit_error().raise(LOCAL_INFO, "ERROR! Signal yields for model SubGeVDM_fermion not implemented yet");
         double mDM = spec.get(Par::Pole_Mass, "DM");
         double mAp = spec.get(Par::Pole_Mass, "Ap");
         double kappa = spec.get(Par::dimensionless, "kappa");
@@ -2267,7 +2262,7 @@ namespace Gambit
 
         double mApmdm_ratio = mAp/mDM;
         if (mApmdm_ratio <= 2.)
-          {ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime");} // beam dump yield will just return 0
+          ColliderBit_error().raise(LOCAL_INFO, "ERROR! mAp/mdm <= 2., in off-shell regime"); // beam dump yield will just return 0
       }
       // Add yields and save in sr_num
       for (size_t i = 0; i < analysis_info.n_signal_regions; ++i)
@@ -2283,14 +2278,20 @@ namespace Gambit
       // Get the interpolator collections for the given operator_key
       const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("SubGeVBeamDump");
 
-      // Compute the signal
-      // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
-      double signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
+      // If values are outside bounds give zero signal
+      double signal = 0.;
+      if(signal_interp.is_inside_range(mDM, mAp))
+      {
+        // Compute the signal
+        // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
+        signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
+      }
 
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
       double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
 
+      // TODO: change to values in numerical constants
       double me = 0.000511; // mass of electron
       double mmu = 0.1057; // mass of muon
       double ee = 0.31343; // elementary charge
@@ -2306,7 +2307,6 @@ namespace Gambit
       double BR_scalarDM  = width_XXscalar / (width_XXscalar + width_ff); // Branching ratio for scalar DM
       double signalcounts = signal * pow(kappa/kappa_simulated,4) * pow(gDM/gDM_simulated,2) * BR_scalarDM;
 
-      // TODO: TG: Is this intended to loop over signal regions? Why is it the same for all signal regions? ; Taylor: I think there is only one in this case..
       for (size_t sr_i = 0; sr_i < analysis_info.n_signal_regions; ++sr_i)
       {
         signal_yields[sr_i] = signalcounts;
@@ -2318,14 +2318,20 @@ namespace Gambit
       // Get the interpolator collections for the given operator_key
       const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("mDM_mAp_events_SubGeVBeamDump_MB");
 
-      // Compute the signal
-      // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
-      double signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
+      // If values are outside bounds give zero signal
+      double signal = 0.;
+      if(signal_interp.is_inside_range(mDM, mAp))
+      {
+        // Compute the signal
+        // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
+        signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
+      }
 
       // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
       double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
       double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
 
+      // TODO: change to values in numerical constants
       double me = 0.000511; // mass of electron
       double mmu = 0.1057; // mass of muon
       double ee = 0.31343; // elementary charge
@@ -2335,14 +2341,13 @@ namespace Gambit
       if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
       if (mAp > 2*mmu) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(mmu,2))*sqrt(pow(mAp,2)/4-pow(mmu,2)) / (24*pi*pow(mAp,2));}
 
-      double width_XXfermion = pow(gDM,2)/3 * (4*pow(mAp,2)+8*pow(mdm,2)) * sqrt(pow(mAp,2)/4 - pow(mdm,2))/(8*pi*pow(mAp,2));
+      double width_XXfermion = pow(gDM,2)/3 * (4*pow(mAp,2)+8*pow(mDM,2)) * sqrt(pow(mAp,2)/4 - pow(mDM,2))/(8*pi*pow(mAp,2));
 
       //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
       double BR_fermionDM  = width_XXfermion / (width_XXfermion + width_ff); // Branching ratio for dirac fermion DM
 
       double signalcounts = signal * pow(kappa/kappa_simulated,4) * pow(gDM/gDM_simulated,2) * BR_fermionDM;
 
-      // TODO: TG: Is this intended to loop over signal regions? Why is it the same for all signal regions? ; Taylor: I think there is only one in this case..
       for (size_t sr_i = 0; sr_i < analysis_info.n_signal_regions; ++sr_i)
       {
         signal_yields[sr_i] = signalcounts;
