@@ -2316,7 +2316,7 @@ namespace Gambit
     void get_SubGeVDM_fermion_signal_yields(std::vector<double>& signal_yields, const Model_analysis_info& analysis_info, double mDM, double mAp, double kappa, double gDM)
     {
       // Get the interpolator collections for the given operator_key
-      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("mDM_mAp_events_SubGeVBeamDump_MB");
+      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("SubGeVBeamDump");
 
       // If values are outside bounds give zero signal
       double signal = 0.;
