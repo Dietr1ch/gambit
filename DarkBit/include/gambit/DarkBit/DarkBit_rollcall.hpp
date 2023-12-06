@@ -2591,6 +2591,18 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY LZ_ER_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_LZ_ER_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(LZ_S2_ER, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY SENSEI_at_MINOS_LogLikelihood
   START_CAPABILITY
     #define FUNCTION calc_SENSEI_at_MINOS_LogLikelihood
@@ -2647,6 +2659,32 @@ START_MODULE
     START_FUNCTION(double)
     NEEDS_CLASSES_FROM(obscura, default)
     BACKEND_REQ(DarkSide50_S2_Migdal_2023, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_SI_p, double)
+    DEPENDENCY(sigma_SI_n, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY PandaX_4T_Migdal_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_PandaX_4T_Migdal_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(PandaX_4T_S2_Migdal, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_SI_p, double)
+    DEPENDENCY(sigma_SI_n, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY LZ_Migdal_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_LZ_Migdal_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(LZ_S2_Migdal, (), obscura_default::obscura::DM_Detector_Ionization_Migdal, ())
     ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
     DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
     DEPENDENCY(sigma_SI_p, double)
