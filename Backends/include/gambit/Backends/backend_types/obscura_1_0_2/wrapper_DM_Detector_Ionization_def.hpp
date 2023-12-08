@@ -60,14 +60,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Use_Electron_Threshold__BOSS(ne_thr);
         }
         
-        inline void DM_Detector_Ionization::Use_Electron_Bins(unsigned int ne_thr, unsigned int N_bins, double bin_width)
-        {
-            get_BEptr()->Use_Electron_Bins(ne_thr, N_bins, bin_width);
-        }
-        
         inline void DM_Detector_Ionization::Use_Electron_Bins(unsigned int ne_thr, unsigned int N_bins)
         {
-            get_BEptr()->Use_Electron_Bins__BOSS(ne_thr, N_bins);
+            get_BEptr()->Use_Electron_Bins(ne_thr, N_bins);
         }
         
         inline double DM_Detector_Ionization::R_S2(unsigned int S2, const obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> electron_spectrum)

@@ -50,8 +50,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void Use_Electron_Threshold(unsigned int ne_thr);
         
-                void Use_Electron_Bins(unsigned int ne_thr, unsigned int N_bins, double bin_width);
-        
                 void Use_Electron_Bins(unsigned int ne_thr, unsigned int N_bins);
         
                 double R_S2(unsigned int S2, const obscura::DM_Particle& DM, obscura::DM_Distribution& DM_distr, std::vector<double> electron_spectrum);
