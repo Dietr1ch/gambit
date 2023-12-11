@@ -41,7 +41,7 @@
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
 # Define minimum compiler versions
-set(MIN_GCC_VERSION 5.1)
+set(MIN_GCC_VERSION 9.1)
 set(MIN_ICC_VERSION 15.0.2)
 set(MIN_CLANG_VERSION 10.0.0)
 set(MIN_APPLECLANG_VERSION 13.0.0)
@@ -170,6 +170,7 @@ else()
   set(PREFERRED_pybind11_VERSION "2.10.1")
   set(pybind11_CONTRIB_DIR "${PROJECT_SOURCE_DIR}/contrib/pybind11")
   include_directories("${PYTHON_INCLUDE_DIRS}")
+  unset(PYBIND11_CPP_STANDARD CACHE)
   find_package(pybind11 QUIET)
   if(pybind11_FOUND)
     if(pybind11_VERSION VERSION_LESS MIN_pybind11_VERSION)
@@ -500,14 +501,26 @@ set(BACKEND_GNU99_FLAGS "${BACKEND_C_FLAGS} -std=gnu99")
 # Should we use pragmas to suppress common compiler warnings from external libraries?
 option(SUPPRESS_LIBRARY_WARNINGS "Suppress common compiler warnings due to external libraries" ON)
 
-# Make symbols hidden by default when compiling GAMBIT source files only
-if(${CMAKE_MAJOR_VERSION} MATCHES "2")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fvisibility=hidden")
-else()
-  set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-  set(CMAKE_Fortran_VISIBILITY_PRESET hidden)
-  set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
+# Unless "-rdynamic" or "-Wl,--export-dynamic" is set, make symbols hidden by default when compiling GAMBIT source files only
+string(FIND ${CMAKE_CXX_FLAGS} "-rdynamic" FOUND_RDYNAMIC_CXX)
+string(FIND ${CMAKE_CXX_FLAGS} "--export-dynamic" FOUND_EXPORT_DYNAMIC_CXX)
+if(${FOUND_RDYNAMIC_CXX} EQUAL -1 AND ${FOUND_EXPORT_DYNAMIC_CXX} EQUAL -1)
+  if(${CMAKE_MAJOR_VERSION} MATCHES "2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
+  else()
+    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
+  endif()
+endif()
+
+string(FIND ${CMAKE_Fortran_FLAGS} "-rdynamic" FOUND_RDYNAMIC_FORTRAN)
+string(FIND ${CMAKE_Fortran_FLAGS} "--export-dynamic" FOUND_EXPORT_DYNAMIC_FORTRAN)
+if(${FOUND_RDYNAMIC_FORTRAN} EQUAL -1 AND ${FOUND_EXPORT_DYNAMIC_FORTRAN} EQUAL -1)
+  if(${CMAKE_MAJOR_VERSION} MATCHES "2")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fvisibility=hidden")
+  else()
+    set(CMAKE_Fortran_VISIBILITY_PRESET hidden)
+  endif()
 endif()
 
 # Check for optional packages and disable sections of GAMBIT accordingly
@@ -692,9 +705,6 @@ include(cmake/executables.cmake)
 if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   include(${PROJECT_BINARY_DIR}/linkedout.cmake)
 endif()
-
-# Create a list of Gambit bits to be used in the diagnostic system of Gambit.
-execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/Utils/scripts/find_all_gambit_bits.py --source-dir ${PROJECT_SOURCE_DIR} --output-file=${PROJECT_SOURCE_DIR}/config/gambit_bits.yaml)
 
 # Forbid the use of variable-length array and other non-standard C++ syntax
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
