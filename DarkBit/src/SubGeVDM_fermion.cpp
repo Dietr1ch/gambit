@@ -32,6 +32,8 @@ namespace Gambit
   namespace DarkBit
   {
 
+    double Gamma_reg(double Gamma, double mass); /// Helper function (width rescaled for RD calculations)
+
     class SubGeVDM_fermion
     {
       public:
@@ -52,16 +54,9 @@ namespace Gambit
       /// Helper function (Breit-Wigner)
       double DAp2 (double s)
       {
-        if (Gamma_Ap/mAp>1e-4)
-        {
-          return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
-        }
-        else // very narrow resonance -> need to regulate
-        {
-          double mGamma_reg = mAp*Gamma_Ap + 5e-5; // result does not depend on numerical value,
-                                                   // but becomes unreliable for <~1e-6
-          return mGamma_reg/Gamma_Ap/mAp/((s-mAp*mAp)*(s-mAp*mAp)+mGamma_reg*mGamma_reg);
-        };
+        double Gamma_eff=Gamma_reg(Gamma_Ap, mAp);
+        return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_eff*Gamma_eff)
+               * Gamma_eff/Gamma_Ap; // rescaling exact in NWA limit
       }
 
       double sv(std::string channel, double gDM, double gSM, double mass, double v, bool smooth)
@@ -114,6 +109,19 @@ namespace Gambit
       private:
         double Gamma_Ap, mb, me, mmu, mtau, mAp, mpi;
     };
+
+    /// Helper function (width rescaled for RD calculations)
+    double Gamma_reg(double Gamma, double mass)
+    {
+      if (Gamma/mass>1e-4){
+        return Gamma;
+      }
+      else // very narrow resonance -> need to regulate
+      {
+        return Gamma + 3e-5*mass; // RD results do not depend on numerical value,
+                                  // but becomes unreliable for <~1e-6
+      }
+    }
 
     void DarkMatter_ID_SubGeVDM_fermion(std::string & result) { result = "DM"; }
     void DarkMatterConj_ID_SubGeVDM_fermion(std::string & result) { result = "DM~"; }
@@ -260,8 +268,9 @@ namespace Gambit
         }
       }
 
-      // Tell DarkSUSY about dark photon resonance
-      if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"), tbl->at("Ap").width_in_GeV));
+      // Tell DarkSUSY about dark photon resonance. NB: must use rescaled width here!
+      double Gamma_eff=Gamma_reg(tbl->at("Ap").width_in_GeV, spec.get(Par::Pole_Mass, "Ap"));
+      if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"),Gamma_eff));
 
       // Tell DarkSUSY about Phi resonance
       double mPhi = 1.02;

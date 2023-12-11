@@ -36,6 +36,8 @@ namespace Gambit
   namespace DarkBit
   {
 
+    double Gamma_reg(double Gamma, double mass); /// Helper function (width rescaled for RD calculations)
+
     class SubGeVDM_scalar
     {
       public:
@@ -56,7 +58,9 @@ namespace Gambit
       /// Helper function (Breit-Wigner)
       double DAp2 (double s)
       {
-        return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
+        double Gamma_eff=Gamma_reg(Gamma_Ap, mAp);
+        return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_eff*Gamma_eff)
+               * Gamma_eff/Gamma_Ap; // rescaling exact in NWA limit
       }
 
       double sv(std::string channel, double gDM, double gSM, double mass, double v, bool smooth)
@@ -254,9 +258,9 @@ namespace Gambit
         }
       }
 
-      // Tell DarkSUSY about dark photon resonance
-      if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.
-          push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"), tbl->at("Ap").width_in_GeV));
+      // Tell DarkSUSY about dark photon resonance. NB: must use rescaled width here!
+      double Gamma_eff=Gamma_reg(tbl->at("Ap").width_in_GeV, spec.get(Par::Pole_Mass, "Ap"));
+      if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"),Gamma_eff));
 
       // Tell DarkSUSY about Phi resonance
       double mPhi = 1.02;
