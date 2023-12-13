@@ -512,23 +512,23 @@ namespace Gambit
         current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
       }
 
-      // if (current_analysis_name == "SubGeVBeamDump_NA64_interpolated") // NA64 limits
-      // {
-      //   // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
-      //   analysis_info_map[current_analysis_name] = Model_analysis_info();
-      //   current_ainfo = &(analysis_info_map[current_analysis_name]);
+      if (current_analysis_name == "SubGeVBeamDump_NA64_interpolated") // NA64 limits
+      {
+        // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+        analysis_info_map[current_analysis_name] = Model_analysis_info();
+        current_ainfo = &(analysis_info_map[current_analysis_name]);
 
-      //   current_ainfo->name = current_analysis_name;
+        current_ainfo->name = current_analysis_name;
 
-      //   // Set the background counts and observed counts TODO: I am just setting this to 1. Replace with your numbers.
-      //   current_ainfo->obsnum = {0};
-      //   current_ainfo->bkgnum = {0.0};
-      //   current_ainfo->bkgerr = {0.0};
+        // Set the background counts and observed counts TODO: I am just setting this to 1. Replace with your numbers.
+        current_ainfo->obsnum = {0};
+        current_ainfo->bkgnum = {0.0};
+        current_ainfo->bkgerr = {0.0};
 
-      //   assert(current_ainfo->obsnum.size() == current_ainfo->bkgnum.size());
-      //   assert(current_ainfo->obsnum.size() == current_ainfo->bkgerr.size());
-      //   current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
-      // }
+        assert(current_ainfo->obsnum.size() == current_ainfo->bkgnum.size());
+        assert(current_ainfo->obsnum.size() == current_ainfo->bkgerr.size());
+        current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
+      }
 
 
 
@@ -2135,24 +2135,24 @@ namespace Gambit
         current_ainfo = &empty_analysis_info;
       }
 
-      // // Analysis name
-      // current_analysis_name = "SubGeVBeamDump_NA64_interpolated";
+      // Analysis name
+      current_analysis_name = "SubGeVBeamDump_NA64_interpolated";
 
-      // if (std::find(skip_analyses.begin(), skip_analyses.end(), current_analysis_name) == skip_analyses.end())
-      // {
-      //   if (not(Utils::file_exists(Analysis_data_path[current_analysis_name])))
-      //   {
-      //     ColliderBit_error().raise(LOCAL_INFO, "ERROR! Cannot find interpolation data file: " + Analysis_data_path[current_analysis_name]);
-      //   }
+      if (std::find(skip_analyses.begin(), skip_analyses.end(), current_analysis_name) == skip_analyses.end())
+      {
+        if (not(Utils::file_exists(Analysis_data_path[current_analysis_name])))
+        {
+          ColliderBit_error().raise(LOCAL_INFO, "ERROR! Cannot find interpolation data file: " + Analysis_data_path[current_analysis_name]);
+        }
 
-      //   // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
-      //   analysis_info_map[current_analysis_name] = Model_analysis_info();
-      //   current_ainfo = &(analysis_info_map[current_analysis_name]);
-      //   fill_analysis_info_map(current_analysis_name, current_ainfo);
-      //   current_ainfo->add_interp1d("mAp_eps_events_SubGeVBeamDump_NA64", Analysis_data_path[current_analysis_name], Interpolation_columns[current_analysis_name]);
+        // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
+        analysis_info_map[current_analysis_name] = Model_analysis_info();
+        current_ainfo = &(analysis_info_map[current_analysis_name]);
+        fill_analysis_info_map(current_analysis_name, current_ainfo);
+        current_ainfo->add_interp1d("mAp_eps_events_SubGeVBeamDump_NA64", Analysis_data_path[current_analysis_name], Interpolation_columns[current_analysis_name]);
 
-      //   current_ainfo = &empty_analysis_info;
-      // }
+        current_ainfo = &empty_analysis_info;
+      }
 
     }
 
@@ -2178,24 +2178,24 @@ namespace Gambit
         Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_scalarDM_NEvents.txt";
         Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_scalarDM_NEvents.txt";
         Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_scalarDM_NEvents.txt";
-        // Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_scalarDM_NEvents.txt";
+        Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_2023.txt";
 
         Interpolation_columns["SubGeVBeamDump_MBe_interpolated"] = {"mDM","mAp","signal_counts"};
         Interpolation_columns["SubGeVBeamDump_MBN_interpolated"] = {"mDM","mAp","signal_counts"};
         Interpolation_columns["SubGeVBeamDump_LSND_interpolated"] = {"mDM","mAp","signal_counts"};
-        //Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
+        Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
       }
       else if(ModelInUse("SubGeVDM_fermion"))
       {
         Analysis_data_path["SubGeVBeamDump_MBe_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_electron_fermionDM_NEvents.txt";
         Analysis_data_path["SubGeVBeamDump_MBN_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/MB_nucleon_fermionDM_NEvents.txt";
         Analysis_data_path["SubGeVBeamDump_LSND_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/LSND_fermionDM_NEvents.txt";
-        //Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_fermionDM_Nevents.txt";
+        Analysis_data_path["SubGeVBeamDump_NA64_interpolated"] = GAMBIT_DIR "/ColliderBit/data/SubGeVDM/BeamDump/NA64_2023.txt";
 
         Interpolation_columns["SubGeVBeamDump_MBe_interpolated"] = {"mDM","mAp","signal_counts"};
         Interpolation_columns["SubGeVBeamDump_MBN_interpolated"] = {"mDM","mAp","signal_counts"};
         Interpolation_columns["SubGeVBeamDump_LSND_interpolated"] = {"mDM","mAp","signal_counts"};
-        // Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
+        Interpolation_columns["SubGeVBeamDump_NA64_interpolated"] = {"mAp","epsilon"};
       }
       else
       {
@@ -2276,45 +2276,79 @@ namespace Gambit
     void get_SubGeVDM_scalar_signal_yields(std::vector<double>& signal_yields, const Model_analysis_info& analysis_info, double mDM, double mAp, double kappa, double gDM)
     {
       // Get the interpolator collections for the given operator_key
-      const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("SubGeVBeamDump");
+      if(current_analysis_name == "SubGeVBeamDump_NA64_interpolated")
+          { const Utils::interp1d_gsl_collection& eps_interp_NA64 = analysis_info.get_interp1d("mAp_eps_events_SubGeVBeamDump_NA64");
+          
+            // If values are outside bounds give zero signal
+            double kappa_interp = 0.;
+            if(eps_interp_NA64.is_inside_range(mAp, kappa))
+            {
+              // Compute the signal
+              // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
+              kappa_interp = eps_interp_NA64.eval(mAp, kappa, 0); // mAp and eps
+            }
+          double signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3
+          }
 
-      // If values are outside bounds give zero signal
-      double signal = 0.;
-      if(signal_interp.is_inside_range(mDM, mAp))
-      {
-        // Compute the signal
-        // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
-        signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
+      else {
+          const Utils::interp2d_gsl_collection& eps_interp = analysis_info.get_interp2d("SubGeVBeamDump");
+        
+          // If values are outside bounds give zero signal
+          double signal = 0.;
+          if(signal_interp.is_inside_range(mDM, mAp))
+          {
+            // Compute the signal
+            // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
+            signal = signal_interp.eval(mDM, mAp, 0); // mdm and mAp
+          }
+
+          // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
+          double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
+          double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
+
+          // TODO: change to values in numerical constants
+          double me = 0.000511; // mass of electron
+          double mmu = 0.1057; // mass of muon
+          double ee = 0.31343; // elementary charge
+
+
+          double width_ff = 0.0;
+          if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
+          if (mAp > 2*mmu) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(mmu,2))*sqrt(pow(mAp,2)/4-pow(mmu,2)) / (24*pi*pow(mAp,2));}
+
+          double width_XXscalar = pow(gDM,2)*(pow(mAp,2)-4*pow(mDM,2))/(8*pi*pow(mAp,2))*sqrt(pow(mAp,2)/4-pow(mDM,2));
+
+          //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
+          double BR_scalarDM  = width_XXscalar / (width_XXscalar + width_ff); // Branching ratio for scalar DM
+          double signalcounts = signal * pow(kappa/kappa_simulated,4) * pow(gDM/gDM_simulated,2) * BR_scalarDM;
+
+        }
+
+        for (size_t sr_i = 0; sr_i < analysis_info.n_signal_regions; ++sr_i)
+        {
+          signal_yields[sr_i] = signalcounts;
+        }
       }
-
-      // TODO: After interpolating the signal, apply any scaling, etc that you intend to.
-      double kappa_simulated  = 1e-4; // epsilon value which the data was simulated with
-      double gDM_simulated    = 2.5;  // gD (dark coupling between A' and DM) value which the data was simulated with
-
-      // TODO: change to values in numerical constants
-      double me = 0.000511; // mass of electron
-      double mmu = 0.1057; // mass of muon
-      double ee = 0.31343; // elementary charge
-
-
-      double width_ff = 0.0;
-      if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
-      if (mAp > 2*mmu) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(mmu,2))*sqrt(pow(mAp,2)/4-pow(mmu,2)) / (24*pi*pow(mAp,2));}
-
-      double width_XXscalar = pow(gDM,2)*(pow(mAp,2)-4*pow(mDM,2))/(8*pi*pow(mAp,2))*sqrt(pow(mAp,2)/4-pow(mDM,2));
-
-      //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
-      double BR_scalarDM  = width_XXscalar / (width_XXscalar + width_ff); // Branching ratio for scalar DM
-      double signalcounts = signal * pow(kappa/kappa_simulated,4) * pow(gDM/gDM_simulated,2) * BR_scalarDM;
-
-      for (size_t sr_i = 0; sr_i < analysis_info.n_signal_regions; ++sr_i)
-      {
-        signal_yields[sr_i] = signalcounts;
-      }
-    }
 
     void get_SubGeVDM_fermion_signal_yields(std::vector<double>& signal_yields, const Model_analysis_info& analysis_info, double mDM, double mAp, double kappa, double gDM)
     {
+
+      // Get the interpolator collections for the given operator_key
+      if(current_analysis_name == "SubGeVBeamDump_NA64_interpolated")
+          { const Utils::interp1d_gsl_collection& eps_interp_NA64 = analysis_info.get_interp1d("mAp_eps_events_SubGeVBeamDump_NA64");
+          
+            // If values are outside bounds give zero signal
+            double kappa_interp = 0.;
+            if(eps_interp_NA64.is_inside_range(mAp, kappa))
+            {
+              // Compute the signal
+              // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
+              kappa_interp = eps_interp_NA64.eval(mAp, kappa, 0); // mAp and eps
+            }
+          double signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3
+          }
+
+      else {
       // Get the interpolator collections for the given operator_key
       const Utils::interp2d_gsl_collection& signal_interp = analysis_info.get_interp2d("SubGeVBeamDump");
 
@@ -2353,6 +2387,7 @@ namespace Gambit
         signal_yields[sr_i] = signalcounts;
       }
     }
+}
 
   } // namespace ColliderBit
 
