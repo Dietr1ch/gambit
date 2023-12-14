@@ -163,7 +163,7 @@ int main()
         double r1 = nevents_pred(0);
         int r2 = nevents_pred_rounded(0);
         std::cout << std::endl << "Retrieved results: " << r1 << ", " << r2 << std::endl << std::endl;
-        
+
       }
 
       // Be sure to do something sensible in cases where the point was invalidated by one of functions.

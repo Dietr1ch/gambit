@@ -52,7 +52,7 @@ namespace Gambit
     {
       utils_error().raise(LOCAL_INFO, "Can only currently use cout or none printer in standalones.");
     }
-  
+
     // Set the minimum required settings by the printer
     YAML::Node printerNode;
     printerNode["printer"] = printer;
