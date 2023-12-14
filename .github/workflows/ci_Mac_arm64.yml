@@ -58,36 +58,9 @@ jobs:
         ./gambit -rf yaml_files/spartan.yaml 
 
 
-  standalones_build:
-    runs-on: [self-hosted, macOS, Arm64]
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [Arm64]
-    defaults:
-      run:
-        shell: bash -eo pipefail {0}
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Set up build environment
-      run: |
-        echo "Set up the build environment"
-        mkdir -p BUILD
-        cd BUILD
-    - name: Configure with cmake
-      run: |
-        echo "Configure with cmake"
-        cd BUILD
-        cmake -DCMAKE_CXX_FLAGS="-rdynamic" -DWITH_MPI=ON -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
-    - name: Build standalones
-      run: |
-        echo "Test the building of the standalones"
-        cd BUILD
-        make standalones
-
-
   backends_build:
+    if: ${{ always() }}
+    needs: [gambit_build] # Sets run order
     runs-on: [self-hosted, macOS, Arm64]
     strategy:
       fail-fast: false
@@ -119,6 +92,8 @@ jobs:
 
 
   test_runs:
+    if: ${{ always() }}
+    needs: [gambit_build, backends_build] # Sets run order
     runs-on: [self-hosted, macOS, Arm64]
     strategy:
       fail-fast: false
@@ -180,3 +155,34 @@ jobs:
         echo "Test run with WC_lite.yaml (no printing)"
         sed -i "" 's/ hdf5/ none/g' yaml_files/WC_lite.yaml
         ./gambit -f yaml_files/WC_lite.yaml
+
+
+  standalones_build:
+    if: ${{ always() }}
+    needs: [gambit_build, backends_build, test_runs] # Sets run order
+    runs-on: [self-hosted, macOS, Arm64]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [Arm64]
+    defaults:
+      run:
+        shell: bash -eo pipefail {0}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up build environment
+      run: |
+        echo "Set up the build environment"
+        mkdir -p BUILD
+        cd BUILD
+    - name: Configure with cmake
+      run: |
+        echo "Configure with cmake"
+        cd BUILD
+        cmake -DCMAKE_CXX_FLAGS="-rdynamic" -DWITH_MPI=ON -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
+    - name: Build standalones
+      run: |
+        echo "Test the building of the standalones"
+        cd BUILD
+        make standalones
