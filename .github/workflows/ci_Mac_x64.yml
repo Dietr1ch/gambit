@@ -31,7 +31,7 @@ jobs:
         echo "Configure with cmake"
         cd BUILD
         # Ditching a few backends that don't currently work on Mac
-        cmake -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
+        cmake -DCMAKE_CXX_FLAGS="-rdynamic" -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
     - name: Build scanners
       run: |
         echo "Build scanners"
@@ -81,7 +81,7 @@ jobs:
         echo "Configure with cmake"
         cd BUILD
         # Ditching a few backends that don't currently work on Mac
-        cmake -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
+        cmake -DCMAKE_CXX_FLAGS="-rdynamic" -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
     - name: Build standalones
       run: |
         echo "Test the building of the standalones"
@@ -111,7 +111,7 @@ jobs:
         echo "Configure with cmake"
         cd BUILD
         # Ditching a few backends that don't currently work on Mac
-        cmake -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
+        cmake -DCMAKE_CXX_FLAGS="-rdynamic" -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="micromegas_DMsimpVectorMedVectorDM" ..
     - name: Build Backends
       run: |
         echo "Building all Backends"
@@ -143,7 +143,7 @@ jobs:
         echo "Configure with cmake"
         cd BUILD
         # Ditching a few backends that don't currently work on Mac
-        cmake -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="DarkBit;CosmoBit;NeutrinoBit;ObjectivesBit;micromegas_DMsimpVectorMedVectorDM" ..
+        cmake -DCMAKE_CXX_FLAGS="-rdynamic" -DWITH_MPI=ON -DPYTHON_EXECUTABLE=/usr/local/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -DPYTHON_LIBRARY=/usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib -DPYTHON_INCLUDE_DIR=/usr/local/Frameworks/Python.framework/Versions/3.11/include/python3.11 -DWITH_HEPMC=ON -DWITH_YODA=ON -DBUILD_FS_MODELS="CMSSM;MSSM;MDM" -Ditch="DarkBit;CosmoBit;NeutrinoBit;ObjectivesBit;micromegas_DMsimpVectorMedVectorDM" ..
     - name: Build required scanners
       run: |
         echo "Build scanners required for test runs"
