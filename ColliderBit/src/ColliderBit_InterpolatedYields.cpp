@@ -2308,14 +2308,14 @@ namespace Gambit
         const Utils::interp1d_gsl_collection& eps_interp = analysis_info.get_interp1d("SubGeVBeamDump");
 
         // If values are outside bounds give zero signal
-        double kappa_interp = 0.;
         if(eps_interp.is_inside_range(mAp))
         {
           // Compute the signal
           // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
-          kappa_interp = eps_interp.eval(mAp, 0); // mAp and eps
+          double kappa_interp = eps_interp.eval(mAp, 0); // mAp and eps
+          signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3;
         }
-        signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3;
+
       }
       else if(analysis_info.has_interp2d("SubGeVBeamDump"))
       {
@@ -2369,14 +2369,13 @@ namespace Gambit
         const Utils::interp1d_gsl_collection& eps_interp = analysis_info.get_interp1d("SubGeVBeamDump");
 
         // If values are outside bounds give zero signal
-        double kappa_interp = 0.;
         if(eps_interp.is_inside_range(mAp))
         {
           // Compute the signal
           // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
-          kappa_interp = eps_interp.eval(mAp, 0); // mAp and eps
+          double kappa_interp = eps_interp.eval(mAp, 0); // mAp and eps
+          signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3;
         }
-        signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3;
       }
 
       else if(analysis_info.has_interp2d("SubGeVBeamDump"))
