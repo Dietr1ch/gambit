@@ -851,11 +851,14 @@ namespace Gambit
         logger() << LogTags::printers << "Running finalise() routine for HDF5Printer (with name=\""<<printer_name<<"\")..." << EOM;
 
         // Add last point ID to metadata
-        std::stringstream ssPPID;
-        ssPPID << lastPointID;
-        map_str_str lastpoint;
-        lastpoint["lastPointID"] = ssPPID.str();
-        _print_metadata(lastpoint);
+        if (get_output_metadata())
+        {
+          std::stringstream ssPPID;
+          ssPPID << lastPointID;
+          map_str_str lastpoint;
+          lastpoint["lastPointID"] = ssPPID.str();
+          _print_metadata(lastpoint);
+        }
 
         // Make sure all the buffers are caught up to the final point.
         synchronise_buffers();

@@ -45,18 +45,19 @@ namespace Gambit
   }
 
   /// Initialise the printers (required for suspicious point raises)
-  YAML::Node get_standalone_printer(str printer, str prefix)
+  YAML::Node get_standalone_printer(str printer, str prefix, str filename)
   {
-    // TODO: allow standalones to make use of other printers?
-    if (printer != "cout" && printer != "none")
-    {
-      utils_error().raise(LOCAL_INFO, "Can only currently use cout or none printer in standalones.");
-    }
+    // TODO: allow standalones to make use of other printers? // TODO: Commenting out while I fiddle
+    //if (printer != "cout" && printer != "none")
+    //{
+    //  utils_error().raise(LOCAL_INFO, "Can only currently use cout or none printer in standalones.");
+    //}
 
     // Set the minimum required settings by the printer
     YAML::Node printerNode;
     printerNode["printer"] = printer;
     printerNode["options"]["default_output_path"] = Utils::ensure_path_exists(prefix);
+    printerNode["options"]["output_file"] = filename; // TODO: Needed for my hdf5 testing
     return printerNode;
   }
 

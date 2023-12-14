@@ -31,7 +31,7 @@ namespace Gambit
   void initialise_standalone_logs(str);
 
   /// Initialise the printers (required for suspicious point raises)
-  YAML::Node get_standalone_printer(str, str);
+  YAML::Node get_standalone_printer(str, str, str);
 
 }
 

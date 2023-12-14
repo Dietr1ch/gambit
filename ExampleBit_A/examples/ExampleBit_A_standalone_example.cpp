@@ -55,9 +55,11 @@ int main()
     initialise_standalone_logs("runs/ExampleBit_A_standalone/logs/");
 
     // Initialise settings for printer (required)
-    YAML::Node printerNode = get_standalone_printer("cout", "runs/ExampleBit_A_standalone/logs/");
+    YAML::Node printerNode = get_standalone_printer("hdf5", "runs/ExampleBit_A_standalone/samples/", "ExampleBit_A_standalone.hdf5");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
+    (printerManager.printerptr)->addToPrintList("Suspicious Point Code");
+    (printerManager.printerptr)->set_output_metadata(false);
 
     // Change the fatality of different errors and warnings from the defaults, if desired.
     model_warning().set_fatal(true);
@@ -136,6 +138,10 @@ int main()
     std::cout << "Starting model scan..." << std::endl << std::endl;
     for (int i = 0; i<5; i++)
     {
+      // Print out some basic info for each point.
+      Gambit::Printers::get_point_id() = i;
+      (printerManager.printerptr)->print(0, "MPIrank", Printers::get_main_param_id("MPIrank"), (printerManager.printerptr)->getRank(), Printers::get_point_id());
+      (printerManager.printerptr)->print(Printers::get_point_id(), "pointID", Printers::get_main_param_id("pointID"), (printerManager.printerptr)->getRank(), Printers::get_point_id());
 
       try
       {
@@ -174,6 +180,7 @@ int main()
 
     }
 
+    (printerManager.printerptr)->finalise(false);
     std::cout << "ExampleBit_A standalone example has finished successfully." << std::endl << std::endl;
 
   }

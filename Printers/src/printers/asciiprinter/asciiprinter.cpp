@@ -205,11 +205,14 @@ namespace Gambit
       AP_DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
 
       // Add last point ID to metadata
-      std::stringstream ssPPID;
-      ssPPID << lastPointID;
-      map_str_str lastpoint;
-      lastpoint["lastPointID"] = ssPPID.str();
-      _print_metadata(lastpoint);
+      if (get_output_metadata())
+      {
+        std::stringstream ssPPID;
+        ssPPID << lastPointID;
+        map_str_str lastpoint;
+        lastpoint["lastPointID"] = ssPPID.str();
+        _print_metadata(lastpoint);
+      }
     }
 
     void asciiPrinter::flush()
