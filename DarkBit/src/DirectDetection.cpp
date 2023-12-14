@@ -557,6 +557,29 @@ namespace Gambit
       result = experiment.Log_Likelihood(DM, SHM);
     }
 
+    // PandaX-4T S2 Electron Recoil Log-Likelihood using obscura
+    void calc_PandaX_4T_ER_LogLikelihood(double& result)
+    {
+      using namespace Pipes::calc_PandaX_4T_ER_LogLikelihood;
+
+      // 1. DM halo model (in powers of GeV)
+      LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+
+      // 2. DM Particle with SI interactions
+      double mDM = *Param["mDM"]; // in GeV
+      double mAp = *Param["mAp"]; // in GeV
+      double sigma_e = *Dep::sigma_e/gev2cm2; // in GeV^-2
+
+      obscura_default::obscura::DM_Particle_SI DM(mDM);
+      DM.Set_Sigma_Electron(sigma_e);
+      DM.Set_FormFactor_DM("General", mAp);
+
+      // 3. Experiment
+      obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::PandaX_4T_S2_ER();
+      result = experiment.Log_Likelihood(DM, SHM);
+    }
+
     // LZ S2 Electron Recoil Log-Likelihood using obscura
     void calc_LZ_ER_LogLikelihood(double& result)
     {

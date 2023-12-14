@@ -17,6 +17,10 @@
 ///         (kahlhoefer@kit.edu)
 ///  \date 2022 May
 ///
+///  \author Tomas Gonzalo
+///          (tomas.gonzalo@kit.edu)
+///  \date 2023 Dec
+///
 ///  *********************************************
 
 #ifndef __SubGeVDM_fermion_hpp__
@@ -51,6 +55,16 @@
 #undef PARENT
 #undef MODEL
 
+#define MODEL SubGeVDM_fermion_sigmaN
+#define PARENT SubGeVDM_fermion
+  START_MODEL
+
+  DEFINEPARS(mDM,mAp,sigmaN,kappa,etaDM)
+
+  // Translate to "SubGeVDM_fermion" (Mapping is defined in SubGeVDM.cpp)
+  INTERPRET_AS_PARENT_FUNCTION(SubGeVDM_fermion_sigmaN_to_SubGeVDM_fermion)
+#undef PARENT
+#undef MODEL
 
 #define MODEL Resonant_SubGeVDM_fermion
   START_MODEL

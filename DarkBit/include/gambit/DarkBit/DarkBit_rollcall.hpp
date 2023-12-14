@@ -2604,6 +2604,18 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY PandaX_4T_ER_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_PandaX_4T_ER_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(PandaX_4T_S2_ER, (), obscura_default::obscura::DM_Detector_Ionization_ER, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY LZ_ER_LogLikelihood
   START_CAPABILITY
     #define FUNCTION calc_LZ_ER_LogLikelihood

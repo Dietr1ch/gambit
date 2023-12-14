@@ -80,6 +80,32 @@
 #undef PARENT
 #undef MODEL
 
+#define MODEL SubGeVDM_fermion_sigmaN
+#define PARENT SubGeVDM_fermion
+  void MODEL_NAMESPACE::CAT_3(MODEL,_to_,PARENT) (const ModelParameters &myP, ModelParameters &targetP)
+  {
+    logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> " STRINGIFY(PARENT) "."<<LogTags::info<<EOM;
+
+    USE_MODEL_PIPE(PARENT) // get pipe for "interprete as PARENT" function
+
+    double mAp = myP["mAp"];
+    double mDM = myP["mDM"];
+    double kappa = myP["kappa"];
+    double sigmaN = myP["sigmaN"];
+
+    double reduced_mass = mDM * m_proton / (mDM + m_proton);
+    double gN = sqrt(sigmaN*pi/gev2cm2)/reduced_mass;
+    double gDM = gN*pow(mAp,2)/sqrt(4*pi*alpha_EM)/kappa;
+
+    targetP.setValue("mDM", mDM);
+    targetP.setValue("mAp", mAp);
+    targetP.setValue("gDM", gDM);
+    targetP.setValue("kappa", kappa);
+    targetP.setValue("etaDM", myP["etaDM"]);
+  }
+#undef PARENT
+#undef MODEL
+
 #define MODEL Resonant_SubGeVDM_fermion
   void MODEL_NAMESPACE::Resonant_SubGeVDM_fermion_to_SubGeVDM_fermion (const ModelParameters &myparams, ModelParameters &friendparams)
   {

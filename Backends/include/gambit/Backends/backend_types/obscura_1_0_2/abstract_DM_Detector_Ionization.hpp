@@ -56,6 +56,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void Use_PE_Bins(double, double, const std::vector<unsigned int>&) =0;
     
+                virtual void Use_PE_Bins(const std::string, const std::vector<unsigned int>&) =0;
+    
                 virtual void Print_Summary(int) const =0;
     
                 virtual void Print_Summary__BOSS() const =0;
