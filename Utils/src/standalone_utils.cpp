@@ -13,6 +13,9 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2016 Jun
 ///
+///  \author Chris Chang
+///  \date 2023 Dec
+///
 ///  *********************************************
 
 #include "gambit/Utils/standalone_utils.hpp"
@@ -39,6 +42,22 @@ namespace Gambit
 
     // Initialise global LogMaster object
     logger().initialise(loggerinfo);
+  }
+
+  /// Initialise the printers (required for suspicious point raises)
+  YAML::Node get_standalone_printer(str printer, str prefix)
+  {
+    // TODO: allow standalones to make use of other printers?
+    if (printer != "cout" && printer != "none")
+    {
+      utils_error().raise(LOCAL_INFO, "Can only currently use cout or none printer in standalones.");
+    }
+  
+    // Set the minimum required settings by the printer
+    YAML::Node printerNode;
+    printerNode["printer"] = printer;
+    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists(prefix);
+    return printerNode;
   }
 
 }

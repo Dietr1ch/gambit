@@ -20,7 +20,6 @@
 // Always required in any standalone module main file
 #include "gambit/Elements/standalone_module.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
-#include "gambit/Printers/printermanager.hpp"
 
 // Only needed here
 #include "gambit/Utils/util_functions.hpp"
@@ -55,20 +54,17 @@ int main()
     //Initialise logging (just comment out if you want no logfiles)
     initialise_standalone_logs("runs/ExampleBit_A_standalone/logs/");
 
+    // Initialise settings for printer (required)
+    YAML::Node printerNode = get_standalone_printer("cout", "runs/ExampleBit_A_standalone/logs/");
+    Printers::PrinterManager printerManager(printerNode, false);
+    set_global_printer_manager(&printerManager);
+
     // Change the fatality of different errors and warnings from the defaults, if desired.
     model_warning().set_fatal(true);
     ExampleBit_A::ExampleBit_A_error().set_fatal(true);
 
     // Initialise the random number generator.
     Random::create_rng_engine("default");
-
-    // Initialise the printer with the cout printer (required for suspicious point printing)
-    // TODO: Allow this to work outside of cout/none printers
-    YAML::Node printerNode;
-    printerNode["printer"] = "cout";
-    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists("runs/ExampleBit_A_standalone/samples/");
-    Printers::PrinterManager printerManager(printerNode, false);
-    set_global_printer_manager(&printerManager);
 
     // Test message (note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag).
     logger()<<"Running ExampleBit_A standalone example"<<LogTags::info<<EOM;

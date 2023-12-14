@@ -26,7 +26,6 @@
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Printers/printermanager.hpp"
 
 using namespace DarkBit::Functown;     // Functors wrapping the module's actual module functions
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
@@ -99,11 +98,8 @@ int main()
     logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
     model_warning().set_fatal(true);
     
-    // Initialise the printer with the cout printer (required for suspicious point printing)
-    // TODO: Allow this to work outside of cout/none printers
-    YAML::Node printerNode;
-    printerNode["printer"] = "cout";
-    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists("runs/DarkBit_standalone_ScalarSingletDM_Z2/samples/");
+    // Initialise settings for printer (required)
+    YAML::Node printerNode = get_standalone_printer("cout", "runs/DarkBit_standalone_ScalarSingletDM_Z2/logs/");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
 

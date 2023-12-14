@@ -22,7 +22,6 @@
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/cats.hpp"
-#include "gambit/Printers/printermanager.hpp"
 // #include "gambit/Backends/backend_rollcall.hpp"
 
 #define NULIKE_VERSION "1.0.9"
@@ -190,12 +189,8 @@ int main(int argc, char* argv[])
     initialise_standalone_logs("CBS_logs/");
     logger()<<"Running CBS"<<LogTags::info<<EOM;
     
-    // Initialise the printer with the cout printer (required for suspicious point printing)
-    // TODO: Allow this to work outside of cout/none printers
-    // TODO: Pull in printer settings from infile
-    YAML::Node printerNode;
-    printerNode["printer"] = "cout";
-    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists("runs/CBS/samples/");
+    // Initialise settings for printer (required)
+    YAML::Node printerNode = get_standalone_printer("cout", "CBS_logs/");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
 
