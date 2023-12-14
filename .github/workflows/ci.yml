@@ -9,7 +9,6 @@ on:
     - cron:  '0 5 * * *'
 
 jobs:
-
   # A job that builds GAMBIT + scanners, tests the command-line interface 
   # and runs a minimal test run with spartan.yaml
   gambit_build:
@@ -229,10 +228,10 @@ jobs:
         make -j$(( ($(nproc)+1)/2 )) higgssignals
         make ATLAS_FullLikes
         # Build bakends needed for WC.yaml
-        make -j$(( ($(nproc)+1)/2 )) superiso
+        make superiso
         make -j$(( ($(nproc)+1)/2 )) heplikedata
         make -j$(( ($(nproc)+1)/2 )) heplike
-    - name: Build required Gambit bits
+    - name: Build Gambit
       run: |
         cd BUILD && . buildenv.sh
         make -j$(( ($(nproc)+1)/2 )) gambit
