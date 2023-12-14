@@ -20,6 +20,7 @@
 // Always required in any standalone module main file
 #include "gambit/Elements/standalone_module.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
+#include "gambit/Printers/printermanager.hpp"
 
 // Only needed here
 #include "gambit/Utils/util_functions.hpp"
@@ -60,6 +61,14 @@ int main()
 
     // Initialise the random number generator.
     Random::create_rng_engine("default");
+
+    // Initialise the printer with the cout printer (required for suspicious point printing)
+    // TODO: Allow this to work outside of cout/none printers
+    YAML::Node printerNode;
+    printerNode["printer"] = "cout";
+    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists("runs/ExampleBit_A_standalone/samples/");
+    Printers::PrinterManager printerManager(printerNode, false);
+    set_global_printer_manager(&printerManager);
 
     // Test message (note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag).
     logger()<<"Running ExampleBit_A standalone example"<<LogTags::info<<EOM;
@@ -158,7 +167,7 @@ int main()
         double r1 = nevents_pred(0);
         int r2 = nevents_pred_rounded(0);
         std::cout << std::endl << "Retrieved results: " << r1 << ", " << r2 << std::endl << std::endl;
-
+        
       }
 
       // Be sure to do something sensible in cases where the point was invalidated by one of functions.

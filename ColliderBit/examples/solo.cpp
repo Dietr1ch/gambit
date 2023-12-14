@@ -22,6 +22,7 @@
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/cats.hpp"
+#include "gambit/Printers/printermanager.hpp"
 // #include "gambit/Backends/backend_rollcall.hpp"
 
 #define NULIKE_VERSION "1.0.9"
@@ -188,6 +189,15 @@ int main(int argc, char* argv[])
     logger().set_log_debug_messages(debug);
     initialise_standalone_logs("CBS_logs/");
     logger()<<"Running CBS"<<LogTags::info<<EOM;
+    
+    // Initialise the printer with the cout printer (required for suspicious point printing)
+    // TODO: Allow this to work outside of cout/none printers
+    // TODO: Pull in printer settings from infile
+    YAML::Node printerNode;
+    printerNode["printer"] = "cout";
+    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists("runs/CBS/samples/");
+    Printers::PrinterManager printerManager(printerNode, false);
+    set_global_printer_manager(&printerManager);
 
     // Initialise the random number generator, using a hardware seed if no seed is given in the input file.
     int seed = settings.getValueOrDef<int>(-1, "seed");

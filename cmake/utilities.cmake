@@ -33,8 +33,9 @@
 #  \date 2018 Dec
 #
 #  \author Christopher Chang
-#          (christopher.chang@uqconnect.edu.au)
+#          (c.j.chang@fys.uio.no)
 #  \date 2021 Feb
+#        2023 Dec
 #
 #  \author Anders Kvellestad
 #          (anders.kvellestad@fys.uio.no)
@@ -76,13 +77,6 @@ function(check_result result command)
   if(NOT ${result} STREQUAL "0")
     message(FATAL_ERROR "${BoldRed}Cmake failed because a GAMBIT python script failed.  Culprit: ${command}${ColourReset}")
   endif()
-endfunction()
-
-# Execute script to prevent printing problems with standalones
-function(add_elements_extras target)
-  set(ELEMENTS_EXTRAS_SCRIPT ${PROJECT_SOURCE_DIR}/Elements/scripts/elements_extras.py)
-  add_custom_target(${target} COMMAND ${PYTHON_EXECUTABLE} ${ELEMENTS_EXTRAS_SCRIPT} ${target}
-                            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 endfunction()
 
 #Check if a string starts with a give substring
@@ -222,7 +216,6 @@ function(add_gambit_library libraryname)
   add_dependencies(${libraryname} printer_harvest)
   add_dependencies(${libraryname} module_harvest)
   add_dependencies(${libraryname} yaml-cpp)
-  add_dependencies(${libraryname} elements_extras)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
     foreach (dir ${GAMBIT_INCDIRS})
@@ -428,9 +421,6 @@ function(add_standalone executablename)
       endif()
       if(module STREQUAL "SpecBit")
         set(USES_SPECBIT TRUE)
-        # Temporarily add the printers module whenever SpecBit is present to avoid linking problems
-        set(COMMA_SEPARATED_MODULES "${COMMA_SEPARATED_MODULES},Printers")
-        set(STANDALONE_OBJECTS ${STANDALONE_OBJECTS} $<TARGET_OBJECTS:Printers>)
       endif()
       if(module STREQUAL "ColliderBit")
         set(USES_COLLIDERBIT TRUE)
@@ -492,11 +482,6 @@ function(add_standalone executablename)
                                   ${STANDALONE_OBJECTS}
                                   ${GAMBIT_ALL_COMMON_OBJECTS}
                           HEADERS ${ARG_HEADERS})
-
-    # Add the elements_extras target
-    add_elements_extras(${executablename}_elements_extras)
-    add_dependencies(${executablename}_elements_extras elements_extras)
-    add_dependencies(${executablename} ${executablename}_elements_extras)
 
     # Add each of the declared dependencies
     foreach(dep ${ARG_DEPENDENCIES})

@@ -29,6 +29,7 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/PrecisionBit/PrecisionBit_rollcall.hpp"
+#include "gambit/Printers/printermanager.hpp"
 
 using namespace BackendIniBit::Functown;
 using namespace SpecBit::Functown;
@@ -76,6 +77,14 @@ int main()
     std::map<std::string, std::string> loggerinfo;
     loggerinfo["Default"] = "3bithit.log";
     logger().initialise(loggerinfo);
+    
+    // Initialise the printer with the cout printer (required for suspicious point printing)
+    // TODO: Allow this to work outside of cout/none printers
+    YAML::Node printerNode;
+    printerNode["printer"] = "cout";
+    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists("./");
+    Printers::PrinterManager printerManager(printerNode, false);
+    set_global_printer_manager(&printerManager);
 
     // Initialise the random number generator.
     Random::create_rng_engine("default");

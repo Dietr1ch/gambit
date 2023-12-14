@@ -29,6 +29,7 @@
 // Always required in any standalone module main file
 #include "gambit/Elements/standalone_module.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
+#include "gambit/Printers/printermanager.hpp"
 
 // Just required in this one
 #include "gambit/Elements/spectrum_factories.hpp"
@@ -93,6 +94,14 @@ int main(int argc, char** argv)
 
     // Define where the logs will end up
     std::string prefix("runs/FlavBit_standalone/logs/");
+
+    // Initialise the printer with the cout printer (required for suspicious point printing)
+    // TODO: Allow this to work outside of cout/none printers
+    YAML::Node printerNode;
+    printerNode["printer"] = "cout";
+    printerNode["options"]["default_output_path"] = Utils::ensure_path_exists("runs/FlavBit_standalone/samples/");
+    Printers::PrinterManager printerManager(printerNode, false);
+    set_global_printer_manager(&printerManager);
 
     // Ensure that the above directory exists
     Utils::ensure_path_exists(prefix);
