@@ -64,8 +64,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void Use_PE_Bins(double S2mu, double S2sigma, const std::vector<unsigned int>& bin_ranges);
         
-                void Use_PE_Bins(const std::string PE_response, const std::vector<unsigned int>& bin_ranges);
-        
                 void Print_Summary(int MPI_rank) const;
         
                 void Print_Summary() const;

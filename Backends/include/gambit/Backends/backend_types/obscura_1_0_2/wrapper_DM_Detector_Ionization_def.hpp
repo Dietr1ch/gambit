@@ -95,11 +95,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             get_BEptr()->Use_PE_Bins(S2mu, S2sigma, bin_ranges);
         }
         
-        inline void DM_Detector_Ionization::Use_PE_Bins(const std::string PE_response, const std::vector<unsigned int>& bin_ranges)
-        {
-            get_BEptr()->Use_PE_Bins(PE_response, bin_ranges);
-        }
-        
         inline void DM_Detector_Ionization::Print_Summary(int MPI_rank) const
         {
             get_BEptr()->Print_Summary(MPI_rank);
