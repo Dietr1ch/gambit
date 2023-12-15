@@ -76,6 +76,7 @@ load_functions = [
     'obscura::LZ_S2_ER()',
     'obscura::SENSEI_at_MINOS()',
     'obscura::CDMS_HVeV_2020()',
+    'obscura::DAMIC_M_2023()',
     'obscura::XENON1T_S2_Migdal()',
     'obscura::DarkSide50_S2_Migdal()',
     'obscura::DarkSide50_S2_Migdal_2023()',

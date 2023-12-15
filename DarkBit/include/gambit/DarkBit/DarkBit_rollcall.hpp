@@ -2652,6 +2652,18 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY DAMIC_M_2023_LogLikelihood
+  START_CAPABILITY
+    #define FUNCTION calc_DAMIC_M_2023_LogLikelihood
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(obscura, default)
+    BACKEND_REQ(DAMIC_M_2023, (), obscura_default::obscura::DM_Detector_Crystal, ())
+    ALLOW_MODELS(SubGeVDM_scalar, SubGeVDM_fermion)
+    DEPENDENCY(LocalHalo_GeV,LocalMaxwellianHalo)
+    DEPENDENCY(sigma_e, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY XENON1T_Migdal_LogLikelihood
   START_CAPABILITY
     #define FUNCTION calc_XENON1T_Migdal_LogLikelihood
