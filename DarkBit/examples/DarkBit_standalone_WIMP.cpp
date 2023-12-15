@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
     model_warning().set_fatal(true);
     
     // Initialise settings for printer (required)
-    YAML::Node printerNode = get_standalone_printer("cout", "runs/DarkBit_standalone_WIMP/logs/");
+    YAML::Node printerNode = get_standalone_printer("cout", "runs/DarkBit_standalone_WIMP/logs/","");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
 

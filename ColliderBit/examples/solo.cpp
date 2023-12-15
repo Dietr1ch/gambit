@@ -190,7 +190,7 @@ int main(int argc, char* argv[])
     logger()<<"Running CBS"<<LogTags::info<<EOM;
     
     // Initialise settings for printer (required)
-    YAML::Node printerNode = get_standalone_printer("cout", "CBS_logs/");
+    YAML::Node printerNode = get_standalone_printer("cout", "CBS_logs/", "");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
 

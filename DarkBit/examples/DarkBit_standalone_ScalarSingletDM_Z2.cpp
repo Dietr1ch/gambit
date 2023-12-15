@@ -99,7 +99,7 @@ int main()
     model_warning().set_fatal(true);
     
     // Initialise settings for printer (required)
-    YAML::Node printerNode = get_standalone_printer("cout", "runs/DarkBit_standalone_ScalarSingletDM_Z2/logs/");
+    YAML::Node printerNode = get_standalone_printer("cout", "runs/DarkBit_standalone_ScalarSingletDM_Z2/logs/","");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
 

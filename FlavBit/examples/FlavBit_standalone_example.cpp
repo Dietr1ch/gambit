@@ -95,7 +95,7 @@ int main(int argc, char** argv)
     std::string prefix("runs/FlavBit_standalone/logs/");
 
     // Initialise settings for printer (required)
-    YAML::Node printerNode = get_standalone_printer("cout", "runs/FlavBit_standalone/logs/");
+    YAML::Node printerNode = get_standalone_printer("cout", "runs/FlavBit_standalone/logs/","");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
 

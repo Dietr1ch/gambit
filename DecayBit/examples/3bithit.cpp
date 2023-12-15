@@ -78,7 +78,7 @@ int main()
     logger().initialise(loggerinfo);
     
     // Initialise settings for printer (required)
-    YAML::Node printerNode = get_standalone_printer("cout", "runs/3bithit/logs/");
+    YAML::Node printerNode = get_standalone_printer("cout", "runs/3bithit/logs/","");
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
 
