@@ -528,7 +528,7 @@ namespace Gambit
 
         current_ainfo->name = current_analysis_name;
 
-        current_ainfo->obsnum = {110};
+        current_ainfo->obsnum = {97}; // not entirely sure about this number
         current_ainfo->bkgnum = {0.0}; 
         current_ainfo->bkgerr = {0.0};
 
