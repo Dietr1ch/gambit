@@ -528,9 +528,9 @@ namespace Gambit
 
         current_ainfo->name = current_analysis_name;
 
-        current_ainfo->obsnum = {0}; /// Needs to be added
-        current_ainfo->bkgnum = {0.0}; /// Needs to be added
-        current_ainfo->bkgerr = {0.0}; /// Needs to be added
+        current_ainfo->obsnum = {110};
+        current_ainfo->bkgnum = {0.0}; 
+        current_ainfo->bkgerr = {0.0};
 
         assert(current_ainfo->obsnum.size() == current_ainfo->bkgnum.size());
         assert(current_ainfo->obsnum.size() == current_ainfo->bkgerr.size());
