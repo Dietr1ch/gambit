@@ -436,7 +436,7 @@ namespace Gambit
         }
         printer_error().raise(LOCAL_INFO,errmsg.str());
       }
-      
+
       // Write the file explaining what is in each column of the output file
       if (info_file_written==false)
       {
