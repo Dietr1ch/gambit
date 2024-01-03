@@ -169,6 +169,9 @@ namespace Gambit
       , lastPointID(nullpoint)
     {
       common_constructor(options);
+
+      // Choose whether or not to print invalid and suspicious point codes
+      print_debug_data = options.getValueOrDef<bool>(true,"print_debug_data");
     }
 
 
@@ -244,6 +247,13 @@ namespace Gambit
     {
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
 
+      // Do not write invalid or suspicious points to buffer if they are not requested to be printed
+      // Also tell the printer not to try to add them to the buffer as a missing entry
+      if (!print_debug_data && (functor_labels[0] == "Suspicious Point Code" || functor_labels[0] == "Invalidation Code"))
+      {
+        return;
+      }
+
       // Key for accessing buffer
       std::pair<int,int> bkey = std::make_pair(rank,pointID);
       PPIDpair ppid(pointID,rank); // This is a bit clunky because I added PPIDpairs later, so not all asciiprinter internals have been updated to use these instead of simple pairs.
@@ -252,12 +262,6 @@ namespace Gambit
       AP_DBUG( std::cout << "Rank "<<myRealRank<<": adding data from (ptID,rank) "<<ppid<<"; labels="<<functor_labels<<std::endl; )
       AP_DBUG( std::cout << "Rank "<<myRealRank<<": last point was from (ptID,rank) "<<lastPointID<<std::endl; )
       //AP_DBUG( std::cout << "Rank "<<this->getRank()<<": Note: nullpoint is (ptID,rank) "<<nullpoint<<std::endl; )
-
-      // Do not write invalid or suspicious points to buffer as this will require extending the dataset, which is not possible in ascii
-      if (functor_labels[0] == "Suspicious Point Code")
-        return;
-      if (functor_labels[0] == "Invalidation Code")
-        return;
 
       if(lastPointID == nullpoint)
       {
@@ -322,6 +326,30 @@ namespace Gambit
          label_record[vID] = functor_labels;
       }
       //}
+
+      // Check if the Suspicious Point/Invalidation Code labels are in the buffer, and if not, add them
+      if (print_debug_data && (!Found_sus || !Found_inv)) {
+        // Check which required entries are not present
+        for (auto entry: label_record)
+        {
+          if (entry.second[0] == "Suspicious Point Code") {Found_sus = true;}
+          if (entry.second[0] == "Invalidation Code") {Found_inv = true;}
+        }
+        if (!Found_sus)
+        {
+          // Add Suspicious Point Code to the buffer
+          std::vector<double> default_data = {0};
+          std::vector<std::string> default_labels = {"Suspicious Point Code"};
+          addtobuffer(default_data, default_labels, get_main_param_id("Suspicious Point Code"), rank, pointID);
+        }
+        if (!Found_inv)
+        {
+          // Add Suspicious Point Code to the buffer
+          std::vector<double> default_data = {0};
+          std::vector<std::string> default_labels = {"Invalidation Code"};
+          addtobuffer(default_data, default_labels, get_main_param_id("Invalidation Code"), rank, pointID);
+        }
+      }
     }
 
     // write the printer buffer to file
@@ -409,7 +437,7 @@ namespace Gambit
         }
         printer_error().raise(LOCAL_INFO,errmsg.str());
       }
-
+      
       // Write the file explaining what is in each column of the output file
       if (info_file_written==false)
       {
@@ -424,6 +452,7 @@ namespace Gambit
         {
           int vID        = it->first;
           int length     = it->second;     // slots reserved in output file for these results
+          
           for (int i=0; i<length; i++)
           {
             AP_DBUG( std::cout<<"Column "<<column_index<<": "<<label_record.at(vID)[i]<<std::endl; )
@@ -467,6 +496,13 @@ namespace Gambit
             }
             uint length = it->second;      // slots reserved in output file for these results
 
+            // Setting some custom default values for when not printing a suspicious or invalid point code.
+            std::string default_value = "none";
+            if (label_record.at(it->first).at(0) == "Suspicious Point Code" || label_record.at(it->first).at(0) == "Invalidation Code")
+            {
+              default_value = "0.0000000000e+00";
+            }
+
             // Print to the fstream!
             int colwidth = precision + 8;  // Just kind of guessing here; tweak as needed
             for (uint j=0;j<length;j++)
@@ -474,7 +510,7 @@ namespace Gambit
               if(j>=results->size())
               {
                 // Finished parsing results vector; fill remaining empty slots with 'none'
-                my_fstream<<std::setw(colwidth)<<"none";
+                my_fstream<<std::setw(colwidth)<<default_value;
               }
               else
               {
