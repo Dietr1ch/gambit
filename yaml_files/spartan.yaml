@@ -44,28 +44,28 @@ Printer:
   #   buffer_length: 1000
   #   # disable_autorepair: true
 
-   printer: ascii
-   options:
-     output_file: "results.dat"
-     buffer_length: 10
-     delete_file_on_restart: true
-     print_debug_data: true
+  # printer: ascii
+  # options:
+  #   output_file: "results.dat"
+  #   buffer_length: 10
+  #   delete_file_on_restart: true
+  #   print_debug_data: true
 
-  #printer: hdf5
-  #options:
+  printer: hdf5
+  options:
     # Name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
     # Name of output file
-  #  output_file: "gambit_output.hdf5"
-  #  group: "/data"
-  #  delete_file_on_restart: true
-  #  disable_combine_routines: true
+    output_file: "gambit_output.hdf5"
+    group: "/data"
+    delete_file_on_restart: true
+    disable_combine_routines: true
 
   # printer: none
 
 Scanner:
 
-  use_scanner: random
+  use_scanner: de
 
   scanners:
 
@@ -353,7 +353,7 @@ Logger:
 
 KeyValues:
 
-  debug: true
+  debug: false
 
   default_output_path: "${PWD}/runs/spartan"
 
