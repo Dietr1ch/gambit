@@ -248,7 +248,6 @@ namespace Gambit
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
 
       // Do not write invalid or suspicious points to buffer if they are not requested to be printed
-      // Also tell the printer not to try to add them to the buffer as a missing entry
       if (!print_debug_data && (functor_labels[0] == "Suspicious Point Code" || functor_labels[0] == "Invalidation Code"))
       {
         return;
