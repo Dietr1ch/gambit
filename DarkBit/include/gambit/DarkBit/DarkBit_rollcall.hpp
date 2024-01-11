@@ -1318,6 +1318,7 @@ START_MODULE
     MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedScalarDM_spectrum, Spectrum, DMsimpVectorMedScalarDM)
     MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedMajoranaDM_spectrum, Spectrum, DMsimpVectorMedMajoranaDM)
     MODEL_CONDITIONAL_DEPENDENCY(DMsimpVectorMedDiracDM_spectrum, Spectrum, DMsimpVectorMedDiracDM)
+    MODEL_CONDITIONAL_DEPENDENCY(SubGeVDM_spectrum, Spectrum, SubGeVDM_fermion, SubGeVDM_scalar)
     ALLOW_MODELS(DMsimpVectorMedScalarDM, DMsimpVectorMedMajoranaDM, DMsimpVectorMedDiracDM, DMsimpVectorMedVectorDM)
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     ALLOW_MODELS(ScalarSingletDM_Z2_running, ScalarSingletDM_Z3_running)
@@ -1585,9 +1586,10 @@ START_MODULE
   #undef CAPABILITY
 
   #define CAPABILITY sigma_e
-      #define FUNCTION sigma_e_SubGeVDM_fermion
-      START_FUNCTION(double)
-      ALLOW_MODELS(SubGeVDM_fermion)
+    #define FUNCTION sigma_e_SubGeVDM_fermion
+    START_FUNCTION(double)
+    ALLOW_MODELS(SubGeVDM_fermion)
+    DEPENDENCY(SubGeVDM_spectrum, Spectrum)
     #undef FUNCTION
   #undef CAPABILITY
 

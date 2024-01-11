@@ -520,7 +520,7 @@ namespace Gambit
         current_ainfo->n_signal_regions = current_ainfo->obsnum.size();
       }
 
-    if (current_analysis_name == "SubGeVBeamDump_LSND_interpolated") // LSND electron limits
+      if (current_analysis_name == "SubGeVBeamDump_LSND_interpolated") // LSND electron limits
       {
         // Create an entry in the global analysis_info_map and point the reference current_ainfo to it
         analysis_info_map[current_analysis_name] = Model_analysis_info();

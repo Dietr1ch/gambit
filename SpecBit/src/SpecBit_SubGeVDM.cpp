@@ -45,8 +45,17 @@ namespace Gambit
     /// Get a (simple) Spectrum object wrapper for the SubGeVDM model
     void get_SubGeVDM_spectrum(Spectrum& result)
     {
-      namespace myPipe = Pipes::get_SubGeVDM_spectrum;
-      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+      using namespace Pipes::get_SubGeVDM_spectrum;
+      const SMInputs& sminputs = *Dep::SMINPUTS;
+
+      // Mass cut on the dark photon mass mAp >= 2 mDM
+      bool dark_photon_mass_cut = runOptions->getValueOrDef<bool>(true, "dark_photon_mass_cut");
+      if(dark_photon_mass_cut and *Param.at("mAp") < 2. * *Param.at("mDM"))
+      {
+        std::stringstream msg;
+        msg << "Parameter point [mDM, mAp] = [" << *Param.at("mDM") << ", " << *Param.at("mAp") << "] is invalid. Dark photon mass must satisfy mAp >= 2 mDM. ";
+        invalid_point().raise(msg.str());
+      }
 
       // Initialise an object to carry the Singlet plus Higgs sector information
       Models::SubGeVDMModel SubGeVmodel;
@@ -60,10 +69,10 @@ namespace Gambit
 
       double vev        = 1. / sqrt(sqrt(2.)*sminputs.GF);
       SubGeVmodel.vev        = vev;
-      SubGeVmodel.SubGeV_DMPoleMass = *myPipe::Param.at("mDM");
-      SubGeVmodel.SubGeV_ApPoleMass = *myPipe::Param.at("mAp");
-      SubGeVmodel.SubGeV_gDM   = *myPipe::Param.at("gDM");
-      SubGeVmodel.SubGeV_kappa   = *myPipe::Param.at("kappa");
+      SubGeVmodel.SubGeV_DMPoleMass = *Param.at("mDM");
+      SubGeVmodel.SubGeV_ApPoleMass = *Param.at("mAp");
+      SubGeVmodel.SubGeV_gDM   = *Param.at("gDM");
+      SubGeVmodel.SubGeV_kappa   = *Param.at("kappa");
 
       // Standard model
       SubGeVmodel.sinW2 = sinW2;
@@ -89,11 +98,11 @@ namespace Gambit
       Models::SubGeVDMSimpleSpec SubGeVspec(SubGeVmodel);
 
       // Retrieve any mass cuts
-      static const Spectrum::mc_info mass_cut = myPipe::runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
-      static const Spectrum::mr_info mass_ratio_cut = myPipe::runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
+      static const Spectrum::mc_info mass_cut = runOptions->getValueOrDef<Spectrum::mc_info>(Spectrum::mc_info(), "mass_cut");
+      static const Spectrum::mr_info mass_ratio_cut = runOptions->getValueOrDef<Spectrum::mr_info>(Spectrum::mr_info(), "mass_ratio_cut");
 
       // We don't supply a LE subspectrum here; an SMSimpleSpec will therefore be automatically created from 'sminputs'
-      result = Spectrum(SubGeVspec,sminputs,&myPipe::Param,mass_cut,mass_ratio_cut);
+      result = Spectrum(SubGeVspec,sminputs,&Param,mass_cut,mass_ratio_cut);
 
     }
 
@@ -102,8 +111,8 @@ namespace Gambit
 
     void get_SubGeVDM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
-      namespace myPipe = Pipes::get_SubGeVDM_spectrum_as_map;
-      const Spectrum& SubGeVdmspec(*myPipe::Dep::SubGeVDM_spectrum);
+      using namespace Pipes::get_SubGeVDM_spectrum_as_map;
+      const Spectrum& SubGeVdmspec(*Dep::SubGeVDM_spectrum);
       fill_map_from_SubGeVDM_spectrum(specmap, SubGeVdmspec);
     }
 
