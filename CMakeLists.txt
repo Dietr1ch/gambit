@@ -549,6 +549,9 @@ retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 # Set up targets to make standalone tarballs of the different modules
 add_standalone_tarballs("${GAMBIT_BITS}" "${GAMBIT_VERSION_FULL}")
 
+# Create a target for the contrib targets that need to be built before gambit modules
+add_custom_target(contrib DEPENDS gambit_preload)
+
 # Include contributed packages
 include(cmake/contrib.cmake)
 
@@ -671,6 +674,9 @@ foreach(bit ${GAMBIT_BITS})
   foreach(dep ${MODULE_DEPENDENCIES})
     add_dependencies(${bit} ${dep})
   endforeach()
+  
+  # Add the dependency on the contrib target
+  add_dependencies(${bit} contrib)
 endforeach()
 
 # If ColliderBit is in use, set various dependencies
@@ -679,18 +685,18 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   add_dependencies(ColliderBit collider_harvest)
   # If RestFrames is in use, make it a dependency of ColliderBit
   if(NOT EXCLUDE_RESTFRAMES)
-    add_dependencies(ColliderBit restframes)
+    add_dependencies(contrib restframes)
   endif()
   # ColliderBit depends on HepMC
   if(EXCLUDE_HEPMC)
     message(FATAL_ERROR "\nColliderBit needs HepMC3. Either use -DWITH_HEPMC=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
   endif()
-  add_dependencies(ColliderBit hepmc)
+  add_dependencies(contrib hepmc)
   # ColliderBit depends on YODA
   if(EXCLUDE_YODA)
     message(FATAL_ERROR "\nColliderBit needs YODA. Either use -DWITH_YODA=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
   endif()
-  add_dependencies(ColliderBit yoda)
+  add_dependencies(contrib yoda)
 endif()
 
 # If SpecBit is in use, make flexiblesusy a dependency of SpecBit

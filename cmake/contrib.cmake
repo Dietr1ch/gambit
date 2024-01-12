@@ -310,6 +310,7 @@ add_gambit_library(fjcore OPTION OBJECT
                           SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.2.0/fjcore.cc
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.2.0/fjcore.hh)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
+add_dependencies(contrib fjcore)
 
 #contrib/multimin
 set(multimin_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/multimin/include")
@@ -318,6 +319,7 @@ add_gambit_library(multimin OPTION OBJECT
                           SOURCES ${PROJECT_SOURCE_DIR}/contrib/multimin/src/multimin.cpp
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/multimin/include/multimin/multimin.hpp)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:multimin>)
+add_dependencies(contrib multimin)
 
 
 #contrib/MassSpectra; include only if SpecBit is in use and if
@@ -457,6 +459,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   add_dependencies(nuke-flexiblesusy distclean-flexiblesusy)
   add_dependencies(distclean distclean-flexiblesusy)
   add_dependencies(nuke-all nuke-flexiblesusy)
+  add_dependencies(contrib flexiblesusy)
 
   # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries but before the other link flags.
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${FS_DIR}/src")
