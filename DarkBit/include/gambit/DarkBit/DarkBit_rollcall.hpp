@@ -158,6 +158,7 @@ START_MODULE
       DEPENDENCY(MSSM_spectrum, Spectrum)
       DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
+      ALLOW_MODELS(MSSM63atQ)
     #undef FUNCTION
     #define FUNCTION RD_spectrum_SUSY_DS5
       START_FUNCTION(RD_spectrum_type)
@@ -167,6 +168,7 @@ START_MODULE
       BACKEND_REQ(pacodes, (ds5), DS5_PACODES)
       BACKEND_REQ(DS5particle_code, (ds5), int, (const str&))
       BACKEND_OPTION((DarkSUSY, 5.1.3), (ds5))  // Only for DarkSUSY5
+      ALLOW_MODELS(MSSM63atQ)
     #undef FUNCTION
     #define FUNCTION RD_spectrum_from_ProcessCatalog
       START_FUNCTION(RD_spectrum_type)
@@ -1086,29 +1088,53 @@ START_MODULE
 
   // Self-interaction likelihoods ================================================
 
-  #define CAPABILITY SigmaOverM_SelfInteraction
-  START_CAPABILITY
-    #define FUNCTION self_int_xsection
-    START_FUNCTION(double)
-    #undef FUNCTION
-  #undef CAPABILITY
+  // #define CAPABILITY SigmaOverM_SelfInteraction
+  // START_CAPABILITY
+  //   #define FUNCTION self_int_xsection
+  //   START_FUNCTION(double)
+  //   #undef FUNCTION
+  // #undef CAPABILITY
 
-  #define CAPABILITY lnL_1D_BulletClusterEvap
-  START_CAPABILITY
-    #define FUNCTION calc_1d_lnL_BulletClusterEvap
-    START_FUNCTION(double)
-    DEPENDENCY(SigmaOverM_SelfInteraction, double)
-    #undef FUNCTION
-  #undef CAPABILITY
+  // #define CAPABILITY lnL_1D_BulletClusterEvap
+  // START_CAPABILITY
+  //   #define FUNCTION calc_1d_lnL_BulletClusterEvap
+  //   START_FUNCTION(double)
+  //   DEPENDENCY(SigmaOverM_SelfInteraction, double)
+  //   #undef FUNCTION
+  // #undef CAPABILITY
 
-  #define CAPABILITY lnL_2D_BulletClusterEvap
+  // #define CAPABILITY lnL_2D_BulletClusterEvap
+  // START_CAPABILITY
+  //   #define FUNCTION calc_2d_lnL_BulletClusterEvap
+  //   START_FUNCTION(double)
+  //   DEPENDENCY(SigmaOverM_SelfInteraction, double)
+  //   DEPENDENCY(RD_fraction, double)
+  //   #undef FUNCTION
+  // #undef CAPABILITY
+
+  #define CAPABILITY BulletCluster_lnL
   START_CAPABILITY
-    #define FUNCTION calc_2d_lnL_BulletClusterEvap
+    #define FUNCTION calc_bullet_cluster_lnL
     START_FUNCTION(double)
-    DEPENDENCY(SigmaOverM_SelfInteraction, double)
+    DEPENDENCY(SubGeVDM_spectrum, Spectrum)
     DEPENDENCY(RD_fraction, double)
+    DEPENDENCY(RD_oh2_aDM, ddpair)
+    DEPENDENCY(decay_rates, DecayTable)
+    ALLOW_MODELS(SubGeVDM_scalar,SubGeVDM_fermion)
     #undef FUNCTION
   #undef CAPABILITY
+
+  // #define CAPABILITY BulletCluster_sDM_lnL
+  // START_CAPABILITY
+  //   #define FUNCTION calc_bullet_cluster_fDM_lnL
+  //   START_FUNCTION(double)
+  //   DEPENDENCY(SubGeVDM_spectrum, Spectrum)
+  //   DEPENDENCY(RD_fraction, double)
+  //   DEPENDENCY(RD_oh2_aDM, ddpair)
+  //   DEPENDENCY(decay_rates, DecayTable)
+  //   ALLOW_MODEL(SubGeVDM_scalar)
+  //   #undef FUNCTION
+  // #undef CAPABILITY
 
 // X-ray likelihoods ================================================
 
