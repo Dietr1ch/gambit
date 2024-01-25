@@ -3947,7 +3947,7 @@ namespace Gambit
     void get_dark_photon_decay_length(double &result)
     {
       using namespace Pipes::get_dark_photon_decay_length;
-      double gammaAp = Dep::SubGeVDM_dark_photon_decays.width_in_GeV;      
+      double gammaAp = Dep::SubGeVDM_dark_photon_decays->width_in_GeV;      
       result = 1.97e-14 / gammaAp; // Conversion GeV^-1 to cm
     }  
     
