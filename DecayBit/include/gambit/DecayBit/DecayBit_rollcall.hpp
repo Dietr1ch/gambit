@@ -932,7 +932,22 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY dark_photon_decay_length
+  START_CAPABILITY
+    #define FUNCTION get_dark_photon_decay_length
+    START_FUNCTION(double)
+    DEPENDENCY(SubGeVDM_dark_photon_decays, DecayTable::Entry)
+    #undef FUNCTION
+  #undef CAPABILITY  
 
+  #define CAPABILITY dark_photon_visible_branching
+  START_CAPABILITY
+    #define FUNCTION get_dark_photon_visible_branching
+    START_FUNCTION(double)
+    DEPENDENCY(SubGeVDM_dark_photon_decays, DecayTable::Entry)
+    #undef FUNCTION
+  #undef CAPABILITY  
+  
   #define CAPABILITY decay_rates
   START_CAPABILITY
 

@@ -3937,6 +3937,20 @@ namespace Gambit
       // Make sure the width is sensible.
     }
 
+    void get_dark_photon_visible_branching(double &result)
+    {
+      using namespace Pipes::get_dark_photon_visible_branching;
+      double BRinv = Dep::SubGeVDM_dark_photon_decays->BF("DM", "DM~");      
+      result = (1 - BRinv); // Conversion GeV^-1 to cm
+    }  
+    
+    void get_dark_photon_decay_length(double &result)
+    {
+      using namespace Pipes::get_dark_photon_decay_length;
+      double gammaAp = Dep::SubGeVDM_dark_photon_decays.width_in_GeV;      
+      result = 1.97e-14 / gammaAp; // Conversion GeV^-1 to cm
+    }  
+    
     //////////// Vector singlet DM /////////////////////
 
     /// Add the decay of Higgs to vectors for the VectorSingletDM models (see arXiv:1512.06458v4)
