@@ -767,7 +767,7 @@ namespace Gambit
       }
       else
       {
-        oh2adm = RDfactorfh*eta*mwimp;
+        oh2adm = RDfactorfh*eta*mwimp; // = oh2(DM) - oh2(anti-DM)
       };
       
       // We first check whether the symmetric part of the relic density
@@ -790,7 +790,7 @@ namespace Gambit
         BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2sym,xf,fast,ierr,iwar);
         etaDS->adm_eta=0;
       }
-      oh2sym = (myRDspec.isSelfConj) ? oh2sym : 2*oh2sym; // include also anti-DM
+      oh2sym = (myRDspec.isSelfConj) ? oh2sym : 2*oh2sym; // include also anti-DM: oh2sym = 2*oh2(anti-DM)
       
       //Check for NAN result.
       if ( Utils::isnan(oh2sym) ) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
@@ -1433,13 +1433,14 @@ namespace Gambit
 
       double DM_fraction = *Dep::RD_fraction;
       ddpair aDM_pair = *Dep::RD_oh2_aDM;
-      double x = aDM_pair.second/DM_fraction; // fsym/fDM
+      double r = aDM_pair.second; // fsym/fDM
       std::string proc = *Dep::DM_process;
-
 
       if (proc == "annihilation")
       {
-        result = x*(2-x);
+        result = DM_fraction*DM_fraction*r*(2-r);
+        // first factor: overall \rho^2 suppression
+        // second factor: suppression aDM vs. only symmetric component
       }
       else if (proc == "decay") // this assumes CP symmetry for decay
       {
