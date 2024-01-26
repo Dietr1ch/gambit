@@ -46,7 +46,7 @@ namespace Gambit
         { 
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = 4*sigma0;
+          double factor = 8*M_PI*sigma0;
           double temp1 = (4*(-1+kappa)*r*(2+r));
           double temp2 = ((4+4*r-(-2+kappa)*kappa*r2)*log(2-(-2+kappa)*r));
           double temp3 = ((-2+(-2+kappa)*r)*(2+kappa*r)*log(2+kappa*r));
@@ -58,7 +58,7 @@ namespace Gambit
         {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = sigma0;
+          double factor = 2*M_PI*sigma0;
           double temp1 = ((2*(-1+kappa)*r)*\
                           (pow(m_Ap,2)*(-16+4*pow(w,2)*(8-3*pow(beta_rel,2))\
                                               +pow(w,4)*(-64+3*(-2+kappa)*kappa*pow(beta_rel,4)))\
@@ -73,7 +73,7 @@ namespace Gambit
         {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = -8*sigma0;
+          double factor = -16*M_PI*sigma0;
           double temp1 = (r*log(2)+log(8));
           double temp2 = (-3*(2+r)*log(2+r));
           double temp3 = ((3+2*r)*log(2+2*r));
@@ -85,7 +85,7 @@ namespace Gambit
         {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = sigma0;
+          double factor = 2*M_PI*sigma0;
           double temp1 = (3*pow(m_Ap,2)*r2 - 4*(4*pow(m_Ap,2)*(1-5*pow(w,2)+4*pow(w,4))+pow(gamma_Ap,2))*log(2));
           double temp2 = (4*(-pow(m_Ap,2)*(-1+4*pow(w,2))*(8+pow(w,2)*(-8+3*pow(beta_rel,2)))+2*pow(gamma_Ap,2))*log(2+r));
           double temp3 = (4*(pow(m_Ap,2)*(-1+4*pow(w,2))*(4+pow(w,2)*(-4+3*pow(beta_rel,2)))- pow(gamma_Ap,2))*log(2+2*r));
@@ -98,7 +98,7 @@ namespace Gambit
         { 
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = 8*sigma0;
+          double factor = 16*M_PI*sigma0;
           double temp1 = (2*(-1+kappa)*r*(2+r));
           double temp2 = ((-2+(-2+kappa)*r)*(2+kappa*r)*log(2-(-2+kappa)*r));
           double temp3 = ((4+4*r-(-2+kappa)*kappa*r2)*log(2+kappa*r));
@@ -110,20 +110,28 @@ namespace Gambit
         {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = sigma0;
-          double temp1 = (192/(-4-4*r+(-2+kappa)*kappa*r2));
-          double temp2 = ((pow(m_Ap,2)*(48+pow(w,2)*(-192-pow((-1+kappa),2)*pow(beta_rel,4))))\
-                         /(pow(m_Ap,2)*pow((-w+4*pow(w,3)),2)+pow(w*gamma_Ap,2)));
-          double temp3 = ((pow(m_Ap,2)*(-1+4*pow(w,2))*(2+r)*(log(2-(-2+kappa)*r)-log(2+kappa*r)))\
-                         /(pow(w,2)*r*(pow((m_Ap-4*m_Ap*pow(w,2)),2)+pow(gamma_Ap,2))));
-          return factor*((1/24*(-1+kappa))*(temp1+temp2)-temp3);
+
+          // t and s-channels
+          // double factor = 2*M_PI*sigma0;
+          // double temp1 = (192/(-4-4*r+(-2+kappa)*kappa*r2));
+          // double temp2 = ((pow(m_Ap,2)*(48+pow(w,2)*(-192-pow((-1+kappa),2)*pow(beta_rel,4))))\
+          //                /(pow(m_Ap,2)*pow((-w+4*pow(w,3)),2)+pow(w*gamma_Ap,2)));
+          // double temp3 = ((pow(m_Ap,2)*(-1+4*pow(w,2))*(2+r)*(log(2-(-2+kappa)*r)-log(2+kappa*r)))\
+          //                /(pow(w,2)*r*(pow((m_Ap-4*m_Ap*pow(w,2)),2)+pow(gamma_Ap,2))));
+          // return factor*((1/24*(-1+kappa))*(temp1+temp2)-temp3);
+          // only t-channel 
+
+          double factor = 16*M_PI*sigma0;
+          double temp1 = (-1+kappa);
+          double denominator = (-4-4*r+(-2+kappa)*kappa*r2);
+          return (factor*temp1)/denominator;
         }
 
         double sigma_tc_rep_s(double sigma0, double w)
         {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = 8*sigma0;
+          double factor = 16*M_PI*sigma0;
           double temp1 = (log(1+r));
           double denominator = (r*(2+r));
           return (factor*temp1)/denominator;
@@ -133,13 +141,22 @@ namespace Gambit
         {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
-          double factor = sigma0;
-          double temp0 = (pow(m_Ap,2)*r2*(-96+pow(w,2)*(384+pow(beta_rel,4))));
-          double temp1 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(2+pow(w,2)*(-2+8*pow(w,2)+pow(beta_rel,2)))+2*pow(w*gamma_Ap,2))*log(2));
-          double temp2 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(4+4*pow(w,2)*(-1+pow(beta_rel,2))+pow(w,4)*(16+pow(beta_rel,4)))+4*pow(w*gamma_Ap,2))*log(2+r));
-          double temp3 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(2+pow(w,2)*(-2+3*pow(beta_rel,2)+pow(w,2)*(8+pow(beta_rel,4))))+2*pow(w*gamma_Ap,2))*log(2+2*r));
-          double denominator = (96*pow(w,2)*r2*(pow((m_Ap-4*m_Ap*pow(w,2)),2)+pow(gamma_Ap,2)));
-          return (factor*(temp0 - temp1 + temp2 - temp3))/denominator;          
+
+          // t and s channels
+          // double factor = M_PI*sigma0;
+          // double temp0 = (pow(m_Ap,2)*r2*(-96+pow(w,2)*(384+pow(beta_rel,4))));
+          // double temp1 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(2+pow(w,2)*(-2+8*pow(w,2)+pow(beta_rel,2)))+2*pow(w*gamma_Ap,2))*log(2));
+          // double temp2 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(4+4*pow(w,2)*(-1+pow(beta_rel,2))+pow(w,4)*(16+pow(beta_rel,4)))+4*pow(w*gamma_Ap,2))*log(2+r));
+          // double temp3 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(2+pow(w,2)*(-2+3*pow(beta_rel,2)+pow(w,2)*(8+pow(beta_rel,4))))+2*pow(w*gamma_Ap,2))*log(2+2*r));
+          // double denominator = (48*pow(w,2)*r2*(pow((m_Ap-4*m_Ap*pow(w,2)),2)+pow(gamma_Ap,2)));
+          // return (factor*(temp0 - temp1 + temp2 - temp3))/denominator;    
+
+          // only t-channel
+          double factor = 8*M_PI*sigma0 ;
+          double temp1 = (2*log(1+r/2));
+          double temp2 = (log(1+r));
+          double denominator = r2;
+          return (factor*(temp1-temp2))/denominator;
         }
     
       public:
@@ -174,9 +191,7 @@ namespace Gambit
     class bullet_cluster_lnL 
     {
       private:
-        // Mass-to-light ratio measurements
-        const double mlr_obs_radius = 2.346e37;//GeV^-1; In SI units, 150 kpc
-
+        
         // Observed MLR of the Bullet Cluster in I-band (units: M_o/L_o)
         const double mlr_obs_i = 179;
         const double error_obs_i = 11;
@@ -191,15 +206,9 @@ namespace Gambit
         const double g_f = 0.0417;
         const double error_g_f = 0.01;
 
-        // Cluster dynamics measurements
-        const double current_separation = 1.126e38; // GeV^-1
-        const double rho_avg_mc = 8.62e-43; // GeV^4
-        const double vrel_to_vesc = 1.619;
-
       public:
 
         std::vector<double> mlr_sample;
-        double depth = rho_avg_mc*(current_separation-vrel_to_vesc*mlr_obs_radius);
 
         // Constructor
         bullet_cluster_lnL(std::string file)
@@ -270,13 +279,17 @@ namespace Gambit
           margLike += exp(-1/(2*pow((error_total),2))*pow((mlr_obs_i- mlr_sample[i]*(1-total_mass_loss)),2));
           }
           // logger() << LogTags::debug << "\n marglike" << margLike << EOM;
-          return log(margLike);
+          double margLike_c = std::max(1e-30, std::min(margLike, 1e30));
+
+          return log(margLike_c);
         }
     };
 
-    void calc_bullet_cluster_lnL(double& result)
+    void calc_bullet_cluster_DMmassLoss(double& result)
     {
-      using namespace Pipes::calc_bullet_cluster_lnL;
+      using namespace Pipes::calc_bullet_cluster_DMmassLoss;
+
+      double depth = 6.432e-05; // GeV^3
 
       // Import Spectrum objects
       const Spectrum& spec = *Dep::SubGeVDM_spectrum;
@@ -296,7 +309,7 @@ namespace Gambit
 
       double fDM = *Dep::RD_fraction;
       ddpair aDM_pair = *Dep::RD_oh2_aDM;
-      double fChiBar = aDM_pair.second/2; // fsym/2
+      double fChiBar = (aDM_pair.second*fDM)/2; // (fsym/fDM * fDM)/2 
       double fChi = fDM - fChiBar;
 
       // Import decay table from DecayBit
@@ -306,12 +319,60 @@ namespace Gambit
       
       // logger() << LogTags::debug << "\n gdm " << gDM 
       //                            << "\n mdm " << mDM
-      //                            << "\n map " << m_Ap
-      //                            << "\n fchi " << f_chi
-      //                            << "\n fchib "<< f_chibar
-      //                            << "\n gap " << gamma_Ap 
+      //                            << "\n map " << mAp
+      //                            << "\n fchi " << fChi
+      //                            << "\n fchib "<< fChiBar
+      //                            << "\n gap " << gammaAp 
       //                            << "\n sigma0 " << sigma0 
       //                            << "\n w " << w << EOM;
+      
+      static std::string model;
+      if (ModelInUse("SubGeVDM_scalar")){
+        model = "SubGeVDM_scalar";
+      }
+      else if (ModelInUse("SubGeVDM_fermion")){
+        model = "SubGeVDM_fermion";
+      } 
+      else
+      {
+        DarkBit_error().raise(LOCAL_INFO, "ERROR! Model not compatible with implementation of bullet cluster likelihood.");
+      }
+
+      //Initializing class for cross-section evaluations corresponding to model in use
+      static subgev_self_interactions subgev_self_interactions_obj(model);
+
+      double sigmaImdRep = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_imd_rep))(sigma0,w);
+      double sigmaImdAtt = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_imd_att))(sigma0,w,mAp,gammaAp);
+      double sigmaTcRep  = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_tc_rep))(sigma0,w);
+      double sigmaTCAtt  = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_tc_att))(sigma0,w,mAp,gammaAp);
+
+      // logger() << LogTags::debug << "\n gdsigma_imd_repm " << sigmaImdRep 
+      //                       << "\n sigma_imd_att " << sigmaImdAtt
+      //                       << "\n sigma_tc_rep " << sigmaTcRep
+      //                       << "\n sigma_tc_att " << sigmaTCAtt << EOM;
+
+      double sigmaRep = sigmaImdRep+sigmaTcRep;
+      double sigmaAtt = sigmaImdAtt+sigmaTCAtt;
+      double sigma_eff_chi = fChi*sigmaRep + fChiBar*sigmaAtt;
+      double sigma_eff_chibar = fChiBar*sigmaRep + fChi*sigmaAtt;
+    
+      // logger() << LogTags::debug << "\n sigma_rep " << sigma_rep 
+      //                   << "\n sigma_att " << sigma_att
+      //                   << "\n sigma_eff_chi " << sigma_eff_chi
+      //                   << "\n sigma_eff_chibar " << sigma_eff_chibar << EOM;
+
+      double dm_loss = fChi*(1-exp(-depth*sigma_eff_chi/mDM)) +\
+                fChiBar*(1-exp(-depth*sigma_eff_chibar/mDM)); 
+
+      // logger() << LogTags::debug << "\n dm loss" << dm_loss << EOM;
+      
+      result = dm_loss;
+    }
+
+    void calc_bullet_cluster_lnL(double& result)
+    {
+      using namespace Pipes::calc_bullet_cluster_lnL;
+      double DMmassLoss = *Dep::DM_mass_loss;
 
       static std::string inital_mlr_prior = runOptions->getValueOrDef<std::string>("lognormal_mlr","initial_mlr_prior");
 
@@ -332,48 +393,9 @@ namespace Gambit
         ('main_cluster_mlr').");
       }
 
-      static std::string model;
-      if (ModelInUse("SubGeVDM_scalar")){
-        model = "SubGeVDM_scalar";
-      }
-      else if (ModelInUse("SubGeVDM_fermion")){
-        model = "SubGeVDM_fermion";
-      } 
-      else
-      {
-        DarkBit_error().raise(LOCAL_INFO, "ERROR! Model not compatible with implementation of bullet cluster likelihood.");
-      }
-
       static bullet_cluster_lnL bullet_cluster_lnL_obj(lnL_file_path);
-      // //Initializing class for cross-section evaluations corresponding to model in use
-      static subgev_self_interactions subgev_self_interactions_obj(model);
-
-      double sigmaImdRep = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_imd_rep))(sigma0,w);
-      double sigmaImdAtt = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_imd_att))(sigma0,w,mAp,gammaAp);
-      double sigmaTcRep  = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_tc_rep))(sigma0,w);
-      double sigmaTCAtt  = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_tc_att))(sigma0,w,mAp,gammaAp);
-
-      // // logger() << LogTags::debug << "\n gdsigma_imd_repm " << sigma_imd_rep 
-      // //                       << "\n sigma_imd_att " << sigma_imd_att
-      // //                       << "\n sigma_tc_rep " << sigma_tc_rep
-      // //                       << "\n sigma_tc_att " << sigma_tc_att << EOM;
-
-      double sigmaRep = sigmaImdRep+sigmaTcRep;
-      double sigmaAtt = sigmaImdAtt+sigmaTCAtt;
-      double sigma_eff_chi = fChi*sigmaRep + fChiBar*sigmaAtt;
-      double sigma_eff_chibar = fChiBar*sigmaRep + fChi*sigmaAtt;
-    
-      // // logger() << LogTags::debug << "\n sigma_rep " << sigma_rep 
-      // //                   << "\n sigma_att " << sigma_att
-      // //                   << "\n sigma_eff_chi " << sigma_eff_chi
-      // //                   << "\n sigma_eff_chibar " << sigma_eff_chibar << EOM;
-
-      double dm_loss = fChi*(1-exp(-bullet_cluster_lnL_obj.depth*sigma_eff_chi/mDM)) +\
-                fChiBar*(1-exp(-bullet_cluster_lnL_obj.depth*sigma_eff_chibar/mDM)); 
-
-      // // logger() << LogTags::debug << "\n dm loss" << dm_loss << EOM;
       
-      result = bullet_cluster_lnL_obj.margloglike(dm_loss);
+      result = bullet_cluster_lnL_obj.margloglike(DMmassLoss);
     }
   }
 }

@@ -3940,14 +3940,14 @@ namespace Gambit
     void get_dark_photon_visible_branching(double &result)
     {
       using namespace Pipes::get_dark_photon_visible_branching;
-      double BRinv = Dep::SubGeVDM_dark_photon_decays->BF("DM", "DM~");      
+      double BRinv = Dep::dark_photon_decay_rates->BF("DM", "DM~");      
       result = (1 - BRinv); // Conversion GeV^-1 to cm
     }  
     
     void get_dark_photon_decay_length(double &result)
     {
       using namespace Pipes::get_dark_photon_decay_length;
-      double gammaAp = Dep::SubGeVDM_dark_photon_decays->width_in_GeV;      
+      double gammaAp = Dep::dark_photon_decay_rates->width_in_GeV;      
       result = 1.97e-14 / gammaAp; // Conversion GeV^-1 to cm
     }  
     

@@ -1112,15 +1112,23 @@ START_MODULE
   //   #undef FUNCTION
   // #undef CAPABILITY
 
-  #define CAPABILITY BulletCluster_lnL
+  #define CAPABILITY DM_mass_loss
   START_CAPABILITY
-    #define FUNCTION calc_bullet_cluster_lnL
+    #define FUNCTION calc_bullet_cluster_DMmassLoss
     START_FUNCTION(double)
     DEPENDENCY(SubGeVDM_spectrum, Spectrum)
     DEPENDENCY(RD_fraction, double)
     DEPENDENCY(RD_oh2_aDM, ddpair)
     DEPENDENCY(decay_rates, DecayTable)
     ALLOW_MODELS(SubGeVDM_scalar,SubGeVDM_fermion)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BulletCluster_lnL
+  START_CAPABILITY
+    #define FUNCTION calc_bullet_cluster_lnL
+    START_FUNCTION(double)
+    DEPENDENCY(DM_mass_loss, double)
     #undef FUNCTION
   #undef CAPABILITY
 
