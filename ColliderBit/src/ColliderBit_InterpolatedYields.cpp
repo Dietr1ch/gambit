@@ -2313,7 +2313,19 @@ namespace Gambit
           // Compute the signal
           // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
           double kappa_interp = eps_interp.eval(mAp, 0); // mAp and eps
-          signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3;
+
+          double me = 0.000511; // mass of electron
+          double mmu = 0.1057; // mass of muon
+          double ee = 0.31343; // elementary charge
+          double width_ff = 0.0;
+          if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
+          if (mAp > 2*mmu) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(mmu,2))*sqrt(pow(mAp,2)/4-pow(mmu,2)) / (24*pi*pow(mAp,2));}
+          double width_XXscalar = pow(gDM,2)*(pow(mAp,2)-4*pow(mDM,2))/(8*pi*pow(mAp,2))*sqrt(pow(mAp,2)/4-pow(mDM,2));
+        //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
+          double BR_scalarDM  = width_XXscalar / (width_XXscalar + width_ff); // Branching ratio for scalar DM
+
+
+          signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3 * BR_scalarDM;
         }
 
       }
@@ -2374,7 +2386,19 @@ namespace Gambit
           // Compute the signal
           // Note: The last entry in this function is the index of the column (minus the number of free params, i.e. 2)
           double kappa_interp = eps_interp.eval(mAp, 0); // mAp and eps
-          signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3;
+
+        double me = 0.000511; // mass of electron
+        double mmu = 0.1057; // mass of muon
+        double ee = 0.31343; // elementary charge
+        double width_ff = 0.0;
+        if (mAp > 2*me) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(me,2))*sqrt(pow(mAp,2)/4-pow(me,2)) / (24*pi*pow(mAp,2));}
+        if (mAp > 2*mmu) {width_ff += pow(kappa*ee,2) * (4*pow(mAp,2)+8*pow(mmu,2))*sqrt(pow(mAp,2)/4-pow(mmu,2)) / (24*pi*pow(mAp,2));}
+
+        double width_XXfermion = pow(gDM,2)/3 * (4*pow(mAp,2)+8*pow(mDM,2)) * sqrt(pow(mAp,2)/4 - pow(mDM,2))/(8*pi*pow(mAp,2));
+        //// Gamma_VtoXX / (Gamma_VtoXX + Gamma_Vtoff)
+        double BR_fermionDM  = width_XXfermion / (width_XXfermion + width_ff); // Branching ratio for dirac fermion DM
+
+          signalcounts = pow(kappa,2) / (pow(kappa_interp,2)) * 2.3 * BR_fermionDM;
         }
       }
 
