@@ -4,8 +4,11 @@
 ///
 ///  Header file for SubGeVDM models, includes
 ///  - SubGeVDM_fermion
+///  - SubGeVDM_fermion_sigmae
+///  - SubGeVMD_fermion_sigmaN
+///  - SubGeV_fermion_RDprior
 ///  - Resonant_SubGeVDM_fermion
-///  - Resonant_SubGeVDM_fermion_sigma
+///  - Resonant_SubGeV_fermion_RDprior
 ///  - SubGeVDM_scalar
 ///
 ///  Authors (add name and date if you modify):
@@ -66,14 +69,38 @@
 #undef PARENT
 #undef MODEL
 
+
+#define MODEL SubGeVDM_fermion_RDprior
+#define PARENT SubGeVDM_fermion
+  START_MODEL
+
+  DEFINEPARS(mDM,mAp,gDM,kappa,etaDM_mDM)
+
+  INTERPRET_AS_PARENT_FUNCTION(SubGeVDM_fermion_RDprior_to_SubGeVDM_fermion)
+#undef PARENT
+#undef MODEL
+
+
 #define MODEL Resonant_SubGeVDM_fermion
+#define PARENT SubGeVDM_fermion
   START_MODEL
 
   DEFINEPARS(mDM,epsR,gDM,kappa,etaDM)
 
-  // Friendship with "SubGeVDM_fermion" (Mapping is defined in SubGeVDM_fermion.cpp)
-  INTERPRET_AS_X_FUNCTION(SubGeVDM_fermion,Resonant_SubGeVDM_fermion_to_SubGeVDM_fermion)
+  INTERPRET_AS_PARENT_FUNCTION(Resonant_SubGeVDM_fermion_to_SubGeVDM_fermion)
+#undef PARENT
 #undef MODEL
+
+#define MODEL Resonant_SubGeVDM_fermion_RDprior
+#define PARENT Resonant_SubGeVDM_fermion
+  START_MODEL
+
+  DEFINEPARS(mDM,epsR,gDM,kappa,etaDM_mDM)
+
+  INTERPRET_AS_PARENT_FUNCTION(Resonant_SubGeVDM_fermion_RDprior_to_Resonant_SubGeVDM_fermion)
+#undef PARENT
+#undef MODEL
+
 
 #define MODEL SubGeVDM_scalar
   START_MODEL

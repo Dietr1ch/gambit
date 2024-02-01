@@ -6,12 +6,15 @@
 ///  Contains the interpret-as-parent translation
 ///  functions for:
 ///
-///  SubGeVDM_fermion_sigmae   --> SubGeVDM_fermion
+///  SubGeVDM_fermion_sigmae           --> SubGeVDM_fermion
+///  SubGeVDM_fermion_sigmaN           --> SubGeVDM_fermion
+///  SubGeVDM_fermion_RDprior          --> SubGeVDM_fermion
+///  Resonant_SubGeVDM_fermion         --> SubGeVDM_fermion
+///  Resonant_SubGeVDM_fermion_RDprior --> Resonant_SubGeVDM_fermion
 ///
 ///  As well as the interpret-as-friend translation
 ///
 ///  SubGeVDM_fermion          --> AnnihilatingDM_general
-///  Resonant_SubGeVDM_fermion --> SubGeVDM_fermion
 ///
 ///  *********************************************
 ///
@@ -39,7 +42,7 @@
 #include "gambit/Models/models/SubGeVDM.hpp"
 
 #define MODEL SubGeVDM_fermion
-  void MODEL_NAMESPACE::SubGeVDM_fermion_to_AnnihilatingDM_general (const ModelParameters &, ModelParameters &friendparams)
+  void MODEL_NAMESPACE::SubGeVDM_fermion_to_AnnihilatingDM_general (const ModelParameters &, ModelParameters &targetP)
   {
     USE_MODEL_PIPE(AnnihilatingDM_general) // get pipe for "interpret as friend" function
     logger()<<"Running interpret_as_friend calculations for SubGeVDM_fermion -> AnnihilatingDM_general ..."<<EOM;
@@ -47,10 +50,10 @@
     const double k = (*Dep::wimp_sc) ? 1. : 0.5;
     const double f = *Dep::RD_fraction;
 
-    friendparams.setValue("mass", *Dep::mwimp);
+    targetP.setValue("mass", *Dep::mwimp);
     // In AnnihilatingDM_general the parameter "sigmav" is assumed to already include
     // (RD_fraction)^2 and the factor k
-    friendparams.setValue("sigmav", k*f*f*(*Dep::sigmav));
+    targetP.setValue("sigmav", k*f*f*(*Dep::sigmav));
   }
 #undef MODEL
 
@@ -106,16 +109,47 @@
 #undef PARENT
 #undef MODEL
 
-#define MODEL Resonant_SubGeVDM_fermion
-  void MODEL_NAMESPACE::Resonant_SubGeVDM_fermion_to_SubGeVDM_fermion (const ModelParameters &myparams, ModelParameters &friendparams)
+#define MODEL SubGeVDM_fermion_RDprior
+#define PARENT SubGeVDM_fermion
+  void MODEL_NAMESPACE::CAT_3(MODEL,_to_,PARENT) (const ModelParameters &myP, ModelParameters &targetP)
   {
-    USE_MODEL_PIPE(SubGeVDM_fermion) // get pipe for "interpret as friend" function
-    logger()<<"Running interpret_as_friend calculations for Resonant_SubGeVDM_fermion -> SubGeVDM_fermion ..."<<EOM;
+    logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> " STRINGIFY(PARENT) "."<<LogTags::info<<EOM;
 
-    friendparams.setValue("mDM", myparams["mDM"]);
-    friendparams.setValue("gDM", myparams["gDM"]);
-    friendparams.setValue("kappa", myparams["kappa"]);
-    friendparams.setValue("etaDM", myparams["etaDM"]);
-    friendparams.setValue("mAp", 2 * myparams["mDM"] * sqrt(myparams["epsR"] + 1));
+    targetP.setValue("mDM", myP["mDM"]);
+    targetP.setValue("mAp", myP["mAp"]);
+    targetP.setValue("gDM", myP["gDM"]);
+    targetP.setValue("kappa", myP["kappa"]);
+    targetP.setValue("etaDM", myP["etaDM_mDM"]/myP["mDM"]);
   }
+#undef PARENT
+#undef MODEL
+
+#define MODEL Resonant_SubGeVDM_fermion
+#define PARENT SubGeVDM_fermion
+  void MODEL_NAMESPACE::CAT_3(MODEL,_to_,PARENT) (const ModelParameters &myP, ModelParameters &targetP)
+  {
+    logger()<<"Running interpret_as_parent calculations for Resonant_SubGeVDM_fermion -> SubGeVDM_fermion ..."<<EOM;
+
+    targetP.setValue("mDM", myP["mDM"]);
+    targetP.setValue("gDM", myP["gDM"]);
+    targetP.setValue("kappa", myP["kappa"]);
+    targetP.setValue("etaDM", myP["etaDM"]);
+    targetP.setValue("mAp", 2 * myP["mDM"] * sqrt(myP["epsR"] + 1));
+  }
+#undef PARENT
+#undef MODEL
+
+#define MODEL Resonant_SubGeVDM_fermion_RDprior
+#define PARENT Resonant_SubGeVDM_fermion
+  void MODEL_NAMESPACE::CAT_3(MODEL,_to_,PARENT) (const ModelParameters &myP, ModelParameters &targetP)
+  {
+    logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> " STRINGIFY(PARENT) "."<<LogTags::info<<EOM;
+
+    targetP.setValue("mDM", myP["mDM"]);
+    targetP.setValue("gDM", myP["gDM"]);
+    targetP.setValue("kappa", myP["kappa"]);
+    targetP.setValue("epsR", myP["epsR"]);
+    targetP.setValue("etaDM", myP["etaDM_mDM"]/myP["mDM"]);
+  }
+#undef PARENT
 #undef MODEL
