@@ -213,6 +213,9 @@ ObsLikes:
     - capability: lnL_vesc
       purpose: LogLike
 
+    - capability: lnL_vrot
+      purpose: LogLike
+      
 Rules:
 
   #-------------------------------------------------------------------------------------

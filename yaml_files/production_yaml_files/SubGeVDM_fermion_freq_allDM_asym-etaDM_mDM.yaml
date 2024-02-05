@@ -54,19 +54,19 @@ Priors:
 
 Printer:
 
-  printer: cout
+  # printer: cout
   # printer: ascii
-  # printer: hdf5_v1
+  printer: hdf5_v1
 
-  # options:
-  #   output_file: "SubGeV_fermion.hdf5"
-  #   disable_combine_routines: true
-  #   group: "/SubGeV_fermion"
+  options:
+    output_file: "SubGeV_fermion.hdf5"
+    disable_combine_routines: true
+    group: "/SubGeV_fermion"
 
 
 Scanner:
 
-  use_scanner: random
+  use_scanner: diver
 
   scanners:
 
@@ -215,6 +215,9 @@ ObsLikes:
     - capability: lnL_vesc
       purpose: LogLike
 
+    - capability: lnL_vrot
+      purpose: LogLike
+      
 Rules:
 
   #-------------------------------------------------------------------------------------

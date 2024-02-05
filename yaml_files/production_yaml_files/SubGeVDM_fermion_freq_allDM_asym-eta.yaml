@@ -11,7 +11,7 @@ Parameters:
   StandardModel_Higgs:
     mH: 125.10 # PDG 2020 value
 
-  Resonant_SubGeVDM_fermion_RDprior:
+  Resonant_SubGeVDM_fermion:
     mDM:
       prior_type: log
       range: [1e-3,1e0]
@@ -24,9 +24,9 @@ Parameters:
     epsR: 
       prior_type: log
       range: [1e-3,8]
-    etaDM_mDM:
-      prior_type: flat
-      range: [0,1e-9]
+    etaDM:
+      prior_type: log
+      range: [1e-13,1e-6]
 
   Halo_gNFW_rho0:
     rho0:
@@ -134,7 +134,7 @@ ObsLikes:
       purpose:    LogLike     
       
     - capability: PandaX_4T_Migdal_LogLikelihood 
-      purpose:    LogLike       
+      purpose:    LogLike      
      
     - capability: sigma_SI_p
       purpose:    Observable
@@ -224,9 +224,9 @@ Rules:
   # Relic density likelihood
   - capability: lnL_oh2
     # Choose to implement the relic density likelihood as an upper bound, not a detection
-    function: lnL_oh2_upperlimit
+    # function: lnL_oh2_upperlimit
     # Choose to implement the relic density likelihood as a detection
-    # function: lnL_oh2_Simple
+    function: lnL_oh2_Simple
     options: # Planck 2018 values
       oh2_obs: 0.120
       oh2_obserr: 0.001
@@ -254,8 +254,8 @@ Rules:
       type: RD_spectrum_type
     then:
       module: DarkBit
-      function: RD_spectrum_from_ProcessCatalog 
-
+      function: RD_spectrum_from_ProcessCatalog
+      
   - capability: TH_ProcessCatalog
     options:
       smooth: true # false for using PDG value, true for using darkcast's fitted value
@@ -398,7 +398,7 @@ Rules:
   - capability: BulletCluster_lnL
     options: # Choose between an optimistic "main_cluster_mlr" or conservative "lognormal_mlr"(default) prior
       initial_mlr_prior: lognormal_mlr
-
+    
   # ----------------------------------------------------------------------------------
   # Nuisance parameter likelihoods
 
@@ -419,7 +419,7 @@ Rules:
     options:
       vesc_obs: 550 # km/s
       vesc_obserr: 35 # km/s
-    
+
 Logger:
 
   redirection:
@@ -439,6 +439,6 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e100
     model_invalid_for_lnlike_below_alt: -1e100
 
-  default_output_path: "runs/1_f_oh2up_asym-etaDM_mDM/"
+  default_output_path: "runs/1_f_oh2s_asym-eta/"
 
   print_timing_data: true

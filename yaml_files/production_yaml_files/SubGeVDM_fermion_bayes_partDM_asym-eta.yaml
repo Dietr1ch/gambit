@@ -11,22 +11,22 @@ Parameters:
   StandardModel_Higgs:
     mH: 125.10 # PDG 2020 value
 
-  Resonant_SubGeVDM_fermion_RDprior:
+  SubGeVDM_fermion:
     mDM:
       prior_type: log
       range: [1e-3,1e0]
-    gDM:  
+    mAp:
+      prior_type: log
+      range: [2e-3, 6e0]
+    gDM:
       prior_type: log
       range: [1e-2,3.5]
     kappa:
       prior_type: log
       range: [1e-8,1e-1]
-    epsR: 
+    etaDM:
       prior_type: log
-      range: [1e-3,8]
-    etaDM_mDM:
-      prior_type: flat
-      range: [0,1e-9]
+      range: [1e-13,1e-6]
 
   Halo_gNFW_rho0:
     rho0:
@@ -83,11 +83,11 @@ Scanner:
     diver:
       plugin: diver
       like: LogLike
-      NP: 45600
+      NP: 20000
       verbosity: 1
-      convthresh: 1E-6
-      lambdajDE: false
-      
+      convthresh: 1E-4
+      lambdajDE: true
+
 
 ObsLikes:
 
@@ -103,7 +103,7 @@ ObsLikes:
 
     - capability: BaBar_single_photon_LogLike
       purpose:    LogLike
-      
+
     - capability: LHC_Combined_LogLike
       purpose:    LogLike
 
@@ -115,9 +115,9 @@ ObsLikes:
 
     - capability: dark_photon_visible_branching
       purpose:    Observable
-      
+
   # Direct detection likelihoods (nucleon)
-  
+
     - capability: CRESST_III_LogLikelihood
       purpose:    LogLike
 
@@ -131,11 +131,11 @@ ObsLikes:
       purpose:    LogLike
 
     - capability: DarkSide50_Migdal_2023_LogLikelihood
-      purpose:    LogLike     
-      
-    - capability: PandaX_4T_Migdal_LogLikelihood 
-      purpose:    LogLike       
-     
+      purpose:    LogLike
+
+    - capability: PandaX_4T_Migdal_LogLikelihood
+      purpose:    LogLike
+
     - capability: sigma_SI_p
       purpose:    Observable
 
@@ -158,7 +158,7 @@ ObsLikes:
 
     - capability: CDMS_HVeV_2020_LogLikelihood
       purpose:    LogLike
-      
+
     - capability: sigma_e
       purpose:    Observable
 
@@ -237,11 +237,6 @@ Rules:
     options: # Planck 2018 values
       oh2_obs: 0.120
 
-  # - capability: RD_fraction
-  #   function: RD_fraction_one
-  #   options: # Planck 2018 values
-  #     oh2_obs: 0.120
-
   - if:
       capability: RD_oh2
       type: double
@@ -254,7 +249,7 @@ Rules:
       type: RD_spectrum_type
     then:
       module: DarkBit
-      function: RD_spectrum_from_ProcessCatalog 
+      function: RD_spectrum_from_ProcessCatalog
 
   - capability: TH_ProcessCatalog
     options:
@@ -291,13 +286,13 @@ Rules:
     # Signal yields for LHC analyses
   - capability: AllAnalysisNumbers
     function: SubGeVDM_results
-  
+
   # ---------------------------------------------------------------------------------
   # Direct detection likelihoods
   # Use DarkBit's own calculations of the direct detection couplings
   - capability: DD_couplings
     function: DD_couplings_SubGeVDM_fermion
-    
+
   # Select WIMP-nucleon couplings for DDCalc 2.1.0 WIMP object
   - capability: DDCalc_Couplings
     function: DDCalc_Couplings_WIMP_nucleon
@@ -346,7 +341,7 @@ Rules:
 
   - capability: decay_rates
     function: all_decays
-    
+
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: GA_SimYieldTable
     #function: GA_SimYieldTable_DS5
@@ -419,7 +414,7 @@ Rules:
     options:
       vesc_obs: 550 # km/s
       vesc_obserr: 35 # km/s
-    
+
 Logger:
 
   redirection:
@@ -439,6 +434,6 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e100
     model_invalid_for_lnlike_below_alt: -1e100
 
-  default_output_path: "runs/1_f_oh2up_asym-etaDM_mDM/"
+  default_output_path: "runs/"
 
   print_timing_data: true

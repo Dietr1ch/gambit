@@ -11,7 +11,7 @@ Parameters:
   StandardModel_Higgs:
     mH: 125.10 # PDG 2020 value
 
-  Resonant_SubGeVDM_fermion_RDprior:
+  Resonant_SubGeVDM_fermion:
     mDM:
       prior_type: log
       range: [1e-3,1e0]
@@ -24,9 +24,9 @@ Parameters:
     epsR: 
       prior_type: log
       range: [1e-3,8]
-    etaDM_mDM:
-      prior_type: flat
-      range: [0,1e-9]
+    etaDM:
+      prior_type: log
+      range: [1e-13,1e-6]
 
   Halo_gNFW_rho0:
     rho0:
@@ -134,8 +134,8 @@ ObsLikes:
       purpose:    LogLike     
       
     - capability: PandaX_4T_Migdal_LogLikelihood 
-      purpose:    LogLike       
-     
+      purpose:    LogLike     
+
     - capability: sigma_SI_p
       purpose:    Observable
 
@@ -152,7 +152,7 @@ ObsLikes:
 
     - capability: DAMIC_M_2023_LogLikelihood
       purpose:    LogLike
-
+      
     - capability: SENSEI_at_MINOS_LogLikelihood
       purpose:    LogLike
 
@@ -439,6 +439,6 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e100
     model_invalid_for_lnlike_below_alt: -1e100
 
-  default_output_path: "runs/1_f_oh2up_asym-etaDM_mDM/"
+  default_output_path: "runs/1_f_oh2up_asym-eta/"
 
   print_timing_data: true
