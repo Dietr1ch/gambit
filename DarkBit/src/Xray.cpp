@@ -62,7 +62,9 @@ namespace Gambit
       double DM_mass = Dep::WIMP_properties->mass;
       LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
       double rho0_resc = LocalHaloParameters.rho0/0.3;
-//      double suppression=1000.0;
+      double suppression = *Dep::ID_suppression;
+//      double 
+ion=1000.0;
 //      std::cout <<"at a mass of "<< DM_mass << " suppression is equal to " << suppression;
       TH_Process process = Dep::TH_ProcessCatalog->getProcess(DM_ID, DMbar_ID);
 
