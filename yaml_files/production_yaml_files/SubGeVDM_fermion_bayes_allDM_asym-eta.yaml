@@ -164,18 +164,12 @@ ObsLikes:
 
   # Cosmo likelihoods and observables
 
-    - capability: lnL_p_ann
-      purpose:    LogLike
-
     - capability: N_eff_likelihood_Planck_BAO
       purpose:    LogLike
 
     - capability: BBN_LogLike
       purpose:    LogLike
       sub_capabilities: [He4, D]
-
-    - capability: p_ann
-      purpose:    Observable
 
     - capability: f_eff
       purpose:    Observable
@@ -188,8 +182,14 @@ ObsLikes:
 
   # Indirect detection likelihoods
 
+    - capability: lnL_p_ann
+      purpose:    LogLike
+
     - capability: Xray_loglikelihoods
       purpose:    LogLike
+
+    - capability: p_ann
+      purpose:    Observable
 
     - capability: sigmav
       purpose:    Observable
@@ -213,9 +213,6 @@ ObsLikes:
       purpose: LogLike
 
     - capability: lnL_vesc
-      purpose: LogLike
-
-    - capability: lnL_vrot
       purpose: LogLike
 
 Rules:
@@ -244,6 +241,11 @@ Rules:
       module: DarkBit
       function: RD_oh2_from_oh2_aDM
 
+  - capability: RD_oh2_DS6_ini
+    options:
+      # these options are identical for DS5 and DS6+ version
+      fast: 0  # 0: standard, 1: fast but may be inaccurate 20: new DS default (default)```
+      
   - if:
       capability: RD_spectrum
       type: RD_spectrum_type
@@ -397,23 +399,19 @@ Rules:
   # ----------------------------------------------------------------------------------
   # Nuisance parameter likelihoods
 
-  - capability: lnL_vrot  # Local disk rotation speed
-    function: lnL_vrot_gaussian
-    options:
-      vrot_obs: 235 # km/s
-      vrot_obserr: 20 # km/s
-
-  - capability: lnL_v0   # Maxwellian most-probable speed
+  # Set v0 to 240 +/- 8 km/s based on Reid et al [arXiv:1401.5377]
+  - capability: lnL_v0
     function: lnL_v0_gaussian
     options:
-      v0_obs: 235 # km/s
-      v0_obserr: 20 # km/s
+      v0_obs: 240
+      v0_obserr: 8
 
-  - capability: lnL_vesc # Local galactic escape speed
+  # Set vesc to 528 +/- 25 km/s based on Gaia data [arXiv:1901.02016]
+  - capability: lnL_vesc
     function: lnL_vesc_gaussian
     options:
-      vesc_obs: 550 # km/s
-      vesc_obserr: 35 # km/s
+      vesc_obs: 528
+      vesc_obserr: 25
 
 Logger:
 
