@@ -60,7 +60,8 @@ namespace Gambit
       std::string DM_ID = Dep::WIMP_properties->name;
       std::string DMbar_ID = Dep::WIMP_properties->conjugate;
       double DM_mass = Dep::WIMP_properties->mass;
-      double suppression = *Dep::ID_suppression;
+      LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
+      double rho0_resc = LocalHaloParameters.rho0/0.3;
 //      double suppression=1000.0;
 //      std::cout <<"at a mass of "<< DM_mass << " suppression is equal to " << suppression;
       TH_Process process = Dep::TH_ProcessCatalog->getProcess(DM_ID, DMbar_ID);
@@ -114,15 +115,15 @@ namespace Gambit
         rate = it->genRate->bind("v")->eval(0.);
         if(fs[0]=="e+_1")
         {
-          sve += rate*suppression;
+          sve += rate*suppression * rho0_resc * rho0_resc;
         }
         else if(fs[0]=="e+_2")
         {
-          svmu += rate*suppression;
+          svmu += rate*suppression * rho0_resc * rho0_resc;
         }
         else if(fs[0]=="pi+")
         {
-          svpi += rate*suppression;
+          svpi += rate*suppression * rho0_resc * rho0_resc;
         }
       }
 

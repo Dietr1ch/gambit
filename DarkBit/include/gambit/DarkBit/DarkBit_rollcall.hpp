@@ -1151,6 +1151,7 @@ START_MODULE
     #define FUNCTION Xray_loglikes_Cirelli
     START_FUNCTION(double)
     DEPENDENCY(WIMP_properties, WIMPprops)
+    DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
     DEPENDENCY(ID_suppression, double)
     #undef FUNCTION
