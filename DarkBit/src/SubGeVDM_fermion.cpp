@@ -113,14 +113,10 @@ namespace Gambit
     /// Helper function (width rescaled for RD calculations)
     double Gamma_reg(double Gamma, double mass)
     {
-      if (Gamma/mass>1e-4){
-        return Gamma;
-      }
-      else // very narrow resonance -> need to regulate
-      {
-        return Gamma + 3e-5*mass; // RD results do not depend on numerical value,
-                                  // but becomes unreliable for <~1e-6
-      }
+        return Gamma + 8e-5*mass; // RD results should not depend on numerical value,
+                                  // as long as it is small enough.
+                                  // the darksusy Boltzmann solver *can* have troubles
+                                  // for <~1e-5
     }
 
     void DarkMatter_ID_SubGeVDM_fermion(std::string & result) { result = "DM"; }
