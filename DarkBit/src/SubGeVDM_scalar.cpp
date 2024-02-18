@@ -55,12 +55,22 @@ namespace Gambit
         };
       ~SubGeVDM_scalar() {};
 
-      /// Helper function (Breit-Wigner)
+      /// Helper function (Breit-Wigner, rescaled close to resonance)
       double DAp2 (double s)
       {
         double Gamma_eff=Gamma_reg(Gamma_Ap, mAp);
-        return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_eff*Gamma_eff)
-               * Gamma_eff/Gamma_Ap; // rescaling exact in NWA limit
+        double smaxres=(mAp+4*Gamma_eff)*(mAp+4*Gamma_eff);
+        double sminres=(mAp-4*Gamma_eff)*(mAp-4*Gamma_eff);
+
+        if (s<sminres || s>smaxres) // well outside resonance
+        {
+          return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
+        }
+        else if (s>=sminres && s<=smaxres) // very close to resonance
+        {
+          return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_eff*Gamma_eff)
+                 * Gamma_eff/Gamma_Ap; // rescaling exact in NWA limit
+        };
       }
 
       double sv(std::string channel, double gDM, double gSM, double mass, double v, bool smooth)
@@ -259,8 +269,12 @@ namespace Gambit
       }
 
       // Tell DarkSUSY about dark photon resonance. NB: must use rescaled width here!
+      // Add threshold because of hard transition outside rescales width region
       double Gamma_eff=Gamma_reg(tbl->at("Ap").width_in_GeV, spec.get(Par::Pole_Mass, "Ap"));
       if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"),Gamma_eff));
+      process_ann.resonances_thresholds.threshold_energy.push_back(spec.get(Par::Pole_Mass, "Ap")-4*Gamma_eff);
+      process_ann.resonances_thresholds.threshold_energy.push_back(spec.get(Par::Pole_Mass, "Ap")+4*Gamma_eff);
+
 
       // Tell DarkSUSY about Phi resonance
       double mPhi = 1.02;

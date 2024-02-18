@@ -785,10 +785,15 @@ namespace Gambit
       }
       else if (eta != 0)
       {
+        DS_RDPARS *myrdpars = BEreq::rdpars.pointer();
+        double hminsav=myrdpars->hmin;
+        myrdpars->hmin=hminsav*2e-3; // adm requires smaller minimal stepsize
+                                     // in Boltzmann solver
         etaDS->adm_eta=eta;
         fast=*Dep::RD_oh2_DS6_ini;
         BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2sym,xf,fast,ierr,iwar);
         etaDS->adm_eta=0;
+        myrdpars->hmin=hminsav;
       }
       oh2sym = (myRDspec.isSelfConj) ? oh2sym : 2*oh2sym; // include also anti-DM: oh2sym = 2*oh2(anti-DM)
       
@@ -800,13 +805,23 @@ namespace Gambit
       {
         invalid_point().raise("DarkSUSY invariant rate tabulation timed out.");
       }
+      else if(ierr == 8)
+      {
+        //invalid_point().raise("DarkSUSY Boltzmann solver did not converge. Consider lowering minimal stepsize hmin.");
+        DarkBit_error().raise(LOCAL_INFO, "DarkSUSY Boltzmann solver did not converge. Consider lowering minimal stepsize hmin.");
+      }
       else if(ierr != 0)
       {
-        DarkBit_error().raise(LOCAL_INFO, "DarkSUSY Boltzmann solver failed.");
+        DarkBit_error().raise(LOCAL_INFO, "DarkSUSY Boltzmann solver failed with ierr = " + std::to_string(ierr));
       }
-      
+            
       result.first = oh2sym + oh2adm; // total DM density
       result.second = oh2sym / (oh2sym + oh2adm); // symmetric fraction
+
+      #ifdef DARKBIT_RD_DEBUG
+      std::cout <<  "RD_oh2_DS_general_aDM: oh2 = " << result.first <<"\n";
+      std::cout <<  "RD_oh2_DS_general_aDM: r = " << result.second <<"\n";
+      #endif
 
       logger() << LogTags::debug << "RD_oh2_DS_general_aDM: oh2 = " << result.first << EOM;
       logger() << LogTags::debug << "RD_oh2_DS_general_aDM: r = " << result.second << EOM;
