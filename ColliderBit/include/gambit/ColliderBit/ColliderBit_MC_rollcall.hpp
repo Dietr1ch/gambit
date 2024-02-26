@@ -611,6 +611,7 @@
     START_FUNCTION(double)
     DEPENDENCY(dark_photon_decay_rates,DecayTable::Entry)
     ALLOW_MODELS(SubGeVDM_fermion)
+    ALLOW_MODELS(SubGeVDM_scalar)
     #undef FUNCTION
   #undef CAPABILITY
 
