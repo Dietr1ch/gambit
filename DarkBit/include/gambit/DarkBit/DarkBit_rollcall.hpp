@@ -380,6 +380,7 @@ START_MODULE
       DEPENDENCY(RD_oh2_DS6_ini,int)
       BACKEND_REQ(dsrdstart,(ds6),void,(int&, double(&)[1000], double(&)[1000], int&, double(&)[1000], double(&)[1000], int&, double(&)[1000]))
       BACKEND_REQ(dsrdens, (ds6), void, (double(*)(double&), double&, double&, int&, int&, int&))
+      BACKEND_REQ(rdpars, (ds6), DS_RDPARS)
       BACKEND_REQ(adm_com, (ds6), DS_ADM_COM)
       BACKEND_OPTION((DarkSUSY_MSSM, 6.4.0),(ds6))
       BACKEND_OPTION((DarkSUSY_generic_wimp, 6.4.0),(ds6))
@@ -1151,6 +1152,7 @@ START_MODULE
     #define FUNCTION Xray_loglikes_Cirelli
     START_FUNCTION(double)
     DEPENDENCY(WIMP_properties, WIMPprops)
+    DEPENDENCY(LocalHalo, LocalMaxwellianHalo)
     DEPENDENCY(TH_ProcessCatalog, TH_ProcessCatalog)
     DEPENDENCY(ID_suppression, double)
     #undef FUNCTION

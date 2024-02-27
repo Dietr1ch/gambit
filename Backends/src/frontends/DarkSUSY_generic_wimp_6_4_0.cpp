@@ -58,7 +58,8 @@ BE_INI_FUNCTION
 
     // Directly overwriting common block variables works, but is *not* intended DS usage!
     // (this bypases, e.g., all the internal error handling)
-    an_how->anyieldhow = runOptions->getValueOrDef<std::string>("default", "DS_yieldtables");
+    an_how->anyieldhow = runOptions->getValueOrDef<std::string>("Hazma", "DS_yieldtables");
+//    an_how->anyieldhow = runOptions->getValueOrDef<std::string>("default", "DS_yieldtables");
 
 
 

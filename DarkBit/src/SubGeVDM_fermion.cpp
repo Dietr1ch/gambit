@@ -51,12 +51,22 @@ namespace Gambit
         };
       ~SubGeVDM_fermion() {};
 
-      /// Helper function (Breit-Wigner)
+      /// Helper function (Breit-Wigner, rescaled close to resonance)
       double DAp2 (double s)
       {
         double Gamma_eff=Gamma_reg(Gamma_Ap, mAp);
-        return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_eff*Gamma_eff)
-               * Gamma_eff/Gamma_Ap; // rescaling exact in NWA limit
+        double smaxres=(mAp+4*Gamma_eff)*(mAp+4*Gamma_eff);
+        double sminres=(mAp-4*Gamma_eff)*(mAp-4*Gamma_eff);
+
+        if (s<sminres || s>smaxres) // well outside resonance
+        {
+          return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
+        }
+        else if (s>=sminres && s<=smaxres) // very close to resonance
+        {
+          return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_eff*Gamma_eff)
+                 * Gamma_eff/Gamma_Ap; // rescaling exact in NWA limit
+        };
       }
 
       double sv(std::string channel, double gDM, double gSM, double mass, double v, bool smooth)
@@ -113,14 +123,10 @@ namespace Gambit
     /// Helper function (width rescaled for RD calculations)
     double Gamma_reg(double Gamma, double mass)
     {
-      if (Gamma/mass>1e-4){
-        return Gamma;
-      }
-      else // very narrow resonance -> need to regulate
-      {
-        return Gamma + 3e-5*mass; // RD results do not depend on numerical value,
-                                  // but becomes unreliable for <~1e-6
-      }
+        return Gamma + 1e-5*mass; // RD results should not depend on numerical value,
+                                  // as long as it is small enough.
+                                  // the darksusy Boltzmann solver *can* have troubles
+                                  // for <~1e-5
     }
 
     void DarkMatter_ID_SubGeVDM_fermion(std::string & result) { result = "DM"; }
@@ -255,7 +261,7 @@ namespace Gambit
         double mtot_final =
         catalog.getParticleProperty(p1[i]).mass +
         catalog.getParticleProperty(p2[i]).mass;
-        if (mDM*2 > mtot_final) // TB bugfix (?) -- removed *0.5 on r.h.s.
+        if (mDM*2 > mtot_final) // TB bugfix -- removed *0.5 on r.h.s.
         {
           daFunk::Funk kinematicFunction = daFunk::funcM(pc, &SubGeVDM_fermion::sv, channels[i],
           gDM, eff, mDM, daFunk::var("v"), runOptions->getValueOrDef<bool>(true,"smooth"));
@@ -269,8 +275,11 @@ namespace Gambit
       }
 
       // Tell DarkSUSY about dark photon resonance. NB: must use rescaled width here!
+      // Add threshold because of hard transition outside rescales width region
       double Gamma_eff=Gamma_reg(tbl->at("Ap").width_in_GeV, spec.get(Par::Pole_Mass, "Ap"));
       if (spec.get(Par::Pole_Mass, "Ap") >= 2*mDM) process_ann.resonances_thresholds.resonances.push_back(TH_Resonance(spec.get(Par::Pole_Mass, "Ap"),Gamma_eff));
+      process_ann.resonances_thresholds.threshold_energy.push_back(spec.get(Par::Pole_Mass, "Ap")-4*Gamma_eff);
+      process_ann.resonances_thresholds.threshold_energy.push_back(spec.get(Par::Pole_Mass, "Ap")+4*Gamma_eff);
 
       // Tell DarkSUSY about Phi resonance
       double mPhi = 1.02;
