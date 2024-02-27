@@ -523,7 +523,9 @@ namespace Gambit {
          // User does not want to create group
          if(nocreate) //accessmode & H5Utils::DONOTCREATE)
          {
+            if(not fatal) errorsOff();
             group_id = H5Gopen2(file_id, name.c_str(), H5P_DEFAULT);
+            if(not fatal) errorsOn();
             if(group_id<0 and fatal)
             {
               std::ostringstream errmsg;
