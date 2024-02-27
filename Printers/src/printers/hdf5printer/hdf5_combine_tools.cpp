@@ -410,8 +410,8 @@ namespace Gambit
                             }
                         //}
 
-                        metadata_group_id = HDF5::openGroup(file_id, metadata_group_name, true);
-                        // If there is no metadata group, skip it 
+                        metadata_group_id = HDF5::openGroup(file_id, metadata_group_name, true, false);
+                        // If there is no metadata group, skip it
                         if(metadata_group_id >= 0)
                         {
                           std::vector<std::string> names = get_dset_names(metadata_group_id);
