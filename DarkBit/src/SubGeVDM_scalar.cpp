@@ -306,6 +306,18 @@ namespace Gambit
       result.gna = 0;
     }
 
+    void sigma_e_SubGeVDM_scalar(double &result)
+    {
+      using namespace Pipes::sigma_e_SubGeVDM_scalar;
+
+      double mAp = *Param["mAp"];
+      double mDM = *Param["mDM"];
+      double effective_coupling = sqrt(4*pi*alpha_EM)*(*Param["gDM"])*(*Param["kappa"]);
+
+      double reduced_mass = mDM * m_electron / (mDM + m_electron);
+      result = gev2cm2*pow(effective_coupling*reduced_mass,2)/pi/pow(pow(mAp,2)+pow(alpha_EM*m_electron,2),2);
+    }
+
 
   }
 }

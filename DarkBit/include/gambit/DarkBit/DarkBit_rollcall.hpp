@@ -1627,6 +1627,12 @@ START_MODULE
     ALLOW_MODELS(SubGeVDM_fermion)
     DEPENDENCY(SubGeVDM_spectrum, Spectrum)
     #undef FUNCTION
+
+    #define FUNCTION sigma_e_SubGeVDM_scalar
+    START_FUNCTION(double)
+    ALLOW_MODELS(SubGeVDM_scalar)
+    DEPENDENCY(SubGeVDM_spectrum, Spectrum)
+    #undef FUNCTION
   #undef CAPABILITY
 
   // Likelihoods for nuclear parameters:
