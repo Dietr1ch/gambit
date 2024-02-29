@@ -66,11 +66,11 @@ namespace Gambit
         {
           return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_Ap*Gamma_Ap);
         }
-        else if (s>=sminres && s<=smaxres) // very close to resonance
+        else // very close to resonance
         {
           return 1/((s-mAp*mAp)*(s-mAp*mAp)+mAp*mAp*Gamma_eff*Gamma_eff)
                  * Gamma_eff/Gamma_Ap; // rescaling exact in NWA limit
-        };
+        }
       }
 
       double sv(std::string channel, double gDM, double gSM, double mass, double v, bool smooth)
