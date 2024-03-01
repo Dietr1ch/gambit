@@ -1,5 +1,5 @@
 ##########################################################################
-## GAMBIT configuration for a Diver scan of the fermionic Sub-GeV DM model
+## GAMBIT configuration for a Diver scan of the scalar Sub-GeV DM model
 ##########################################################################
 
 
@@ -18,7 +18,7 @@ Parameters:
     mAp:
       prior_type: log
       range: [2e-3, 6e0]
-    gDM:  
+    gDM:
       prior_type: log
       range: [1e-2,3.5]
     kappa:
@@ -85,7 +85,7 @@ Scanner:
       verbosity: 1
       convthresh: 1E-6
       lambdajDE: false
-      
+
 
 ObsLikes:
 
@@ -101,15 +101,15 @@ ObsLikes:
 
     - capability: BaBar_single_photon_LogLike
       purpose:    LogLike
-      
+
     - capability: LHC_Combined_LogLike
       purpose:    LogLike
 
     - capability: LHC_signals
       purpose:    Observable
-      
+
   # Direct detection likelihoods (nucleon)
-  
+
     - capability: CRESST_III_LogLikelihood
       purpose:    LogLike
 
@@ -119,18 +119,15 @@ ObsLikes:
     - capability: CDMSlite_LogLikelihood
       purpose:    LogLike
 
-    # - capability: XENON1T_Migdal_LogLikelihood
-    #   purpose:    LogLike
+    - capability: XENON1T_Migdal_LogLikelihood
+      purpose:    LogLike
 
     - capability: DarkSide50_Migdal_2023_LogLikelihood
-      purpose:    LogLike     
-      
-    - capability: PandaX_4T_Migdal_LogLikelihood 
-      purpose:    LogLike     
-      
-    # - capability: LZ_Migdal_LogLikelihood 
-    #   purpose:    LogLike   
-     
+      purpose:    LogLike
+
+    - capability: PandaX_4T_Migdal_LogLikelihood
+      purpose:    LogLike
+
     - capability: sigma_SI_p
       purpose:    Observable
 
@@ -147,16 +144,13 @@ ObsLikes:
 
     - capability: DAMIC_M_2023_LogLikelihood
       purpose:    LogLike
-      
-    # - capability: LZ_ER_LogLikelihood
-    #   purpose:    LogLike
 
     - capability: SENSEI_at_MINOS_LogLikelihood
       purpose:    LogLike
 
     - capability: CDMS_HVeV_2020_LogLikelihood
       purpose:    LogLike
-      
+
     - capability: sigma_e
       purpose:    Observable
 
@@ -231,7 +225,7 @@ Rules:
       type: RD_spectrum_type
     then:
       module: DarkBit
-      function: RD_spectrum_from_ProcessCatalog 
+      function: RD_spectrum_from_ProcessCatalog
 
   - capability: TH_ProcessCatalog
     options:
@@ -268,13 +262,13 @@ Rules:
     # Signal yields for LHC analyses
   - capability: AllAnalysisNumbers
     function: SubGeVDM_results
-  
+
   # ---------------------------------------------------------------------------------
   # Direct detection likelihoods
   # Use DarkBit's own calculations of the direct detection couplings
   - capability: DD_couplings
-    function: DD_couplings_SubGeVDM_fermion
-    
+    function: DD_couplings_SubGeVDM_scalar
+
   # Select WIMP-nucleon couplings for DDCalc 2.1.0 WIMP object
   - capability: DDCalc_Couplings
     function: DDCalc_Couplings_WIMP_nucleon
@@ -292,7 +286,7 @@ Rules:
 
   - capability: DarkMatterConj_ID
     type: std::string
-    function: DarkMatterConj_ID_SubGeVDM_fermion
+    function: DarkMatterConj_ID_SubGeVDM_scalar
     module: DarkBit
 
   # ---------------------------------------------------------------------------------
@@ -328,7 +322,7 @@ Rules:
 
   - capability: decay_rates
     function: all_decays
-    
+
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: GA_SimYieldTable
     #function: GA_SimYieldTable_DS5
@@ -373,7 +367,7 @@ Rules:
   # Calculate the constant f_eff by convolution of f_eff(z) with a weighting function
   - capability: f_eff
     function: f_eff_weighted
-    
+
 Logger:
 
   redirection:
