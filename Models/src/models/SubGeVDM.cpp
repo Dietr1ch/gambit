@@ -52,7 +52,7 @@
 
     targetP.setValue("mass", *Dep::mwimp);
     // In AnnihilatingDM_general the parameter "sigmav" is assumed to already include
-    // (RD_fraction)^2 and the factor k
+    // supression and the factor k
     targetP.setValue("sigmav", k*suppression*(*Dep::sigmav));
   }
 #undef MODEL
@@ -165,8 +165,8 @@
 
     targetP.setValue("mass", *Dep::mwimp);
     // In AnnihilatingDM_general the parameter "sigmav" is assumed to already include
-    // (RD_fraction)^2 and the factor k
-    targetP.setValue("sigmav", k*f*f*(*Dep::sigmav));
+    // supression and the factor k
+    targetP.setValue("sigmav", k*suppression*(*Dep::sigmav));
   }
 #undef MODEL
 
