@@ -43,7 +43,7 @@
   INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,mwimp,double)
   INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,wimp_sc,bool)
   INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,sigmav,double)
-  INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,RD_fraction,double)
+  INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,ID_suppression,double)
 
 #undef MODEL
 

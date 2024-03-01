@@ -48,12 +48,12 @@
     logger()<<"Running interpret_as_friend calculations for SubGeVDM_fermion -> AnnihilatingDM_general ..."<<EOM;
 
     const double k = (*Dep::wimp_sc) ? 1. : 0.5;
-    const double f = *Dep::RD_fraction;
+    const double suppression = *Dep::ID_suppression;
 
     targetP.setValue("mass", *Dep::mwimp);
     // In AnnihilatingDM_general the parameter "sigmav" is assumed to already include
     // (RD_fraction)^2 and the factor k
-    targetP.setValue("sigmav", k*f*f*(*Dep::sigmav));
+    targetP.setValue("sigmav", k*suppression*(*Dep::sigmav));
   }
 #undef MODEL
 

@@ -113,8 +113,6 @@ namespace Gambit
         positronElectronYield = positronElectronYield / totalRate;
         gammaYield = gammaYield / totalRate;
         
-        positronElectronYield *= suppression;
-        gammaYield *= suppression;
       }
 
       // Define the underlying energy axes (kinetic energies)
