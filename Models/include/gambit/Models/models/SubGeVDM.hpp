@@ -106,6 +106,46 @@
   START_MODEL
 
   DEFINEPARS(mDM,mAp,gDM,kappa,etaDM)
+
+  // In order to enable CMB constraints create a friendship relation
+  // to the s-wave annihilation "marker" model AnnihilatingDM_general
+  INTERPRET_AS_X_FUNCTION(AnnihilatingDM_general,SubGeVDM_scalar_to_AnnihilatingDM_general)
+  INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,mwimp,double)
+  INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,wimp_sc,bool)
+  INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,sigmav,double)
+  INTERPRET_AS_X_DEPENDENCY(AnnihilatingDM_general,RD_fraction,double)
+
+#undef MODEL
+
+#define MODEL SubGeVDM_scalar_RDprior
+#define PARENT SubGeVDM_scalar
+  START_MODEL
+
+  DEFINEPARS(mDM,mAp,gDM,kappa,etaDM_mDM)
+
+  INTERPRET_AS_PARENT_FUNCTION(SubGeVDM_scalar_RDprior_to_SubGeVDM_scalar)
+#undef PARENT
+#undef MODEL
+
+
+#define MODEL Resonant_SubGeVDM_scalar
+#define PARENT SubGeVDM_scalar
+  START_MODEL
+
+  DEFINEPARS(mDM,epsR,gDM,kappa,etaDM)
+
+  INTERPRET_AS_PARENT_FUNCTION(Resonant_SubGeVDM_scalar_to_SubGeVDM_scalar)
+#undef PARENT
+#undef MODEL
+
+#define MODEL Resonant_SubGeVDM_scalar_RDprior
+#define PARENT Resonant_SubGeVDM_scalar
+  START_MODEL
+
+  DEFINEPARS(mDM,epsR,gDM,kappa,etaDM_mDM)
+
+  INTERPRET_AS_PARENT_FUNCTION(Resonant_SubGeVDM_scalar_RDprior_to_Resonant_SubGeVDM_scalar)
+#undef PARENT
 #undef MODEL
 
 #endif
