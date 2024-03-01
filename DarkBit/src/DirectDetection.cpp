@@ -495,7 +495,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -518,7 +519,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -541,7 +543,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -564,7 +567,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -587,7 +591,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -610,7 +615,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -633,7 +639,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -656,7 +663,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -679,7 +687,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -705,7 +714,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -731,7 +741,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -757,7 +768,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
@@ -783,7 +795,8 @@ namespace Gambit
 
       // 1. DM halo model (in powers of GeV)
       LocalMaxwellianHalo LH = *Dep::LocalHalo_GeV;
-      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0, LH.v0, LH.vrot, LH.vesc);
+      double fraction = *Dep::RD_fraction;
+      obscura_default::obscura::Standard_Halo_Model SHM(LH.rho0*fraction, LH.v0, LH.vrot, LH.vesc);
 
       // 2. DM Particle with SI interactions
       double mDM = *Param["mDM"]; // in GeV
