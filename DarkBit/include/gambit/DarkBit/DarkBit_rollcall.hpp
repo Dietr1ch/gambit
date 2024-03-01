@@ -1929,7 +1929,6 @@ START_MODULE
       DEPENDENCY(GA_Yield, daFunk::Funk)
       DEPENDENCY(electron_Yield, daFunk::Funk)
       DEPENDENCY(positron_Yield, daFunk::Funk)
-      DEPENDENCY(ID_suppression, double)
     #undef FUNCTION
   #undef CAPABILITY
 
