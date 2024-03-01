@@ -694,7 +694,7 @@ namespace Gambit
       double mDM = *Param["mDM"]; // in GeV
       double mAp = *Param["mAp"]; // in GeV
       double sigma_p = *Dep::sigma_SI_p/gev2cm2; // in GeV^-2
-      double sigma_n = *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
+      double sigma_n = runOptions->getValueOrDef<bool>(false, "equal_p_and_n_xsecs") ? *Dep::sigma_SI_p/gev2cm2 : *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
 
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Unfix_Coupling_Ratios();
@@ -721,7 +721,7 @@ namespace Gambit
       double mDM = *Param["mDM"]; // in GeV
       double mAp = *Param["mAp"]; // in GeV
       double sigma_p = *Dep::sigma_SI_p/gev2cm2; // in GeV^-2
-      double sigma_n = *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
+      double sigma_n = runOptions->getValueOrDef<bool>(false, "equal_p_and_n_xsecs") ? *Dep::sigma_SI_p/gev2cm2 : *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
 
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Unfix_Coupling_Ratios();
@@ -748,7 +748,7 @@ namespace Gambit
       double mDM = *Param["mDM"]; // in GeV
       double mAp = *Param["mAp"]; // in GeV
       double sigma_p = *Dep::sigma_SI_p/gev2cm2; // in GeV^-2
-      double sigma_n = *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
+      double sigma_n = runOptions->getValueOrDef<bool>(false, "equal_p_and_n_xsecs") ? *Dep::sigma_SI_p/gev2cm2 : *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
 
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Unfix_Coupling_Ratios();
@@ -775,7 +775,7 @@ namespace Gambit
       double mDM = *Param["mDM"]; // in GeV
       double mAp = *Param["mAp"]; // in GeV
       double sigma_p = *Dep::sigma_SI_p/gev2cm2; // in GeV^-2
-      double sigma_n = *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
+      double sigma_n = runOptions->getValueOrDef<bool>(false, "equal_p_and_n_xsecs") ? *Dep::sigma_SI_p/gev2cm2 : *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
 
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Unfix_Coupling_Ratios();
@@ -802,7 +802,7 @@ namespace Gambit
       double mDM = *Param["mDM"]; // in GeV
       double mAp = *Param["mAp"]; // in GeV
       double sigma_p = *Dep::sigma_SI_p/gev2cm2; // in GeV^-2
-      double sigma_n = *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
+      double sigma_n = runOptions->getValueOrDef<bool>(false, "equal_p_and_n_xsecs") ? *Dep::sigma_SI_p/gev2cm2 : *Dep::sigma_SI_n/gev2cm2; // in GeV^-2
 
       obscura_default::obscura::DM_Particle_SI DM(mDM);
       DM.Unfix_Coupling_Ratios();

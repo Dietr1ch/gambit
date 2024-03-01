@@ -153,3 +153,64 @@
   }
 #undef PARENT
 #undef MODEL
+
+#define MODEL SubGeVDM_scalar
+  void MODEL_NAMESPACE::SubGeVDM_scalar_to_AnnihilatingDM_general (const ModelParameters &, ModelParameters &targetP)
+  {
+    USE_MODEL_PIPE(AnnihilatingDM_general) // get pipe for "interpret as friend" function
+    logger()<<"Running interpret_as_friend calculations for SubGeVDM_scalar -> AnnihilatingDM_general ..."<<EOM;
+
+    const double k = (*Dep::wimp_sc) ? 1. : 0.5;
+    const double f = *Dep::RD_fraction;
+
+    targetP.setValue("mass", *Dep::mwimp);
+    // In AnnihilatingDM_general the parameter "sigmav" is assumed to already include
+    // (RD_fraction)^2 and the factor k
+    targetP.setValue("sigmav", k*f*f*(*Dep::sigmav));
+  }
+#undef MODEL
+
+#define MODEL SubGeVDM_scalar_RDprior
+#define PARENT SubGeVDM_scalar
+  void MODEL_NAMESPACE::CAT_3(MODEL,_to_,PARENT) (const ModelParameters &myP, ModelParameters &targetP)
+  {
+    logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> " STRINGIFY(PARENT) "."<<LogTags::info<<EOM;
+
+    targetP.setValue("mDM", myP["mDM"]);
+    targetP.setValue("mAp", myP["mAp"]);
+    targetP.setValue("gDM", myP["gDM"]);
+    targetP.setValue("kappa", myP["kappa"]);
+    targetP.setValue("etaDM", myP["etaDM_mDM"]/myP["mDM"]);
+  }
+#undef PARENT
+#undef MODEL
+
+#define MODEL Resonant_SubGeVDM_scalar
+#define PARENT SubGeVDM_scalar
+  void MODEL_NAMESPACE::CAT_3(MODEL,_to_,PARENT) (const ModelParameters &myP, ModelParameters &targetP)
+  {
+    logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> " STRINGIFY(PARENT) "."<<LogTags::info<<EOM;
+
+    targetP.setValue("mDM", myP["mDM"]);
+    targetP.setValue("gDM", myP["gDM"]);
+    targetP.setValue("kappa", myP["kappa"]);
+    targetP.setValue("etaDM", myP["etaDM"]);
+    targetP.setValue("mAp", 2 * myP["mDM"] * sqrt(myP["epsR"] + 1));
+  }
+#undef PARENT
+#undef MODEL
+
+#define MODEL Resonant_SubGeVDM_scalar_RDprior
+#define PARENT Resonant_SubGeVDM_scalar
+  void MODEL_NAMESPACE::CAT_3(MODEL,_to_,PARENT) (const ModelParameters &myP, ModelParameters &targetP)
+  {
+    logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> " STRINGIFY(PARENT) "."<<LogTags::info<<EOM;
+
+    targetP.setValue("mDM", myP["mDM"]);
+    targetP.setValue("gDM", myP["gDM"]);
+    targetP.setValue("kappa", myP["kappa"]);
+    targetP.setValue("epsR", myP["epsR"]);
+    targetP.setValue("etaDM", myP["etaDM_mDM"]/myP["mDM"]);
+  }
+#undef PARENT
+#undef MODEL
