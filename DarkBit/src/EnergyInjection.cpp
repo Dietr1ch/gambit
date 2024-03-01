@@ -112,10 +112,10 @@ namespace Gambit
 
         positronElectronYield = positronElectronYield / totalRate;
         gammaYield = gammaYield / totalRate;
+        
+        positronElectronYield *= suppression;
+        gammaYield *= suppression;
       }
-
-      // account for underabundant DM
-      totalRate *= suppression;
 
       // Define the underlying energy axes (kinetic energies)
       // Extend above Emax such that resolved monochromatic lines are included.
