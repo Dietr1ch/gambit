@@ -161,7 +161,7 @@
     logger()<<"Running interpret_as_friend calculations for SubGeVDM_scalar -> AnnihilatingDM_general ..."<<EOM;
 
     const double k = (*Dep::wimp_sc) ? 1. : 0.5;
-    const double f = *Dep::RD_fraction;
+    const double suppression = *Dep::ID_suppression;
 
     targetP.setValue("mass", *Dep::mwimp);
     // In AnnihilatingDM_general the parameter "sigmav" is assumed to already include
