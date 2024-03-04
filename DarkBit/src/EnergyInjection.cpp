@@ -53,9 +53,6 @@ namespace Gambit
       const std::string DMid = *Dep::DarkMatter_ID;
       const std::string DMbarid = *Dep::DarkMatterConj_ID;
 
-      // Is the (symmetric) DM componenet underabundant ?
-      double suppression = *Dep::ID_suppression;
-
       // Get the ProcessCatalog
       auto& catalog = *Dep::TH_ProcessCatalog;
 
