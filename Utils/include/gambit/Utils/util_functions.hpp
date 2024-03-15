@@ -249,8 +249,8 @@ namespace Gambit
     /// Useful for allowing evaluation of a removal criterion over the whole container in parallel.
     template<template<class, class> class Container, class T >
     void masked_erase(Container<std::pair<T,bool>, std::allocator<std::pair<T,bool>>>& c)
-    {     
-      auto it = std::remove_if(c.begin(), c.end(), [](const std::pair<T,bool>& e) { return not e.second; }); 
+    {
+      auto it = std::remove_if(c.begin(), c.end(), [](const std::pair<T,bool>& e) { return not e.second; });
       c.erase(it, c.end());
     }
 
