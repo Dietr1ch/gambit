@@ -299,7 +299,7 @@ namespace Gambit {
       }
 
       /// Check if a group exists and can be accessed
-      bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg)
+      bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg, bool fatal)
       {
           hid_t group_id;
           bool readable(false);
@@ -307,7 +307,7 @@ namespace Gambit {
           errorsOff();
           group_id = H5Gopen2(location, groupname.c_str(), H5P_DEFAULT);
           errorsOn();
-          if(group_id < 0)
+          if(group_id < 0 and fatal)
           {
             readable=false;
             std::ostringstream errmsg;

@@ -550,7 +550,7 @@ namespace Gambit
               }
 
               // Check that metadata group is readable
-              if(not HDF5::checkGroupReadable(file_id, metadata_group, msg2))
+              if(not HDF5::checkGroupReadable(file_id, metadata_group, msg2, false))
               {
                 // We are supposed to be resuming, but metadata group was not readable in the output file, so we can't.
                 std::ostringstream errmsg;
