@@ -105,10 +105,10 @@ namespace Gambit
          { std::string garbage; return checkFileReadable(fname, garbage); }
 
          /// Check if a group exists and can be accessed
-         bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg, bool fatal = true);
+         bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg);
          /// Thin wrapper for the above to discard failure message
-         inline bool checkGroupReadable(hid_t location, const std::string& groupname, bool fatal = true)
-         { std::string garbage; return checkGroupReadable(location, groupname, garbage, fatal); }
+         inline bool checkGroupReadable(hid_t location, const std::string& groupname)
+         { std::string garbage; return checkGroupReadable(location, groupname, garbage); }
 
          /// Check if a dataset exists and can be read from fully
          /// (Reads through entire dataset to make sure! May take some time)
