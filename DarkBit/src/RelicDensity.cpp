@@ -777,7 +777,7 @@ namespace Gambit
       double oh2sym, xf;
       int ierr=0; int iwar=0;
       int fast=*Dep::RD_oh2_DS6_ini;
-      
+
       DS_RDPARS *myrdpars = BEreq::rdpars.pointer();
       double hminsav=myrdpars->hmin;
       if (eta != 0) // adm requires smaller minimal stepsize in Boltzmann solver
@@ -1372,14 +1372,15 @@ namespace Gambit
 
     ////////////////////////////////////////////////////////////////////
     //
-    //   Uncertainty on the relic density, from 2103.01944
+    //   Undepredictions on the relic density, from 2103.01944
     //   Accounts for the amount the RD is expect to be underpredicted
+    //   by using the simple Boltzmann solution vs the full solution
     //
     ///////////////////////////////////////////////////////////////////
 
-    void RD_oh2_uncertainty_SubGeVDM(double &result)
+    void RD_oh2_underprediction_SubGeVDM(double &result)
     {
-      using namespace Pipes::RD_oh2_uncertainty_SubGeVDM;
+      using namespace Pipes::RD_oh2_underprediction_SubGeVDM;
 
       // Translate model parameters to parameters of table
       double mDM = *Param["mDM"];
@@ -1399,11 +1400,12 @@ namespace Gambit
       }
 
       // Get interpolator
-      static const Utils::interp2d_gsl_collection uncertainty("RD_oh2_uncertainty", GAMBIT_DIR "/DarkBit/data/VRES_scan_negative_delta.dat", {"log10(-delta)","log10(Gamma/mA)", "log10(oh2full/oh2simp)"});
+      static const Utils::interp2d_gsl_collection underprediction("RD_oh2_underprediction", GAMBIT_DIR "/DarkBit/data/VRES_scan_negative_delta.dat", {"log10(-delta)","log10(Gamma/mA)", "log10(oh2full/oh2simp)"});
 
-     // Evaluate the uncertainty for the model parameters
-     result = exp(log(10)*uncertainty.eval(log10(negative_delta), log10(Gamma/mAp)));
-     std::cout << "uncertainty = " << result << std::endl;
+     // Evaluate the underprediction for the model parameters
+     // The tabulated data only goes down to Gamma/mAp = 1e-6, but the behaviour seems constant below that, so take the value at the edge
+     // For values of -log10(-delta) < 0.30103 or Gamma/mAp > 0.1, assume that there is no underprediction, i.e. = 1
+     result = (-log10(negative_delta) > 0.30103 and Gamma/mAp <= 0.1) ? exp(log(10)*underprediction.eval(-log10(negative_delta), log10(Gamma/mAp) > -6 ? log10(Gamma/mAp) : -6)) : 1.;
 
     }
 
