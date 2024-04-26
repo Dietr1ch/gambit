@@ -777,25 +777,29 @@ namespace Gambit
       double oh2sym, xf;
       int ierr=0; int iwar=0;
       int fast=*Dep::RD_oh2_DS6_ini;
-      fast=1; // for this estimate, a quick RD calculation is sufficient
-      BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2sym,xf,fast,ierr,iwar);
-      if (oh2sym<oh2adm/200)
+      
+      DS_RDPARS *myrdpars = BEreq::rdpars.pointer();
+      double hminsav=myrdpars->hmin;
+      if (eta != 0) // adm requires smaller minimal stepsize in Boltzmann solver
       {
-        oh2sym = 0.0; // actual symmetric component will be tiny
-                      // (but lead to numerical instabilities in dsrdens)
+        myrdpars->hmin=hminsav*1e-4;
+      }
+
+      BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2sym,xf,fast,ierr,iwar);
+      if (oh2sym<oh2adm/300)
+      {
+        oh2sym = 0; // actual symmetric component will be tiny
+                    // (but lead to numerical instabilities in dsrdens)
       }
       else if (eta != 0)
       {
-        DS_RDPARS *myrdpars = BEreq::rdpars.pointer();
-        double hminsav=myrdpars->hmin;
-        myrdpars->hmin=hminsav*2e-3; // adm requires smaller minimal stepsize
-                                     // in Boltzmann solver
         etaDS->adm_eta=eta;
         fast=*Dep::RD_oh2_DS6_ini;
         BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2sym,xf,fast,ierr,iwar);
         etaDS->adm_eta=0;
-        myrdpars->hmin=hminsav;
       }
+      myrdpars->hmin=hminsav;
+
       oh2sym = (myRDspec.isSelfConj) ? oh2sym : 2*oh2sym; // include also anti-DM: oh2sym = 2*oh2(anti-DM)
 
       //Check for NAN result.
