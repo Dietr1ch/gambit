@@ -25,6 +25,7 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/interp_collection.hpp"
 
 
 namespace Gambit
@@ -651,7 +652,7 @@ namespace Gambit
       int fast = runOptions->getValueOrDef<int>(1, "fast");
       RD_spectrum_type myRDspec = *Dep::RD_spectrum_ordered;
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
-      
+
       switch (fast)
       {
         case 0:
@@ -769,7 +770,7 @@ namespace Gambit
       {
         oh2adm = RDfactorfh*eta*mwimp; // = oh2(DM) - oh2(anti-DM)
       };
-      
+
       // We first check whether the symmetric part of the relic density
       // would be irrelevant, before fully computing it with eta != 0
       etaDS->adm_eta=0;
@@ -796,7 +797,7 @@ namespace Gambit
         myrdpars->hmin=hminsav;
       }
       oh2sym = (myRDspec.isSelfConj) ? oh2sym : 2*oh2sym; // include also anti-DM: oh2sym = 2*oh2(anti-DM)
-      
+
       //Check for NAN result.
       if ( Utils::isnan(oh2sym) ) DarkBit_error().raise(LOCAL_INFO, "DarkSUSY returned NaN for relic density!");
 
@@ -814,7 +815,7 @@ namespace Gambit
       {
         DarkBit_error().raise(LOCAL_INFO, "DarkSUSY Boltzmann solver failed with ierr = " + std::to_string(ierr));
       }
-            
+
       result.first = oh2sym + oh2adm; // total DM density
       result.second = oh2sym / (oh2sym + oh2adm); // symmetric fraction
 
@@ -923,7 +924,7 @@ namespace Gambit
       {
         fast=*Dep::RD_oh2_DS6pre4_ini;
       }
-      
+
       BEreq::dsrdens(byVal(*Dep::RD_eff_annrate),oh2,xf,fast,ierr,iwar);
 
       //Check for NAN result.
@@ -1365,6 +1366,42 @@ namespace Gambit
     }
 
 
+    ////////////////////////////////////////////////////////////////////
+    //
+    //   Uncertainty on the relic density, from 2103.01944
+    //   Accounts for the amount the RD is expect to be underpredicted
+    //
+    ///////////////////////////////////////////////////////////////////
+
+    void RD_oh2_uncertainty_SubGeVDM(double &result)
+    {
+      using namespace Pipes::RD_oh2_uncertainty_SubGeVDM;
+
+      // Translate model parameters to parameters of table
+      double mDM = *Param["mDM"];
+      double mAp = *Param["mAp"];
+      double gDM = *Param["gDM"];
+      double negative_delta = 1. - 4*mDM*mDM/mAp/mAp;
+      double Gamma = 0.;
+      if (ModelInUse("SubGeVDM_scalar"))
+      {
+        if (2.0*mDM <= mAp)
+          Gamma = pow(gDM,2)*mAp/(48.*pi) * pow(sqrt(1.0 - 4.0*pow(mDM/mAp,2)),3); //See eq. (5) or arXiv:1707.03835
+      }
+      if (ModelInUse("SubGeVDM_fermion"))
+      {
+        if (2.0*mDM <= mAp)
+          Gamma = pow(gDM,2)*mAp/(12.*pi) * sqrt(1.0 - 4.0*pow(mDM/mAp,2)) * (1.0 + 2.0*pow(mDM/mAp,2)); //See eq. (7) or arXiv:1707.03835 in the limit Delta -> 0
+      }
+
+      // Get interpolator
+      static const Utils::interp2d_gsl_collection uncertainty("RD_oh2_uncertainty", GAMBIT_DIR "/DarkBit/data/VRES_scan_negative_delta.dat", {"log10(-delta)","log10(Gamma/mA)", "log10(oh2full/oh2simp)"});
+
+     // Evaluate the uncertainty for the model parameters
+     result = exp(log(10)*uncertainty.eval(log10(negative_delta), log10(Gamma/mAp)));
+     std::cout << "uncertainty = " << result << std::endl;
+
+    }
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -1422,7 +1459,7 @@ namespace Gambit
     void ID_suppression_symDM(double &result)
     {
       using namespace Pipes::ID_suppression_symDM;
-      
+
       double DM_fraction = *Dep::RD_fraction;
       std::string proc = *Dep::DM_process;
 

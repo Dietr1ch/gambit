@@ -368,6 +368,13 @@ START_MODULE
 */
   #undef CAPABILITY
 
+  #define CAPABILITY RD_oh2_uncertainty
+  START_CAPABILITY
+    #define FUNCTION RD_oh2_uncertainty_SubGeVDM
+    START_FUNCTION(double)
+    ALLOW_MODEL(SubGeVDM_fermion, SubGeVDM_scalar)
+    #undef FUNCTION
+ #undef CAPABILITY
 
   #define CAPABILITY RD_oh2_aDM
   START_CAPABILITY
