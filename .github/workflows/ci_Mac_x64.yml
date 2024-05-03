@@ -1,6 +1,6 @@
 name: Gambit Mac X64 CI
 
-#on:
+on: workflow_dispatch
 #  push:
 #    branches: [ master, ci-* ]
 #  pull_request:
