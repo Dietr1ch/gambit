@@ -1400,12 +1400,12 @@ namespace Gambit
       }
 
       // Get interpolator
-      static const Utils::interp2d_gsl_collection underprediction("RD_oh2_underprediction", GAMBIT_DIR "/DarkBit/data/VRES_scan_negative_delta.dat", {"log10(-delta)","log10(Gamma/mA)", "log10(oh2full/oh2simp)"});
+      static const Utils::interp2d_gsl_collection underprediction("RD_oh2_underprediction", GAMBIT_DIR "/DarkBit/data/VRES_scan_negative_delta.dat", {"log10(Gamma/mA)","log10(-delta)","log10(oh2full/oh2simp)"});
 
      // Evaluate the underprediction for the model parameters
      // The tabulated data only goes down to Gamma/mAp = 1e-6, but the behaviour seems constant below that, so take the value at the edge
      // For values of -log10(-delta) < 0.30103 or Gamma/mAp > 0.1, assume that there is no underprediction, i.e. = 1
-     result = (-log10(negative_delta) > 0.30103 and Gamma/mAp <= 0.1) ? exp(log(10)*underprediction.eval(-log10(negative_delta), log10(Gamma/mAp) > -6 ? log10(Gamma/mAp) : -6)) : 1.;
+     result = (-log10(negative_delta) > 0.30103 and Gamma/mAp <= 0.1) ? exp(log(10)*underprediction.eval(log10(Gamma/mAp) > -6 ? log10(Gamma/mAp) : -6, -log10(negative_delta))) : 1.;
 
     }
 
