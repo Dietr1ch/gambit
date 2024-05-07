@@ -88,12 +88,6 @@ elseif (CXX_COMPILER_NAME MATCHES "icc.*$")
   message(FATAL_ERROR "\nYou have set CMAKE_CXX_COMPILER to icc.  Did you mean icpc?")
 endif()
 
-# Forbid the use of variable-length array and other non-standard C++ syntax
-if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic-errors")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic-errors")
-endif()
-
 # Include cmake utility scripts, including colour definitions.
 include(cmake/utilities.cmake)
 
@@ -527,6 +521,12 @@ if(${FOUND_RDYNAMIC_FORTRAN} EQUAL -1 AND ${FOUND_EXPORT_DYNAMIC_FORTRAN} EQUAL 
   else()
     set(CMAKE_Fortran_VISIBILITY_PRESET hidden)
   endif()
+endif()
+
+# Forbid the use of variable-length array and other non-standard C++ syntax
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic-errors -Wno-misleading-indentation -Wno-deprecated-copy")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic-errors -Wno-misleading-indentation -Wno-deprecated-copy")
 endif()
 
 # Check for optional packages and disable sections of GAMBIT accordingly
