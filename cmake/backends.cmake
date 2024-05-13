@@ -619,7 +619,7 @@ if(NOT ditched_${name}_${ver})
     BUILD_IN_SOURCE 1
     PATCH_COMMAND patch -p1 < ${patch}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${MAKE_PARALLEL} CC=${CMAKE_C_COMPILER} ARFLAGS=rcs CFLAGS=${SI_C_FLAGS}
+    BUILD_COMMAND ${MAKE_SERIAL} CC=${CMAKE_C_COMPILER} ARFLAGS=rcs CFLAGS=${SI_C_FLAGS}
           COMMAND ar x src/libsuperiso.a
           COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${NO_FIXUP_CHAINS} ${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -o ${lib}.so *.o" > make_so.sh
           COMMAND chmod u+x make_so.sh
