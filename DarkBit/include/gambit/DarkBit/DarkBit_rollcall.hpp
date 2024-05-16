@@ -2670,6 +2670,8 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+// TODO: Not implemented in obscura yet, uncomment when it is
+/*
   #define CAPABILITY LZ_ER_LogLikelihood
   START_CAPABILITY
     #define FUNCTION calc_LZ_ER_LogLikelihood
@@ -2682,6 +2684,7 @@ START_MODULE
     DEPENDENCY(sigma_e, double)
     #undef FUNCTION
   #undef CAPABILITY
+*/
 
   #define CAPABILITY SENSEI_at_MINOS_LogLikelihood
   START_CAPABILITY
@@ -2778,6 +2781,8 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+// TODO: Not implemented in obscura yet, uncomment when it is
+/*
   #define CAPABILITY LZ_Migdal_LogLikelihood
   START_CAPABILITY
     #define FUNCTION calc_LZ_Migdal_LogLikelihood
@@ -2791,6 +2796,7 @@ START_MODULE
     DEPENDENCY(sigma_SI_n, double)
     #undef FUNCTION
   #undef CAPABILITY
+*/
 
   // Super Renormalizable Higgs Portal DM relative observables and likelihoods -----------------
 

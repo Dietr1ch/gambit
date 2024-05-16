@@ -584,6 +584,8 @@ namespace Gambit
       result = experiment.Log_Likelihood(DM, SHM);
     }
 
+// TODO: Not implemented in obscura, uncomment when it is
+/*
     // LZ S2 Electron Recoil Log-Likelihood using obscura
     void calc_LZ_ER_LogLikelihood(double& result)
     {
@@ -607,6 +609,7 @@ namespace Gambit
       obscura_default::obscura::DM_Detector_Ionization_ER experiment = BEreq::LZ_S2_ER();
       result = experiment.Log_Likelihood(DM, SHM);
     }
+*/
 
     // SENSEI at MINOS Electron Recoil Log-Likelihood using obscura
     void calc_SENSEI_at_MINOS_LogLikelihood(double& result)
@@ -788,6 +791,8 @@ namespace Gambit
       result = experiment.Log_Likelihood(DM, SHM);
     }
 
+// TODO: Not implemented in obscura, uncomment when it is
+/*
     // LZ Migdal Log-Likelihood using obscura
     void calc_LZ_Migdal_LogLikelihood(double& result)
     {
@@ -814,6 +819,7 @@ namespace Gambit
       obscura_default::obscura::DM_Detector_Ionization_Migdal experiment = BEreq::LZ_S2_Migdal();
       result = experiment.Log_Likelihood(DM, SHM);
     }
+*/
 
   }
 }

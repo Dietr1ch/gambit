@@ -2169,6 +2169,40 @@ DarkSide_50_S2_SignalSI: |
 DarkSide_50_S2_SignalSD: |
    The number of spin-dependent signal events for the DarkSide 50 (S2-only) direct detection analysis.
 
+
+CDMS_HVeV_2020_LogLikelihood: |
+   Log likelihood from direct detection with electron recoils from the CDMS HVeV experiment.
+
+DAMIC_M_2023_LogLikelihood: |
+   Log likelihood from direct detection with electron recoils from the DAMIC-M HVeV experiment.
+
+DarkSide50_ER_2023_LogLikelihood: |
+   Log likelihood from direct detection with electron recoils from the DarkSide50 2023 experiment.
+
+DarkSide50_ER_LogLikelihood: |
+   Log likelihood from direct detection with electron recoils from the DarkSide50 experiment.
+
+DarkSide50_Migdal_2023_LogLikelihood: |
+   Log likelihood from direct detection with Migdal scattering recoils from the DarkSide50 2023 experiment.
+
+DarkSide50_Migdal_LogLikelihood: |
+   Log likelihood from direct detection with Migdal scattering recoils from the DarkSide50 experiment.
+
+PandaX_4T_ER_LogLikelihood: |
+   Log likelihood from direct detection with electron recoils from the PandaX 4T experiment.
+
+PandaX_4T_Migdal_LogLikelihood: |
+   Log likelihood from direct detection with Migdal scattering from the PandaX 4T experiment.
+
+SENSEI_at_MINOS_LogLikelihood: |
+   Log likelihood from direct detection with electron recoils from the SENSEI experiment.
+
+XENON1T_ER_LogLikelihood: |
+   Log likelihood from direct detection with electron recoils from the XENON1T experiment.
+
+XENON1T_Migdal_LogLikelihood: |
+   Log likelihood from direct detection with Migdal scattering from the XENON1T experiment.
+
 lnL_SI_nuclear_parameters: |
    The log-likehood for the spin-independent nuclear parameters.
 
@@ -2645,6 +2679,46 @@ InitHalo: |
 
 SetSHM: |
   Sets the dark matter halo to the Standard Halo Model (SHM), used in DDCalc
+
+obscura_1_1_0_init: |
+   Initialises obscura 1.1.0.
+
+CDMS_HVeV_2020: |
+   Results from direct detection with electron recoils for the CDMS HVeV 2020 experiment with obscura.
+
+DAMIC_M_2023: |
+   Results from direct detection with electron recoils for the DAMIC M 2023 experiment with obscura.
+
+DarkSide50_S2_ER: |
+   Results from direct detection with electron recoils for the DarkSide50 experiment with obscura.
+
+DarkSide50_S2_ER_2023: |
+   Results from direct detection with electron recoils for the DarkSide50 experiment with obscura.
+
+DarkSide50_S2_Migdal: |
+   Results from direct detection with Migdal scattering for the DarkSide50 experiment with obscura.
+
+DarkSide50_S2_Migdal_2023: |
+   Results from direct detection with Migdal scattering for the DarkSide50 2023 experiment with obscura.
+
+PandaX_4T_S2_ER: |
+   Results from direct detection with electron recoils from the PandaX 4T experiment with obscura.
+
+PandaX_4T_S2_Migdal: |
+   Results from direct detection with Migdal scattering from the PandaX 4T experiment with obscura.
+
+SENSEI_at_MINOS: |
+   Results from direct detection with electron recoils from the SENSEI experiment with obscura.
+
+XENON1T_S2_ER: |
+   Results from direct detection with electron recoils from the XENON1T experiment with obscura.
+
+XENON1T_S2_Migdal: |
+   Results from direct detection with Migdal scattering from the XENON1T experiment with obscura.
+
+#-------------------------------
+# Indirect Detection capabilities
+#-------------------------------
 
 nulike_init: |
   Initializes nulike.
@@ -4337,12 +4411,6 @@ supbar_r_decay_rates: |
 DMEFT_parameters: |
    Parameters for the DMEFT model (see ./gambit DMEFT)
 
-SubGeVDM_scalar_parameters: |
-   Parameters for the SubGeVDM model (see ./gambit SubGeVDM_scalar)
-
-SubGeVDM_fermion_scalar_parameters: |
-   Parameters for the SubGeVDM model (see ./gambit SubGeVDM_fermion)
-
 Halo_Einasto_parameters: |
    Parameters of the Einasto halo profile (rho0, rhos, vrot, v0, vesc, rs, r_sun, alpha).
    See also ./gambit Halo_Einasto
@@ -4739,6 +4807,36 @@ RightHandedNeutrinos_parameters: |
 
 RightHandedNeutrinos_diff_parameters: |
    Parameters for the model RightHandedNeutrinos_diff (see ./gambit RightHandedNeutrinos_diff)
+
+SubGeVDM_scalar_parameters: |
+   Parameters for the SubGeVDM_scalar model (see ./gambit SubGeVDM_scalar)
+
+Resonant_SubGeVDM_fermion_RDprior_parameters: |
+   Parameters for the Resonant_SubGeVDM_fermion_RDprior model (see ./gambit SubGeVDM_fermion)
+
+Resonant_SubGeVDM_fermion_parameters: |
+   Parameters for the Resonant_SubGeVDM_fermion model (see ./gambit Resonant_SubGeVDM_fermion)
+
+Resonant_SubGeVDM_scalar_RDprior_parameters: |
+   Parameters for the Resonant_SubGeVDM_scalar_RDprior model (see ./gambit Resonant_SubGeVDM_scalar_RDprior)
+
+Resonant_SubGeVDM_scalar_parameters: |
+   Parameters for the Resonant_SubGeVDM_scalar model (see ./gambit Resonant_SubGeVDM_scalar)
+
+SubGeVDM_fermion_RDprior_parameters: |
+   Parameters for the SubGeVDM_fermion_RDprior model (see ./gambit SubGeVDM_fermion_RDprior)
+
+SubGeVDM_fermion_parameters: |
+   Parameters for the SubGeVDM_fermion model (see ./gambit SubGeVDM_fermion)
+
+SubGeVDM_fermion_sigmaN_parameters: |
+   Parameters for the SubGeVDM_fermion_sigmaN model (see ./gambit SubGeVDM_fermion_sigmaN)
+
+SubGeVDM_fermion_sigmae_parameters: |
+   Parameters for the SubGeVDM_fermion_sigmae model (see ./gambit SubGeVDM_fermion_sigmae)
+
+SubGeVDM_scalar_RDprior_parameters: |
+   Parameters for the SubGeVDM_scalar_RDprior model (see ./gambit SubGeVDM_scalar_RDprior)
 
 ColliderBit_SLHA_file_model_parameters: |
    Parameters for the ColliderBit dummy model ColliderBit_SLHA_file_model.
