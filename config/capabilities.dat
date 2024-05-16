@@ -2744,6 +2744,9 @@ nulike_1_0_9_init: |
 nubounds:
   Counts, likelihoods and p-values from neutrino telescope searches for dark matter annihilation in the Sun.
 
+Xray_loglikelihoods: |
+  Log likelihood for the constraints from the annihilation of DM into X-rays
+
 lnL_Xray_Integral_SPI_sterile_nu: |
   Bound on decaying dark matter subcomponent into \gamma\gamma based on Integral SPI data.
   Recasted from bound on sterile neutrinos (c.f. https://arxiv.org/abs/0706.4084)

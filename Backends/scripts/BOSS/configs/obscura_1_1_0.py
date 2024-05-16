@@ -73,7 +73,7 @@ load_functions = [
     'obscura::DarkSide50_S2_ER()',
     'obscura::DarkSide50_S2_ER_2023()',
     'obscura::PandaX_4T_S2_ER()',
-    'obscura::LZ_S2_ER()',
+#    'obscura::LZ_S2_ER()',
     'obscura::SENSEI_at_MINOS()',
     'obscura::CDMS_HVeV_2020()',
     'obscura::DAMIC_M_2023()',
@@ -81,7 +81,7 @@ load_functions = [
     'obscura::DarkSide50_S2_Migdal()',
     'obscura::DarkSide50_S2_Migdal_2023()',
     'obscura::PandaX_4T_S2_Migdal()',
-    'obscura::LZ_S2_Migdal()',
+#    'obscura::LZ_S2_Migdal()',
 ]
 
 ditch = []
