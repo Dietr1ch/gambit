@@ -68,7 +68,6 @@ load_classes = [
 ]
 
 load_functions = [
-    'obscura::Fractional_Days_since_J2000(int , int , int , double , double , double)',
     'obscura::XENON1T_S2_ER()',
     'obscura::DarkSide50_S2_ER()',
     'obscura::DarkSide50_S2_ER_2023()',
