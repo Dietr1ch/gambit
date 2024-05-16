@@ -393,17 +393,17 @@ Logger:
 
 Printer:
 
-  printer: cout
+  printer: hdf5
 
-#  options:
-#    output_file: "DMEFT.hdf5"
-#    delete_file_on_restart: false
-#    buffer_length: 100
-#    group: "/DMEFT"
+  options:
+    output_file: "DMEFT.hdf5"
+    delete_file_on_restart: false
+    buffer_length: 100
+    group: "/DMEFT"
 
 Scanner:
 
-  use_scanner: random
+  use_scanner: diver
 
   scanners:
 
