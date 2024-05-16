@@ -1096,30 +1096,6 @@ START_MODULE
 
   // Self-interaction likelihoods ================================================
 
-  // #define CAPABILITY SigmaOverM_SelfInteraction
-  // START_CAPABILITY
-  //   #define FUNCTION self_int_xsection
-  //   START_FUNCTION(double)
-  //   #undef FUNCTION
-  // #undef CAPABILITY
-
-  // #define CAPABILITY lnL_1D_BulletClusterEvap
-  // START_CAPABILITY
-  //   #define FUNCTION calc_1d_lnL_BulletClusterEvap
-  //   START_FUNCTION(double)
-  //   DEPENDENCY(SigmaOverM_SelfInteraction, double)
-  //   #undef FUNCTION
-  // #undef CAPABILITY
-
-  // #define CAPABILITY lnL_2D_BulletClusterEvap
-  // START_CAPABILITY
-  //   #define FUNCTION calc_2d_lnL_BulletClusterEvap
-  //   START_FUNCTION(double)
-  //   DEPENDENCY(SigmaOverM_SelfInteraction, double)
-  //   DEPENDENCY(RD_fraction, double)
-  //   #undef FUNCTION
-  // #undef CAPABILITY
-
   #define CAPABILITY DM_mass_loss
   START_CAPABILITY
     #define FUNCTION calc_bullet_cluster_DMmassLoss
@@ -1139,18 +1115,6 @@ START_MODULE
     DEPENDENCY(DM_mass_loss, double)
     #undef FUNCTION
   #undef CAPABILITY
-
-  // #define CAPABILITY BulletCluster_sDM_lnL
-  // START_CAPABILITY
-  //   #define FUNCTION calc_bullet_cluster_fDM_lnL
-  //   START_FUNCTION(double)
-  //   DEPENDENCY(SubGeVDM_spectrum, Spectrum)
-  //   DEPENDENCY(RD_fraction, double)
-  //   DEPENDENCY(RD_oh2_aDM, ddpair)
-  //   DEPENDENCY(decay_rates, DecayTable)
-  //   ALLOW_MODEL(SubGeVDM_scalar)
-  //   #undef FUNCTION
-  // #undef CAPABILITY
 
 // X-ray likelihoods ================================================
 

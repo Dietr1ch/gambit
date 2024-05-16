@@ -4,7 +4,7 @@
 ///
 ///  Likelihood for angular and velocity-dependent self-scattering
 ///  cross-section based on evaporation of sub-cluster
-///  in Bullet cluster collision. 
+///  in Bullet cluster collision.
 ///
 ///  *********************************************
 ///
@@ -43,7 +43,7 @@ namespace Gambit
 
         //Cross-sections for SubGeV_fermion model
         double sigma_imd_rep_f(double sigma0, double w)
-        { 
+        {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
           double factor = 8*M_PI*sigma0;
@@ -90,12 +90,12 @@ namespace Gambit
           double temp2 = (4*(-pow(m_Ap,2)*(-1+4*pow(w,2))*(8+pow(w,2)*(-8+3*pow(beta_rel,2)))+2*pow(gamma_Ap,2))*log(2+r));
           double temp3 = (4*(pow(m_Ap,2)*(-1+4*pow(w,2))*(4+pow(w,2)*(-4+3*pow(beta_rel,2)))- pow(gamma_Ap,2))*log(2+2*r));
           double denominator = (r2*(pow((m_Ap-4*m_Ap*pow(w,2)),2)+pow(gamma_Ap,2)));
-          return (factor*(temp1 + temp2 + temp3))/denominator;          
+          return (factor*(temp1 + temp2 + temp3))/denominator;
         }
 
         //Cross-sections for SubGeV_scalar model
         double sigma_imd_rep_s(double sigma0, double w)
-        { 
+        {
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
           double factor = 16*M_PI*sigma0;
@@ -111,16 +111,7 @@ namespace Gambit
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
 
-          // t and s-channels
-          // double factor = 2*M_PI*sigma0;
-          // double temp1 = (192/(-4-4*r+(-2+kappa)*kappa*r2));
-          // double temp2 = ((pow(m_Ap,2)*(48+pow(w,2)*(-192-pow((-1+kappa),2)*pow(beta_rel,4))))\
-          //                /(pow(m_Ap,2)*pow((-w+4*pow(w,3)),2)+pow(w*gamma_Ap,2)));
-          // double temp3 = ((pow(m_Ap,2)*(-1+4*pow(w,2))*(2+r)*(log(2-(-2+kappa)*r)-log(2+kappa*r)))\
-          //                /(pow(w,2)*r*(pow((m_Ap-4*m_Ap*pow(w,2)),2)+pow(gamma_Ap,2))));
-          // return factor*((1/24*(-1+kappa))*(temp1+temp2)-temp3);
-          // only t-channel 
-
+          // only t-channel
           double factor = 16*M_PI*sigma0;
           double temp1 = (-1+kappa);
           double denominator = (-4-4*r+(-2+kappa)*kappa*r2);
@@ -142,15 +133,6 @@ namespace Gambit
           double r = pow(w*beta_rel,2);
           double r2 = pow(r,2);
 
-          // t and s channels
-          // double factor = M_PI*sigma0;
-          // double temp0 = (pow(m_Ap,2)*r2*(-96+pow(w,2)*(384+pow(beta_rel,4))));
-          // double temp1 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(2+pow(w,2)*(-2+8*pow(w,2)+pow(beta_rel,2)))+2*pow(w*gamma_Ap,2))*log(2));
-          // double temp2 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(4+4*pow(w,2)*(-1+pow(beta_rel,2))+pow(w,4)*(16+pow(beta_rel,4)))+4*pow(w*gamma_Ap,2))*log(2+r));
-          // double temp3 = (192*(pow(m_Ap,2)*(-1+4*pow(w,2))*(2+pow(w,2)*(-2+3*pow(beta_rel,2)+pow(w,2)*(8+pow(beta_rel,4))))+2*pow(w*gamma_Ap,2))*log(2+2*r));
-          // double denominator = (48*pow(w,2)*r2*(pow((m_Ap-4*m_Ap*pow(w,2)),2)+pow(gamma_Ap,2)));
-          // return (factor*(temp0 - temp1 + temp2 - temp3))/denominator;    
-
           // only t-channel
           double factor = 8*M_PI*sigma0 ;
           double temp1 = (2*log(1+r/2));
@@ -158,7 +140,7 @@ namespace Gambit
           double denominator = r2;
           return (factor*(temp1-temp2))/denominator;
         }
-    
+
       public:
 
         double (subgev_self_interactions::*sigma_imd_rep)(double, double);
@@ -184,14 +166,14 @@ namespace Gambit
             sigma_imd_att = &subgev_self_interactions::sigma_imd_att_s;
             sigma_tc_rep  = &subgev_self_interactions::sigma_tc_rep_s;
             sigma_tc_att  = &subgev_self_interactions::sigma_tc_att_s;
-          } 
+          }
         }
     };
 
-    class bullet_cluster_lnL 
+    class bullet_cluster_lnL
     {
       private:
-        
+
         // Observed MLR of the Bullet Cluster in I-band (units: M_o/L_o)
         const double mlr_obs_i = 179;
         const double error_obs_i = 11;
@@ -200,7 +182,7 @@ namespace Gambit
         const double fg_mc = 0.09;
         const double error_fg_mc = 0.01;
 
-        // Gas to DM ratio derived from gas fractions 
+        // Gas to DM ratio derived from gas fractions
         const double g_i = 0.0989;
         const double error_g_i = 0.0101;
         const double g_f = 0.0417;
@@ -241,7 +223,7 @@ namespace Gambit
           return g_f/g_i * (1-dm_mass_loss/(1-fg_mc));
         }
 
-        //Errors    
+        //Errors
         double error_gfgi(double dm_mass_loss)
         {
           double x = mgf_to_mgi(dm_mass_loss);
@@ -270,15 +252,10 @@ namespace Gambit
           double x = mgf_to_mgi(dm_loss);
           double total_mass_loss = dm_loss + fg_mc*(1-x);
           double error_total = error_tot(dm_loss);
-          // logger() << LogTags::debug << "\n total mass loss" << total_mass_loss
-          //                            << "\n error " << error_total << EOM;
           double margLike = 0;
-          // logger() << LogTags::debug << "\n mlr sample " << mlr_sample[0]
-          //                            << "\n mlr_sample " << mlr_sample[1] << EOM;
           for (int i = 0; i < mlr_sample.size(); i++) {
           margLike += exp(-1/(2*pow((error_total),2))*pow((mlr_obs_i- mlr_sample[i]*(1-total_mass_loss)),2));
           }
-          // logger() << LogTags::debug << "\n marglike" << margLike << EOM;
           double margLike_c = std::max(1e-30, std::min(margLike, 1e30));
 
           return log(margLike_c);
@@ -296,12 +273,12 @@ namespace Gambit
       const SubSpectrum& he = spec.get_HE();
 
       // Import coupling
-      double gDM = he.get(Par::dimensionless,"gDM");   
+      double gDM = he.get(Par::dimensionless,"gDM");
       double alphaDM = pow(gDM,2)/(4*M_PI);
 
       // Import masses
       double mDM = spec.get(Par::Pole_Mass, "DM");
-      double mAp = spec.get(Par::Pole_Mass, "Ap");         
+      double mAp = spec.get(Par::Pole_Mass, "Ap");
 
       // Define self-scaterring parameters
       double sigma0 = pow(alphaDM*mDM,2)/pow(mAp,4);
@@ -309,30 +286,21 @@ namespace Gambit
 
       double fDM = *Dep::RD_fraction;
       ddpair aDM_pair = *Dep::RD_oh2_aDM;
-      double fChiBar = (aDM_pair.second*fDM)/2; // (fsym/fDM * fDM)/2 
+      double fChiBar = (aDM_pair.second*fDM)/2; // (fsym/fDM * fDM)/2
       double fChi = fDM - fChiBar;
 
       // Import decay table from DecayBit
       const DecayTable* tbl = &(*Dep::decay_rates);
       // Save dark photon width for later
       double gammaAp = tbl->at("Ap").width_in_GeV;
-      
-      // logger() << LogTags::debug << "\n gdm " << gDM 
-      //                            << "\n mdm " << mDM
-      //                            << "\n map " << mAp
-      //                            << "\n fchi " << fChi
-      //                            << "\n fchib "<< fChiBar
-      //                            << "\n gap " << gammaAp 
-      //                            << "\n sigma0 " << sigma0 
-      //                            << "\n w " << w << EOM;
-      
+
       static std::string model;
       if (ModelInUse("SubGeVDM_scalar")){
         model = "SubGeVDM_scalar";
       }
       else if (ModelInUse("SubGeVDM_fermion")){
         model = "SubGeVDM_fermion";
-      } 
+      }
       else
       {
         DarkBit_error().raise(LOCAL_INFO, "ERROR! Model not compatible with implementation of bullet cluster likelihood.");
@@ -346,26 +314,14 @@ namespace Gambit
       double sigmaTcRep  = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_tc_rep))(sigma0,w);
       double sigmaTCAtt  = (subgev_self_interactions_obj.*(subgev_self_interactions_obj.sigma_tc_att))(sigma0,w,mAp,gammaAp);
 
-      // logger() << LogTags::debug << "\n gdsigma_imd_repm " << sigmaImdRep 
-      //                       << "\n sigma_imd_att " << sigmaImdAtt
-      //                       << "\n sigma_tc_rep " << sigmaTcRep
-      //                       << "\n sigma_tc_att " << sigmaTCAtt << EOM;
-
       double sigmaRep = sigmaImdRep+sigmaTcRep;
       double sigmaAtt = sigmaImdAtt+sigmaTCAtt;
       double sigma_eff_chi = fChi*sigmaRep + fChiBar*sigmaAtt;
       double sigma_eff_chibar = fChiBar*sigmaRep + fChi*sigmaAtt;
-    
-      // logger() << LogTags::debug << "\n sigma_rep " << sigma_rep 
-      //                   << "\n sigma_att " << sigma_att
-      //                   << "\n sigma_eff_chi " << sigma_eff_chi
-      //                   << "\n sigma_eff_chibar " << sigma_eff_chibar << EOM;
 
       double dm_loss = fChi*(1-exp(-depth*sigma_eff_chi/mDM)) +\
-                fChiBar*(1-exp(-depth*sigma_eff_chibar/mDM)); 
+                fChiBar*(1-exp(-depth*sigma_eff_chibar/mDM));
 
-      // logger() << LogTags::debug << "\n dm loss" << dm_loss << EOM;
-      
       result = dm_loss;
     }
 
@@ -394,7 +350,7 @@ namespace Gambit
       }
 
       static bullet_cluster_lnL bullet_cluster_lnL_obj(lnL_file_path);
-      
+
       result = bullet_cluster_lnL_obj.margloglike(DMmassLoss);
     }
   }

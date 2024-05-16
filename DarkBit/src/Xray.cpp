@@ -63,15 +63,12 @@ namespace Gambit
       LocalMaxwellianHalo LocalHaloParameters = *Dep::LocalHalo;
       double rho0_resc = LocalHaloParameters.rho0/0.3;
       double suppression = *Dep::ID_suppression;
-//      double suppression=1000.0;
-//      std::cout <<"at a mass of "<< DM_mass << " suppression is equal to " << suppression;
       TH_Process process = Dep::TH_ProcessCatalog->getProcess(DM_ID, DMbar_ID);
 
       double logchisqre;
       double logchisqrmu;
       double logchisqrpi;
       double logchisqr;
-//      double sigmavcms = -28.0;   // Placeholder cross section
 
       static Interpolator2D xraygride(
         "xraygride",
@@ -179,10 +176,7 @@ namespace Gambit
         logchisqrpi = xraygridpi.eval(log10(DM_mass)+3, log10(svpi));
       }
       logchisqr = std::max(logchisqrpi,std::max(logchisqre,logchisqrmu));
-//      logchisqr = logchisqrmu;
-//      logchisqr = std::max(logchisqrpi,logchisqrmu);
       result = -pow(10,logchisqr)/2;
-//      result = suppression;
     }
 
 ///  *********************************************

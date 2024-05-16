@@ -3883,7 +3883,6 @@ namespace Gambit
       result.calculator = BEreq::dark_photon_decay_width.origin();
       result.calculator_version = BEreq::dark_photon_decay_width.version();
       result.width_in_GeV = BEreq::dark_photon_decay_width(kappa,"visible",mAp);
-      //TODO: Set individual branching ratios
       // Fermion pairs:
       result.set_BF(BEreq::dark_photon_branching_fraction("gamma_gamma_gamma",mAp), 0.0, "gamma", "gamma", "gamma");
       result.set_BF(BEreq::dark_photon_branching_fraction("e_e",mAp), 0.0, "e+", "e-");
@@ -3896,19 +3895,11 @@ namespace Gambit
       result.set_BF(BEreq::dark_photon_branching_fraction("b_b",mAp), 0.0, "bbar", "b");
       result.set_BF(BEreq::dark_photon_branching_fraction("t_t",mAp), 0.0, "tbar", "t");
       // Hadrons: Use either "hardrons" modes or the entire list below it
-      // result.set_BF(BEreq::dark_photon_branching_fraction("hadrons",mAp), 0.0, "hadrons");
       result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-",mAp), 0.0, "pi+", "pi-");
-      // result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi+_pi-",mAp), 0.0, "pi+", "pi-", "pi+", "pi-");
-      // result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0_pi0",mAp), 0.0,"pi+", "pi-", "pi0", "pi0");
-      //result.set_BF(BEreq::dark_photon_branching_fraction("pi+_pi-_pi0",mAp), 0.0, "pi+", "pi-", "pi0");
       result.set_BF(BEreq::dark_photon_branching_fraction("pi0_gamma",mAp), 0.0, "pi0", "gamma");
       result.set_BF(BEreq::dark_photon_branching_fraction("K_K",mAp), 0.0, "K0", "K0"); // KK = K+K- - K_S K_L
-      //result.set_BF(BEreq::dark_photon_branching_fraction("K_K_pi",mAp), 0.0, "K0", "K0", "pi0"); // Isoscalar component of KKpi
-      //result.set_BF(BEreq::dark_photon_branching_fraction("others",mAp), 0.0, "others");
 
       // Add the dark photon invisible width to the total
-      //TODO: Check expression;
-
       double gamma = 0;
       if (ModelInUse("SubGeVDM_scalar"))
       {
@@ -3940,17 +3931,17 @@ namespace Gambit
     void get_dark_photon_visible_branching(double &result)
     {
       using namespace Pipes::get_dark_photon_visible_branching;
-      double BRinv = Dep::dark_photon_decay_rates->BF("DM", "DM~");      
+      double BRinv = Dep::dark_photon_decay_rates->BF("DM", "DM~");
       result = (1 - BRinv); // Conversion GeV^-1 to cm
-    }  
-    
+    }
+
     void get_dark_photon_decay_length(double &result)
     {
       using namespace Pipes::get_dark_photon_decay_length;
-      double gammaAp = Dep::dark_photon_decay_rates->width_in_GeV;      
+      double gammaAp = Dep::dark_photon_decay_rates->width_in_GeV;
       result = 1.97e-14 / gammaAp; // Conversion GeV^-1 to cm
-    }  
-    
+    }
+
     //////////// Vector singlet DM /////////////////////
 
     /// Add the decay of Higgs to vectors for the VectorSingletDM models (see arXiv:1512.06458v4)

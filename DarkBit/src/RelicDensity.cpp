@@ -57,7 +57,8 @@ namespace Gambit
             "RD_spectrum_MSSM requires DMid to be ~chi0_1.");
       }
       // Neutralino DM is self-conjugate (and hence there cannot be an aDM component)
-      result.isSelfConj = true; result.etaDM = 0.0;
+      result.isSelfConj = true;
+      result.etaDM = 0.0;
       // This function reports particle IDs in terms of PDG codes
       result.particle_index_type = "PDG";
 
