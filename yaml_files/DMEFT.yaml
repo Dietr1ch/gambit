@@ -394,7 +394,6 @@ Logger:
 Printer:
 
   printer: hdf5
-
   options:
     output_file: "DMEFT.hdf5"
     delete_file_on_restart: false
