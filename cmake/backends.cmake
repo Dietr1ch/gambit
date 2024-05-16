@@ -619,7 +619,7 @@ if(NOT ditched_${name}_${ver})
     BUILD_IN_SOURCE 1
     PATCH_COMMAND patch -p1 < ${patch}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${MAKE_PARALLEL} CC=${CMAKE_C_COMPILER} ARFLAGS=rcs CFLAGS=${SI_C_FLAGS}
+    BUILD_COMMAND ${MAKE_SERIAL} CC=${CMAKE_C_COMPILER} ARFLAGS=rcs CFLAGS=${SI_C_FLAGS}
           COMMAND ar x src/libsuperiso.a
           COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_C_COMPILER} ${CMAKE_SHARED_LINKER_FLAGS} ${NO_FIXUP_CHAINS} ${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -o ${lib}.so *.o" > make_so.sh
           COMMAND chmod u+x make_so.sh
@@ -1993,7 +1993,7 @@ endif()
 # Fastjet
 set(name "fastjet")
 set(ver "3.3.2")
-set(dl "http://fastjet.fr/repo/fastjet-3.3.2.tar.gz")
+set(dl "https://fastjet.fr/repo/fastjet-3.3.2.tar.gz")
 set(md5 "ca3708785c9194513717a54c1087bfb0")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 # OpenMP flags don't play nicely with clang and FastJet's antiquated libtoolized build system.

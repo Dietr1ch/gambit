@@ -723,9 +723,9 @@ namespace Gambit {
       std::string getName(hid_t dset_id)
       {
           size_t len = H5Iget_name(dset_id,NULL,0);
-          char buffer[len];
-          H5Iget_name(dset_id,buffer,len+1);
-          std::string n = buffer;
+          std::vector<char> buffer(len+1);
+          H5Iget_name(dset_id,&buffer[0],len+1);
+          std::string n = &buffer[0];
           return n;
       }
 
