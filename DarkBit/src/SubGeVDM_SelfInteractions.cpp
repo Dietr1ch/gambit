@@ -220,7 +220,7 @@ namespace Gambit
         //Gas mass loss
         double mgf_to_mgi(double dm_mass_loss)
         {
-          return g_f/g_i * (1-dm_mass_loss/(1-fg_mc));
+          return g_f/g_i * (1-dm_mass_loss);
         }
 
         //Errors
@@ -228,15 +228,14 @@ namespace Gambit
         {
           double x = mgf_to_mgi(dm_mass_loss);
           return sqrt( pow((error_g_f * x/g_f),2) + \
-                       pow((error_g_i * x/g_i),2) + \
-                       pow((error_fg_mc * g_f/g_i * dm_mass_loss/pow((1-fg_mc),2) * fg_mc),2));
+                       pow((error_g_i * x/g_i),2));
         }
 
         double error_tml(double dm_mass_loss)
         {
           double x = mgf_to_mgi(dm_mass_loss);
           double error_x = error_gfgi(dm_mass_loss);
-          return sqrt(pow((error_fg_mc * (1-x)),2) + pow((error_x * fg_mc),2));
+          return sqrt(pow((error_fg_mc * (1-x-dm_mass_loss)),2) + pow((error_x * fg_mc),2));
         }
 
         double error_tot(double dm_mass_loss)
@@ -250,7 +249,7 @@ namespace Gambit
         {
           // likelihood for "total" mass loss "within 150kpc" (including "imd and cml" evap) marginalized over prior for mlr_ini
           double x = mgf_to_mgi(dm_loss);
-          double total_mass_loss = dm_loss + fg_mc*(1-x);
+          double total_mass_loss = dm_loss*(1-fg_mc) + fg_mc*(1-x);
           double error_total = error_tot(dm_loss);
           double margLike = 0;
           for (int i = 0; i < mlr_sample.size(); i++) {
