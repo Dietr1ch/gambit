@@ -289,6 +289,10 @@ starting_value: |
 DMEFT_spectrum: |
     The spectrum for the DMEFT model.
 
+##### SubGeVDM #####
+
+SubGeVDM_spectrum: |
+    Spectrum object for a SubGeVDM model.
 
 #####  Scalar singlet Higgs-portal models  #####
 
@@ -1232,6 +1236,9 @@ sigma_SI_n: |
 sigma_SD_n: |
    Spin-dependent WIMP-neutron cross section, in cm^2.
 
+sigma_e:
+   WIMP-electron cross section, in cm^2.
+
 DarkMatter_ID: |
    Contains string ID to identify dark matter particle.
 
@@ -1266,6 +1273,12 @@ RD_eff_annrate: |
 RD_oh2: |
    The dark matter relic density.
 
+RD_oh2_aDM: |
+   The dark matter relic density for asymmetric dark matter.
+
+RD_oh2_underprediction: |
+    Underprediction of the relic abundance by using the simple vs full Boltzman solution.
+
 Xf: |
    X_f = m_DM / T_f, where T_f is the freezeout temperature of the
    thermal relic DM.
@@ -1277,6 +1290,9 @@ RD_oh2_Xf: |
 RD_fraction: |
    Contains the fraction of the observed dark matter density that is
    used to calculate direct and indirect detection observables.
+
+ID_suppression: |
+   Suppression factor for indirect detection signals from underabundant dark matter.
 
 lnL_oh2: |
    Contains the log likelihood function constraining the relic density.
@@ -1293,6 +1309,11 @@ LocalHalo: |
    Provides the parameters of the Maxwell-Boltzmann velocity distribution,
    in terms of the strucutre LocalMaxwellianHalo containing the parameters
    rho0, v0, vrot, vesc.
+
+LocalHalo_GeV: |
+   Provides the parameters of the Maxwell-Boltzmann velocity distribution,
+   in terms of the strucutre LocalMaxwellianHalo containing the parameters
+   rho0, v0, vrot, vesc, in GeV.
 
 GalacticHalo: |
    Provides the properties of the dark matter density distribution in the Galaxy,
@@ -3531,6 +3552,16 @@ lnL_Z_inv: |
 
 inv_Higgs_BF: |
    Invisible decay branching fraction of the SM-like Higgs boson.
+
+dark_photon_decay_rates: |
+   Decay rates for the dark photon.
+
+dark_photon_decay_length: |
+   Decay length of the dark photon.
+
+dark_photon_visible_branching: |
+    Branching ratio of the dark photon to visible decay products.
+
 
 #-------------------------------------
 #  PrecisionBit capabilities
@@ -6465,6 +6496,9 @@ DirectDMNuisanceParameters: |
 #-------------------------------------
 #  DarkCast capabilities
 #-------------------------------------
+
+DarkCast_1_1_init: |
+  Initialise DarkCast v1.1 backend.
 
 dark_photon_decay_width: |
   Calculate the decay width of a dark photon with a given coupling strength, decay state and mass.
