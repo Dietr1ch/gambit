@@ -2974,6 +2974,12 @@ dshainit: |
 dshayield: |
    Integrated or differential yield of a range of SM species from various final states.
 
+an_how: |
+   DarkSUSY6 common block storing information about which annihilation yield table is in use.
+
+dsanyield_set: |
+   DarkSUSY6 routine to set defaults annihilation yield table.
+
 dshigwid: |
    Choose which Higgs width calculation to use in DarkSUSY.
 
@@ -3025,11 +3031,21 @@ dsrdtab: |
 dsrdthlim: |
    Determine which limits in p_eff for DarkSUSY to use when integrating for the thermal average.
 
+rd20opt: |
+   DarkSUSY common block containing accuracy settings for the DarkSUSY Boltzmann solver
+   (specifically for opt=20 in dsrdomega).
+
+rdlims: |
+   DarkSUSY common block containing accuracy settings for the DarkSUSY Boltzmann solver.
+
 dsrdwintp: |
    Interpolation of tabulated invariant rate.
 
 dsrdcom: |
-   DarkSUSY 6 common block use by the Boltzmann solver.
+   DarkSUSY 6 common block used by the Boltzmann solver.
+
+adm_com: |
+   DarkSUSY 6 common block that contains the dark matter asymmetry parameter.
 
 dsrdens: |
    DarkSUSY Boltzmann solver (for relic density).
