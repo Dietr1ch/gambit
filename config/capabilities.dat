@@ -2831,6 +2831,12 @@ lnL_ShortRangeForces_Sushkov2011: |
 Higgs_Nucleon_coupling_fN: |
   fN parameter from the Higgs-Nucleon coupling. The complete coupling constant is given by fN*mN/vev. Returns a Higgs_Nucleon_coupling_fN object, which is a simple structure containing the value of fN for protons and neutrons.
 
+BulletCluster_lnL: |
+  Marginalised log-likelihood based on mass lost by subcluster due to DM self-interactions in the Bullet Cluster. Observed mass loss obtained by comparing initial and final subcluster mass-to-light ratio; likelihood marginalised over initial subcluster mass-to-light ratio.
+
+DM_mass_loss: |
+  Calculates the dark matter mass lost by the sublcuster in the Bullet Cluster for a model with self-interacting DM; also compatible with subdominant, asymmetric DM. 
+
 #-------------------------------------
 #  HiggsBounds capabilities
 #-------------------------------------
