@@ -670,33 +670,14 @@ set(GAMBIT_ALL_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
-  # Add dependencies that need to be built before any bit
-  foreach(dep ${MODULE_DEPENDENCIES})
-    add_dependencies(${bit} ${dep})
-  endforeach()
   
   # Add the dependency on the contrib target
   add_dependencies(${bit} contrib)
 endforeach()
 
-# If ColliderBit is in use, set various dependencies
+# Make the collider_harvest step a dependency of ColliderBit
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
-  # Make the collider_harvest step a dependency of ColliderBit
   add_dependencies(ColliderBit collider_harvest)
-  # If RestFrames is in use, make it a dependency of ColliderBit
-  if(NOT EXCLUDE_RESTFRAMES)
-    add_dependencies(contrib restframes)
-  endif()
-  # ColliderBit depends on HepMC
-  if(EXCLUDE_HEPMC)
-    message(FATAL_ERROR "\nColliderBit needs HepMC3. Either use -DWITH_HEPMC=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
-  endif()
-  add_dependencies(contrib hepmc)
-  # ColliderBit depends on YODA
-  if(EXCLUDE_YODA)
-    message(FATAL_ERROR "\nColliderBit needs YODA. Either use -DWITH_YODA=ON or ditch ColliderBit with -Ditch=\"ColliderBit\".")
-  endif()
-  add_dependencies(contrib yoda)
 endif()
 
 # If SpecBit is in use, make flexiblesusy a dependency of SpecBit
