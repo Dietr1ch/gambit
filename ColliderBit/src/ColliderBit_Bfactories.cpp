@@ -71,7 +71,6 @@ namespace Gambit
     /// A Map between search name and the analysis info needed
     std::map<str,BaBar_single_photon_analysis_info> SubGeVDM_BaBar_single_photon_analysis_info;
 
-    /// Fill the DMsimp object with the interpolation information.
     void fill_BaBar_single_photon()
     {
 
@@ -99,7 +98,7 @@ namespace Gambit
 
     }
 
-    /// Perform the actual likelihood evaluation for a given di-jet search
+    /// Perform the actual likelihood evaluation
     double BaBar_single_photon_LogLike(double kappa, double mAp, double BRinv)
     {
       const Utils::interp1d_gsl_collection& BaBar_interp = SubGeVDM_BaBar_single_photon_analysis_info["BaBar_single_photon"].get_interp1d("BaBar_single_photon");
@@ -124,8 +123,6 @@ namespace Gambit
 
     }
 
-    /// Interpolated Di-jet likelihoods from quark coupling upper limits
-    /// This assumes the Narrow width approximation
     void BaBar_single_photon_LogLike_SubGeVDM(double& result)
     {
 
@@ -140,9 +137,9 @@ namespace Gambit
 
       double mAp;
       double kappa;
-      
+
       DecayTable::Entry decays;
-      
+
       // Get the theory spectrum to pass on masses and parameters
       mAp = *Param["mAp"];
       kappa = *Param["kappa"];

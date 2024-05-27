@@ -128,7 +128,7 @@ namespace Gambit
         result["selfConjugate"] = 0;
         result["EM_coupled"] = 1;
         result["wimp"] = 1;
-      }      
+      }
       else // at this point either LCDM or LCDM_theta are in use so we assume standard values for Nnu and dNnu
       {
         result["Nnu"] = *Dep::Neff_SM; // contribution from SM neutrinos
@@ -613,13 +613,13 @@ namespace Gambit
       result = Dep::primordial_abundances->get_BBN_abund("He4");
     }
 
-    /// Extract helium-4 abundance from BBN abundance container
+    /// Extract Neff from BBN abundance container
     void extract_Neff_after_BBN(double &result)
     {
       using namespace Pipes::extract_Neff_after_BBN;
       result = Dep::primordial_abundances->get_BBN_abund("Neff");
     }
-    
+
     /// Compute the overall log-likelihood from BBN
     void compute_BBN_LogLike(double &result)
     {
@@ -637,7 +637,7 @@ namespace Gambit
       // The measurement of the abundance for 3He is done for 3H/D, whereas the computed abundance is 3He/H, so convert it
       int He3 = abund_map.at("He3"), D = abund_map.at("D");
       double YD = BBN_res.get_BBN_abund("D"), YHe3 = BBN_res.get_BBN_abund("He3")/BBN_res.get_BBN_abund("D");
-      
+
       // If the abundance of deuterium is smaller than some arbitrary value, it is effectively zero, so no need to compute anything as the point will be invalidated anyway
       if(YD > 1.0e-20)
       {

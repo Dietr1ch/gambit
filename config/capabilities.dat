@@ -1190,6 +1190,9 @@ xsecBE_import_slha_string: |
 xsecBE_set_parameters: |
    Xsec backend function: set parameters in xsec.
 
+BaBar_single_photon_LogLike: |
+   Log-Likelihood for the BaBar single photon search.
+
 
 #-------------------------------------
 #  DarkBit capabilities
@@ -2835,7 +2838,7 @@ BulletCluster_lnL: |
   Marginalised log-likelihood based on mass lost by subcluster due to DM self-interactions in the Bullet Cluster. Observed mass loss obtained by comparing initial and final subcluster mass-to-light ratio; likelihood marginalised over initial subcluster mass-to-light ratio.
 
 DM_mass_loss: |
-  Calculates the dark matter mass lost by the sublcuster in the Bullet Cluster for a model with self-interacting DM; also compatible with subdominant, asymmetric DM. 
+  Calculates the dark matter mass lost by the sublcuster in the Bullet Cluster for a model with self-interacting DM; also compatible with subdominant, asymmetric DM.
 
 #-------------------------------------
 #  HiggsBounds capabilities
@@ -5892,6 +5895,12 @@ lnL_p_ann: |
 
 gagg: |
    ALP-photon coupling.
+
+N_eff_likelihood_Planck_BAO: |
+   Neff likelihood from Planck TT,TE,EE+lowE+lensing+BAO (arXiv:1807.06209)
+
+Neff_after_BBN: |
+   Extract Neff from BBN abundance container
 
 # -----------
 # ACROPOLIS
