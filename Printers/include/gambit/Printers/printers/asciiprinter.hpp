@@ -198,8 +198,9 @@ namespace Gambit
         /// Label for printer, mostly for more helpful error messages
         std::string printer_name;
 
-        // Flag for whether to print Suspicious or Invalid point codes
-        bool print_debug_data = true;
+        // Flags for whether to print Suspicious or Invalid point codes
+        bool print_suspicious_point_code = true;
+        bool print_invalidation_code = true;
 
         // Flags to indicate whether Susicious or Invalid point codes have been added to the print list
         bool Found_sus = false;

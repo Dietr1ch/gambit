@@ -171,7 +171,8 @@ namespace Gambit
       common_constructor(options);
 
       // Choose whether or not to print invalid and suspicious point codes
-      print_debug_data = options.getValueOrDef<bool>(true,"print_debug_data");
+      print_suspicious_point_code = options.getValueOrDef<bool>(true,"print_suspicious_point_code");
+      print_invalidation_code = options.getValueOrDef<bool>(true,"print_invalidation_code");
     }
 
 
@@ -248,7 +249,11 @@ namespace Gambit
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
 
       // Do not write invalid or suspicious points to buffer if they are not requested to be printed
-      if (!print_debug_data && (functor_labels[0] == "Suspicious Point Code" || functor_labels[0] == "Invalidation Code"))
+      if (!print_suspicious_point_code && (functor_labels[0] == "Suspicious Point Code"))
+      {
+        return;
+      }
+      if (!print_invalidation_code && (functor_labels[0] == "Invalidation Code"))
       {
         return;
       }
@@ -327,12 +332,12 @@ namespace Gambit
       //}
 
       // Check if the Suspicious Point/Invalidation Code labels are in the buffer, and if not, add them
-      if (print_debug_data && (!Found_sus || !Found_inv)) {
+      if (print_suspicious_point_code && !Found_sus)
+      {
         // Check which required entries are not present
         for (auto entry: label_record)
         {
           if (entry.second[0] == "Suspicious Point Code") {Found_sus = true;}
-          if (entry.second[0] == "Invalidation Code") {Found_inv = true;}
         }
         if (!Found_sus)
         {
@@ -340,6 +345,14 @@ namespace Gambit
           std::vector<double> default_data = {0};
           std::vector<std::string> default_labels = {"Suspicious Point Code"};
           addtobuffer(default_data, default_labels, get_main_param_id("Suspicious Point Code"), rank, pointID);
+        }
+      }
+      if (print_invalidation_code && !Found_inv)
+      {
+        // Check which required entries are not present
+        for (auto entry: label_record)
+        {
+          if (entry.second[0] == "Invalidation Code") {Found_inv = true;}
         }
         if (!Found_inv)
         {
@@ -499,7 +512,9 @@ namespace Gambit
             std::string default_value = "none";
             if (label_record.at(it->first).at(0) == "Suspicious Point Code" || label_record.at(it->first).at(0) == "Invalidation Code")
             {
-              default_value = "0.0000000000e+00";
+              std::stringstream stream;
+              stream << std::scientific << std::setprecision(precision) << 0.0;
+              default_value = stream.str();
             }
 
             // Print to the fstream!

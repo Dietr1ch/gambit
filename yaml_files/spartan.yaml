@@ -353,7 +353,7 @@ Logger:
 
 KeyValues:
 
-  debug: false
+  debug: false #true
 
   default_output_path: "${PWD}/runs/spartan"
 
