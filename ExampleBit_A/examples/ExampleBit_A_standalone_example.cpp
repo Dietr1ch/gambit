@@ -56,6 +56,7 @@ int main()
 
     // Initialise settings for printer (required)
     YAML::Node printerNode = get_standalone_printer("hdf5", "runs/ExampleBit_A_standalone/samples/", "ExampleBit_A_standalone.hdf5");
+    printerNode["options"]["group"] = "/ExampleBit_A";
     Printers::PrinterManager printerManager(printerNode, false);
     set_global_printer_manager(&printerManager);
     (printerManager.printerptr)->addToPrintList("Suspicious Point Code");

@@ -24,6 +24,7 @@
 #  \date 2021 Mar
 #
 #  \author Christopher Chang
+#          (c.j.chang@fys.uio.no)
 #  \date 2021 Feb
 #
 #************************************************

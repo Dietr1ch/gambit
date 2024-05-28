@@ -290,6 +290,7 @@ namespace Gambit
     }
 
   }
+
 }
 
 #undef DBUG
