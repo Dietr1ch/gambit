@@ -49,6 +49,7 @@ Printer:
   #   output_file: "results.dat"
   #   buffer_length: 10
   #   delete_file_on_restart: true
+  #   print_debug_data: true
 
   printer: hdf5
   options:
