@@ -24,7 +24,7 @@
 #  \date 2021 Mar
 #
 #  \author Christopher Chang
-#          (christopher.chang@uqconnect.edu.au)
+#          (c.j.chang@fys.uio.no)
 #  \date 2021 Feb
 #
 #************************************************

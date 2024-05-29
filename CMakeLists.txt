@@ -633,8 +633,6 @@ set(MODULE_HARVESTER_FILES ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES})
 remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested colliders_harvested)
 if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/")
   add_gambit_custom(module_harvest modules_harvested MODULE_HARVESTER MODULE_HARVESTER_FILES ${itch_with_commas})
-  # Add the elements_extras target
-  add_elements_extras(elements_extras)
 endif()
 if(EXISTS "${PROJECT_SOURCE_DIR}/Backends/")
   add_gambit_custom(backend_harvest backends_harvested BACKEND_HARVESTER BACKEND_HARVESTER_FILES ${itch_with_commas})
@@ -675,7 +673,7 @@ add_subdirectory_if_present(Printers)
 
 # Lists of different GAMBIT object files to link
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:Logs> $<TARGET_OBJECTS:Utils>)
-set(GAMBIT_ALL_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:Models> $<TARGET_OBJECTS:Backends> $<TARGET_OBJECTS:Elements>)
+set(GAMBIT_ALL_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:Models> $<TARGET_OBJECTS:Backends> $<TARGET_OBJECTS:Elements> $<TARGET_OBJECTS:Printers>)
 
 # Set compilation targets for GAMBIT modules
 foreach(bit ${GAMBIT_BITS})

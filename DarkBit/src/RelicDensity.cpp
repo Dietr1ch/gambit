@@ -21,7 +21,7 @@
 #include <chrono>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/elements_extras.hpp"
+#include "gambit/Printers/printer_utils.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include "gambit/Utils/util_functions.hpp"
