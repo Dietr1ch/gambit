@@ -604,6 +604,7 @@ set(ver "2.0")
 set(dl "https://github.com/tegonzalo/HEPLike/archive/V${ver}.zip")
 set(dir "${PROJECT_SOURCE_DIR}/Backends/installed/${name}/${ver}")
 set(md5 "a9b674b8a11037a15bfed69835aac1a6")
+set(patch "${PROJECT_SOURCE_DIR}/Backends/patches/${name}/${ver}/patch_${name}_${ver}.dif")
 set(HL_CXXFLAGS "${BACKEND_CXX_FLAGS} -I${yaml_INCLUDE_DIR}")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(HL_CXXFLAGS "${HL_CXXFLAGS} -undefined dynamic_lookup -flat_namespace")
@@ -618,9 +619,10 @@ if(NOT ditched_${name}_${ver})
     DOWNLOAD_COMMAND ${DL_BACKEND} ${dl} ${md5} ${dir} ${name} ${ver}
     SOURCE_DIR ${dir}
     BUILD_IN_SOURCE 1
+    PATCH_COMMAND patch -p1 < ${patch}
     UPDATE_COMMAND ${CMAKE_COMMAND} -E echo "set_target_properties(HEPLike_shared PROPERTIES OUTPUT_NAME HEPLike SUFFIX \".so\")" >> ${dir}/CMakeLists.txt
     CMAKE_COMMAND ${CMAKE_COMMAND} ..
-    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${HL_CXXFLAGS} -DCMAKE_MODULE_PATH=${PROJECT_SOURCE_DIR}/cmake -DUSE_ROOT=false
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${HL_CXXFLAGS} -DCMAKE_MODULE_PATH=${PROJECT_SOURCE_DIR}/cmake -DUSE_ROOT=false -DBoost_INCLUDE_DIRS=${Boost_INCLUDE_DIR} -DBoost_LIBRARIES=${Boost_LIBRARIES} -DGSL_INCLUDE_DIR=${GSL_INCLUDE_DIR} -DGSL_LIBRARIES=${GSL_LIBRARIES}
     BUILD_COMMAND ${MAKE_PARALLEL} HEPLike_shared
     INSTALL_COMMAND ""
     )
