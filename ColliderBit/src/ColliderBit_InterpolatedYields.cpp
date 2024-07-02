@@ -1704,7 +1704,7 @@ namespace Gambit
         get_all_signal_yields(get_all_DMsimp_signal_yields, spec, analysis_data_map, result, modelname);
       }
 
-    };
+    }
 
 
     /// Fill the input vector with the total DMsimp signal prediction for each SR in the given LHC analysis
