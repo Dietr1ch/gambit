@@ -77,7 +77,11 @@ COMPULSORY:
  - gfortran >= 9 / ifort >=15.0.2
  - CMake 3.2.3 or greater
  - Python 3
- - Python modules: yaml, future, os, re, datetime, sys, getopt, shutil and itertools.
+ - Python modules
+   - `yaml` (pyyaml)
+   - `future`
+   - (`pybind11` already bundled in ./contrib/)
+   - Python Standard Library (`os`, `re`, `datetime`, `sys`, `getopt` (DEPRECATED by `argparse`), `shutil` and `itertools`).
  - git
  - Boost 1.48 or greater
  - GNU Scientific Library (GSL) 2.1 or greater
@@ -138,9 +142,9 @@ Assuming that you have retrieved the git repository or the tarball and unpacked 
   mkdir build
   cd build
   cmake ..
-  make -jn scanners (where n specifies the desired number of cores for the build, e.g. 4)
+  make -j scanners  # (Use `-jN` instead of `-j` to adjust parallelism if needed)
   cmake ..
-  make -jn gambit
+  make -j gambit
 ```
 
 To build all backend codes:
