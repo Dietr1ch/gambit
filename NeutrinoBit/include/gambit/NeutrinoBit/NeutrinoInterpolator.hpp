@@ -18,8 +18,14 @@
 #ifndef __NeutrinoInterpolator_hpp__
 #define __NeutrinoInterpolator_hpp__
 
+#include <filesystem>
+#include <map>
+
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_spline2d.h>
+
+#include "gambit/cmake/cmake_variables.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 namespace Gambit
 {
@@ -28,24 +34,20 @@ namespace Gambit
 
     class NeutrinoInterpolator
     {
-      private:
+    private:
+      gsl_interp_accel *acc;
+      gsl_spline *spline;
 
-        // GSL objects
-        gsl_interp_accel *acc;
-        gsl_spline *spline;
-
-      public:
-
-        // Constructor
-        NeutrinoInterpolator(std::string file)
-        {
-          str filename = GAMBIT_DIR "/"+file;
-          if(not Utils::file_exists(filename))
-            NeutrinoBit_error().raise(LOCAL_INFO, "Data file '"+filename+"' does not exist.\n");
+    public:
+      NeutrinoInterpolator(const std::filesystem::path& file_path)
+      {
+          if(not Utils::file_exists(file_path)) {
+            throw std::invalid_argument("Data file '" + file_path.string() + "' does not exist.");
+          }
 
           // Read file
           std::vector<std::pair<double,double> > array;
-          std::ifstream f(filename);
+          std::ifstream f{file_path};
           std::string line;
           while(getline(f, line))
           {
@@ -75,50 +77,45 @@ namespace Gambit
           gsl_spline_init(spline, &x[0], &y[0], npoints);
 
         }
-
-        // Delete copy constructor and assignment operator to avoid shallow copies
-        NeutrinoInterpolator(const NeutrinoInterpolator&) = delete;
-        NeutrinoInterpolator& operator=(const NeutrinoInterpolator&) = delete;     
-
-        // Destructor
         ~NeutrinoInterpolator()
         {
           gsl_spline_free (spline);
           gsl_interp_accel_free (acc);
         }
 
-        // Evaluation function
+        // Disallow copy and assignment operators
+        NeutrinoInterpolator(const NeutrinoInterpolator&) = delete;
+        NeutrinoInterpolator& operator=(const NeutrinoInterpolator&) = delete;     
+
+
         double eval(double x)
         {
           return gsl_spline_eval(spline, x, acc);
         }
-
     };
 
     // 2D version
     class NeutrinoInterpolator2D
     {
       private:
-
-        // GSL objects
         gsl_interp_accel *xacc;
         gsl_interp_accel *yacc;
         gsl_spline2d *spline2d;
-
       public:
-
-        // Constructor
-        NeutrinoInterpolator2D(std::string file)
+        NeutrinoInterpolator2D(const std::string& file_name)
         {
-          str filename = GAMBIT_DIR "/"+file;
-          if(not Utils::file_exists(filename))
-            NeutrinoBit_error().raise(LOCAL_INFO, "Data file '"+filename+"' does not exist.\n");
+          const std::filesystem::path gambit_dir = GAMBIT_DIR;
+
+          const auto file_path = gambit_dir / file_name;
+          if(not Utils::file_exists(file_path)) {
+            throw std::invalid_argument("Data file '" + file_path.string() + "' does not exist.");
+          }
 
           // Read file
           std::vector<double> xvals, yvals;
           std::map<std::pair<double,double>,double> zvals;
           double maxzval = 0;
-          std::ifstream f(filename);
+          std::ifstream f(file_path);
           std::string line;
           while(getline(f, line))
           {
@@ -172,12 +169,6 @@ namespace Gambit
           gsl_spline2d_init(spline2d, &x[0], &y[0], &z[0], xsize, ysize);
 
         }
-
-        // Delete copy constructor and assignment operator to avoid shallow copies
-        NeutrinoInterpolator2D(const NeutrinoInterpolator2D&) = delete;
-        NeutrinoInterpolator2D& operator=(const NeutrinoInterpolator2D&) = delete;     
-
-        // Destructor
         ~NeutrinoInterpolator2D()
         {
           gsl_spline2d_free (spline2d);
@@ -185,12 +176,15 @@ namespace Gambit
           gsl_interp_accel_free (yacc);
         }
 
-        // Evaluation function
+        // Disallow copy and assignment operators
+        NeutrinoInterpolator2D(const NeutrinoInterpolator2D&) = delete;
+        NeutrinoInterpolator2D& operator=(const NeutrinoInterpolator2D&) = delete;     
+
+
         double eval(double x, double y)
         {
           return gsl_spline2d_eval(spline2d, x, y, xacc, yacc);
         }
-
     };
 
 

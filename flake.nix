@@ -69,6 +69,11 @@
                   # Env
                   git
                   just
+                  sqlite
+                  doxygen
+
+                  # LSP
+                  cmake-language-server
 
                   # Build system
                   pkg-config
