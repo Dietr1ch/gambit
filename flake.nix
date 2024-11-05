@@ -13,13 +13,6 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-
-    nixpkgs-python = {
-      url = "github:cachix/nixpkgs-python";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
   };
 
   nixConfig = {
@@ -51,7 +44,7 @@
           modules = [
             {
               env = {
-                DICTIONARY = "en_GB";
+                "DICTIONARY" = "en_GB";
               };
 
               # https://devenv.sh/reference/options/
@@ -67,71 +60,65 @@
                 python = {
                   # https://devenv.sh/reference/options/#languagespythonenable
                   enable = true;
-
-                  version = "3.11";
-                  libraries = with pkgs.python311Packages; [
-                    ipython
-
-                    pyyaml
-                    future
-
-                    iminuit
-
-                    # Optional python modules (./README.md)
-                    # cython
-                    numpy
-                    scipy
-                    dill
-                    six
-                    pandas
-                    h5py
-                    # pyhf
-                    numba
-                    configobj
-                    tensorflow
-                  ];
                 };
               };
 
               # https://devenv.sh/reference/options/#packages
-              packages = with pkgs; [
-                # Env
-                git
-                just
+              packages = with pkgs;
+                [
+                  # Env
+                  git
+                  just
 
-                # Build system
-                pkg-config
-                gnumake
-                cmake
-                mold
+                  # Build system
+                  pkg-config
+                  gnumake
+                  cmake
+                  mold
 
-                # Libs
-                boost
-                gsl
-                eigen
-                lapack
-                liblapack
-                libuuid
-                root
+                  # Libs
+                  boost
+                  gsl
+                  eigen
+                  lapack
+                  liblapack
+                  libuuid
+                  root
 
-                # More packages
-                castxml
+                  # More packages
+                  castxml
+                  zlib
 
-                # Fortran
-                gfortran # IDK why this isn't included when using languages.fortran.enable.
+                  # Fortran
+                  gfortran # IDK why this isn't included when using languages.fortran.enable.
 
-                # Python
-                python311Packages.pyyaml # IDK why this isn't included by languages.python.libraries
-                python311Packages.iminuit
+                  # Graphs
+                  graphviz
+                  gnuplot
+                  # Misc
+                  axel
+                  mpi
+                  highfive
+                ]
+                ++ (with python311Packages; [
+                  ipython
 
-                # Graphs
-                graphviz
-                gnuplot
-                # Misc
-                axel
-                mpi
-                highfive
-              ];
+                  pyyaml
+                  future
+                  pybind11
+
+                  cython
+                  scipy
+                  numpy
+                  dill
+                  six
+                  pandas
+                  h5py
+                  # pyhf
+                  numba
+                  configobj
+                  tensorflow
+                ]);
 
               # https://devenv.sh/reference/options/#pre-commit
               pre-commit = {
