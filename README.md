@@ -88,6 +88,7 @@ COMPULSORY:
  - Eigen 3.1.0 or greater
  - LAPACK
  - pkg-config
+ - zlib
 
 OPTIONAL:
 

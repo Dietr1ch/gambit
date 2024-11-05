@@ -2,30 +2,45 @@
 #
 # WARNING: This is still broken.
 
-main: build_gambit
-    @echo 'Done :)'
+some_cpus := "16"
+
+
+SOURCE_DIR := "."
+BUILD_DIR := "build/"
+
+CMAKE  := "cmake -B " + BUILD_DIR + " -S " + SOURCE_DIR
+MAKE_BASE  := "make --directory " +BUILD_DIR
+MAKE       := MAKE_BASE + " -j" + num_cpus()
+MAKE_SLOW  := MAKE_BASE + " -j" + some_cpus
+
 
 build_gambit:
     @echo 'Building gambit'
     @echo '  Generating build instructions...'
-    mkdir -p build/
-    cmake -B build/ -S .
+    mkdir -p {{BUILD_DIR}}
+    {{CMAKE}}
 
     @echo '  building scanners...'
-    make --debug -j --directory build/ scanners
+    {{MAKE}} scanners
 
     @echo '  building gambit...'
-    cmake -B build/ -S . -Ditch="great"
-    make --debug -j --directory build/ gambit
+    {{CMAKE}} -Ditch="great"
+    {{MAKE_SLOW}} gambit  # This may have a race condition. Re-running a dirty build seems to work.
 
 build_backends: build_gambit
     @echo 'Building all backends'
-    make --debug -j --directory build/ backends
+    {{MAKE}} backends
+
+
+clean_build: clean_thoroughly build_gambit
+    @echo 'Done :)'
+
 
 clean:
-    @echo 'Removing build/'
-    rm -rf ./build/
-    mkdir -p build/
+    @echo 'Removing build directory'
+    rm -rf {{BUILD_DIR}}
+    mkdir -p {{BUILD_DIR}}
+
 
 clean_thoroughly: clean
     @echo 'Will remove untracked files:'
@@ -33,20 +48,4 @@ clean_thoroughly: clean
     @echo ''
     @echo 'Removing untracked files...'
     git clean -d --force -X
-
-
-# From https://gambitbsm.org/tutorials/BSM2/Pre_Tutorial_Instructions.txt
-
-build_gambit_tutorial:
-    @echo 'Building gambit'
-    @echo 'Building gambit'
-    @echo '  Generating build instructions for running the Tutorial...'
-    cmake -B build/ -S . -DWITH_MPI="on" -DWITH_ROOT="on" -Ditch="Cosmo;Collider;Precision;Mathematica;pybind"  # (yes, do it again, needed to register the scanner plugins with the build system)
-
-    @echo '  building scanners...'
-    make --debug -j --directory build/ scanners
-    cmake -B build/ -S . -DWITH_MPI="on" -DWITH_ROOT="on" -Ditch="Cosmo;Collider;Precision;Mathematica;pybind"  # (yes, do it again, needed to register the scanner plugins with the build system)
-
-    make --debug -j --directory build/ superiso
-    make --debug -j --directory build/ heplike
-    make --debug -j --directory build/ gambit
+    direnv reload
