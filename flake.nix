@@ -75,6 +75,8 @@
                     pyyaml
                     future
 
+                    iminuit
+
                     # Optional python modules (./README.md)
                     # cython
                     numpy
@@ -110,12 +112,17 @@
                 lapack
                 liblapack
                 libuuid
+                root
+
+                # More packages
+                castxml
 
                 # Fortran
                 gfortran # IDK why this isn't included when using languages.fortran.enable.
 
                 # Python
                 python311Packages.pyyaml # IDK why this isn't included by languages.python.libraries
+                python311Packages.iminuit
 
                 # Graphs
                 graphviz
